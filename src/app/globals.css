@@ -1,26 +1,112 @@
 @import "tailwindcss";
 
+/* ─── Brand Design Tokens ──────────────────────────────────────────────────── */
+@theme {
+  /* Core colours — generates bg-pe-*, text-pe-*, border-pe-* utilities */
+  --color-pe-bg: #F5F5F5;
+  --color-pe-primary: #39575C;
+  --color-pe-secondary: #709DA9;
+  --color-pe-text: #1A1A1A;
+  --color-pe-muted: #6B7280;
+  --color-pe-border: #E5E7EB;
+  --color-pe-card: #FFFFFF;
+  --color-pe-nav-dark: #0d1f22;
+
+  /* Vertical accent colours */
+  --color-accent-solar: #E3C58D;
+  --color-accent-wheeling: #D97C76;
+  --color-accent-optim: #709DA9;
+  --color-accent-carbon: #9CAF88;
+  --color-accent-wbs: #C97A40;
+  --color-accent-ev: #A9D6CB;
+
+  /* Typography — font-display and font-body utility classes */
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Border radii — rounded-card, rounded-featured, rounded-nav */
+  --radius-card: 16px;
+  --radius-featured: 18px;
+  --radius-nav: 14px;
+}
+
+/* ─── CSS Custom Properties (layout dimensions) ────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --max-content: 960px;
+  --max-wide: 1280px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ─── Base ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #F5F5F5;
+  color: #1A1A1A;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── iOS Safari — prevent auto-zoom on input focus ───────────────────────── */
+@media (max-width: 768px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* ─── Custom layout utilities ──────────────────────────────────────────────── */
+@layer utilities {
+  .max-w-content { max-width: var(--max-content); }
+  .max-w-wide    { max-width: var(--max-wide); }
+
+  /* Hide scrollbar, keep scroll function */
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Touch carousel snap */
+  .scroll-snap-x {
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+  .scroll-snap-x > * {
+    scroll-snap-align: start;
+  }
+}
+
+/* ─── Shimmer skeleton animation ──────────────────────────────────────────── */
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #E5E7EB 25%, #F5F5F5 50%, #E5E7EB 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ─── Pulse ring (HowItWorks active step) ──────────────────────────────────── */
+@keyframes pulseRing {
+  0%   { transform: scale(1.08); opacity: 1; }
+  70%  { transform: scale(1.22); opacity: 0; }
+  100% { transform: scale(1.22); opacity: 0; }
+}
+
+/* ─── Hero accordion progress bar ──────────────────────────────────────────── */
+@keyframes fillProgress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
 }
