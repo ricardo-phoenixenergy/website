@@ -17,6 +17,8 @@ interface HowItWorksProps {
   steps: Step[];
   autoAdvanceInterval?: number;
   showCTA?: boolean;
+  ctaLabel?: string;
+  ctaHref?: string;
 }
 
 export function HowItWorks({
@@ -25,6 +27,8 @@ export function HowItWorks({
   steps,
   autoAdvanceInterval = 2600,
   showCTA = true,
+  ctaLabel = 'Get a Free Assessment →',
+  ctaHref = '/contact',
 }: HowItWorksProps) {
   const [activeStep, setActiveStep] = useState(0);
   const [sparkVisible, setSparkVisible] = useState(false);
@@ -212,8 +216,8 @@ export function HowItWorks({
 
         {showCTA && (
           <div className="text-center mt-7">
-            <Button variant="primary" href="/contact">
-              Get a Free Assessment →
+            <Button variant="primary" href={ctaHref}>
+              {ctaLabel}
             </Button>
           </div>
         )}
@@ -303,8 +307,8 @@ export function HowItWorks({
 
         {showCTA && (
           <div className="text-center mt-7">
-            <Button variant="primary" href="/contact">
-              Get a Free Assessment →
+            <Button variant="primary" href={ctaHref}>
+              {ctaLabel}
             </Button>
           </div>
         )}
