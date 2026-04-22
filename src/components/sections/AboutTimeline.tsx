@@ -72,6 +72,12 @@ export function AboutTimeline({ milestones }: Props) {
     return () => observer.disconnect();
   }, [milestones]);
 
+  useEffect(() => {
+    return () => {
+      if (timerRef.current !== null) clearTimeout(timerRef.current);
+    };
+  }, []);
+
   if (milestones.length === 0) return null;
 
   return (
@@ -180,7 +186,7 @@ export function AboutTimeline({ milestones }: Props) {
                       : isActive
                       ? 'linear-gradient(135deg, #39575C 0%, #0d1f22 100%)'
                       : 'linear-gradient(135deg, #E5E7EB 0%, #F5F5F5 100%)',
-                    transform: isActive ? 'scale(1)' : 'scale(0.97)',
+                    transform: isActive ? 'scale(1)' : m.isFuture ? 'scale(0.96)' : 'scale(0.97)',
                     opacity: m.isFuture ? (isActive ? 0.7 : 0.45) : 1,
                     border: m.isFuture ? '1px dashed rgba(112,157,169,0.4)' : 'none',
                     transition: 'transform 400ms cubic-bezier(0.4,0,0.2,1), opacity 300ms ease',
