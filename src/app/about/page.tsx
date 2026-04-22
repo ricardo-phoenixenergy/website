@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { sanityClient } from '@/lib/sanity';
-import { TEAM_MEMBERS_QUERY } from '@/lib/queries';
+import { TEAM_MEMBERS_QUERY, MILESTONE_TIMELINE_QUERY } from '@/lib/queries';
 import { Button } from '@/components/ui/Button';
 import { AboutStory } from '@/components/sections/AboutStory';
 import { AboutMission } from '@/components/sections/AboutMission';
@@ -9,7 +9,7 @@ import { AboutValues } from '@/components/sections/AboutValues';
 import { AboutTimeline } from '@/components/sections/AboutTimeline';
 import { AboutTeam } from '@/components/sections/AboutTeam';
 import { AboutTrust } from '@/components/sections/AboutTrust';
-import type { TeamMember } from '@/types/sanity';
+import type { TeamMember, MilestoneTimeline } from '@/types/sanity';
 
 export const metadata: Metadata = {
   title: 'About Phoenix Energy — Our Story, Mission & Team',
@@ -33,24 +33,26 @@ async function getTeamMembers(): Promise<TeamMember[]> {
   }
 }
 
+async function getMilestones(): Promise<MilestoneTimeline[]> {
+  try {
+    return await sanityClient.fetch<MilestoneTimeline[]>(MILESTONE_TIMELINE_QUERY);
+  } catch {
+    return [];
+  }
+}
+
 export default async function AboutPage() {
-  const teamMembers = await getTeamMembers();
+  const [teamMembers, milestones] = await Promise.all([
+    getTeamMembers(),
+    getMilestones(),
+  ]);
 
   return (
     <main>
-      {/* Breadcrumb */}
-      <div className="page-container pt-[88px]">
-        <nav className="flex items-center gap-1.5 font-body text-sm text-[#6B7280] pt-2 mb-4">
-          <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
-          <span>/</span>
-          <span className="font-semibold text-[#39575C]">About</span>
-        </nav>
-      </div>
-
-      {/* Hero */}
+      {/* Hero — background stretches to top of screen */}
       <div
-        className="relative overflow-hidden mt-4"
-        style={{ height: 300 }}
+        className="relative overflow-hidden"
+        style={{ height: 448 }}
       >
         {/* Background gradient (replace with next/image when photo available) */}
         <div
@@ -65,6 +67,14 @@ export default async function AboutPage() {
               'linear-gradient(180deg, rgba(13,31,34,0.2) 0%, rgba(13,31,34,0.9) 100%)',
           }}
         />
+        {/* Breadcrumb — same visual position, colours adapted for dark bg */}
+        <div className="page-container absolute inset-x-0 top-0 pt-[88px]">
+          <nav className="flex items-center gap-1.5 font-body text-sm pt-2" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            <Link href="/" className="hover:text-white transition-colors">Home</Link>
+            <span>/</span>
+            <span className="font-semibold text-white">About</span>
+          </nav>
+        </div>
         {/* Content */}
         <div className="page-container absolute inset-x-0 bottom-0 pb-8">
           <p
@@ -87,7 +97,7 @@ export default async function AboutPage() {
       <AboutStory />
       <AboutMission />
       <AboutValues />
-      <AboutTimeline />
+      <AboutTimeline milestones={milestones} />
       <AboutTeam members={teamMembers} />
       <AboutTrust />
 
