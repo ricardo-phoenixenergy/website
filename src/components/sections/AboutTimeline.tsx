@@ -13,6 +13,7 @@ export function AboutTimeline({ milestones }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const isProgrammaticScroll = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reduced = useReducedMotion();
 
   // Derived — not separate state
@@ -23,14 +24,15 @@ export function AboutTimeline({ milestones }: Props) {
     (i: number) => {
       const el = itemRefs.current[i];
       if (el && scrollRef.current) {
+        if (timerRef.current !== null) clearTimeout(timerRef.current);
         isProgrammaticScroll.current = true;
         scrollRef.current.scrollTo({
           left: el.offsetLeft - 20,
           behavior: reduced ? 'instant' : 'smooth',
         });
-        // Allow IntersectionObserver to resume after scroll animation
-        setTimeout(() => {
+        timerRef.current = setTimeout(() => {
           isProgrammaticScroll.current = false;
+          timerRef.current = null;
         }, 600);
       }
     },
@@ -90,24 +92,18 @@ export function AboutTimeline({ milestones }: Props) {
 
           <div className="hidden md:flex items-center gap-2">
             <button
-              onClick={() => canGoPrev && goTo(activeIndex - 1)}
+              onClick={() => goTo(activeIndex - 1)}
+              disabled={!canGoPrev}
               aria-label="Previous milestone"
-              className="w-9 h-9 rounded-full border border-[#E5E7EB] bg-white flex items-center justify-center text-[#39575C] transition-all duration-200 hover:border-[#39575C] hover:bg-[#F5F5F5]"
-              style={{
-                opacity: canGoPrev ? 1 : 0.3,
-                pointerEvents: canGoPrev ? 'auto' : 'none',
-              }}
+              className="w-9 h-9 rounded-full border border-[#E5E7EB] bg-white flex items-center justify-center text-[#39575C] transition-all duration-200 hover:border-[#39575C] hover:bg-[#F5F5F5] disabled:opacity-30 disabled:cursor-not-allowed"
             >
               ←
             </button>
             <button
-              onClick={() => canGoNext && goTo(activeIndex + 1)}
+              onClick={() => goTo(activeIndex + 1)}
+              disabled={!canGoNext}
               aria-label="Next milestone"
-              className="w-9 h-9 rounded-full border bg-[#39575C] border-[#39575C] flex items-center justify-center text-white transition-all duration-200"
-              style={{
-                opacity: canGoNext ? 1 : 0.3,
-                pointerEvents: canGoNext ? 'auto' : 'none',
-              }}
+              className="w-9 h-9 rounded-full border bg-[#39575C] border-[#39575C] flex items-center justify-center text-white transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               →
             </button>
@@ -235,9 +231,9 @@ export function AboutTimeline({ milestones }: Props) {
 
         {/* Progress dots — clickable on both desktop and mobile */}
         <div className="flex items-center gap-2 mt-6">
-          {milestones.map((_, i) => (
+          {milestones.map((m, i) => (
             <button
-              key={i}
+              key={m._id}
               onClick={() => goTo(i)}
               aria-label={`Go to milestone ${i + 1}`}
               className="rounded-full transition-all duration-300"
