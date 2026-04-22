@@ -32,8 +32,8 @@
 
 /* ─── CSS Custom Properties (layout dimensions) ────────────────────────────── */
 :root {
-  --max-content: 960px;
-  --max-wide: 1280px;
+  --max-content: 60rem;  /* 960px  — max-w-4xl equivalent */
+  --max-wide:    80rem;  /* 1280px — max-w-7xl equivalent */
 }
 
 /* ─── Base ─────────────────────────────────────────────────────────────────── */
@@ -62,7 +62,28 @@ body {
   }
 }
 
+/* ─── Page container — used as the inner content wrapper in every section ──── */
+@layer components {
+  .page-container {
+    max-width: var(--max-wide);
+    margin-inline: auto;
+    padding-inline: 1rem; /* px-4 */
+  }
+  @media (min-width: 640px) {
+    .page-container { padding-inline: 1.5rem; } /* sm:px-6 */
+  }
+  @media (min-width: 1024px) {
+    .page-container { padding-inline: 2rem; }   /* lg:px-8 */
+  }
+}
+
 /* ─── Custom layout utilities ──────────────────────────────────────────────── */
+/* ─── Stat tile shimmer animation ─────────────────────────────────────────── */
+@keyframes tile-shimmer {
+  0%        { transform: translateX(-101%); }
+  40%, 100% { transform: translateX(101%);  }
+}
+
 @layer utilities {
   .max-w-content { max-width: var(--max-content); }
   .max-w-wide    { max-width: var(--max-wide); }
@@ -83,6 +104,17 @@ body {
   }
   .scroll-snap-x > * {
     scroll-snap-align: start;
+  }
+
+  /* Stat tile shimmer — ::after pseudo sweeps a 1px gradient line across the top */
+  .shimmer-tile::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(112,157,169,0.5), transparent);
+    animation: tile-shimmer 2.5s ease-in-out infinite;
+    animation-delay: var(--shimmer-delay, 0s);
   }
 }
 
