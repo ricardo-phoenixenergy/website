@@ -9,6 +9,7 @@ interface StatStripProps {
 
 export function StatStrip({ stats }: StatStripProps) {
   const cols = Math.min(stats.length, 4);
+  if (cols === 0) return null;
   return (
     <div
       className="my-5 rounded-xl overflow-hidden"

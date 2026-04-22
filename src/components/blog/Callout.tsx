@@ -39,7 +39,7 @@ export function Callout({ type, icon, title, text }: CalloutProps) {
       }}
     >
       {icon && (
-        <span className="flex-shrink-0 text-lg leading-none" role="img" aria-hidden="true">
+        <span className="flex-shrink-0 text-lg leading-none" aria-hidden="true">
           {icon}
         </span>
       )}
