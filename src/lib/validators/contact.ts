@@ -29,7 +29,7 @@ export const webBuySolarSchema = z.object({
     rangeHigh: z.number(),
     dcfValue: z.number(),
   }),
-  recaptchaToken: z.string().min(1),
+  recaptchaToken: z.string().optional(),
 });
 
 export type ContactInput = z.infer<typeof contactSchema>;
