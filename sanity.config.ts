@@ -29,6 +29,8 @@ export default defineConfig({
             S.documentTypeListItem('project').title('Projects'),
             S.divider(),
             S.documentTypeListItem('teamMember').title('Team Members'),
+            S.divider(),
+            S.documentTypeListItem('milestoneTimeline').title('Timeline Milestones'),
           ]),
     }),
     visionTool(),
