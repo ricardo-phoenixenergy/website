@@ -204,8 +204,7 @@ export const ALL_AUTHOR_SLUGS_QUERY = `
 export const TEAM_MEMBERS_QUERY = `
   *[_type == "teamMember" && active == true]
   | order(
-    category == "founders" desc,
-    category == "business" desc,
+    select(category == "founders" => 1, category == "business" => 2, 3) asc,
     order asc
   ) {
     _id,
