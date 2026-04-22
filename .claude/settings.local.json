@@ -13,7 +13,18 @@
       "Bash(npx next *)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:api.github.com)"
+      "WebFetch(domain:api.github.com)",
+      "Bash(claude update *)",
+      "Bash(claude *)",
+      "Bash(C:/Users/ricar/AppData/Roaming/npm/node_modules/@anthropic-ai/claude-code/bin/claude.exe *)",
+      "Read(//c/Users/ricar/AppData/Roaming/Claude/**)",
+      "Read(//c/Users/ricar/.claude/**)",
+      "Skill(update-config)",
+      "Bash(node *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git commit *)",
+      "Bash(xargs grep *)"
     ]
   }
 }
