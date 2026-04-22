@@ -1,20 +1,28 @@
 import Link from 'next/link';
 import { sanityClient } from '@/lib/sanity';
-import { FEATURED_PROJECTS_QUERY } from '@/lib/queries';
+import { FEATURED_PROJECTS_QUERY, PROJECTS_BY_VERTICAL_QUERY } from '@/lib/queries';
 import { ProjectCard } from './ProjectCard';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import type { ProjectCard as ProjectCardType } from '@/types/sanity';
+import type { SolutionVertical } from '@/types/solutions';
 
-async function getFeaturedProjects(): Promise<ProjectCardType[]> {
+interface FeaturedProjectsProps {
+  vertical?: SolutionVertical;
+}
+
+async function getProjects(vertical?: SolutionVertical): Promise<ProjectCardType[]> {
   try {
+    if (vertical) {
+      return await sanityClient.fetch<ProjectCardType[]>(PROJECTS_BY_VERTICAL_QUERY, { vertical });
+    }
     return await sanityClient.fetch<ProjectCardType[]>(FEATURED_PROJECTS_QUERY);
   } catch {
     return [];
   }
 }
 
-export async function FeaturedProjects() {
-  const projects = await getFeaturedProjects();
+export async function FeaturedProjects({ vertical }: FeaturedProjectsProps = {}) {
+  const projects = await getProjects(vertical);
 
   if (projects.length === 0) return null;
 
@@ -48,9 +56,7 @@ export async function FeaturedProjects() {
       >
         {projects.map((project, i) => (
           <AnimatedSection key={project._id} delay={i * 0.05} as="div" className="flex-shrink-0">
-            <ProjectCard
-              project={project}
-            />
+            <ProjectCard project={project} />
           </AnimatedSection>
         ))}
       </div>
