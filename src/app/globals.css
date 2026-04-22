@@ -77,6 +77,12 @@ body {
   }
 }
 
+/* ─── Stat tile shimmer animation ─────────────────────────────────────────── */
+@keyframes tile-shimmer {
+  0%        { transform: translateX(-101%); }
+  40%, 100% { transform: translateX(101%);  }
+}
+
 /* ─── Custom layout utilities ──────────────────────────────────────────────── */
 @layer utilities {
   .max-w-content { max-width: var(--max-content); }
@@ -110,12 +116,6 @@ body {
     animation: tile-shimmer 2.5s ease-in-out infinite;
     animation-delay: var(--shimmer-delay, 0s);
   }
-}
-
-/* ─── Stat tile shimmer animation ─────────────────────────────────────────── */
-@keyframes tile-shimmer {
-  0%        { transform: translateX(-101%); }
-  40%, 100% { transform: translateX(101%);  }
 }
 
 /* ─── Shimmer skeleton animation ──────────────────────────────────────────── */

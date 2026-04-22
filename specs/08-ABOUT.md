@@ -434,14 +434,14 @@ export const metadata = {
 | Section | Component |
 |---|---|
 | Hero | `src/app/about/page.tsx` (inline, not reused) |
-| Stats strip | `src/components/ui/StatsStrip.tsx` (reused from project page) |
+| ~~Stats strip~~ | ~~removed April 2026~~ — `StatsStrip` still used on `/projects/[slug]` |
 | Story | `src/components/sections/AboutStory.tsx` |
 | Mission | `src/components/sections/AboutMission.tsx` |
 | Values | `src/components/sections/AboutValues.tsx` |
 | Timeline | `src/components/sections/AboutTimeline.tsx` |
 | Team | `src/components/sections/AboutTeam.tsx` |
 | Trust | `src/components/sections/AboutTrust.tsx` |
-| Careers band | `src/components/sections/CareersBand.tsx` |
+| ~~Careers band~~ | ~~removed April 2026~~ — `CareersBand.tsx` deleted |
 | CTA | `src/components/sections/CTABanner.tsx` (shared) |
 | Footer | `src/components/layout/Footer.tsx` (shared) |
 
