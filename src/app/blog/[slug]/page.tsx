@@ -13,6 +13,11 @@ import { ShareButtons } from '@/components/blog/ShareButtons';
 import { AuthorCard } from '@/components/blog/AuthorCard';
 import { RelatedPosts } from '@/components/blog/RelatedPosts';
 import { CTABanner } from '@/components/sections/CTABanner';
+import { cache } from 'react';
+
+const getPost = cache((slug: string) =>
+  sanityClient.fetch<BlogPost | null>(POST_BY_SLUG_QUERY, { slug }),
+);
 
 export const revalidate = 3600;
 
@@ -28,9 +33,7 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  const post = await sanityClient.fetch<BlogPost | null>(POST_BY_SLUG_QUERY, {
-    slug: params.slug,
-  });
+  const post = await getPost(params.slug);
   if (!post) return {};
   const canonical =
     post.canonicalUrl ?? `${SITE}/blog/${post.slug.current}`;
@@ -102,9 +105,7 @@ function initials(name: string) {
 }
 
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = await sanityClient.fetch<BlogPost | null>(POST_BY_SLUG_QUERY, {
-    slug: params.slug,
-  });
+  const post = await getPost(params.slug);
   if (!post) notFound();
 
   const tocItems = extractTocItems(post.body);
@@ -210,7 +211,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             {authorPhotoSrc ? (
               <Image
                 src={authorPhotoSrc}
-                alt={post.author.name}
+                alt=""
                 width={26}
                 height={26}
                 className="rounded-full object-cover flex-shrink-0"
@@ -245,7 +246,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         className="flex items-center justify-between max-w-[960px] mx-auto"
         style={{ padding: '12px 24px', borderBottom: '1px solid #E5E7EB' }}
       >
-        <nav className="font-body text-[10px] text-[#6B7280] flex items-center gap-1">
+        <nav aria-label="Breadcrumb" className="font-body text-[10px] text-[#6B7280] flex items-center gap-1">
           <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
           <span>/</span>
           <Link href="/blog" className="hover:text-[#39575C] transition-colors">Blog</Link>
@@ -260,7 +261,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
               display: 'inline-block',
             }}
           >
-            {post.title.length > 35 ? `${post.title.slice(0, 35)}…` : post.title}
+            {post.title}
           </span>
         </nav>
         <ShareButtons url={canonicalUrl} title={post.seoTitle ?? post.title} />
@@ -342,7 +343,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         <aside className="flex flex-col gap-4" style={{ position: 'sticky', top: 24, alignSelf: 'start' }}>
           <TableOfContents items={tocItems} />
           <AuthorCard author={post.author} />
-          {post.related?.length > 0 && <RelatedPosts posts={post.related} />}
+          {post.related.length > 0 && <RelatedPosts posts={post.related} />}
         </aside>
       </div>
 

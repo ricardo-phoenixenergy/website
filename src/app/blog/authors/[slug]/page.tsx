@@ -9,6 +9,11 @@ import type { Author, BlogPostCard } from '@/types/sanity';
 import { ArticleCard } from '@/components/ui/ArticleCard';
 import { CTABanner } from '@/components/sections/CTABanner';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
+import { cache } from 'react';
+
+const getAuthor = cache((slug: string) =>
+  sanityClient.fetch<Author | null>(AUTHOR_BY_SLUG_QUERY, { slug }),
+);
 
 export const revalidate = 3600;
 
@@ -24,9 +29,7 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  const author = await sanityClient.fetch<Author | null>(AUTHOR_BY_SLUG_QUERY, {
-    slug: params.slug,
-  });
+  const author = await getAuthor(params.slug);
   if (!author) return {};
   return {
     title: `${author.name} | Phoenix Energy Blog`,
@@ -41,7 +44,7 @@ function initials(name: string) {
 
 export default async function AuthorPage({ params }: { params: { slug: string } }) {
   const [author, posts] = await Promise.all([
-    sanityClient.fetch<Author | null>(AUTHOR_BY_SLUG_QUERY, { slug: params.slug }),
+    getAuthor(params.slug),
     sanityClient.fetch<BlogPostCard[]>(POSTS_BY_AUTHOR_QUERY, { slug: params.slug }),
   ]);
 
@@ -50,6 +53,7 @@ export default async function AuthorPage({ params }: { params: { slug: string } 
   const photoSrc = author.photo?.asset
     ? urlFor(author.photo).width(176).height(176).url()
     : null;
+  const photoLqip = author.photo?.asset?.metadata?.lqip ?? null;
 
   return (
     <>
@@ -64,6 +68,7 @@ export default async function AuthorPage({ params }: { params: { slug: string } 
               height={88}
               className="rounded-full object-cover mx-auto mb-4"
               style={{ border: '3px solid rgba(112,157,169,0.5)' }}
+              {...(photoLqip ? { placeholder: 'blur' as const, blurDataURL: photoLqip } : {})}
             />
           ) : (
             <div
@@ -103,7 +108,7 @@ export default async function AuthorPage({ params }: { params: { slug: string } 
 
       {/* Breadcrumb */}
       <div className="max-w-[960px] mx-auto px-6 py-3" style={{ borderBottom: '1px solid #E5E7EB' }}>
-        <nav className="font-body text-[10px] text-[#6B7280] flex items-center gap-1">
+        <nav aria-label="Breadcrumb" className="font-body text-[10px] text-[#6B7280] flex items-center gap-1">
           <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
           <span>/</span>
           <Link href="/blog" className="hover:text-[#39575C] transition-colors">Blog</Link>
@@ -122,19 +127,17 @@ export default async function AuthorPage({ params }: { params: { slug: string } 
             By {author.name}
           </h2>
         </div>
-        <div
-          className="max-w-[960px] mx-auto"
-          style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}
-        >
-          {posts.map((post, i) => (
-            <ArticleCard key={post._id} post={post} delay={i * 0.04} />
-          ))}
-          {posts.length === 0 && (
-            <div className="col-span-3 py-16 text-center">
-              <p className="font-body text-sm text-[#9CA3AF]">No articles yet.</p>
-            </div>
-          )}
-        </div>
+        {posts.length === 0 ? (
+          <div className="max-w-[960px] mx-auto py-16 text-center">
+            <p className="font-body text-sm text-[#9CA3AF]">No articles yet.</p>
+          </div>
+        ) : (
+          <div className="max-w-[960px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {posts.map((post, i) => (
+              <ArticleCard key={post._id} post={post} delay={i * 0.04} />
+            ))}
+          </div>
+        )}
       </section>
 
       <CTABanner />

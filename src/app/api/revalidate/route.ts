@@ -3,13 +3,25 @@ import { revalidatePath } from 'next/cache';
 import { NextRequest } from 'next/server';
 
 export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json() as { slug?: string; _type?: string };
+  const secret = process.env.REVALIDATE_SECRET;
+  const authHeader = req.headers.get('authorization');
+  if (!secret || authHeader !== `Bearer ${secret}`) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
-    if (body._type === 'blogPost' && body.slug) {
-      revalidatePath(`/blog/${body.slug}`);
+  try {
+    const raw = await req.json();
+    const type = typeof raw._type === 'string' ? raw._type : undefined;
+    const slug = typeof raw.slug === 'string' ? raw.slug : undefined;
+
+    if (type === 'blogPost') {
+      if (slug) revalidatePath(`/blog/${slug}`);
+      revalidatePath('/blog');
     }
-    revalidatePath('/blog');
+
+    if (type === 'author' && slug) {
+      revalidatePath(`/blog/authors/${slug}`);
+    }
 
     return Response.json({ revalidated: true, timestamp: new Date().toISOString() });
   } catch {
