@@ -21,13 +21,28 @@ export const revalidate = 3600;
 const SITE = 'https://phoenixenergy.solutions';
 const PAGE_SIZE = 6;
 
+function buildBlogHref(p: number, cat: string, t: string): string {
+  const params = new URLSearchParams();
+  if (p > 1) params.set('page', String(p));
+  if (cat) params.set('category', cat);
+  if (t) params.set('tag', t);
+  const qs = params.toString();
+  return qs ? `/blog?${qs}` : '/blog';
+}
+
 export async function generateMetadata({
   searchParams,
 }: {
   searchParams: { page?: string; category?: string; tag?: string };
 }): Promise<Metadata> {
   const page = Number(searchParams.page) || 1;
+  const category = searchParams.category ?? '';
+  const tag = searchParams.tag ?? '';
   const canonical = page > 1 ? `${SITE}/blog?page=${page}` : `${SITE}/blog`;
+
+  const total = await sanityClient.fetch<number>(BLOG_COUNT_QUERY, { category, tag } as Record<string, string>);
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+
   return {
     title: 'Blog & Insights | Phoenix Energy',
     description:
@@ -36,6 +51,9 @@ export async function generateMetadata({
       canonical,
       ...(page > 1 && {
         prev: page > 2 ? `${SITE}/blog?page=${page - 1}` : `${SITE}/blog`,
+      }),
+      ...(page < totalPages && {
+        next: `${SITE}/blog?page=${page + 1}`,
       }),
     },
     openGraph: {
@@ -175,7 +193,7 @@ export default async function BlogPage({
           <div className="flex items-center justify-center gap-2 py-10">
             {page > 1 && (
               <Link
-                href={`/blog${page === 2 ? '' : `?page=${page - 1}${category ? `&category=${encodeURIComponent(category)}` : ''}${tag ? `&tag=${encodeURIComponent(tag)}` : ''}`}`}
+                href={buildBlogHref(page - 1, category, tag)}
                 className="font-body text-xs text-[#6B7280] px-4 py-2 rounded-full transition-colors hover:bg-white"
                 style={{ border: '1px solid #E5E7EB' }}
               >
@@ -185,7 +203,7 @@ export default async function BlogPage({
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
               <Link
                 key={p}
-                href={`/blog${p === 1 ? '' : `?page=${p}`}${category ? `&category=${encodeURIComponent(category)}` : ''}${tag ? `&tag=${encodeURIComponent(tag)}` : ''}`}
+                href={buildBlogHref(p, category, tag)}
                 className="font-body text-xs rounded-full px-3.5 py-2 transition-colors"
                 style={
                   p === page
@@ -198,7 +216,7 @@ export default async function BlogPage({
             ))}
             {page < totalPages && (
               <Link
-                href={`/blog?page=${page + 1}${category ? `&category=${encodeURIComponent(category)}` : ''}${tag ? `&tag=${encodeURIComponent(tag)}` : ''}`}
+                href={buildBlogHref(page + 1, category, tag)}
                 className="font-body text-xs text-[#6B7280] px-4 py-2 rounded-full transition-colors hover:bg-white"
                 style={{ border: '1px solid #E5E7EB' }}
               >
