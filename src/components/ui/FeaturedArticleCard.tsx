@@ -3,30 +3,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { BlogPostCard } from '@/types/sanity';
 import { urlFor } from '@/lib/sanity';
-
-const CATEGORY_STYLES: Record<string, { bg: string; color: string }> = {
-  'Industry Insights':  { bg: 'rgba(57,87,92,0.10)',    color: '#39575C' },
-  'Project Spotlight':  { bg: 'rgba(227,197,141,0.10)', color: '#6b4e10' },
-  'Company News':       { bg: 'rgba(169,214,203,0.10)', color: '#1a5a48' },
-  'Press Release':      { bg: 'rgba(217,124,118,0.10)', color: '#7a2a20' },
-};
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-ZA', {
-    day: 'numeric', month: 'short', year: 'numeric',
-  });
-}
-
-function initials(name: string) {
-  return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
-}
+import { categoryStyle, formatDate, initials } from '@/lib/blogUtils';
 
 interface FeaturedArticleCardProps {
   post: BlogPostCard;
 }
 
 export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
-  const cs = CATEGORY_STYLES[post.category] ?? { bg: 'rgba(57,87,92,0.10)', color: '#39575C' };
+  const cs = categoryStyle(post.category);
   const imgSrc = post.heroImage?.asset
     ? urlFor(post.heroImage).width(600).height(440).auto('format').url()
     : null;

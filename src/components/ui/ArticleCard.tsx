@@ -4,23 +4,7 @@ import Link from 'next/link';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import type { BlogPostCard } from '@/types/sanity';
 import { urlFor } from '@/lib/sanity';
-
-const CATEGORY_STYLES: Record<string, { bg: string; color: string }> = {
-  'Industry Insights':  { bg: 'rgba(57,87,92,0.10)',    color: '#39575C' },
-  'Project Spotlight':  { bg: 'rgba(227,197,141,0.10)', color: '#6b4e10' },
-  'Company News':       { bg: 'rgba(169,214,203,0.10)', color: '#1a5a48' },
-  'Press Release':      { bg: 'rgba(217,124,118,0.10)', color: '#7a2a20' },
-};
-
-function categoryStyle(cat: string) {
-  return CATEGORY_STYLES[cat] ?? { bg: 'rgba(57,87,92,0.10)', color: '#39575C' };
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-ZA', {
-    day: 'numeric', month: 'short', year: 'numeric',
-  });
-}
+import { categoryStyle, formatDate } from '@/lib/blogUtils';
 
 interface ArticleCardProps {
   post: BlogPostCard;
@@ -38,10 +22,8 @@ export function ArticleCard({ post, delay = 0 }: ArticleCardProps) {
     <AnimatedSection delay={delay}>
       <Link href={`/blog/${post.slug.current}`} className="group block h-full">
         <article
-          className="bg-white rounded-[14px] overflow-hidden h-full flex flex-col transition-all duration-200 group-hover:-translate-y-[3px]"
+          className="bg-white rounded-[14px] overflow-hidden h-full flex flex-col transition-all duration-200 group-hover:-translate-y-[3px] hover:border-[#cccccc]"
           style={{ border: '1px solid #E5E7EB' }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = '#cccccc')}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = '#E5E7EB')}
         >
           {/* Photo */}
           <div className="relative overflow-hidden" style={{ height: 130 }}>
@@ -51,7 +33,7 @@ export function ArticleCard({ post, delay = 0 }: ArticleCardProps) {
                 alt={post.heroImage?.alt ?? post.title}
                 fill
                 className="object-cover"
-                sizes="(max-width: 768px) 100vw, 320px"
+                sizes="(max-width: 768px) 100vw, 400px"
                 {...(blurSrc ? { placeholder: 'blur', blurDataURL: blurSrc } : {})}
               />
             ) : (
