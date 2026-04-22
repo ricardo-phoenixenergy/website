@@ -15,6 +15,7 @@ export function AuthorCard({ author }: AuthorCardProps) {
   const photoSrc = author.photo?.asset
     ? urlFor(author.photo).width(88).height(88).url()
     : null;
+  const lqip = author.photo?.asset?.metadata?.lqip ?? null;
 
   return (
     <div className="bg-white rounded-[14px] p-[18px]" style={{ border: '1px solid #E5E7EB' }}>
@@ -29,6 +30,7 @@ export function AuthorCard({ author }: AuthorCardProps) {
             width={44}
             height={44}
             className="rounded-full object-cover flex-shrink-0"
+            {...(lqip ? { placeholder: 'blur' as const, blurDataURL: lqip } : {})}
           />
         ) : (
           <div

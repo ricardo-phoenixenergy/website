@@ -21,9 +21,8 @@ export function RelatedPosts({ posts }: RelatedPostsProps) {
       <p className="font-display font-bold text-[13px] text-[#1A1A1A] mb-3">Related articles</p>
       <div className="flex flex-col">
         {posts.map((post, i) => {
-          const thumbSrc = post.heroImage?.asset
-            ? urlFor(post.heroImage).width(104).height(88).auto('format').url()
-            : null;
+          const thumbSrc = urlFor(post.heroImage).width(104).height(88).auto('format').url();
+          const lqip = post.heroImage.asset.metadata?.lqip ?? null;
           return (
             <Link
               key={post._id}
@@ -31,27 +30,21 @@ export function RelatedPosts({ posts }: RelatedPostsProps) {
               className="flex gap-3 py-3 group"
               style={{ borderBottom: i < posts.length - 1 ? '1px solid #E5E7EB' : 'none' }}
             >
-              {thumbSrc ? (
-                <Image
-                  src={thumbSrc}
-                  alt={post.heroImage?.alt ?? post.title}
-                  width={52}
-                  height={44}
-                  className="rounded-lg object-cover flex-shrink-0"
-                />
-              ) : (
-                <div className="w-[52px] h-11 rounded-lg bg-[#E5E7EB] flex-shrink-0" />
-              )}
+              <Image
+                src={thumbSrc}
+                alt={post.heroImage.alt ?? post.title}
+                width={52}
+                height={44}
+                className="rounded-lg object-cover flex-shrink-0"
+                {...(lqip ? { placeholder: 'blur' as const, blurDataURL: lqip } : {})}
+              />
               <div>
-                <p
-                  className="font-display font-bold text-[11px] text-[#1A1A1A] leading-[1.35] mb-1 group-hover:text-[#39575C] transition-colors"
-                  style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
-                >
+                <p className="font-display font-bold text-[11px] text-[#1A1A1A] leading-[1.35] mb-1 group-hover:text-[#39575C] transition-colors line-clamp-2">
                   {post.title}
                 </p>
                 <p className="font-body text-[9px] text-[#9CA3AF]">
                   {formatDate(post.publishedAt)}
-                  <span className="mx-1">·</span>
+                  <span className="mx-1" aria-hidden="true">·</span>
                   {post.readTime} min
                 </p>
               </div>
