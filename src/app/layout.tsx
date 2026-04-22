@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans, Inter } from 'next/font/google';
 import Script from 'next/script';
-import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
+import { SiteShell } from '@/components/layout/SiteShell';
 import './globals.css';
 
 const jakarta = Plus_Jakarta_Sans({
@@ -81,9 +80,7 @@ export default function RootLayout({
           </noscript>
         )}
 
-        <Navbar />
-        {children}
-        <Footer />
+        <SiteShell>{children}</SiteShell>
 
         {/* GTM script */}
         {process.env.NEXT_PUBLIC_GTM_ID && (
