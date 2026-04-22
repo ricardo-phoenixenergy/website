@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
+import { AnimatedSection } from '@/components/ui/AnimatedSection';
 
 const STORY_STATS = [
   { value: 'R380M', label: 'Client savings', featured: true  },
@@ -122,8 +123,8 @@ export function AboutStory() {
           </div>
         </div>
 
-        {/* ── Right — copy (unchanged) ─────────────────────────────────────── */}
-        <div>
+        {/* ── Right — copy ────────────────────────────────────────────────────── */}
+        <AnimatedSection delay={0.6}>
           <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-3">
             Our story
           </p>
@@ -156,7 +157,7 @@ export function AboutStory() {
             Zero Carbon Emissions, enhance efficiency, and unlock new revenue streams
             across Southern Africa and beyond.
           </p>
-        </div>
+        </AnimatedSection>
 
       </div>
     </section>
