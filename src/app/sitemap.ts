@@ -1,54 +1,59 @@
 import type { MetadataRoute } from 'next';
 import { sanityClient } from '@/lib/sanity';
-import { ALL_PROJECT_SLUGS_QUERY, ALL_BLOG_SLUGS_QUERY } from '@/lib/queries';
 
-const BASE = 'https://phoenixenergy.solutions';
+const SITE = 'https://phoenixenergy.solutions';
 
-const STATIC_PAGES = [
-  { url: '/', priority: 1.0, changeFrequency: 'monthly' as const },
-  { url: '/about', priority: 0.8, changeFrequency: 'monthly' as const },
-  { url: '/contact', priority: 0.8, changeFrequency: 'monthly' as const },
-  { url: '/projects', priority: 0.8, changeFrequency: 'monthly' as const },
-  { url: '/blog', priority: 0.8, changeFrequency: 'weekly' as const },
-  { url: '/tools', priority: 0.7, changeFrequency: 'monthly' as const },
-  { url: '/tools/solar-asset-valuation', priority: 0.7, changeFrequency: 'monthly' as const },
-  { url: '/solutions', priority: 0.9, changeFrequency: 'monthly' as const },
-  { url: '/solutions/ci-solar-storage', priority: 0.9, changeFrequency: 'monthly' as const },
-  { url: '/solutions/wheeling', priority: 0.9, changeFrequency: 'monthly' as const },
-  { url: '/solutions/energy-optimisation', priority: 0.9, changeFrequency: 'monthly' as const },
-  { url: '/solutions/carbon-credits', priority: 0.9, changeFrequency: 'monthly' as const },
-  { url: '/solutions/webuysolar', priority: 0.9, changeFrequency: 'monthly' as const },
-  { url: '/solutions/ev-fleets', priority: 0.9, changeFrequency: 'monthly' as const },
+export const revalidate = 3600;
+
+const STATIC: MetadataRoute.Sitemap = [
+  { url: SITE,                                          priority: 1.0, changeFrequency: 'weekly' },
+  { url: `${SITE}/about`,                               priority: 0.8, changeFrequency: 'monthly' },
+  { url: `${SITE}/contact`,                             priority: 0.8, changeFrequency: 'monthly' },
+  { url: `${SITE}/solutions`,                           priority: 0.9, changeFrequency: 'monthly' },
+  { url: `${SITE}/solutions/ci-solar-storage`,          priority: 0.8, changeFrequency: 'monthly' },
+  { url: `${SITE}/solutions/wheeling`,                  priority: 0.8, changeFrequency: 'monthly' },
+  { url: `${SITE}/solutions/energy-optimisation`,       priority: 0.8, changeFrequency: 'monthly' },
+  { url: `${SITE}/solutions/carbon-credits`,            priority: 0.8, changeFrequency: 'monthly' },
+  { url: `${SITE}/solutions/webuysolar`,                priority: 0.8, changeFrequency: 'monthly' },
+  { url: `${SITE}/solutions/ev-fleets`,                 priority: 0.8, changeFrequency: 'monthly' },
+  { url: `${SITE}/projects`,                            priority: 0.8, changeFrequency: 'weekly' },
+  { url: `${SITE}/blog`,                                priority: 0.8, changeFrequency: 'weekly' },
+  { url: `${SITE}/tools`,                               priority: 0.7, changeFrequency: 'monthly' },
+  { url: `${SITE}/tools/solar-valuation`,               priority: 0.7, changeFrequency: 'monthly' },
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  let projectSlugs: { slug: string }[] = [];
-  let blogSlugs: { slug: string }[] = [];
+  let blogEntries: { slug: string; publishedAt?: string }[] = [];
+  let projectEntries: { slug: string }[] = [];
 
   try {
-    [projectSlugs, blogSlugs] = await Promise.all([
-      sanityClient.fetch<{ slug: string }[]>(ALL_PROJECT_SLUGS_QUERY),
-      sanityClient.fetch<{ slug: string }[]>(ALL_BLOG_SLUGS_QUERY),
-    ]);
+    blogEntries = await sanityClient.fetch<{ slug: string; publishedAt?: string }[]>(
+      `*[_type == "blogPost"]{ "slug": slug.current, publishedAt }`,
+    );
   } catch {
-    // Sanity not yet configured — return static pages only
+    // Sanity not yet configured — skip dynamic blog routes
   }
 
-  return [
-    ...STATIC_PAGES.map(({ url, priority, changeFrequency }) => ({
-      url: `${BASE}${url}`,
-      changeFrequency,
-      priority,
-    })),
-    ...projectSlugs.map(({ slug }) => ({
-      url: `${BASE}/projects/${slug}`,
-      changeFrequency: 'yearly' as const,
-      priority: 0.7,
-    })),
-    ...blogSlugs.map(({ slug }) => ({
-      url: `${BASE}/blog/${slug}`,
-      changeFrequency: 'weekly' as const,
-      priority: 0.6,
-    })),
-  ];
+  try {
+    projectEntries = await sanityClient.fetch<{ slug: string }[]>(
+      `*[_type == "project"]{ "slug": slug.current }`,
+    );
+  } catch {
+    // Sanity not yet configured — skip dynamic project routes
+  }
+
+  const blogRoutes: MetadataRoute.Sitemap = blogEntries.map(({ slug, publishedAt }) => ({
+    url: `${SITE}/blog/${slug}`,
+    lastModified: publishedAt ? new Date(publishedAt) : undefined,
+    changeFrequency: 'weekly',
+    priority: 0.7,
+  }));
+
+  const projectRoutes: MetadataRoute.Sitemap = projectEntries.map(({ slug }) => ({
+    url: `${SITE}/projects/${slug}`,
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }));
+
+  return [...STATIC, ...blogRoutes, ...projectRoutes];
 }
