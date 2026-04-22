@@ -25,6 +25,10 @@ export async function POST(req: NextRequest) {
     return Response.json({ revalidated: false, error: 'Invalid JSON' }, { status: 400 });
   }
 
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    return Response.json({ revalidated: false, error: 'Expected JSON object' }, { status: 400 });
+  }
+
   const type = typeof raw._type === 'string' ? raw._type : undefined;
   const slug = extractSlug(raw.slug);
 
