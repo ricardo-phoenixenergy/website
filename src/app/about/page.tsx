@@ -33,23 +33,11 @@ async function getTeamMembers(): Promise<TeamMember[]> {
   }
 }
 
-const FALLBACK_MILESTONES: MilestoneTimeline[] = [
-  { _id: 'f1', date: '2019', title: 'Founded by Erin, Ricardo & Russel with a vision to transform African energy', isFuture: false, order: 1, active: true },
-  { _id: 'f2', date: '2020', title: 'First C&I solar installation commissioned in Gauteng', isFuture: false, order: 2, active: true },
-  { _id: 'f3', date: '2021', title: 'BESS offering launched — first battery + solar hybrid project delivered', isFuture: false, order: 3, active: true },
-  { _id: 'f4', date: '2022', title: 'Wheeling vertical launched — first PPA agreement signed', isFuture: false, order: 4, active: true },
-  { _id: 'f5', date: '2023', title: 'Carbon credits programme launched — Gold Standard certification achieved', isFuture: false, order: 5, active: true },
-  { _id: 'f6', date: '2024', title: 'EV Fleets & Infrastructure vertical launched — Transnet Phase 1 commissioned', isFuture: false, order: 6, active: true },
-  { _id: 'f7', date: '2025', title: 'WeBuySolar platform launched — 42 systems acquired in first 6 months', isFuture: false, order: 7, active: true },
-  { _id: 'f8', date: '2030', title: 'Vision: Net Zero roadmap delivered for 1,000+ Southern African businesses', isFuture: true, order: 8, active: true },
-];
-
 async function getMilestones(): Promise<MilestoneTimeline[]> {
   try {
-    const data = await sanityClient.fetch<MilestoneTimeline[]>(MILESTONE_TIMELINE_QUERY);
-    return data.length > 0 ? data : FALLBACK_MILESTONES;
+    return await sanityClient.fetch<MilestoneTimeline[]>(MILESTONE_TIMELINE_QUERY);
   } catch {
-    return FALLBACK_MILESTONES;
+    return [];
   }
 }
 
