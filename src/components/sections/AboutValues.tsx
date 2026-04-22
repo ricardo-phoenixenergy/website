@@ -4,7 +4,7 @@ const VALUES = [
   {
     num: '01',
     title: 'Empathy',
-    text: 'We put people first, understanding our clients\' unique needs to create meaningful, impactful solutions.',
+    text: "We put people first, understanding our clients' unique needs to create meaningful, impactful solutions.",
   },
   {
     num: '02',
@@ -26,12 +26,17 @@ const VALUES = [
     title: 'Inspiration',
     text: 'We inspire businesses by creating new opportunities to deliver efficient, sustainable services — empowering them to inspire their own customers.',
   },
+  {
+    num: '06',
+    title: 'Ubuntu',
+    text: 'We are rooted in the African belief that we grow stronger together — alongside our clients, our communities, and our continent.',
+  },
 ];
 
 export function AboutValues() {
   return (
-    <section className="bg-[#F5F5F5] px-6 py-[52px]">
-      <AnimatedSection className="text-center mb-8">
+    <section className="bg-[#F5F5F5] py-[52px]">
+      <AnimatedSection className="page-container text-center mb-8">
         <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-3">
           What we stand for
         </p>
@@ -40,7 +45,7 @@ export function AboutValues() {
         </h2>
       </AnimatedSection>
 
-      <div className="grid gap-3 grid-cols-1 md:grid-cols-3 max-w-[960px] mx-auto">
+      <div className="page-container grid gap-3 grid-cols-1 md:grid-cols-3">
         {VALUES.map((v, i) => (
           <AnimatedSection key={v.num} delay={i * 0.04} as="div">
             <div
@@ -63,31 +68,6 @@ export function AboutValues() {
             </div>
           </AnimatedSection>
         ))}
-
-        {/* Join card */}
-        <AnimatedSection delay={VALUES.length * 0.04} as="div">
-          <div
-            className="rounded-2xl p-[22px] h-full cursor-default"
-            style={{
-              background: 'rgba(57,87,92,0.12)',
-              border: '1px dashed rgba(57,87,92,0.3)',
-            }}
-          >
-            <p
-              className="font-display font-extrabold text-4xl leading-none mb-3"
-              style={{ color: 'rgba(57,87,92,0.3)' }}
-            >
-              +
-            </p>
-            <p className="font-display font-bold text-base text-[#39575C] mb-2">Join the team</p>
-            <p
-              className="font-body text-sm leading-[1.75]"
-              style={{ color: '#6B7280' }}
-            >
-              We're always looking for passionate, ambitious individuals who share our vision for a prosperous Africa.
-            </p>
-          </div>
-        </AnimatedSection>
       </div>
     </section>
   );
