@@ -102,6 +102,7 @@ export const BLOG_INDEX_QUERY = `
   *[_type == "blogPost"
     && ($category == "" || category == $category)
     && ($tag == "" || $tag in tags)
+    && ($q == "" || title match $q || excerpt match $q)
   ] | order(featured desc, publishedAt desc) [$offset...$offset+6] {
     ${BLOG_CARD_FIELDS}
   }
@@ -163,6 +164,7 @@ export const BLOG_COUNT_QUERY = `
   count(*[_type == "blogPost"
     && ($category == "" || category == $category)
     && ($tag == "" || $tag in tags)
+    && ($q == "" || title match $q || excerpt match $q)
   ])
 `;
 
@@ -216,6 +218,20 @@ export const TEAM_MEMBERS_QUERY = `
     archetype,
     bio,
     linkedin,
+    order,
+    active
+  }
+`;
+
+/* ─── Timeline Milestones ─────────────────────────────────────────────────────── */
+
+export const MILESTONE_TIMELINE_QUERY = `
+  *[_type == "milestoneTimeline" && active == true]
+  | order(order asc) {
+    _id,
+    date,
+    title,
+    isFuture,
     order,
     active
   }

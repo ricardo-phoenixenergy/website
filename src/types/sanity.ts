@@ -135,3 +135,14 @@ export interface TeamMember {
   order: number;
   active: boolean;
 }
+
+/* ─── Timeline ───────────────────────────────────────────────────────────────── */
+
+export interface MilestoneTimeline {
+  _id:      string;
+  date:     string;   // display label — "2019", "March 2026", "2030"
+  title:    string;
+  isFuture: boolean;  // true = vision/aspirational; false = historical
+  order:    number;
+  active:   boolean;
+}
