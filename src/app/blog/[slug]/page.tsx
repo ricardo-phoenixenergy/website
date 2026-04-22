@@ -274,14 +274,6 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       >
         {/* Article body */}
         <article style={{ maxWidth: 680 }}>
-          {/* Intro paragraph (first block if normal paragraph) */}
-          {post.body?.[0]?._type === 'block' && (post.body[0] as { style?: string }).style === 'normal' && (
-            <div
-              className="font-body font-medium text-sm text-[#1A1A1A] leading-[1.8] mb-5 pb-5"
-              style={{ borderBottom: '1px solid #E5E7EB' }}
-            >
-            </div>
-          )}
           <PortableText
             value={post.body}
             components={{
