@@ -15,9 +15,9 @@ function formatRand(n: number): string {
 export function WeBuySolarCalculator() {
   const [bill, setBill] = useState(20000);
 
-  // Est. system size in kWp; indicative buyback
+  // R3 500/mo ≈ 1 kWp avg demand → system size estimate
   const systemKwp = Math.round((bill / 3500) * 10) / 10;
-  // Formula from spec: (bill/3500) × 1680 × 20000 × 0.4 / 12
+  // kWp × 1 680 kWh/yr yield × R20 000/kWp install value × 0.4 buyback rate ÷ 12
   const buybackValue = Math.round((bill / 3500) * 1680 * 20000 * 0.4 / 12);
 
   return (
