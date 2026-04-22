@@ -123,7 +123,7 @@ export const POST_BY_SLUG_QUERY = `
   *[_type == "blogPost" && slug.current == $slug][0] {
     _id,
     title,
-    "slug": slug.current,
+    "slug": { "current": slug.current },
     category,
     tags,
     excerpt,
@@ -140,7 +140,7 @@ export const POST_BY_SLUG_QUERY = `
     "ogImage": ogImage ${IMAGE_FIELDS},
     canonicalUrl,
     featured,
-    "author": author->{ _id, name, "slug": slug.current, role, bio, linkedin, "photo": photo ${IMAGE_FIELDS} },
+    "author": author->{ _id, name, "slug": { "current": slug.current }, role, bio, linkedin, "photo": photo ${IMAGE_FIELDS} },
     "related": *[
       _type == "blogPost"
       && slug.current != $slug
@@ -157,6 +157,46 @@ export const ALL_BLOG_SLUGS_QUERY = `
 
 export const ALL_BLOG_TAGS_QUERY = `
   array::unique(*[_type == "blogPost"].tags[])
+`;
+
+export const BLOG_COUNT_QUERY = `
+  count(*[_type == "blogPost"
+    && ($category == "" || category == $category)
+    && ($tag == "" || $tag in tags)
+  ])
+`;
+
+export const AUTHOR_BY_SLUG_QUERY = `
+  *[_type == "author" && slug.current == $slug][0] {
+    _id,
+    name,
+    "slug": { "current": slug.current },
+    role,
+    bio,
+    linkedin,
+    "photo": photo { asset->, alt, hotspot, crop }
+  }
+`;
+
+export const POSTS_BY_AUTHOR_QUERY = `
+  *[_type == "blogPost" && references(*[_type == "author" && slug.current == $slug]._id)]
+  | order(publishedAt desc) {
+    _id,
+    title,
+    "slug": { "current": slug.current },
+    category,
+    tags,
+    excerpt,
+    readTime,
+    publishedAt,
+    featured,
+    "heroImage": heroImage { asset->, alt, hotspot, crop },
+    "author": author->{ name, "slug": { "current": slug.current }, "photo": photo { asset->, alt, hotspot, crop } }
+  }
+`;
+
+export const ALL_AUTHOR_SLUGS_QUERY = `
+  *[_type == "author"]{ "slug": slug.current }
 `;
 
 /* ─── Team ───────────────────────────────────────────────────────────────── */
