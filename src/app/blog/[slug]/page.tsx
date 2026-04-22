@@ -31,9 +31,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const post = await getPost(params.slug);
+  const { slug } = await params;
+  const post = await getPost(slug);
   if (!post) return {};
   const canonical =
     post.canonicalUrl ?? `${SITE}/blog/${post.slug.current}`;
@@ -104,8 +105,9 @@ function initials(name: string) {
   return name.split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase();
 }
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = await getPost(params.slug);
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = await getPost(slug);
   if (!post) notFound();
 
   const tocItems = extractTocItems(post.body);

@@ -27,14 +27,15 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const author = await getAuthor(params.slug);
+  const { slug } = await params;
+  const author = await getAuthor(slug);
   if (!author) return {};
   return {
     title: `${author.name} | Phoenix Energy Blog`,
     description: author.bio ?? `Articles by ${author.name}, ${author.role}`,
-    alternates: { canonical: `${SITE}/blog/authors/${params.slug}` },
+    alternates: { canonical: `${SITE}/blog/authors/${slug}` },
   };
 }
 
@@ -42,10 +43,11 @@ function initials(name: string) {
   return name.split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase();
 }
 
-export default async function AuthorPage({ params }: { params: { slug: string } }) {
+export default async function AuthorPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const [author, posts] = await Promise.all([
-    getAuthor(params.slug),
-    sanityClient.fetch<BlogPostCard[]>(POSTS_BY_AUTHOR_QUERY, { slug: params.slug }),
+    getAuthor(slug),
+    sanityClient.fetch<BlogPostCard[]>(POSTS_BY_AUTHOR_QUERY, { slug }),
   ]);
 
   if (!author) notFound();

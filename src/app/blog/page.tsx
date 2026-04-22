@@ -33,11 +33,12 @@ function buildBlogHref(p: number, cat: string, t: string): string {
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: { page?: string; category?: string; tag?: string };
+  searchParams: Promise<{ page?: string; category?: string; tag?: string }>;
 }): Promise<Metadata> {
-  const page = Number(searchParams.page) || 1;
-  const category = searchParams.category ?? '';
-  const tag = searchParams.tag ?? '';
+  const { page: pageParam, category: catParam, tag: tagParam } = await searchParams;
+  const page = Number(pageParam) || 1;
+  const category = catParam ?? '';
+  const tag = tagParam ?? '';
   const canonical = page > 1 ? `${SITE}/blog?page=${page}` : `${SITE}/blog`;
 
   const total = await sanityClient.fetch<number>(BLOG_COUNT_QUERY, { category, tag } as Record<string, string>);
@@ -67,11 +68,12 @@ export async function generateMetadata({
 export default async function BlogPage({
   searchParams,
 }: {
-  searchParams: { page?: string; category?: string; tag?: string };
+  searchParams: Promise<{ page?: string; category?: string; tag?: string }>;
 }) {
-  const page = Math.max(1, Number(searchParams.page) || 1);
-  const category = searchParams.category ?? '';
-  const tag = searchParams.tag ?? '';
+  const { page: pageParam, category: categoryParam, tag: tagParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam) || 1);
+  const category = categoryParam ?? '';
+  const tag = tagParam ?? '';
   const offset = (page - 1) * PAGE_SIZE;
 
   // `tag` is a reserved key in Sanity's QueryParams interface (typed `never`),
