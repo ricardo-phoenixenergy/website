@@ -1,7 +1,7 @@
 // src/config/verticals.ts
 import type { SolutionVertical } from '@/types/solutions';
 
-interface VerticalStat {
+export interface VerticalStat {
   value: string;
   label: string;
 }
