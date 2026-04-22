@@ -50,10 +50,10 @@ export async function generateMetadata({
     alternates: {
       canonical,
       ...(page > 1 && {
-        prev: page > 2 ? `${SITE}/blog?page=${page - 1}` : `${SITE}/blog`,
+        prev: `${SITE}${buildBlogHref(page - 1, category, tag)}`,
       }),
       ...(page < totalPages && {
-        next: `${SITE}/blog?page=${page + 1}`,
+        next: `${SITE}${buildBlogHref(page + 1, category, tag)}`,
       }),
     },
     openGraph: {
