@@ -70,36 +70,7 @@ background: linear-gradient(180deg, rgba(13,31,34,0.2) 0%, rgba(13,31,34,0.9) 10
 
 ## 4. Stats Strip
 
-Sits **flush directly below hero**. No overlap, no negative margins.
-
-- `background: #39575C`
-- `padding: 16px 24px`
-
-### Desktop — 4 columns
-```css
-display: grid;
-grid-template-columns: repeat(4, 1fr);
-max-width: 960px;
-margin: 0 auto;
-```
-- Dividers: `::after` pseudo, `width: 1px`, `height: 60%`, `background: rgba(255,255,255,0.15)`, vertically centred right edge. Last item: none.
-
-### Mobile — 2×2 grid
-```css
-grid-template-columns: repeat(2, 1fr);
-```
-
-### Stat anatomy
-- Value: Plus Jakarta Sans 800, 20px desktop / 16px mobile, white, `text-align: center`
-- Label: Inter 400, 8px, `rgba(255,255,255,0.45)`, uppercase, `letter-spacing: 0.08em`, `margin-top: 3px`
-
-### Stats data
-| Value | Label |
-|---|---|
-| 3 | Co-founders |
-| 6+ | Solutions |
-| Southern | Africa scope |
-| Net 0 | Our goal |
+> ~~Removed April 2026.~~ The stats strip has been removed. The hero flows directly into the Story section. Impact numbers (48 MW, 120+, R380M, 12kt) are now presented in the Story section's animated stat panel.
 
 ---
 
@@ -118,13 +89,15 @@ max-width: 960px;
 margin: 0 auto;
 ```
 
-**Left — image with badge:**
-- `border-radius: 16px`, `height: 230px`, `overflow: hidden`
-- `next/image` fill, `object-fit: cover`
-- Bottom-left floating badge (absolute):
-  - `background: #39575C`, `border-radius: 10px`, `padding: 10px 14px`, `border: 3px solid #fff`
-  - Value: Plus Jakarta Sans 800, 15px, white — *"Pan-Africa"*
-  - Label: Inter 400, 9px, `rgba(255,255,255,0.6)`, uppercase — *"Our vision"*
+**Left — animated stat panel:**
+- Container: `border-radius: 16px`, `height: 230px`, `background: #0d1f22`
+- Inner 2×2 grid: absolute inset-0, `gap: 3px`, `padding: 3px`
+- Stats: R380M (Client savings — featured), 48MW (Deployed), 120+ (Projects), 12kt (CO₂ saved / yr)
+- Featured tile (R380M): `background: linear-gradient(140deg, #1a4a52 0%, #0f2d33 100%)` + radial glow, value `font-size: 26px`
+- Other tiles: `background: rgba(255,255,255,0.04)`, value `font-size: 24px`
+- Shimmer: `.shimmer-tile` CSS class (`globals.css`) — 1px gradient sweeps tile top; `--shimmer-delay` CSS var staggers per tile
+- Scroll reveal: Framer Motion `useInView`, spring stagger 0 → 0.45s; component is `'use client'`
+- Badge bottom-left: "Since 2019 / Our impact" — `background: #39575C`, `border: 2px solid white`
 
 **Right — copy:**
 - Eyebrow: `OUR STORY`
@@ -228,11 +201,11 @@ margin-right: auto;
 | 04 | Conscience | Everything we do is driven by our commitment to creating positive change for the planet and future generations. |
 | 05 | Inspiration | We inspire businesses by creating new opportunities to deliver efficient, sustainable services — empowering them to inspire their own customers. |
 
-### 6th card — Join the team (accent style)
-- `background: rgba(57,87,92,0.12)`, `border: 1px dashed rgba(57,87,92,0.3)`
-- Number: `+` in `rgba(57,87,92,0.3)`
-- Title: `Join the team` — Deep Teal `#39575C`
-- Text: *"We're always looking for passionate, ambitious individuals who share our vision for a prosperous Africa."*
+### 6th card — Ubuntu
+- Same dark card style as values 01–05: `background: #0d1f22`, `border-radius: 14px`
+- Number: `06` in `rgba(255,255,255,0.08)`
+- Title: `Ubuntu` — white
+- Text: *"We are rooted in the African belief that we grow stronger together — alongside our clients, our communities, and our continent."*
 
 ### Mobile — 1-column stacked
 
@@ -419,26 +392,7 @@ Business Day · Fin24 · Engineering News · Daily Maverick · ESI Africa · EE 
 
 ## 11. Careers Band
 
-- `background: #ffffff`
-- `padding: 28px 24px`
-- `border-top: 1px solid #E5E7EB`
-
-### Desktop layout
-```css
-display: flex;
-align-items: center;
-justify-content: space-between;
-gap: 20px;
-max-width: 960px;
-margin: 0 auto;
-```
-- Left label: `JOIN US` — Inter 700, 9px, `#709DA9`, uppercase, `letter-spacing: 0.12em`, `margin-bottom: 6px`
-- Title: Plus Jakarta Sans 700, 16px, `#1A1A1A` — *"Become a part of our journey"*
-- Sub: Inter 400, 11px, `#6B7280`, `margin-top: 3px` — *"We're always looking for passionate, ambitious and like-minded individuals who share our vision for a prosperous Africa."*
-- Right: `See career opportunities →` — Deep Teal fill, white text, pill, `white-space: nowrap`
-- Link: `https://linkedin.com/company/105465145` (current LinkedIn, update when careers page exists)
-
-### Mobile — stacked, button full-width
+> ~~Removed April 2026.~~ The standalone careers band has been removed. The single careers touchpoint on the About page is the "Become a part of our journey" banner at the bottom of the Team section grid (section 9).
 
 ---
 
@@ -451,7 +405,7 @@ margin: 0 auto;
 ```
 [max-width: 520px, margin: 0 auto]
 Headline: "Work with us"
-Sub: "Whether you're a prospective client, partner, or future team member — we'd love to hear from you."
+Sub: "Whether you're a prospective client or a future partner — we'd love to hear from you."
 [Get in Touch]   [View our projects]
 ```
 - Headline: Plus Jakarta Sans 800, 24px, white
