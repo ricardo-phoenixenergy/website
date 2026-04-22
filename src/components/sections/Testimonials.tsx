@@ -39,7 +39,7 @@ export function Testimonials({ quotes, accent, id }: TestimonialsProps) {
 
         <div className="grid md:grid-cols-3 gap-5">
           {quotes.map((q, i) => (
-            <AnimatedSection key={i} delay={i * 0.07}>
+            <AnimatedSection key={`${q.author}-${i}`} delay={i * 0.07}>
               <div className="bg-white rounded-2xl p-6 h-full flex flex-col" style={{ border: '1px solid #E5E7EB' }}>
                 {/* Quote mark */}
                 <p
