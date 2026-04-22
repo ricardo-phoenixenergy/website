@@ -78,6 +78,7 @@ export const portableTextComponents: PortableTextComponents = {
     image: ({ value }) => {
       if (!value?.asset) return null;
       const src = urlFor(value).width(680).auto('format').url();
+      const blurSrc: string | undefined = value?.asset?.metadata?.lqip;
       return (
         <figure className="my-5">
           <div className="relative w-full rounded-xl overflow-hidden" style={{ aspectRatio: '16/9' }}>
@@ -87,6 +88,7 @@ export const portableTextComponents: PortableTextComponents = {
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 680px"
+              {...(blurSrc ? { placeholder: 'blur', blurDataURL: blurSrc } : {})}
             />
           </div>
           {value.caption && (
