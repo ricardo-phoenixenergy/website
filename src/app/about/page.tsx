@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { sanityClient } from '@/lib/sanity';
 import { TEAM_MEMBERS_QUERY } from '@/lib/queries';
-import { StatsStrip } from '@/components/ui/StatsStrip';
 import { Button } from '@/components/ui/Button';
 import { AboutStory } from '@/components/sections/AboutStory';
 import { AboutMission } from '@/components/sections/AboutMission';
@@ -10,7 +9,6 @@ import { AboutValues } from '@/components/sections/AboutValues';
 import { AboutTimeline } from '@/components/sections/AboutTimeline';
 import { AboutTeam } from '@/components/sections/AboutTeam';
 import { AboutTrust } from '@/components/sections/AboutTrust';
-import { CareersBand } from '@/components/sections/CareersBand';
 import type { TeamMember } from '@/types/sanity';
 
 export const metadata: Metadata = {
@@ -27,13 +25,6 @@ export const metadata: Metadata = {
   },
 };
 
-const ABOUT_STATS = [
-  { value: '3', label: 'Co-founders' },
-  { value: '6+', label: 'Solutions' },
-  { value: 'Southern', label: 'Africa scope' },
-  { value: 'Net 0', label: 'Our goal' },
-];
-
 async function getTeamMembers(): Promise<TeamMember[]> {
   try {
     return await sanityClient.fetch<TeamMember[]>(TEAM_MEMBERS_QUERY);
@@ -48,7 +39,7 @@ export default async function AboutPage() {
   return (
     <main>
       {/* Breadcrumb */}
-      <div className="pt-[88px] px-6 max-w-[960px] mx-auto">
+      <div className="page-container pt-[88px]">
         <nav className="flex items-center gap-1.5 font-body text-sm text-[#6B7280] pt-2 mb-4">
           <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
           <span>/</span>
@@ -75,7 +66,7 @@ export default async function AboutPage() {
           }}
         />
         {/* Content */}
-        <div className="absolute inset-x-0 bottom-0 px-6 pb-8 max-w-[960px] mx-auto">
+        <div className="page-container absolute inset-x-0 bottom-0 pb-8">
           <p
             className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-2.5"
             style={{ color: 'rgba(255,255,255,0.4)' }}
@@ -92,9 +83,6 @@ export default async function AboutPage() {
         </div>
       </div>
 
-      {/* Stats strip */}
-      <StatsStrip stats={ABOUT_STATS} />
-
       {/* Sections */}
       <AboutStory />
       <AboutMission />
@@ -102,7 +90,6 @@ export default async function AboutPage() {
       <AboutTimeline />
       <AboutTeam members={teamMembers} />
       <AboutTrust />
-      <CareersBand />
 
       {/* CTA Banner — teal variant */}
       <section className="bg-[#39575C] px-6 py-[52px] text-center">
@@ -114,7 +101,7 @@ export default async function AboutPage() {
             className="font-body text-sm leading-[1.75] mb-6"
             style={{ color: 'rgba(255,255,255,0.6)' }}
           >
-            Whether you're a prospective client, partner, or future team member — we'd love to hear from you.
+            Whether you're a prospective client or a future partner — we'd love to hear from you.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Button variant="light" href="/contact">Get in Touch</Button>
