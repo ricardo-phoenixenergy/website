@@ -22,7 +22,7 @@ export function ArticleCard({ post, delay = 0 }: ArticleCardProps) {
     <AnimatedSection delay={delay}>
       <Link href={`/blog/${post.slug.current}`} className="group block h-full">
         <article
-          className="bg-white rounded-2xl overflow-hidden h-full flex flex-col transition-all duration-200 group-hover:-translate-y-[3px] group-hover:shadow-lg"
+          className="bg-white rounded-2xl overflow-hidden h-full flex flex-col transition-all duration-200 group-hover:-translate-y-[5px] group-hover:shadow-[0_16px_40px_rgba(57,87,92,0.12)] group-hover:border-[#cccccc]"
           style={{ border: '1px solid #E5E7EB' }}
         >
           {/* Photo */}
@@ -32,7 +32,7 @@ export function ArticleCard({ post, delay = 0 }: ArticleCardProps) {
                 src={imgSrc}
                 alt={post.heroImage?.alt ?? post.title}
                 fill
-                className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
                 sizes="(max-width: 768px) 100vw, 400px"
                 {...(blurSrc ? { placeholder: 'blur', blurDataURL: blurSrc } : {})}
               />

@@ -78,7 +78,7 @@ export default function ToolsPage() {
               <AnimatedSection key={tool.href} delay={i * 0.06}>
                 <Link href={tool.href} className="group block h-full">
                   <div
-                    className="rounded-2xl overflow-hidden h-full flex flex-col transition-all duration-200 group-hover:shadow-xl group-hover:-translate-y-0.5"
+                    className="rounded-2xl overflow-hidden h-full flex flex-col transition-all duration-200 group-hover:-translate-y-[5px] group-hover:shadow-[0_16px_40px_rgba(57,87,92,0.12)] group-hover:border-[#cccccc]"
                     style={{ border: '1px solid #E5E7EB' }}
                   >
                     {/* Dark gradient header */}
