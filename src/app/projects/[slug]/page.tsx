@@ -74,16 +74,24 @@ export default async function ProjectPage({
 
   const sections = [
     { num: '01', tag: 'The Challenge', content: project.challenge },
-    { num: '02', tag: 'Our Solution', content: project.solution },
-    { num: '03', tag: 'The Outcome', content: project.outcome },
+    { num: '02', tag: 'Our Solution',  content: project.solution },
+    { num: '03', tag: 'The Outcome',   content: project.outcome },
   ];
+
+  const metaRows = [
+    { label: 'Client',    value: project.clientName },
+    { label: 'Location',  value: project.location },
+    { label: 'Completed', value: project.completionDate },
+    { label: 'Value',     value: project.projectValue },
+    { label: 'Status',    value: project.status === 'in-progress' ? 'In progress' : project.status === 'planned' ? 'Planned' : 'Operational' },
+  ].filter((r) => r.value);
 
   return (
     <div className="bg-[#F5F5F5] min-h-screen">
 
       {/* Breadcrumb */}
-      <div className="max-w-[960px] mx-auto px-5 pt-5 pb-0">
-        <div className="flex items-center gap-1.5 font-body text-sm text-[#6B7280]">
+      <div className="page-container pt-5 pb-0">
+        <nav className="flex items-center gap-1.5 font-body text-sm text-[#6B7280]">
           <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
           <span>/</span>
           <Link href="/projects" className="hover:text-[#39575C] transition-colors">Projects</Link>
@@ -91,69 +99,61 @@ export default async function ProjectPage({
           <span className="font-semibold text-[#39575C] truncate" style={{ maxWidth: 200 }}>
             {project.title}
           </span>
-        </div>
+        </nav>
       </div>
 
-      {/* Hero — split desktop, full-bleed mobile */}
-      <div className="max-w-[960px] mx-auto px-5 pt-3">
-        <div className="rounded-xl overflow-hidden md:flex md:min-h-[280px]">
+      {/* ── Hero ─────────────────────────────────────────────────────────────── */}
+      <div className="page-container pt-3">
+        <div className="rounded-2xl overflow-hidden md:flex md:min-h-[380px]">
 
           {/* Desktop: dark left panel */}
-          <div className="hidden md:flex md:w-1/2 bg-[#0d1f22] p-7 flex-col justify-end">
-            <p
-              className="font-body font-bold text-xs uppercase tracking-[0.14em] mb-3"
-              style={{ color: '#709DA9' }}
-            >
-              CASE STUDY
+          <div
+            className="hidden md:flex md:w-[44%] flex-col justify-between p-8"
+            style={{ background: 'linear-gradient(155deg, #1a3a3e 0%, #0d1f22 100%)' }}
+          >
+            <p className="font-body font-bold text-xs uppercase tracking-[0.14em]" style={{ color: '#709DA9' }}>
+              Case Study
             </p>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: meta.accent }} />
+
+            <div>
               <span
-                className="font-body font-bold text-xs uppercase tracking-[0.12em] rounded-full px-2.5 py-1"
-                style={{ background: `${meta.accent}33`, color: meta.accent }}
+                className="inline-flex font-body font-bold text-[10px] uppercase tracking-[0.1em] rounded-full px-2.5 py-1 mb-4"
+                style={{ background: meta.accent, color: meta.accentText }}
               >
                 {meta.label}
               </span>
-            </div>
-            <h1
-              className="font-display font-extrabold text-xl text-white leading-[1.2] mb-4"
-            >
-              {project.title}
-            </h1>
-            <div className="flex flex-col gap-[5px]">
-              {[
-                { label: 'Client', value: project.clientName },
-                { label: 'Location', value: project.location },
-                { label: 'Completed', value: project.completionDate },
-                { label: 'Value', value: project.projectValue },
-                { label: 'Status', value: project.status === 'in-progress' ? 'In progress' : project.status === 'planned' ? 'Planned' : 'Operational' },
-              ].filter((r) => r.value).map((row) => (
-                <div key={row.label} className="flex gap-2">
-                  <span
-                    className="font-body font-semibold text-xs min-w-[64px]"
-                    style={{ color: 'rgba(255,255,255,0.8)' }}
-                  >
-                    {row.label}
-                  </span>
-                  <span className="font-body text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                    {row.value}
-                  </span>
-                </div>
-              ))}
+              <h1 className="font-display font-extrabold text-2xl text-white leading-[1.2] mb-6">
+                {project.title}
+              </h1>
+              <div className="flex flex-col gap-2.5">
+                {metaRows.map((row) => (
+                  <div key={row.label} className="flex gap-3 items-baseline">
+                    <span
+                      className="font-body font-bold text-[10px] uppercase tracking-[0.1em] min-w-[68px] flex-shrink-0"
+                      style={{ color: 'rgba(255,255,255,0.35)' }}
+                    >
+                      {row.label}
+                    </span>
+                    <span className="font-body text-xs" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                      {row.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Photo panel */}
-          <div className="relative h-[210px] md:h-auto md:w-1/2 overflow-hidden group">
+          <div className="relative h-[280px] md:h-auto md:flex-1 overflow-hidden group">
             {/* Left-edge veil — desktop only */}
             <div
               className="absolute inset-0 z-10 hidden md:block pointer-events-none"
-              style={{ background: 'linear-gradient(270deg, transparent 50%, rgba(13,31,34,0.2) 100%)' }}
+              style={{ background: 'linear-gradient(270deg, transparent 55%, rgba(13,31,34,0.25) 100%)' }}
             />
             {/* Mobile gradient overlay */}
             <div
               className="absolute inset-0 z-10 md:hidden pointer-events-none"
-              style={{ background: 'linear-gradient(180deg, rgba(13,31,34,0.1) 0%, rgba(13,31,34,0.92) 100%)' }}
+              style={{ background: 'linear-gradient(180deg, rgba(13,31,34,0.05) 0%, rgba(13,31,34,0.88) 100%)' }}
             />
 
             {project.heroImage ? (
@@ -164,34 +164,28 @@ export default async function ProjectPage({
                 className="object-cover transition-transform duration-[800ms] group-hover:scale-[1.03]"
                 placeholder="blur"
                 blurDataURL={project.heroImage.asset.metadata?.lqip ?? 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'}
-                sizes="(max-width:768px) 100vw, 480px"
+                sizes="(max-width:768px) 100vw, 56vw"
                 priority
               />
             ) : (
               <div
                 className="w-full h-full"
-                style={{ background: `linear-gradient(135deg, ${meta.accent}44, #0d1f22)` }}
+                style={{ background: `linear-gradient(135deg, ${meta.accent}44 0%, #0d1f22 100%)` }}
               />
             )}
 
             {/* Mobile: bottom-anchored content */}
-            <div className="absolute inset-x-0 bottom-0 z-20 p-[14px] md:hidden">
-              <div className="flex items-center gap-1.5 mb-1.5">
-                <span className="w-1 h-1 rounded-full" style={{ background: meta.accent }} />
-                <span
-                  className="font-body font-bold text-xs uppercase tracking-[0.1em] rounded-full px-2 py-0.5"
-                  style={{ background: `${meta.accent}33`, color: meta.accent }}
-                >
-                  {meta.label}
-                </span>
-              </div>
-              <h1 className="font-display font-extrabold text-base text-white leading-[1.2] mb-1.5">
+            <div className="absolute inset-x-0 bottom-0 z-20 p-5 md:hidden">
+              <span
+                className="inline-flex font-body font-bold text-[10px] uppercase tracking-[0.1em] rounded-full px-2.5 py-1 mb-3"
+                style={{ background: meta.accent, color: meta.accentText }}
+              >
+                {meta.label}
+              </span>
+              <h1 className="font-display font-extrabold text-lg text-white leading-[1.2] mb-2">
                 {project.title}
               </h1>
-              <p
-                className="font-body text-xs flex gap-2 flex-wrap"
-                style={{ color: 'rgba(255,255,255,0.55)' }}
-              >
+              <p className="font-body text-xs flex gap-2 flex-wrap" style={{ color: 'rgba(255,255,255,0.55)' }}>
                 {project.location && <span>{project.location}</span>}
                 {project.completionDate && <span>· {project.completionDate}</span>}
                 {project.projectValue && <span>· {project.projectValue}</span>}
@@ -203,81 +197,56 @@ export default async function ProjectPage({
 
       {/* Stats strip */}
       {stats.length > 0 && (
-        <div className="max-w-[960px] mx-auto px-5 mt-3">
+        <div className="page-container mt-2">
           <StatsStrip stats={stats} responsive className="rounded-xl" />
         </div>
       )}
 
-      {/* Body */}
-      <div
-        className="max-w-[760px] mx-auto px-5 md:px-6 mt-6 mb-0"
-      >
+      {/* ── Body ─────────────────────────────────────────────────────────────── */}
+      <div className="max-w-[760px] mx-auto px-5 md:px-6 mt-8 mb-0">
+
         {/* Intro paragraph */}
         {project.summary && (
           <p
-            className="font-body font-medium text-base text-[#1A1A1A] leading-[1.7] mb-5 pb-5"
+            className="font-body font-medium text-base text-[#1A1A1A] leading-[1.75] mb-6 pb-6"
             style={{ borderBottom: '1px solid #E5E7EB' }}
           >
             {project.summary}
           </p>
         )}
 
-        {/* Numbered sections */}
+        {/* Numbered sections — single responsive layout */}
         {sections.map((section, idx) => (
           <div
             key={section.num}
-            className="py-[18px]"
-            style={{ borderBottom: idx < sections.length - 1 ? '1px solid #E5E7EB' : undefined }}
+            className="py-5 md:grid md:gap-6"
+            style={{
+              borderBottom: idx < sections.length - 1 ? '1px solid #E5E7EB' : undefined,
+              gridTemplateColumns: '96px 1fr',
+            }}
           >
-            {/* Desktop: 2-col */}
-            <div className="hidden md:grid gap-5" style={{ gridTemplateColumns: '96px 1fr' }}>
-              <div>
-                <p
-                  className="font-display font-extrabold text-5xl leading-none mb-1"
-                  style={{ color: '#E5E7EB' }}
-                >
-                  {section.num}
-                </p>
-                <p
-                  className="font-body font-bold text-xs uppercase tracking-[0.12em]"
-                  style={{ color: '#709DA9' }}
-                >
-                  {section.tag}
-                </p>
-              </div>
-              <div>
-                {section.content && section.content.length > 0 ? (
-                  <PortableText value={section.content} components={PT_COMPONENTS} />
-                ) : (
-                  <p className="font-body text-sm text-[#6B7280] leading-[1.8]">
-                    Content coming soon.
-                  </p>
-                )}
-              </div>
+            {/* Number + tag: inline flex on mobile, stacked block in left column on desktop */}
+            <div className="flex items-baseline gap-2.5 mb-3 md:block md:mb-0">
+              <p
+                className="font-display font-extrabold text-3xl md:text-5xl leading-none md:mb-2"
+                style={{ color: '#E5E7EB' }}
+              >
+                {section.num}
+              </p>
+              <p
+                className="font-body font-bold text-xs uppercase tracking-[0.12em]"
+                style={{ color: '#709DA9' }}
+              >
+                {section.tag}
+              </p>
             </div>
 
-            {/* Mobile: stacked */}
-            <div className="md:hidden">
-              <div className="flex items-baseline gap-2 mb-2">
-                <span
-                  className="font-display font-extrabold text-2xl leading-none"
-                  style={{ color: '#E5E7EB' }}
-                >
-                  {section.num}
-                </span>
-                <span
-                  className="font-body font-bold text-xs uppercase tracking-[0.12em]"
-                  style={{ color: '#709DA9' }}
-                >
-                  {section.tag}
-                </span>
-              </div>
+            {/* Content */}
+            <div>
               {section.content && section.content.length > 0 ? (
                 <PortableText value={section.content} components={PT_COMPONENTS} />
               ) : (
-                <p className="font-body text-xs text-[#6B7280] leading-[1.75]">
-                  Content coming soon.
-                </p>
+                <p className="font-body text-sm text-[#6B7280] leading-[1.8]">Content coming soon.</p>
               )}
             </div>
           </div>
@@ -285,55 +254,24 @@ export default async function ProjectPage({
 
         {/* Results strip */}
         {project.results && project.results.length > 0 && (
-          <div
-            className="rounded-[14px] md:rounded-xl px-5 py-[18px] my-5"
-            style={{ background: '#0d1f22' }}
-          >
+          <div className="rounded-2xl px-5 py-5 my-6" style={{ background: '#0d1f22' }}>
             <p
-              className="font-body font-bold text-xs uppercase tracking-[0.14em] mb-3"
+              className="font-body font-bold text-xs uppercase tracking-[0.14em] mb-4"
               style={{ color: '#709DA9' }}
             >
-              PROJECT RESULTS
+              Project Results
             </p>
-
-            {/* Desktop: 4-col */}
-            <div className="hidden md:grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-0">
               {project.results.slice(0, 4).map((r, i) => (
                 <div
                   key={i}
-                  className="text-center"
-                  style={
-                    i < project.results.length - 1
-                      ? { borderRight: '1px solid rgba(255,255,255,0.08)' }
-                      : undefined
-                  }
+                  className="text-center rounded-xl p-3 bg-white/[0.06] md:rounded-none md:p-0 md:bg-transparent md:[&:not(:last-child)]:border-r md:border-white/[0.08]"
                 >
-                  <p className="font-display font-extrabold text-xl text-white leading-none">
+                  <p className="font-display font-extrabold text-lg md:text-xl text-white leading-none">
                     {r.value}
                   </p>
                   <p
-                    className="font-body text-xs uppercase tracking-[0.07em] mt-1"
-                    style={{ color: 'rgba(255,255,255,0.4)' }}
-                  >
-                    {r.label}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {/* Mobile: 2×2 */}
-            <div className="md:hidden grid grid-cols-2 gap-2">
-              {project.results.slice(0, 4).map((r, i) => (
-                <div
-                  key={i}
-                  className="rounded-[8px] p-2.5 text-center"
-                  style={{ background: 'rgba(255,255,255,0.06)' }}
-                >
-                  <p className="font-display font-extrabold text-base text-white leading-none">
-                    {r.value}
-                  </p>
-                  <p
-                    className="font-body text-xs uppercase tracking-[0.07em] mt-1"
+                    className="font-body text-xs uppercase tracking-[0.07em] mt-1.5"
                     style={{ color: 'rgba(255,255,255,0.4)' }}
                   >
                     {r.label}
@@ -345,29 +283,23 @@ export default async function ProjectPage({
         )}
       </div>
 
-      {/* Gallery */}
+      {/* ── Gallery ──────────────────────────────────────────────────────────── */}
       {project.gallery && project.gallery.length > 0 && (
-        <div className="max-w-[960px] mx-auto px-5 mt-2 mb-5">
+        <div className="page-container mt-2 mb-5">
           <ProjectGallery images={project.gallery} />
         </div>
       )}
 
-      {/* Related projects */}
+      {/* ── Related projects ─────────────────────────────────────────────────── */}
       {project.related && project.related.length > 0 && (
-        <div className="bg-white px-5 py-[18px]">
-          <div className="max-w-[960px] mx-auto">
-            <div className="flex items-center justify-between mb-4">
-              <p
-                className="font-body font-bold text-xs uppercase tracking-[0.14em]"
-                style={{ color: '#6B7280' }}
-              >
-                SIMILAR PROJECTS
+        <div className="bg-white py-8">
+          <div className="page-container">
+            <div className="flex items-center justify-between mb-5">
+              <p className="font-body font-bold text-xs uppercase tracking-[0.14em] text-[#6B7280]">
+                Similar Projects
               </p>
-              <Link
-                href="/projects"
-                className="font-body text-sm text-[#39575C] font-semibold hover:underline"
-              >
-                View all projects →
+              <Link href="/projects" className="font-body text-sm text-[#39575C] font-semibold hover:underline">
+                View all →
               </Link>
             </div>
 
@@ -378,51 +310,40 @@ export default async function ProjectPage({
               ))}
             </div>
 
-            {/* Mobile: horizontal scroll */}
-            <div
-              className="flex md:hidden gap-2 overflow-x-auto pb-2 scrollbar-none"
-              style={{ scrollbarWidth: 'none' }}
-            >
+            {/* Mobile: 2-col grid */}
+            <div className="grid grid-cols-2 gap-3 md:hidden">
               {project.related.map((rel) => (
-                <div key={rel._id} style={{ width: 130, flexShrink: 0 }}>
-                  <ProjectCard project={rel} />
-                </div>
+                <ProjectCard key={rel._id} project={rel} fluid />
               ))}
             </div>
           </div>
         </div>
       )}
 
-      {/* CTA banner */}
-      <div className="max-w-[960px] mx-auto px-5 py-4">
+      {/* ── CTA banner ───────────────────────────────────────────────────────── */}
+      <div className="page-container py-5">
         <div
-          className="rounded-[14px] md:rounded-xl px-5 py-[22px] md:px-[20px] text-center"
+          className="rounded-2xl px-6 py-8 text-center"
           style={{ background: '#39575C' }}
         >
-          <h2 className="font-display font-extrabold text-lg md:text-lg text-white mb-2">
+          <h2 className="font-display font-extrabold text-xl md:text-2xl text-white leading-[1.2] mb-2">
             Ready for a similar project?
           </h2>
-          <p
-            className="font-body text-sm mb-5"
-            style={{ color: 'rgba(255,255,255,0.6)' }}
-          >
+          <p className="font-body text-sm mb-6" style={{ color: 'rgba(255,255,255,0.6)' }}>
             Get a free assessment for your facility in under 48 hours.
           </p>
-          <div className="flex gap-2 justify-center flex-wrap">
+          <div className="flex gap-3 justify-center flex-col sm:flex-row">
             <Link
               href="/contact"
-              className="font-body font-semibold text-sm text-[#39575C] rounded-full px-5 py-2.5 transition-colors hover:bg-[#e8e8e8]"
+              className="font-body font-semibold text-sm text-[#39575C] rounded-full px-6 py-3 transition-colors hover:bg-[#e8e8e8]"
               style={{ background: '#F5F5F5' }}
             >
               Get a Quote
             </Link>
             <Link
               href="/projects"
-              className="font-body font-semibold text-sm text-white rounded-full px-5 py-2.5 transition-all hover:bg-white/20"
-              style={{
-                background: 'rgba(255,255,255,0.1)',
-                border: '1px solid rgba(255,255,255,0.2)',
-              }}
+              className="font-body font-semibold text-sm text-white rounded-full px-6 py-3 transition-all hover:bg-white/20"
+              style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}
             >
               View all projects
             </Link>
