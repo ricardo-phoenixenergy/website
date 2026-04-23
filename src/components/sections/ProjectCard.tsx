@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { SOLUTION_META } from '@/types/solutions';
 import type { ProjectCard as ProjectCardType } from '@/types/sanity';
+import { IconArrowRight } from '../ui/Icons';
 
 type ProjectCardWithMetrics = ProjectCardType & {
   metrics?: { label: string; value: string }[];
@@ -19,14 +20,8 @@ export function ProjectCard({ project, className, onClick, fluid }: ProjectCardP
 
   const inner = (
     <>
-      {/* Photo — fixed height, never grows */}
-      <div className="relative overflow-hidden flex-shrink-0" style={{ height: 148 }}>
-        {meta && (
-          <div
-            className="absolute top-0 inset-x-0 z-10"
-            style={{ height: 3, background: meta.accent }}
-          />
-        )}
+      {/* Photo zone — category badge floats over a gradient overlay */}
+      <div className="relative overflow-hidden flex-shrink-0" style={{ height: 168 }}>
         {project.heroImage ? (
           <Image
             src={project.heroImage.asset.url}
@@ -40,37 +35,37 @@ export function ProjectCard({ project, className, onClick, fluid }: ProjectCardP
         ) : (
           <div
             className="w-full h-full"
-            style={{ background: meta ? `${meta.accent}33` : '#E5E7EB' }}
+            style={{ background: meta ? `linear-gradient(135deg, ${meta.accent}55 0%, ${meta.accent}22 100%)` : '#E5E7EB' }}
           />
+        )}
+
+        {/* Gradient scrim — helps badge read over any photo */}
+        <div
+          className="absolute inset-0"
+          style={{ background: 'linear-gradient(to top, rgba(13,31,34,0.65) 0%, rgba(13,31,34,0.1) 55%, transparent 100%)' }}
+        />
+
+        {/* Category badge — bottom-left over scrim */}
+        {meta && project.vertical && (
+          <span
+            className="absolute bottom-3 left-3 z-10 font-body font-bold text-[10px] uppercase tracking-[0.1em] px-2.5 py-1 rounded-full"
+            style={{ background: meta.accent, color: meta.accentText }}
+          >
+            {meta.label}
+          </span>
         )}
       </div>
 
-      {/* Body — flex-col so footer is always pinned to bottom */}
-      <div className="p-3.5 flex flex-col flex-1">
-        {meta && project.vertical && (
-          <div className="flex items-center gap-1.5 mb-2">
-            <span
-              className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-              style={{ background: meta.accent }}
-            />
-            <span
-              className="font-body font-semibold text-xs uppercase tracking-[0.1em] px-2 py-0.5 rounded-full"
-              style={{ background: `${meta.accent}1a`, color: meta.accentText }}
-            >
-              {meta.label}
-            </span>
-          </div>
-        )}
-
-        {/* Title clamped to 2 lines — prevents card height variation */}
-        <p className="font-display font-bold text-base text-[#1A1A1A] leading-[1.35] mb-2.5 line-clamp-2">
+      {/* Body */}
+      <div className="p-4 flex flex-col flex-1">
+        {/* Title clamped to 2 lines */}
+        <p className="font-display font-bold text-base text-[#1A1A1A] leading-[1.35] mb-3 line-clamp-2 flex-1">
           {project.title}
         </p>
 
-        <div className="h-px bg-[#E5E7EB] mb-2.5" />
-
+        {/* Metrics */}
         {project.metrics && project.metrics.length >= 2 && (
-          <div className="flex gap-4 mb-2.5">
+          <div className="flex gap-5 mb-3">
             {project.metrics.slice(0, 2).map((stat, i) => (
               <div key={i} className="flex flex-col">
                 <span className="font-display font-bold text-base text-[#39575C] leading-none">
@@ -84,13 +79,13 @@ export function ProjectCard({ project, className, onClick, fluid }: ProjectCardP
           </div>
         )}
 
-        {/* Footer always at the bottom */}
-        <div className="flex items-center justify-between mt-auto pt-1">
+        {/* Footer */}
+        <div className="flex items-center justify-between pt-3 border-t border-[#E5E7EB]">
           <span className="font-body text-xs text-[#6B7280] truncate pr-2">
             {project.location ?? ''}
           </span>
           <div className="w-6 h-6 rounded-full border border-[#E5E7EB] flex items-center justify-center text-xs text-[#6B7280] flex-shrink-0 transition-all duration-200 group-hover:bg-[#39575C] group-hover:border-[#39575C] group-hover:text-white">
-            →
+            <IconArrowRight/>
           </div>
         </div>
       </div>
