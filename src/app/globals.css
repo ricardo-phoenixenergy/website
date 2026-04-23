@@ -118,6 +118,27 @@ body {
   }
 }
 
+/* ─── CTA card shimmer border ─────────────────────────────────────────────── */
+@keyframes cta-border-shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+.cta-shimmer-border {
+  background: linear-gradient(
+    90deg,
+    #1a3a3e 0%,
+    #39575C 20%,
+    #709DA9 38%,
+    rgba(255, 255, 255, 0.55) 50%,
+    #709DA9 62%,
+    #39575C 80%,
+    #1a3a3e 100%
+  );
+  background-size: 300% 100%;
+  animation: cta-border-shimmer 4s linear infinite;
+}
+
 /* ─── Shimmer skeleton animation ──────────────────────────────────────────── */
 @keyframes shimmer {
   from { background-position: 200% 0; }

@@ -7,7 +7,6 @@ import { sanityClient, urlFor } from '@/lib/sanity';
 import { PROJECT_BY_SLUG_QUERY, ALL_PROJECT_SLUGS_QUERY } from '@/lib/queries';
 import { SOLUTION_META } from '@/types/solutions';
 import { ProjectStatsTiles } from '@/components/ui/ProjectStatsTiles';
-import { IconArrowRight } from '@/components/ui/Icons';
 import { ProjectCard } from '@/components/sections/ProjectCard';
 import { ProjectGallery } from '@/components/sections/ProjectGallery';
 import type { Project } from '@/types/sanity';
@@ -334,52 +333,46 @@ export default async function ProjectPage({
 
       {/* ── CTA banner ───────────────────────────────────────────────────────── */}
       <div className="page-container py-5">
-        <div
-          className="relative rounded-2xl overflow-hidden px-7 py-8 md:px-10 md:py-10"
-          style={{
-            background: 'linear-gradient(135deg, #1a3a3e 0%, #0d1f22 100%)',
-            borderTop: `2px solid ${meta.accent}`,
-          }}
-        >
-          {/* Decorative accent glow */}
+        {/* Shimmer border wrapper — animated gradient, inner card sits 2px inside */}
+        <div className="cta-shimmer-border rounded-2xl p-[2px]">
           <div
-            className="absolute top-0 right-0 w-72 h-72 pointer-events-none"
-            style={{ background: `radial-gradient(circle at top right, ${meta.accent}20 0%, transparent 65%)` }}
-          />
+            className="relative rounded-[14px] overflow-hidden px-7 py-8 md:px-10 md:py-10"
+            style={{ background: 'linear-gradient(135deg, #1a3a3e 0%, #0d1f22 100%)' }}
+          >
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              {/* Text */}
+              <div className="md:max-w-sm">
+                <p
+                  className="font-body font-bold text-xs uppercase tracking-[0.14em] mb-2"
+                  style={{ color: '#709DA9' }}
+                >
+                  Start your project
+                </p>
+                <h2 className="font-display font-extrabold text-xl md:text-2xl text-white leading-[1.2] mb-2.5">
+                  Ready for a similar project?
+                </h2>
+                <p className="font-body text-sm leading-[1.7]" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                  Get a free assessment for your facility in under 48 hours.
+                </p>
+              </div>
 
-          <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            {/* Text */}
-            <div className="md:max-w-sm">
-              <p
-                className="font-body font-bold text-xs uppercase tracking-[0.14em] mb-2"
-                style={{ color: meta.accent }}
-              >
-                Start your project
-              </p>
-              <h2 className="font-display font-extrabold text-xl md:text-2xl text-white leading-[1.2] mb-2.5">
-                Ready for a similar project?
-              </h2>
-              <p className="font-body text-sm leading-[1.7]" style={{ color: 'rgba(255,255,255,0.55)' }}>
-                Get a free assessment for your facility in under 48 hours.
-              </p>
-            </div>
-
-            {/* Buttons */}
-            <div className="flex gap-3 flex-col sm:flex-row md:flex-col lg:flex-row flex-shrink-0">
-              <Link
-                href="/contact"
-                className="flex items-center justify-center gap-2 font-body font-semibold text-sm rounded-full px-6 py-3 transition-all hover:brightness-110"
-                style={{ background: meta.accent, color: meta.accentText }}
-              >
-                Get a Quote <IconArrowRight size={14} />
-              </Link>
-              <Link
-                href="/projects"
-                className="flex items-center justify-center font-body font-semibold text-sm text-white rounded-full px-6 py-3 transition-all hover:bg-white/20"
-                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
-              >
-                View all projects
-              </Link>
+              {/* Buttons */}
+              <div className="flex gap-3 flex-col sm:flex-row md:flex-col lg:flex-row flex-shrink-0">
+                <Link
+                  href="/contact"
+                  className="flex items-center justify-center font-body font-semibold text-sm text-[#39575C] rounded-full px-6 py-3 transition-colors hover:bg-[#e8e8e8]"
+                  style={{ background: '#F5F5F5' }}
+                >
+                  Get a Quote
+                </Link>
+                <Link
+                  href="/projects"
+                  className="flex items-center justify-center font-body font-semibold text-sm text-white rounded-full px-6 py-3 transition-all hover:bg-white/20"
+                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                >
+                  View all projects
+                </Link>
+              </div>
             </div>
           </div>
         </div>
