@@ -32,6 +32,7 @@ export const ALL_PROJECTS_QUERY = `
   *[_type == "project"] | order(completionDate desc) {
     ${PROJECT_CARD_FIELDS},
     featured,
+    featuredOrder,
     clientName,
     completionDate,
     projectValue,
