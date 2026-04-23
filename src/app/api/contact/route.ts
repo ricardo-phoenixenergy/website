@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { render } from '@react-email/render';
 import { contactSchema, webBuySolarSchema } from '@/lib/validators/contact';
+import { ContactEmail } from '@/emails/ContactEmail';
+import { WeBuySolarEmail } from '@/emails/WeBuySolarEmail';
 
 const FROM = 'Phoenix Energy <noreply@phoenixenergy.solutions>';
 const TO = 'info@phoenixenergy.solutions';
@@ -38,33 +41,31 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Route by intent
+  // ─── WeBuySolar ────────────────────────────────────────────────────────────
   if (raw.intent === 'webuysolar') {
     const parsed = webBuySolarSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: 'Validation failed', details: parsed.error.issues }, { status: 422 });
     }
     const d = parsed.data;
+    const indicativeK = Math.round(d.valuation.indicativeValue / 1000);
+
+    const html = await render(
+      WeBuySolarEmail({
+        firstName: d.firstName,
+        lastName: d.lastName,
+        email: d.email,
+        phone: d.phone,
+        valuation: d.valuation,
+      }),
+    );
+
     const { error } = await getResend().emails.send({
       from: FROM,
       to: TO,
       replyTo: d.email,
-      subject: `[WeBuySolar] ${d.valuation.kw}kWp system — ${d.firstName} ${d.lastName ?? ''} — est. R${Math.round(d.valuation.indicativeValue / 1000)}k`,
-      text: [
-        `Intent: WeBuySolar valuation request`,
-        `Name: ${d.firstName} ${d.lastName ?? ''}`,
-        `Email: ${d.email}`,
-        `Phone: ${d.phone ?? 'Not provided'}`,
-        '',
-        '--- VALUATION SUMMARY ---',
-        `System: ${d.valuation.kw} kWp, installed ${d.valuation.installYear}`,
-        `BESS: ${d.valuation.bessKwh > 0 ? `${d.valuation.bessKwh} kWh` : 'None'}`,
-        `Panel tier: ${d.valuation.tier}`,
-        `Province: ${d.valuation.province}`,
-        `Indicative value: R${d.valuation.indicativeValue.toLocaleString()}`,
-        `Range: R${d.valuation.rangeLow.toLocaleString()} – R${d.valuation.rangeHigh.toLocaleString()}`,
-        `10-yr DCF: R${d.valuation.dcfValue.toLocaleString()}`,
-      ].join('\n'),
+      subject: `[WeBuySolar] ${d.valuation.kw}kWp — ${d.firstName} ${d.lastName ?? ''} — est. R${indicativeK}k`,
+      html,
     });
 
     if (error) {
@@ -73,7 +74,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true });
   }
 
-  // Client / Partner / Investor
+  // ─── Client / Partner / Investor ───────────────────────────────────────────
   const parsed = contactSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: 'Validation failed', details: parsed.error.issues }, { status: 422 });
@@ -81,20 +82,25 @@ export async function POST(req: NextRequest) {
   const d = parsed.data;
   const intentLabel = d.intent.charAt(0).toUpperCase() + d.intent.slice(1);
 
+  const html = await render(
+    ContactEmail({
+      intent: d.intent,
+      firstName: d.firstName,
+      lastName: d.lastName,
+      email: d.email,
+      phone: d.phone,
+      company: d.company,
+      location: d.location,
+      message: d.message,
+    }),
+  );
+
   const { error } = await getResend().emails.send({
     from: FROM,
     to: TO,
     replyTo: d.email,
     subject: `[${intentLabel}] ${d.firstName} ${d.lastName} — ${d.company} — ${d.location}`,
-    text: [
-      `Intent: ${intentLabel}`,
-      `Name: ${d.firstName} ${d.lastName}`,
-      `Email: ${d.email}`,
-      `Phone: ${d.phone}`,
-      `Company: ${d.company}`,
-      `Location: ${d.location}`,
-      d.message ? `\nMessage:\n${d.message}` : '',
-    ].join('\n'),
+    html,
   });
 
   if (error) {
