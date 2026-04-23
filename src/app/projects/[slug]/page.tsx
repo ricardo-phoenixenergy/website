@@ -359,16 +359,13 @@ export default async function ProjectPage({
 
             {/* Buttons */}
             <div className="flex gap-3 flex-col sm:flex-row md:flex-col lg:flex-row flex-shrink-0">
-              {/* Shimmer border wraps the primary button */}
-              <div className="cta-shimmer-border rounded-full p-[2px]">
-                <Link
-                  href="/contact"
-                  className="flex items-center justify-center font-body font-semibold text-sm text-[#39575C] rounded-full px-6 py-[10px] transition-colors hover:bg-[#e8e8e8]"
-                  style={{ background: '#F5F5F5' }}
-                >
-                  Get a Quote
-                </Link>
-              </div>
+              <Link
+                href="/contact"
+                className="btn-shimmer flex items-center justify-center font-body font-semibold text-sm text-[#39575C] rounded-full px-6 py-3 transition-colors hover:bg-[#e8e8e8]"
+                style={{ background: '#F5F5F5' }}
+              >
+                Get a Quote
+              </Link>
               <Link
                 href="/projects"
                 className="flex items-center justify-center font-body font-semibold text-sm text-white rounded-full px-6 py-3 transition-all hover:bg-white/20"

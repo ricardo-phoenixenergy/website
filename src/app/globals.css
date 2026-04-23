@@ -118,25 +118,35 @@ body {
   }
 }
 
-/* ─── CTA card shimmer border ─────────────────────────────────────────────── */
-@keyframes cta-border-shimmer {
-  0%   { background-position: 200% center; }
-  100% { background-position: -200% center; }
+/* ─── Button border trace shimmer ─────────────────────────────────────────── */
+@keyframes btn-border-trace {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
 }
 
-.cta-shimmer-border {
+.btn-shimmer {
+  position: relative;
+}
+
+/* 1px traced highlight — mask punches out the fill, leaving only the border strip */
+.btn-shimmer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
   background: linear-gradient(
     90deg,
-    #1a3a3e 0%,
-    #39575C 20%,
-    #709DA9 38%,
-    rgba(255, 255, 255, 0.55) 50%,
-    #709DA9 62%,
-    #39575C 80%,
-    #1a3a3e 100%
+    transparent 20%,
+    rgba(255, 255, 255, 0.7) 50%,
+    transparent 80%
   );
-  background-size: 300% 100%;
-  animation: cta-border-shimmer 4s linear infinite;
+  background-size: 200% 100%;
+  animation: btn-border-trace 3s linear infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 /* ─── Shimmer skeleton animation ──────────────────────────────────────────── */
