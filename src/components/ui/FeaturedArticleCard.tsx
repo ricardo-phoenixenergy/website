@@ -26,18 +26,18 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
         style={{
           gridTemplateColumns: '1fr 1fr',
           border: '1px solid #E5E7EB',
-          minHeight: 220,
+          minHeight: 240,
         }}
       >
         {/* Left: Photo */}
-        <div className="relative overflow-hidden" style={{ minHeight: 220 }}>
+        <div className="relative overflow-hidden" style={{ minHeight: 240 }}>
           {imgSrc ? (
             <Image
               src={imgSrc}
               alt={post.heroImage?.alt ?? post.title}
               fill
               priority
-              className="object-cover"
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               sizes="(max-width: 768px) 100vw, 480px"
               {...(blurSrc ? { placeholder: 'blur', blurDataURL: blurSrc } : {})}
             />
@@ -46,10 +46,10 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
           )}
           {/* FEATURED badge */}
           <span
-            className="absolute top-3 left-3 font-body font-bold text-[9px] text-white rounded-full px-2.5 py-1"
+            className="absolute top-3 left-3 font-body font-bold text-[10px] uppercase tracking-[0.08em] text-white rounded-full px-2.5 py-1"
             style={{ background: '#39575C' }}
           >
-            FEATURED
+            Featured
           </span>
         </div>
 
@@ -58,16 +58,16 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
           {/* Tags */}
           <div className="flex flex-wrap gap-1.5 mb-3">
             <span
-              className="font-body font-semibold rounded-full"
-              style={{ fontSize: 9, padding: '3px 10px', background: cs.bg, color: cs.color }}
+              className="font-body font-bold text-[10px] uppercase tracking-[0.08em] rounded-full px-2.5 py-1"
+              style={{ background: cs.bg, color: cs.color }}
             >
               {post.category}
             </span>
             {post.tags?.slice(0, 2).map(tag => (
               <span
                 key={tag}
-                className="font-body font-semibold rounded-full"
-                style={{ fontSize: 9, padding: '3px 10px', background: 'rgba(112,157,169,0.10)', color: '#39575C' }}
+                className="font-body font-semibold text-[10px] rounded-full px-2.5 py-1"
+                style={{ background: 'rgba(112,157,169,0.10)', color: '#39575C' }}
               >
                 {tag}
               </span>
@@ -76,17 +76,13 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
 
           {/* Title */}
           <h2
-            className="font-display font-extrabold text-[18px] text-[#1A1A1A] leading-[1.3] mb-2 flex-1"
-            style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+            className="font-display font-extrabold text-xl text-[#1A1A1A] leading-[1.3] mb-2 flex-1 line-clamp-3"
           >
             {post.title}
           </h2>
 
           {/* Excerpt */}
-          <p
-            className="font-body text-xs text-[#6B7280] leading-[1.75] mb-4"
-            style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
-          >
+          <p className="font-body text-sm text-[#6B7280] leading-[1.7] mb-4 line-clamp-3">
             {post.excerpt}
           </p>
 
@@ -96,21 +92,21 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
               <Image
                 src={authorImgSrc}
                 alt={post.author.name}
-                width={24}
-                height={24}
+                width={26}
+                height={26}
                 className="rounded-full object-cover flex-shrink-0"
               />
             ) : (
               <div
-                className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                className="w-[26px] h-[26px] rounded-full flex items-center justify-center flex-shrink-0"
                 style={{ background: '#39575C' }}
               >
-                <span className="font-display font-bold text-[8px] text-white">
+                <span className="font-display font-bold text-[10px] text-white">
                   {initials(post.author.name)}
                 </span>
               </div>
             )}
-            <span className="font-body text-[10px] text-[#6B7280]">
+            <span className="font-body text-xs text-[#6B7280]">
               {post.author.name}
               <span className="mx-1">·</span>
               {formatDate(post.publishedAt)}

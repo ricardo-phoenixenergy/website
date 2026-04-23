@@ -166,7 +166,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       />
 
       {/* Post hero */}
-      <section className="relative overflow-hidden" style={{ height: 280, background: '#0d1f22' }}>
+      <section className="relative overflow-hidden" style={{ height: 360, background: '#0d1f22' }}>
         {heroSrc && (
           <Image
             src={heroSrc}
@@ -181,31 +181,29 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         {/* Overlay */}
         <div
           className="absolute inset-0"
-          style={{ background: 'linear-gradient(180deg, rgba(13,31,34,0.20) 0%, rgba(13,31,34,0.85) 100%)' }}
+          style={{ background: 'linear-gradient(180deg, rgba(13,31,34,0.15) 0%, rgba(13,31,34,0.88) 100%)' }}
         />
         {/* Bottom-anchored content */}
-        <div className="absolute bottom-0 left-0 right-0 max-w-[760px] mx-auto px-6 pb-6">
+        <div className="absolute bottom-0 left-0 right-0 max-w-[760px] mx-auto px-6 pb-7">
           {/* Tags */}
           <div className="flex flex-wrap gap-2 mb-3">
             <span
-              className="font-body font-semibold text-[9px] text-white rounded-full px-2.5 py-1"
-              style={{ background: 'rgba(255,255,255,0.35)' }}
+              className="font-body font-bold text-[10px] uppercase tracking-[0.08em] text-white rounded-full px-2.5 py-1"
+              style={{ background: 'rgba(255,255,255,0.25)' }}
             >
               {post.category}
             </span>
             {post.tags?.slice(0, 2).map(tag => (
               <span
                 key={tag}
-                className="font-body font-semibold text-[9px] text-white rounded-full px-2.5 py-1"
-                style={{ background: 'rgba(255,255,255,0.25)' }}
+                className="font-body font-semibold text-[10px] text-white rounded-full px-2.5 py-1"
+                style={{ background: 'rgba(255,255,255,0.15)' }}
               >
                 {tag}
               </span>
             ))}
           </div>
-          <h1
-            className="font-display font-extrabold text-[22px] text-white leading-[1.25] mb-3"
-          >
+          <h1 className="font-display font-extrabold text-2xl md:text-3xl text-white leading-[1.2] mb-3">
             {post.title}
           </h1>
           {/* Meta */}
@@ -214,29 +212,26 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               <Image
                 src={authorPhotoSrc}
                 alt=""
-                width={26}
-                height={26}
+                width={28}
+                height={28}
                 className="rounded-full object-cover flex-shrink-0"
                 style={{ border: '2px solid rgba(255,255,255,0.30)' }}
               />
             ) : (
               <div
-                className="w-[26px] h-[26px] rounded-full flex items-center justify-center flex-shrink-0"
+                className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{ background: '#39575C', border: '2px solid rgba(255,255,255,0.30)' }}
               >
-                <span className="font-display font-bold text-[8px] text-white">
+                <span className="font-display font-bold text-[10px] text-white">
                   {initials(post.author.name)}
                 </span>
               </div>
             )}
-            <span
-              className="font-body text-[10px]"
-              style={{ color: 'rgba(255,255,255,0.55)' }}
-            >
+            <span className="font-body text-xs" style={{ color: 'rgba(255,255,255,0.6)' }}>
               {post.author.name}
-              <span className="mx-1">·</span>
+              <span className="mx-1.5">·</span>
               {formatDate(post.publishedAt)}
-              <span className="mx-1">·</span>
+              <span className="mx-1.5">·</span>
               {post.readTime} min read
             </span>
           </div>
@@ -245,37 +240,26 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
       {/* Breadcrumb + Share bar */}
       <div
-        className="flex items-center justify-between max-w-[960px] mx-auto"
-        style={{ padding: '12px 24px', borderBottom: '1px solid #E5E7EB' }}
+        className="page-container flex items-center justify-between py-3"
+        style={{ borderBottom: '1px solid #E5E7EB' }}
       >
-        <nav aria-label="Breadcrumb" className="font-body text-[10px] text-[#6B7280] flex items-center gap-1">
+        <nav aria-label="Breadcrumb" className="font-body text-xs text-[#6B7280] flex items-center gap-1.5">
           <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
           <span>/</span>
           <Link href="/blog" className="hover:text-[#39575C] transition-colors">Blog</Link>
           <span>/</span>
-          <span
-            className="text-[#1A1A1A]"
-            style={{
-              maxWidth: 260,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              display: 'inline-block',
-            }}
-          >
+          <span className="text-[#1A1A1A] truncate" style={{ maxWidth: 260 }}>
             {post.title}
           </span>
         </nav>
         <ShareButtons url={canonicalUrl} title={post.seoTitle ?? post.title} />
       </div>
 
-      {/* Two-column layout */}
-      <div
-        className="max-w-[960px] mx-auto"
-        style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 32, padding: '32px 24px 48px' }}
-      >
+      {/* Body — single col on mobile, sidebar on lg+ */}
+      <div className="page-container pt-8 pb-12 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
+
         {/* Article body */}
-        <article style={{ maxWidth: 680 }}>
+        <article className="min-w-0">
           <PortableText
             value={post.body}
             components={{
@@ -289,7 +273,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                   return (
                     <h2
                       id={id}
-                      className="font-display font-extrabold text-[17px] text-[#1A1A1A] leading-tight mt-6 mb-2.5 scroll-mt-24"
+                      className="font-display font-extrabold text-lg text-[#1A1A1A] leading-tight mt-7 mb-3 scroll-mt-24"
                     >
                       {children}
                     </h2>
@@ -302,7 +286,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                   return (
                     <h3
                       id={id}
-                      className="font-display font-bold text-sm text-[#1A1A1A] leading-tight mt-[18px] mb-2 scroll-mt-24"
+                      className="font-display font-bold text-base text-[#1A1A1A] leading-tight mt-5 mb-2 scroll-mt-24"
                     >
                       {children}
                     </h3>
@@ -318,12 +302,12 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               className="flex flex-wrap gap-1.5 pt-5 mt-7"
               style={{ borderTop: '1px solid #E5E7EB' }}
             >
-              <span className="font-body font-semibold text-[11px] text-[#1A1A1A]">Tags:</span>
+              <span className="font-body font-semibold text-xs text-[#1A1A1A]">Tags:</span>
               {post.tags.map(tag => (
                 <Link
                   key={tag}
                   href={`/blog?tag=${encodeURIComponent(tag)}`}
-                  className="font-body text-[11px] rounded-full px-2.5 py-1 transition-opacity hover:opacity-80"
+                  className="font-body text-xs rounded-full px-2.5 py-1 transition-opacity hover:opacity-80"
                   style={{ background: 'rgba(57,87,92,0.10)', color: '#39575C' }}
                 >
                   {tag}
@@ -333,8 +317,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           )}
         </article>
 
-        {/* Sidebar */}
-        <aside className="flex flex-col gap-4" style={{ position: 'sticky', top: 24, alignSelf: 'start' }}>
+        {/* Sidebar — stacks below article on mobile, sticky column on lg+ */}
+        <aside className="flex flex-col gap-4 lg:sticky lg:top-6 lg:self-start">
           <TableOfContents items={tocItems} />
           <AuthorCard author={post.author} />
           {post.related.length > 0 && <RelatedPosts posts={post.related} />}
