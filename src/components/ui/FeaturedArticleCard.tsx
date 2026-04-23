@@ -22,7 +22,7 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
   return (
     <Link href={`/blog/${post.slug.current}`} className="group block">
       <article
-        className="grid overflow-hidden rounded-2xl bg-white transition-all duration-200 group-hover:-translate-y-[5px] group-hover:shadow-[0_16px_40px_rgba(57,87,92,0.12)] group-hover:border-[#cccccc]"
+        className="grid overflow-hidden rounded-2xl bg-white transition-all duration-200 group-hover:-translate-y-[5px] group-hover:shadow group-hover:border-[#cccccc]"
         style={{
           gridTemplateColumns: '1fr 1fr',
           border: '1px solid #E5E7EB',
