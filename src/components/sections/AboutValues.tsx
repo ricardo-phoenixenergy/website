@@ -49,8 +49,7 @@ export function AboutValues() {
         {VALUES.map((v, i) => (
           <AnimatedSection key={v.num} delay={i * 0.04} as="div">
             <div
-              className="rounded-2xl p-[22px] h-full cursor-default transition-all duration-200 hover:-translate-y-[3px]"
-              style={{ background: '#0d1f22' }}
+              className="rounded-2xl p-[22px] h-full cursor-default transition-all duration-300 hover:-translate-y-[3px] bg-[#0d1f22] hover:bg-[#39575C]"
             >
               <p
                 className="font-display font-extrabold text-4xl leading-none mb-3"
