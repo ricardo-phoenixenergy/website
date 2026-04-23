@@ -49,21 +49,30 @@ export function AboutValues() {
         {VALUES.map((v, i) => (
           <AnimatedSection key={v.num} delay={i * 0.04} as="div">
             <div
-              className="rounded-2xl p-[22px] h-full cursor-default transition-all duration-300 hover:-translate-y-[3px] bg-[#0d1f22] hover:bg-[#39575C]"
+              className="group relative rounded-2xl p-[22px] h-full cursor-default overflow-hidden transition-transform duration-300 hover:-translate-y-[3px] bg-[#0d1f22]"
             >
-              <p
-                className="font-display font-extrabold text-4xl leading-none mb-3"
-                style={{ color: 'rgba(255,255,255,0.08)' }}
-              >
-                {v.num}
-              </p>
-              <p className="font-display font-bold text-base text-white mb-2">{v.title}</p>
-              <p
-                className="font-body text-sm leading-[1.75]"
-                style={{ color: 'rgba(255,255,255,0.5)' }}
-              >
-                {v.text}
-              </p>
+              {/* Gradient overlay — opacity-0 at rest, fades in on hover */}
+              <div
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                style={{ background: 'linear-gradient(135deg, #39575C 0%, #0d1f22 100%)' }}
+              />
+
+              {/* Content sits above the overlay */}
+              <div className="relative z-10">
+                <p
+                  className="font-display font-extrabold text-4xl leading-none mb-3"
+                  style={{ color: 'rgba(255,255,255,0.08)' }}
+                >
+                  {v.num}
+                </p>
+                <p className="font-display font-bold text-base text-white mb-2">{v.title}</p>
+                <p
+                  className="font-body text-sm leading-[1.75]"
+                  style={{ color: 'rgba(255,255,255,0.5)' }}
+                >
+                  {v.text}
+                </p>
+              </div>
             </div>
           </AnimatedSection>
         ))}
