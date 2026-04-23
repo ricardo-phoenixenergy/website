@@ -5,6 +5,7 @@ import { LATEST_POSTS_QUERY } from '@/lib/queries';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { formatDate } from '@/lib/utils';
 import type { BlogPostCard } from '@/types/sanity';
+import { IconArrowRight } from '../ui/Icons';
 
 async function getLatestPosts(): Promise<BlogPostCard[]> {
   try {
@@ -23,10 +24,10 @@ export async function LatestPosts() {
   const listPosts = rest.slice(0, 3);
 
   return (
-    <section className="bg-[#F5F5F5] px-5 py-12 md:py-[48px]">
+    <section className="bg-[#F5F5F5] py-12 md:py-[48px]">
       {/* Header row */}
       <AnimatedSection>
-        <div className="flex items-end justify-between max-w-[960px] mx-auto mb-6">
+        <div className="page-container flex items-end justify-between mb-6">
           <div>
             <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-2">
               Latest insights
@@ -38,21 +39,24 @@ export async function LatestPosts() {
           </div>
           <Link
             href="/blog"
-            className="font-body text-sm font-medium text-[#39575C] hover:text-[#2a4045] transition-colors flex-shrink-0 ml-4"
+            className="group flex items-center gap-1.5 font-body text-sm font-medium text-[#39575C] hover:text-[#2a4045] transition-colors flex-shrink-0 ml-4"
           >
-            All articles →
+            View all articles
+            <span className="transition-transform duration-200 group-hover:translate-x-1">
+              <IconArrowRight size={14} />
+            </span>
           </Link>
         </div>
       </AnimatedSection>
 
       {/* Desktop 2-col grid */}
-      <div className="max-w-[960px] mx-auto grid gap-5 md:grid-cols-2">
+      <div className="page-container grid gap-5 md:grid-cols-2">
         {/* Featured article */}
         {featured && (
           <AnimatedSection delay={0}>
             <Link
               href={`/blog/${featured.slug.current}`}
-              className="group block bg-white rounded-2xl overflow-hidden border border-[#E5E7EB] hover:-translate-y-[3px] transition-transform duration-200"
+              className="group block bg-white rounded-2xl overflow-hidden border border-[#E5E7EB] transition-all duration-200 hover:-translate-y-[5px] hover:shadow-[0_16px_40px_rgba(57,87,92,0.12)] hover:border-[#cccccc]"
             >
               {featured.heroImage && (
                 <div className="relative overflow-hidden" style={{ height: 180 }}>
@@ -60,7 +64,7 @@ export async function LatestPosts() {
                     src={featured.heroImage.asset.url}
                     alt={featured.heroImage.alt ?? featured.title}
                     fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
                     placeholder="blur"
                     blurDataURL={featured.heroImage.asset.metadata?.lqip ?? 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'}
                     sizes="(max-width: 768px) 100vw, 50vw"
@@ -101,7 +105,7 @@ export async function LatestPosts() {
                 <Link
                   key={post._id}
                   href={`/blog/${post.slug.current}`}
-                  className="group flex gap-3 px-4 py-3.5 hover:bg-[#F5F5F5] transition-colors"
+                  className="group flex gap-3 px-4 py-3.5 hover:bg-[#F5F5F5] transition-all duration-200"
                   style={i < listPosts.length - 1 ? { borderBottom: '1px solid #E5E7EB' } : undefined}
                 >
                   {/* Thumbnail */}
@@ -111,7 +115,7 @@ export async function LatestPosts() {
                         src={post.heroImage.asset.url}
                         alt={post.heroImage.alt ?? post.title}
                         fill
-                        className="object-cover"
+                        className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
                         sizes="60px"
                       />
                     </div>
