@@ -45,6 +45,16 @@ export function ProjectCard({ project, className, onClick, fluid }: ProjectCardP
           style={{ background: 'linear-gradient(to top, rgba(13,31,34,0.65) 0%, rgba(13,31,34,0.1) 55%, transparent 100%)' }}
         />
 
+        {/* Flagship badge — top-right */}
+        {project.featured && (
+          <span
+            className="absolute top-3 right-3 z-10 font-body font-bold text-[10px] uppercase tracking-[0.08em] px-2.5 py-1 rounded-full text-white"
+            style={{ background: '#39575C' }}
+          >
+            ★ Featured
+          </span>
+        )}
+
         {/* Category badge — bottom-left over scrim */}
         {meta && project.vertical && (
           <span
@@ -93,7 +103,7 @@ export function ProjectCard({ project, className, onClick, fluid }: ProjectCardP
   );
 
   // flex flex-col + h-full: card fills its grid cell; photo is fixed, body grows to fill rest
-  const sharedClass = `group flex flex-col h-full overflow-hidden rounded-2xl bg-white transition-all duration-200 hover:-translate-y-[5px] hover:shadow-[0_16px_40px_rgba(57,87,92,0.12)] hover:border-[#cccccc] ${className ?? ''}`;
+  const sharedClass = `group flex flex-col h-full overflow-hidden rounded-2xl bg-white transition-all duration-200 hover:-translate-y-[5px] hover:shadow hover:border-[#cccccc] ${className ?? ''}`;
   const sharedStyle = {
     border: '1px solid #E5E7EB',
     ...(!fluid ? { width: 260, flexShrink: 0 } : {}),
