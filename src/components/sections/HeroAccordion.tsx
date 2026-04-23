@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SOLUTION_META } from '@/types/solutions';
 import type { SolutionVertical } from '@/types/solutions';
@@ -10,7 +11,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 interface Panel {
   vertical: SolutionVertical;
   number: string;
-  bgTint: string;
+  image: string;
   href: string;
   title: string;
   description: string;
@@ -20,7 +21,7 @@ const PANELS: Panel[] = [
   {
     vertical: 'ci-solar-storage',
     number: '01',
-    bgTint: '#2a3d28',
+    image: '/hero-solar.png',
     href: '/solutions/ci-solar-storage',
     title: 'Power your business with solar & storage',
     description: 'Design, finance, install and operate solar + BESS systems for C&I clients across Southern Africa.',
@@ -28,7 +29,7 @@ const PANELS: Panel[] = [
   {
     vertical: 'wheeling',
     number: '02',
-    bgTint: '#3d2a28',
+    image: '/hero-wheeling.png',
     href: '/solutions/wheeling',
     title: 'Buy cheaper renewable energy via the grid',
     description: 'Access clean, cost-effective electricity through our established wheeling network — no equipment required.',
@@ -36,7 +37,7 @@ const PANELS: Panel[] = [
   {
     vertical: 'carbon-credits',
     number: '03',
-    bgTint: '#28352a',
+    image: '/hero-carbon.png',
     href: '/solutions/carbon-credits',
     title: 'Turn clean energy into certified revenue',
     description: 'Register, certify and monetise carbon credits from your renewable assets under the Gold Standard.',
@@ -44,7 +45,7 @@ const PANELS: Panel[] = [
   {
     vertical: 'energy-optimisation',
     number: '04',
-    bgTint: '#1e2e38',
+    image: '/hero-optimisation.png',
     href: '/solutions/energy-optimisation',
     title: 'Eliminate energy waste intelligently',
     description: 'Expert audit, tariff restructuring and demand management — maximise every kilowatt at zero cost.',
@@ -52,7 +53,7 @@ const PANELS: Panel[] = [
   {
     vertical: 'ev-fleets',
     number: '05',
-    bgTint: '#1e3230',
+    image: '/hero-ev.png',
     href: '/solutions/ev-fleets',
     title: 'Electrify your fleet from day one',
     description: 'End-to-end fleet electrification — infrastructure, vehicles, financing and management in one solution.',
@@ -60,7 +61,7 @@ const PANELS: Panel[] = [
   {
     vertical: 'webuysolar',
     number: '06',
-    bgTint: '#2e1e10',
+    image: '/hero-webuysolar.png',
     href: '/solutions/webuysolar',
     title: 'Sell your solar system fast & fair',
     description: 'Get an instant valuation and formal offer within 5 business days. Phoenix Energy buys and redeploys solar assets.',
@@ -144,22 +145,24 @@ export function HeroAccordion() {
             }}
             onMouseEnter={() => handlePanelEnter(i)}
           >
-            {/* Background gradient */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background: `linear-gradient(135deg, ${panel.bgTint}, #0d1f22)`,
-              }}
+            {/* Background photo */}
+            <Image
+              src={panel.image}
+              alt={panel.title}
+              fill
+              className={`object-cover transition-transform duration-[800ms] ease-in-out ${isActive ? 'scale-105' : 'scale-100'}`}
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority={i === 0}
+              quality={85}
             />
 
-            {/* Active gradient overlay */}
+            {/* Darkening overlay — lighter gradient when active, solid dark when collapsed */}
             <div
-              className="absolute inset-0 transition-opacity duration-500"
+              className="absolute inset-0 transition-all duration-500"
               style={{
                 background: isActive
-                  ? 'linear-gradient(180deg, rgba(13,31,34,0.1) 0%, rgba(13,31,34,0.82) 60%, rgba(13,31,34,0.95) 100%)'
-                  : 'rgba(13,31,34,0.72)',
-                opacity: 1,
+                  ? 'linear-gradient(180deg, rgba(13,31,34,0.15) 0%, rgba(13,31,34,0.75) 55%, rgba(13,31,34,0.95) 100%)'
+                  : 'rgba(13,31,34,0.78)',
               }}
             />
 
