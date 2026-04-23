@@ -47,22 +47,14 @@ export function FeaturedProjectCard({ project }: FeaturedProjectCardProps) {
             style={{ background: 'linear-gradient(to top, rgba(13,31,34,0.82) 0%, rgba(13,31,34,0.15) 55%, transparent 100%)' }}
           />
 
-          {/* Top badges */}
-          <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+          {/* Featured badge */}
+          <div className="absolute top-4 left-4 z-10">
             <span
               className="font-body font-bold text-[10px] uppercase tracking-[0.08em] px-3 py-1.5 rounded-full text-white"
               style={{ background: '#39575C', border: '1px solid rgba(255,255,255,0.2)' }}
             >
               ★ Featured
             </span>
-            {meta && project.vertical && (
-              <span
-                className="font-body font-bold text-[10px] uppercase tracking-[0.1em] px-2.5 py-1 rounded-full"
-                style={{ background: meta.accent, color: meta.accentText }}
-              >
-                {meta.label}
-              </span>
-            )}
           </div>
 
           {/* Bottom: title + location overlay */}
@@ -108,12 +100,9 @@ export function FeaturedProjectCard({ project }: FeaturedProjectCardProps) {
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between pt-4 border-t border-[#E5E7EB]">
-            <span className="font-body text-xs text-[#6B7280] truncate pr-3">
-              {project.location ?? ''}
-            </span>
+          <div className="flex items-center justify-end pt-4 border-t border-[#E5E7EB]">
             <span
-              className="font-body font-bold text-xs text-white rounded-full px-4 py-2 flex-shrink-0 flex items-center gap-1.5"
+              className="font-body font-bold text-xs text-white rounded-full px-4 py-2 flex items-center gap-1.5"
               style={{ background: '#39575C' }}
             >
               View case study <IconArrowRight />
