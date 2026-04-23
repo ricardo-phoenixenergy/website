@@ -16,7 +16,14 @@ async function getProjects(vertical?: SolutionVertical): Promise<ProjectCardType
     if (vertical) {
       return await sanityClient.fetch<ProjectCardType[]>(PROJECTS_BY_VERTICAL_QUERY, { vertical });
     }
-    return await sanityClient.fetch<ProjectCardType[]>(FEATURED_PROJECTS_QUERY);
+    const all = await sanityClient.fetch<ProjectCardType[]>(FEATURED_PROJECTS_QUERY);
+    // Enforce one flagship per vertical — keep the first (lowest featuredOrder) per group
+    const seen = new Set<string>();
+    return all.filter((p) => {
+      if (!p.vertical || seen.has(p.vertical)) return false;
+      seen.add(p.vertical);
+      return true;
+    });
   } catch {
     return [];
   }

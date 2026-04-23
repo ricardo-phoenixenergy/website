@@ -42,13 +42,29 @@ export const ALL_PROJECTS_QUERY = `
 `;
 
 export const FEATURED_PROJECTS_QUERY = `
-  *[_type == "project" && featured == true] | order(completionDate desc) [0..5] {
+  *[_type == "project" && featured == true]
+  | order(coalesce(featuredOrder, 99) asc, completionDate desc) {
     ${PROJECT_CARD_FIELDS},
+    featuredOrder,
     clientName,
     completionDate,
     projectValue,
     status,
     metrics
+  }
+`;
+
+/* One flagship per vertical — used on solution/about pages */
+export const FLAGSHIP_BY_VERTICAL_QUERY = `
+  *[_type == "project" && vertical == $vertical && featured == true]
+  | order(coalesce(featuredOrder, 99) asc, completionDate desc) [0] {
+    ${PROJECT_CARD_FIELDS},
+    clientName,
+    completionDate,
+    projectValue,
+    status,
+    metrics,
+    summary
   }
 `;
 
