@@ -31,6 +31,8 @@ export default defineConfig({
             S.documentTypeListItem('teamMember').title('Team Members'),
             S.divider(),
             S.documentTypeListItem('milestoneTimeline').title('Timeline Milestones'),
+            S.divider(),
+            S.documentTypeListItem('partner').title('Partners & Investors'),
           ]),
     }),
     visionTool(),

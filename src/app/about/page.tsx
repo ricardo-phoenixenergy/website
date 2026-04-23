@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { sanityClient } from '@/lib/sanity';
-import { TEAM_MEMBERS_QUERY, MILESTONE_TIMELINE_QUERY } from '@/lib/queries';
+import { TEAM_MEMBERS_QUERY, MILESTONE_TIMELINE_QUERY, PARTNERS_QUERY } from '@/lib/queries';
 import { Button } from '@/components/ui/Button';
 import { AboutStory } from '@/components/sections/AboutStory';
 import { AboutMission } from '@/components/sections/AboutMission';
@@ -9,7 +9,7 @@ import { AboutValues } from '@/components/sections/AboutValues';
 import { AboutTimeline } from '@/components/sections/AboutTimeline';
 import { AboutTeam } from '@/components/sections/AboutTeam';
 import { AboutTrust } from '@/components/sections/AboutTrust';
-import type { TeamMember, MilestoneTimeline } from '@/types/sanity';
+import type { TeamMember, MilestoneTimeline, Partner } from '@/types/sanity';
 
 export const metadata: Metadata = {
   title: 'About Phoenix Energy — Our Story, Mission & Team',
@@ -41,10 +41,19 @@ async function getMilestones(): Promise<MilestoneTimeline[]> {
   }
 }
 
+async function getPartners(): Promise<Partner[]> {
+  try {
+    return await sanityClient.fetch<Partner[]>(PARTNERS_QUERY);
+  } catch {
+    return [];
+  }
+}
+
 export default async function AboutPage() {
-  const [teamMembers, milestones] = await Promise.all([
+  const [teamMembers, milestones, partners] = await Promise.all([
     getTeamMembers(),
     getMilestones(),
+    getPartners(),
   ]);
 
   return (
@@ -57,7 +66,7 @@ export default async function AboutPage() {
         {/* Background gradient (replace with next/image when photo available) */}
         <div
           className="absolute inset-0"
-          style={{ background: 'linear-gradient(135deg, #1a3a3e 0%, #0d1f22 100%)' }}
+          style={{ background: 'linear-gradient(135deg, #39575C 0%, #0d1f22 100%)' }}
         />
         {/* Overlay */}
         <div
@@ -99,7 +108,7 @@ export default async function AboutPage() {
       <AboutValues />
       <AboutTimeline milestones={milestones} />
       <AboutTeam members={teamMembers} />
-      <AboutTrust />
+      <AboutTrust partners={partners} />
 
       {/* CTA Banner — teal variant */}
       <section className="bg-[#39575C] px-6 py-[52px] text-center">

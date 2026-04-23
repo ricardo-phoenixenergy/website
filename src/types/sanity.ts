@@ -146,3 +146,18 @@ export interface MilestoneTimeline {
   order:    number;
   active:   boolean;
 }
+
+/* ─── Partner / Investor ─────────────────────────────────────────────────────── */
+
+export interface Partner {
+  _id:      string;
+  name:     string;
+  category: 'investors' | 'partners' | 'media';
+  website?: string;
+  order:    number;
+  active:   boolean;
+  logo?: {
+    asset: SanityImageAsset;
+    alt?: string;
+  };
+}

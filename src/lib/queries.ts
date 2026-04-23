@@ -236,3 +236,18 @@ export const MILESTONE_TIMELINE_QUERY = `
     active
   }
 `;
+
+/* ─── Partners & Investors ──────────────────────────────────────────────────── */
+
+export const PARTNERS_QUERY = `
+  *[_type == "partner" && active == true]
+  | order(order asc) {
+    _id,
+    name,
+    category,
+    website,
+    order,
+    active,
+    "logo": logo { asset->, alt }
+  }
+`;
