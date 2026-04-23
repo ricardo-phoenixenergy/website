@@ -27,9 +27,8 @@ export function FeaturedProjectCard({ project }: FeaturedProjectCardProps) {
               priority
               className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
               sizes="(max-width: 640px) 100vw, 60vw"
-              {...(project.heroImage.asset.metadata?.lqip
-                ? { placeholder: 'blur', blurDataURL: project.heroImage.asset.metadata.lqip }
-                : {})}
+              placeholder="blur"
+              blurDataURL={project.heroImage.asset.metadata?.lqip ?? 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'}
             />
           ) : (
             <div
