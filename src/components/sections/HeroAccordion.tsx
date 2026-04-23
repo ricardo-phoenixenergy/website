@@ -90,7 +90,61 @@ const barVariants = {
   exit: { scaleX: 0, opacity: 0, transition: { duration: 0.1 } },
 } as const;
 
-export function HeroAccordion() {
+// ─── Shared panel content (active state) ─────────────────────────────────────
+
+function ActivePanelContent({ panel, i }: { panel: Panel; i: number }) {
+  const meta = SOLUTION_META[panel.vertical];
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div key={`content-${i}`}>
+        <motion.div
+          variants={barVariants}
+          initial="hidden" animate="visible" exit="exit"
+          className="h-0.5 mb-4 origin-left"
+          style={{ width: 40, background: meta.accent }}
+        />
+        <motion.p
+          custom={0.18} variants={revealVariants} initial="hidden" animate="visible" exit="exit"
+          className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-2"
+          style={{ color: meta.accent }}
+        >
+          {meta.label}
+        </motion.p>
+        <motion.h2
+          custom={0.22} variants={revealVariants} initial="hidden" animate="visible" exit="exit"
+          className="font-display font-extrabold text-white leading-[1.15] mb-3"
+          style={{ fontSize: 'clamp(1.75rem, 3vw, 2.75rem)', maxWidth: 520 }}
+        >
+          {panel.title}
+        </motion.h2>
+        <motion.p
+          custom={0.3} variants={revealVariants} initial="hidden" animate="visible" exit="exit"
+          className="font-body text-base font-normal leading-[1.75] mb-5"
+          style={{ color: 'rgba(255,255,255,0.65)', maxWidth: 440 }}
+        >
+          {panel.description}
+        </motion.p>
+        <motion.div
+          custom={0.38} variants={revealVariants} initial="hidden" animate="visible" exit="exit"
+        >
+          <Link
+            href={panel.href}
+            className="inline-flex items-center gap-2 font-body font-semibold text-base transition-colors duration-150"
+            style={{ color: meta.accent }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            Explore {meta.label}
+            <span className="text-sm">→</span>
+          </Link>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+// ─── Desktop: horizontal accordion (hover + auto-advance) ────────────────────
+
+function DesktopAccordion() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [progressKey, setProgressKey] = useState(0);
   const isPausedRef = useRef(false);
@@ -145,7 +199,6 @@ export function HeroAccordion() {
             }}
             onMouseEnter={() => handlePanelEnter(i)}
           >
-            {/* Background photo */}
             <Image
               src={panel.image}
               alt={panel.title}
@@ -155,132 +208,47 @@ export function HeroAccordion() {
               priority={i === 0}
               quality={85}
             />
-
-            {/* Darkening overlay — lighter gradient when active, solid dark when collapsed */}
             <div
               className="absolute inset-0 transition-all duration-500"
               style={{
                 background: isActive
-                  ? 'linear-gradient(180deg, rgba(13,31,34,0.15) 0%, rgba(13,31,34,0.75) 55%, rgba(13,31,34,0.95) 100%)'
-                  : 'rgba(13,31,34,0.78)',
+                  ? 'linear-gradient(180deg, rgba(13,31,34,0.1) 0%, rgba(13,31,34,0.82) 60%, rgba(13,31,34,0.95) 100%)'
+                  : 'rgba(13,31,34,0.72)',
               }}
             />
 
-            {/* Panel number */}
+            {/* Collapsed label */}
             <div
               className="absolute top-4 left-3 font-display font-extrabold text-sm transition-opacity duration-300"
               style={{ color: 'rgba(255,255,255,0.2)', opacity: isActive ? 0 : 1 }}
             >
               {panel.number}
             </div>
-
-            {/* Collapsed eyebrow — vertical */}
             {!isActive && (
-              <div
-                className="absolute inset-0 flex items-center justify-center pointer-events-none"
-              >
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <p
                   className="font-body text-xs font-bold uppercase tracking-[0.14em] whitespace-nowrap"
-                  style={{
-                    color: 'rgba(255,255,255,0.45)',
-                    writingMode: 'vertical-rl',
-                    transform: 'rotate(180deg)',
-                  }}
+                  style={{ color: 'rgba(255,255,255,0.45)', writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
                 >
                   {meta.label}
                 </p>
               </div>
             )}
 
-            {/* Active panel content */}
+            {/* Active content */}
             {isActive && (
               <div className="absolute inset-x-0 bottom-0 px-6 pb-10 md:px-8 md:pb-12">
-                <AnimatePresence mode="wait">
-                  <motion.div key={`content-${i}`}>
-                    {/* Accent bar */}
-                    <motion.div
-                      variants={barVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className="h-0.5 mb-4 origin-left"
-                      style={{
-                        width: 40,
-                        background: meta.accent,
-                      }}
-                    />
-
-                    {/* Eyebrow */}
-                    <motion.p
-                      custom={0.18}
-                      variants={revealVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-2"
-                      style={{ color: meta.accent }}
-                    >
-                      {meta.label}
-                    </motion.p>
-
-                    {/* Title */}
-                    <motion.h2
-                      custom={0.2}
-                      variants={revealVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className="font-display font-extrabold text-white leading-[1.15] mb-3"
-                      style={{ fontSize: 'clamp(1.75rem, 3vw, 2.75rem)', maxWidth: 520 }}
-                    >
-                      {panel.title}
-                    </motion.h2>
-
-                    {/* Description */}
-                    <motion.p
-                      custom={0.28}
-                      variants={revealVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className="font-body text-base font-normal leading-[1.75] mb-5"
-                      style={{ color: 'rgba(255,255,255,0.65)', maxWidth: 440 }}
-                    >
-                      {panel.description}
-                    </motion.p>
-
-                    {/* CTA link */}
-                    <motion.div
-                      custom={0.36}
-                      variants={revealVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                    >
-                      <Link
-                        href={panel.href}
-                        className="inline-flex items-center gap-2 font-body font-semibold text-base transition-colors duration-150"
-                        style={{ color: meta.accent }}
-                      >
-                        Explore {meta.label}
-                        <span className="text-sm">→</span>
-                      </Link>
-                    </motion.div>
-                  </motion.div>
-                </AnimatePresence>
+                <ActivePanelContent panel={panel} i={i} />
               </div>
             )}
 
-            {/* Progress bar at bottom */}
+            {/* Progress bar */}
             {isActive && !reduced && (
               <div className="absolute bottom-0 inset-x-0 h-0.5" style={{ background: 'rgba(255,255,255,0.1)' }}>
                 <div
                   key={`bar-${progressKey}`}
                   className="h-full origin-left"
-                  style={{
-                    background: meta.accent,
-                    animation: `fillProgress ${INTERVAL}ms linear forwards`,
-                  }}
+                  style={{ background: meta.accent, animation: `fillProgress ${INTERVAL}ms linear forwards` }}
                 />
               </div>
             )}
@@ -288,5 +256,131 @@ export function HeroAccordion() {
         );
       })}
     </div>
+  );
+}
+
+// ─── Mobile: vertical accordion driven by scroll ──────────────────────────────
+
+function MobileAccordion() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const reduced = useReducedMotion();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const { top, height } = container.getBoundingClientRect();
+      const scrollable = height - window.innerHeight;
+      if (scrollable <= 0) return;
+      const progress = Math.max(0, Math.min(1, -top / scrollable));
+      setActiveIndex(Math.min(PANELS.length - 1, Math.floor(progress * PANELS.length)));
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToPanel = useCallback((i: number) => {
+    const container = containerRef.current;
+    if (!container) return;
+    const scrollable = container.offsetHeight - window.innerHeight;
+    const target = container.offsetTop + (i / PANELS.length) * scrollable;
+    window.scrollTo({ top: target, behavior: reduced ? 'auto' : 'smooth' });
+  }, [reduced]);
+
+  return (
+    <div ref={containerRef} style={{ height: `${PANELS.length * 100}vh` }}>
+      <div className="sticky top-0 h-screen overflow-hidden flex flex-col">
+        {PANELS.map((panel, i) => {
+          const meta = SOLUTION_META[panel.vertical];
+          const isActive = i === activeIndex;
+
+          return (
+            <div
+              key={panel.vertical}
+              className="relative overflow-hidden transition-all duration-[600ms]"
+              style={{
+                flex: isActive ? 5 : 1,
+                transitionTimingFunction: 'cubic-bezier(0.4,0,0.2,1)',
+                borderBottom: i < PANELS.length - 1 ? '1px solid rgba(255,255,255,0.06)' : undefined,
+                cursor: isActive ? 'default' : 'pointer',
+              }}
+              onClick={() => !isActive && scrollToPanel(i)}
+            >
+              <Image
+                src={panel.image}
+                alt={panel.title}
+                fill
+                className={`object-cover transition-transform duration-[800ms] ease-in-out ${isActive ? 'scale-105' : 'scale-100'}`}
+                sizes="100vw"
+                priority={i === 0}
+                quality={85}
+              />
+              <div
+                className="absolute inset-0 transition-all duration-500"
+                style={{
+                  background: isActive
+                    ? 'linear-gradient(180deg, rgba(13,31,34,0.15) 0%, rgba(13,31,34,0.72) 55%, rgba(13,31,34,0.95) 100%)'
+                    : 'rgba(13,31,34,0.80)',
+                }}
+              />
+
+              {/* Collapsed strip */}
+              {!isActive && (
+                <div className="absolute inset-0 flex items-center px-5 gap-3 pointer-events-none">
+                  <span className="font-display font-extrabold text-xs flex-shrink-0" style={{ color: 'rgba(255,255,255,0.2)' }}>
+                    {panel.number}
+                  </span>
+                  <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: meta.accent }} />
+                  <p className="font-body text-xs font-bold uppercase tracking-[0.14em] truncate" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                    {meta.label}
+                  </p>
+                </div>
+              )}
+
+              {/* Active content */}
+              {isActive && (
+                <div className="absolute inset-x-0 bottom-0 px-5 pb-8">
+                  <ActivePanelContent panel={panel} i={i} />
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        {/* Scroll indicator dots */}
+        <div className="absolute bottom-5 right-5 flex flex-col items-center gap-1.5 z-20">
+          {PANELS.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => scrollToPanel(i)}
+              aria-label={`Go to panel ${i + 1}`}
+              className="rounded-full transition-all duration-300 flex-shrink-0"
+              style={{
+                width: 4,
+                height: i === activeIndex ? 18 : 4,
+                background: i === activeIndex ? '#ffffff' : 'rgba(255,255,255,0.3)',
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Public export — responsive wrapper ──────────────────────────────────────
+
+export function HeroAccordion() {
+  return (
+    <>
+      <div className="hidden xl:block">
+        <DesktopAccordion />
+      </div>
+      <div className="xl:hidden">
+        <MobileAccordion />
+      </div>
+    </>
   );
 }
