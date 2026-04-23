@@ -5,6 +5,7 @@ import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { SOLUTION_META, SOLUTION_VERTICALS } from '@/types/solutions';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { CTABanner } from '@/components/sections/CTABanner';
+import { IconArrowRight } from '@/components/ui/Icons';
 
 export const metadata: Metadata = {
   title: 'Energy Solutions | Phoenix Energy',
@@ -39,8 +40,8 @@ export default function SolutionsPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* Hero */}
-      <section className="bg-[#0d1f22] px-5 py-16 md:py-24 text-center">
-        <AnimatedSection>
+      <section className="bg-[#0d1f22] py-16 md:py-24 text-center">
+        <AnimatedSection className="page-container">
           <p
             className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-3"
             style={{ color: 'rgba(255,255,255,0.50)' }}
@@ -61,8 +62,8 @@ export default function SolutionsPage() {
       </section>
 
       {/* Solution cards grid */}
-      <section className="bg-[#F5F5F5] px-5 py-12 md:py-16">
-        <div className="max-w-[960px] mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <section className="bg-[#F5F5F5] py-12 md:py-16">
+        <div className="page-container grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {SOLUTION_VERTICALS.map((vertical, i) => {
             const meta = SOLUTION_META[vertical];
             const cfg = VERTICAL_CONFIG[vertical];
@@ -91,8 +92,11 @@ export default function SolutionsPage() {
                         </div>
                       ))}
                     </div>
-                    <p className="font-body text-sm font-semibold text-[#39575C] transition-colors group-hover:text-[#2a4045]">
-                      Learn more →
+                    <p className="flex items-center gap-1.5 font-body text-sm font-semibold text-[#39575C] transition-colors group-hover:text-[#2a4045]">
+                      Learn more
+                      <span className="transition-transform duration-200 group-hover:translate-x-1">
+                        <IconArrowRight size={13} />
+                      </span>
                     </p>
                   </div>
                 </Link>

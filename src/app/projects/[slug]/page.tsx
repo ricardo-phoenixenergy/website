@@ -9,6 +9,7 @@ import { SOLUTION_META } from '@/types/solutions';
 import { ProjectStatsTiles } from '@/components/ui/ProjectStatsTiles';
 import { ProjectCard } from '@/components/sections/ProjectCard';
 import { ProjectGallery } from '@/components/sections/ProjectGallery';
+import { IconArrowRight } from '@/components/ui/Icons';
 import type { Project } from '@/types/sanity';
 
 export const revalidate = 3600;
@@ -309,8 +310,11 @@ export default async function ProjectPage({
               <p className="font-body font-bold text-xs uppercase tracking-[0.14em] text-[#6B7280]">
                 Similar Projects
               </p>
-              <Link href="/projects" className="font-body text-sm text-[#39575C] font-semibold hover:underline">
-                View all →
+              <Link href="/projects" className="group flex items-center gap-1.5 font-body text-sm text-[#39575C] font-semibold hover:underline">
+                View all
+                <span className="transition-transform duration-200 group-hover:translate-x-1">
+                  <IconArrowRight size={13} />
+                </span>
               </Link>
             </div>
 
@@ -361,7 +365,7 @@ export default async function ProjectPage({
             <div className="flex gap-3 flex-col sm:flex-row md:flex-col lg:flex-row flex-shrink-0">
               <Link
                 href="/contact"
-                className="btn-shimmer flex items-center justify-center font-body font-semibold text-sm text-[#39575C] rounded-full px-6 py-3 transition-colors hover:bg-[#e8e8e8]"
+                className="flex items-center justify-center font-body font-semibold text-sm text-[#39575C] rounded-full px-6 py-3 transition-colors hover:bg-[#e8e8e8]"
                 style={{ background: '#F5F5F5' }}
               >
                 Get a Quote

@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SOLUTION_META, SOLUTION_VERTICALS } from '@/types/solutions';
 import { IconArrowRight } from '../ui/Icons';
-import { Power, Zap } from 'lucide-react';
+import { Power, Zap, ZapIcon, ZapOff } from 'lucide-react';
 
 const NAV_LINKS = [
   { label: 'Projects', href: '/projects' },
@@ -171,10 +171,13 @@ export function Navbar() {
                   <div className="border-t border-white/[0.07] py-2.5 text-center">
                     <Link
                       href="/solutions"
-                      className="font-body text-sm font-medium text-white/50 hover:text-white/80 transition-colors"
+                      className="group inline-flex items-center gap-1.5 font-body text-sm font-medium text-white/50 hover:text-white/80 transition-colors"
                       onClick={() => setDropdownOpen(false)}
                     >
-                      View all solutions →
+                      View all solutions
+                      <span className="transition-transform duration-200 group-hover:translate-x-1">
+                        <IconArrowRight size={13} />
+                      </span>
                     </Link>
                   </div>
                 </motion.div>
@@ -232,27 +235,29 @@ export function Navbar() {
             >
               {/* Power / standby — visible at rest, spins out on hover */}
               <motion.span
-                className="absolute inset-0 flex items-center justify-center text-white"
+                className="absolute inset-0 flex items-center justify-center"
+                style={{ color: '#F5F5F5' }}
                 variants={{
                   rest:  { opacity: 1, scale: 1,   rotate: 0 },
                   hover: { opacity: 0, scale: 0.3, rotate: -120 },
+                  
                 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: 0.55 }}
               >
-                <Power size={13} />
+                <ZapIcon size={16} />
               </motion.span>
 
               {/* Zap / charging — hidden at rest, spins in on hover */}
               <motion.span
                 className="absolute inset-0 flex items-center justify-center"
-                style={{ color: '#39575C' }}
+                style={{ color: '#F5F5F5' }}
                 variants={{
                   rest:  { opacity: 0, scale: 0.3, rotate: 120 },
                   hover: { opacity: 1, scale: 1,   rotate: 0 },
                 }}
-                transition={{ duration: 0.22, delay: 0.14 }}
+                transition={{ duration: 0.25, delay: 0.14 }}
               >
-                <Zap size={13} />
+                <Zap size={16} />
               </motion.span>
             </span>
           </Link>

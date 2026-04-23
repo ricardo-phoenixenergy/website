@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { SOLUTION_META } from '@/types/solutions';
 import type { SolutionVertical } from '@/types/solutions';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { IconArrowRight } from '@/components/ui/Icons';
 
 interface Panel {
   vertical: SolutionVertical;
@@ -129,12 +130,14 @@ function ActivePanelContent({ panel, i }: { panel: Panel; i: number }) {
         >
           <Link
             href={panel.href}
-            className="inline-flex items-center gap-2 font-body font-semibold text-base transition-colors duration-150"
+            className="group inline-flex items-center gap-2 font-body font-semibold text-base transition-colors duration-150"
             style={{ color: meta.accent }}
             onClick={(e) => e.stopPropagation()}
           >
             Explore {meta.label}
-            <span className="text-sm">→</span>
+            <span className="transition-transform duration-200 group-hover:translate-x-1">
+              <IconArrowRight size={14} />
+            </span>
           </Link>
         </motion.div>
       </motion.div>

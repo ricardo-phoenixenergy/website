@@ -3,6 +3,7 @@ import { sanityClient } from '@/lib/sanity';
 import { FEATURED_PROJECTS_QUERY, PROJECTS_BY_VERTICAL_QUERY } from '@/lib/queries';
 import { ProjectCard } from './ProjectCard';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
+import { IconArrowRight } from '@/components/ui/Icons';
 import type { ProjectCard as ProjectCardType } from '@/types/sanity';
 import type { SolutionVertical } from '@/types/solutions';
 
@@ -27,10 +28,10 @@ export async function FeaturedProjects({ vertical }: FeaturedProjectsProps = {})
   if (projects.length === 0) return null;
 
   return (
-    <section className="bg-white px-5 py-12 md:py-[48px]">
+    <section className="bg-white py-12 md:py-[48px]">
       {/* Header row */}
       <AnimatedSection>
-        <div className="flex items-end justify-between max-w-[960px] mx-auto mb-6">
+        <div className="page-container flex items-end justify-between mb-6">
           <div>
             <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-2">
               Featured projects
@@ -42,23 +43,27 @@ export async function FeaturedProjects({ vertical }: FeaturedProjectsProps = {})
           </div>
           <Link
             href="/projects"
-            className="font-body text-sm font-medium text-[#39575C] hover:text-[#2a4045] transition-colors flex-shrink-0 ml-4"
+            className="group flex items-center gap-1.5 font-body text-sm font-medium text-[#39575C] hover:text-[#2a4045] transition-colors flex-shrink-0 ml-4"
           >
-            View all projects →
+            View all projects
+            <span className="transition-transform duration-200 group-hover:translate-x-1">
+              <IconArrowRight size={14} />
+            </span>
           </Link>
         </div>
       </AnimatedSection>
 
-      {/* Horizontal scroll container */}
+      {/* Horizontal scroll container — no overflow-hidden so card shadows aren't clipped */}
+      <div className="page-container">
       <div
-        className="flex gap-3.5 overflow-x-auto scrollbar-none pb-2"
-        style={{ margin: '0 -20px', paddingLeft: 20, paddingRight: 20 }}
+        className="flex gap-3.5 overflow-x-auto scrollbar-none pt-3 -mt-3 pb-4"
       >
         {projects.map((project, i) => (
           <AnimatedSection key={project._id} delay={i * 0.05} as="div" className="flex-shrink-0">
             <ProjectCard project={project} />
           </AnimatedSection>
         ))}
+      </div>
       </div>
     </section>
   );
