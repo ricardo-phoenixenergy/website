@@ -39,6 +39,7 @@ export interface ProjectCard {
   location: string;
   systemSize?: string;
   heroImage?: SanityImage;
+  featured?: boolean;
 }
 
 export interface ProjectMetric {
@@ -48,6 +49,7 @@ export interface ProjectMetric {
 
 export interface ProjectPreview extends ProjectCard {
   featured: boolean;
+  featuredOrder?: number;
   clientName?: string;
   completionDate?: string;
   projectValue?: string;
