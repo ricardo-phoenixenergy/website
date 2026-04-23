@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SOLUTION_META, SOLUTION_VERTICALS } from '@/types/solutions';
-import { IconArrowRight } from '../ui/Icons';
+import { IconArrowRight, IconZap } from '../ui/Icons';
 
 const NAV_LINKS = [
   { label: 'Projects', href: '/projects' },
@@ -200,15 +200,65 @@ export function Navbar() {
         </div>
 
         {/* CTA Button */}
-        <Link
-          href="/contact"
-          className="hidden xl:inline-flex items-center gap-2 rounded-full px-4 py-2 font-body text-sm font-semibold transition-all duration-200 flex-shrink-0 bg-[#39575C] text-white hover:bg-[#2a4045]"
+        <motion.div
+          className="hidden xl:block flex-shrink-0"
+          initial="rest"
+          animate="rest"
+          whileHover="hover"
         >
-          Get in touch
-          <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs bg-white/15">
-            <IconArrowRight />
-          </span>
-        </Link>
+          <Link
+            href="/contact"
+            className="relative isolate inline-flex items-center gap-2 rounded-full px-4 py-2 font-body text-sm font-semibold overflow-hidden bg-[#39575C] text-white"
+          >
+            {/* Expanding circle — starts at icon size, grows to fill the button on hover */}
+            <span className="absolute top-1/2 -translate-y-1/2 pointer-events-none" style={{ right: 7 }}>
+              <motion.span
+                aria-hidden
+                className="block rounded-full bg-[#709DA9]"
+                style={{ width: 26, height: 26 }}
+                variants={{ rest: { scale: 1 }, hover: { scale: 18 } }}
+                transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }}
+              />
+            </span>
+
+            {/* Label */}
+            <span className="relative z-10 leading-none">Get in touch</span>
+
+            {/* Icon container */}
+            <span
+              className="relative z-10 w-[22px] h-[22px] rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
+              style={{ background: 'rgba(255,255,255,0.18)' }}
+            >
+              {/* Standby icon — visible at rest, spins out on hover */}
+              <motion.span
+                className="absolute flex items-center justify-center text-white"
+                variants={{
+                  rest:  { opacity: 1, scale: 1,   rotate: 0 },
+                  hover: { opacity: 0, scale: 0.3, rotate: -120 },
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                  <path d="M5.5 1.5V4.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                  <path d="M3.5 3C2.3 3.8 1.5 5.1 1.5 6.5C1.5 8.7 3.3 10.5 5.5 10.5C7.7 10.5 9.5 8.7 9.5 6.5C9.5 5.1 8.7 3.8 7.5 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                </svg>
+              </motion.span>
+
+              {/* Zap icon — hidden at rest, spins in on hover */}
+              <motion.span
+                className="absolute flex items-center justify-center"
+                style={{ color: '#39575C' }}
+                variants={{
+                  rest:  { opacity: 0, scale: 0.3, rotate: 120 },
+                  hover: { opacity: 1, scale: 1,   rotate: 0 },
+                }}
+                transition={{ duration: 0.22, delay: 0.14 }}
+              >
+                <IconZap size={11} />
+              </motion.span>
+            </span>
+          </Link>
+        </motion.div>
 
         {/* Mobile hamburger */}
         <button
