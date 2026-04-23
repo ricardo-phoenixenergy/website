@@ -6,7 +6,7 @@ import { PortableText } from '@portabletext/react';
 import { sanityClient, urlFor } from '@/lib/sanity';
 import { PROJECT_BY_SLUG_QUERY, ALL_PROJECT_SLUGS_QUERY } from '@/lib/queries';
 import { SOLUTION_META } from '@/types/solutions';
-import { StatsStrip } from '@/components/ui/StatsStrip';
+import { ProjectStatsTiles } from '@/components/ui/ProjectStatsTiles';
 import { ProjectCard } from '@/components/sections/ProjectCard';
 import { ProjectGallery } from '@/components/sections/ProjectGallery';
 import type { Project } from '@/types/sanity';
@@ -90,7 +90,7 @@ export default async function ProjectPage({
     <div className="bg-[#F5F5F5] min-h-screen">
 
       {/* Breadcrumb */}
-      <div className="page-container pt-5 pb-0">
+      <div className="page-container pt-24 pb-0">
         <nav className="flex items-center gap-1.5 font-body text-sm text-[#6B7280]">
           <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
           <span>/</span>
@@ -125,16 +125,19 @@ export default async function ProjectPage({
               <h1 className="font-display font-extrabold text-2xl text-white leading-[1.2] mb-6">
                 {project.title}
               </h1>
-              <div className="flex flex-col gap-2.5">
+              <div className="flex flex-col gap-2">
                 {metaRows.map((row) => (
-                  <div key={row.label} className="flex gap-3 items-baseline">
+                  <div key={row.label} className="flex items-baseline gap-3">
                     <span
                       className="font-body font-bold text-[10px] uppercase tracking-[0.1em] min-w-[68px] flex-shrink-0"
                       style={{ color: 'rgba(255,255,255,0.35)' }}
                     >
                       {row.label}
                     </span>
-                    <span className="font-body text-xs" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                    <span
+                      className="font-body text-xs"
+                      style={{ color: 'rgba(255,255,255,0.75)' }}
+                    >
                       {row.value}
                     </span>
                   </div>
@@ -198,12 +201,12 @@ export default async function ProjectPage({
       {/* Stats strip */}
       {stats.length > 0 && (
         <div className="page-container mt-2">
-          <StatsStrip stats={stats} responsive className="rounded-xl" />
+          <ProjectStatsTiles stats={stats} />
         </div>
       )}
 
       {/* ── Body ─────────────────────────────────────────────────────────────── */}
-      <div className="max-w-[760px] mx-auto px-5 md:px-6 mt-8 mb-0">
+      <div className="page-container mt-8 mb-0">
 
         {/* Intro paragraph */}
         {project.summary && (
