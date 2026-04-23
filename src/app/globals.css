@@ -118,31 +118,40 @@ body {
   }
 }
 
-/* ─── Button border trace shimmer ─────────────────────────────────────────── */
-@keyframes btn-border-trace {
-  from { background-position: 200% 0; }
-  to   { background-position: -200% 0; }
+/* ─── Button border rotate shimmer ────────────────────────────────────────── */
+/* @property lets the browser interpolate --shimmer-angle so conic-gradient animates */
+@property --shimmer-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes btn-rotate-shimmer {
+  to { --shimmer-angle: 360deg; }
 }
 
 .btn-shimmer {
   position: relative;
 }
 
-/* 1px traced highlight — mask punches out the fill, leaving only the border strip */
+/* Mask punches out the fill — only the 1px border ring is visible */
 .btn-shimmer::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 20%,
-    rgba(255, 255, 255, 0.7) 50%,
-    transparent 80%
+  background: conic-gradient(
+    from var(--shimmer-angle),
+    transparent        0deg,
+    transparent       70deg,
+    rgba(255,255,255,0.0) 80deg,
+    rgba(255,255,255,0.6) 100deg,
+    rgba(255,255,255,0.0) 120deg,
+    transparent       130deg,
+    transparent       360deg
   );
-  background-size: 200% 100%;
-  animation: btn-border-trace 3s linear infinite;
+  animation: btn-rotate-shimmer 3s linear infinite;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
