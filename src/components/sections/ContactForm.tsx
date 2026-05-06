@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { contactSchema } from '@/lib/validators/contact';
+import { dlPush } from '@/lib/analytics';
 import {
   IconZap,
   IconUsers,
@@ -145,6 +146,7 @@ export function ContactForm() {
         return;
       }
 
+      dlPush({ event: 'form_submit', form_name: 'contact', service_interest: intent ?? '' });
       setStatus('success');
     } catch {
       setErrorMessage("Something went wrong sending your message. Please try again or email us directly at info@phoenixenergy.solutions.");
