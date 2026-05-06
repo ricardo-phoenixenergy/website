@@ -1,6 +1,6 @@
 // src/components/tools/SolarValuationTool.tsx
 'use client';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import type { SolarInputs, BessInputs, ConditionInputs } from '@/lib/valuation/types';
 import { dlPush } from '@/lib/analytics';
 import { useValuation } from './useValuation';
@@ -39,17 +39,21 @@ export function SolarValuationTool() {
   const [bess, setBess] = useState<BessInputs>(DEFAULT_BESS);
   const [cond, setCond] = useState<ConditionInputs>(DEFAULT_COND);
   const [unlocked, setUnlocked] = useState(false);
+  const valuationFiredRef = useRef(false);
 
   const result = useValuation(solar, bess, cond);
 
   const handleValuationComplete = () => {
     setStep(3);
-    dlPush({
-      event: 'valuation_complete',
-      kw: solar.kw,
-      bess_kwh: bess.enabled ? bess.kWh : 0,
-      install_year: solar.installYear,
-    });
+    if (!valuationFiredRef.current) {
+      valuationFiredRef.current = true;
+      dlPush({
+        event: 'valuation_complete',
+        kw: solar.kw,
+        bess_kwh: bess.enabled ? bess.kWh : 0,
+        install_year: solar.installYear,
+      });
+    }
   };
 
   return (
