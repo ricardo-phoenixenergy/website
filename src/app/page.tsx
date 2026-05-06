@@ -5,6 +5,9 @@ import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { LatestPosts } from '@/components/sections/LatestPosts';
 import { CTABanner } from '@/components/sections/CTABanner';
+import { sanityClient } from '@/lib/sanity';
+import { PARTNERS_QUERY } from '@/lib/queries';
+import type { Partner } from '@/types/sanity';
 
 export const metadata: Metadata = {
   title: 'Phoenix Energy — Integrated Clean Energy Solutions for SA Businesses',
@@ -36,6 +39,18 @@ export const metadata: Metadata = {
   },
 };
 
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Phoenix Energy',
+  url: 'https://phoenixenergy.solutions',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: 'https://phoenixenergy.solutions/blog?q={search_term_string}',
+    'query-input': 'required name=search_term_string',
+  },
+};
+
 const HOME_HIW_STEPS = [
   {
     label: 'Free assessment',
@@ -54,20 +69,33 @@ const HOME_HIW_STEPS = [
   },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  let partners: Partner[] = [];
+  try {
+    partners = await sanityClient.fetch<Partner[]>(PARTNERS_QUERY);
+  } catch {
+    // Graceful fallback — renders empty
+  }
+
   return (
-    <main>
-      <HeroAccordion />
-      <PartnerCards />
-      <HowItWorks
-        title="Your path to energy <em>independence</em>"
-        steps={HOME_HIW_STEPS}
-        autoAdvanceInterval={2600}
-        showCTA={false}
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
-      <FeaturedProjects />
-      <LatestPosts />
-      <CTABanner />
-    </main>
+      <main>
+        <HeroAccordion />
+        <PartnerCards partners={partners} />
+        <HowItWorks
+          title="Your path to energy <em>independence</em>"
+          steps={HOME_HIW_STEPS}
+          autoAdvanceInterval={2600}
+          showCTA={false}
+        />
+        <FeaturedProjects />
+        <LatestPosts />
+        <CTABanner />
+      </main>
+    </>
   );
 }
