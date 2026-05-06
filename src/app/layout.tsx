@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans, Inter } from 'next/font/google';
 import Script from 'next/script';
 import { SiteShell } from '@/components/layout/SiteShell';
+import { ScrollDepth } from '@/components/analytics/ScrollDepth';
 import { WebVitals } from './_components/WebVitals';
 import './globals.css';
 
@@ -70,6 +71,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased" style={{ background: '#F5F5F5', color: '#1A1A1A' }}>
         <WebVitals />
+        <ScrollDepth />
 
         {/* Google Tag Manager — body noscript */}
         {process.env.NEXT_PUBLIC_GTM_ID && (
