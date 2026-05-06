@@ -13,6 +13,7 @@ import { ShareButtons } from '@/components/blog/ShareButtons';
 import { AuthorCard } from '@/components/blog/AuthorCard';
 import { RelatedPosts } from '@/components/blog/RelatedPosts';
 import { CTABanner } from '@/components/sections/CTABanner';
+import { BlogReadDepth } from '@/components/analytics/BlogReadDepth';
 import { cache } from 'react';
 
 const getPost = cache((slug: string) =>
@@ -156,6 +157,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   return (
     <>
+      <BlogReadDepth slug={post.slug.current} category={post.category} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
@@ -184,7 +186,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           style={{ background: 'linear-gradient(180deg, rgba(13,31,34,0.15) 0%, rgba(13,31,34,0.88) 100%)' }}
         />
         {/* Bottom-anchored content */}
-        <div className="absolute bottom-0 left-0 right-0 max-w-[760px] mx-auto px-6 pb-7">
+        <div className="absolute bottom-0 left-0 right-0 max-w-5xl mx-auto px-6 pb-7">
           {/* Tags */}
           <div className="flex flex-wrap gap-2 mb-3">
             <span
@@ -240,15 +242,15 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
       {/* Breadcrumb + Share bar */}
       <div
-        className="page-container flex items-center justify-between py-3"
+        className="max-w-5xl mx-auto flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between py-3 px-6"
         style={{ borderBottom: '1px solid #E5E7EB' }}
       >
-        <nav aria-label="Breadcrumb" className="font-body text-xs text-[#6B7280] flex items-center gap-1.5">
-          <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
-          <span>/</span>
-          <Link href="/blog" className="hover:text-[#39575C] transition-colors">Blog</Link>
-          <span>/</span>
-          <span className="text-[#1A1A1A] truncate" style={{ maxWidth: 260 }}>
+        <nav aria-label="Breadcrumb" className="font-body text-xs text-[#6B7280] flex items-center gap-1.5 min-w-0">
+          <Link href="/" className="hover:text-[#39575C] transition-colors shrink-0">Home</Link>
+          <span className="shrink-0">/</span>
+          <Link href="/blog" className="hover:text-[#39575C] transition-colors shrink-0">Blog</Link>
+          <span className="shrink-0">/</span>
+          <span className="text-[#1A1A1A] truncate">
             {post.title}
           </span>
         </nav>
@@ -256,7 +258,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       </div>
 
       {/* Body — single col on mobile, sidebar on lg+ */}
-      <div className="page-container pt-8 pb-12 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
+      <div className="max-w-5xl mx-auto pt-8 pb-12 px-6 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
 
         {/* Article body */}
         <article className="min-w-0">
