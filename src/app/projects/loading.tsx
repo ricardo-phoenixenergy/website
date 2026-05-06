@@ -1,7 +1,7 @@
 export default function ProjectsLoading() {
   return (
     <div className="min-h-screen" style={{ background: '#F5F5F5', paddingTop: '80px' }}>
-      <div className="max-w-content mx-auto px-6 py-10">
+      <div className="page-container py-10">
         {/* Header skeleton */}
         <div className="shimmer h-4 w-24 rounded mb-3" />
         <div className="shimmer h-9 w-72 rounded mb-2" />

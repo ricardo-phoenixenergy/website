@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import type { MilestoneTimeline } from '@/types/sanity';
+import { IconArrowLeft, IconArrowRight } from '../ui/Icons';
 
 interface Props {
   milestones: MilestoneTimeline[];
@@ -101,17 +102,17 @@ export function AboutTimeline({ milestones }: Props) {
               onClick={() => goTo(activeIndex - 1)}
               disabled={!canGoPrev}
               aria-label="Previous milestone"
-              className="w-9 h-9 rounded-full border border-[#E5E7EB] bg-white flex items-center justify-center text-[#39575C] transition-all duration-200 hover:border-[#39575C] hover:bg-[#F5F5F5] disabled:opacity-30 disabled:cursor-not-allowed"
+              className="cursor-pointer w-9 h-9 rounded-full border border-[#E5E7EB] bg-white flex items-center justify-center text-[#39575C] transition-all duration-200 hover:border-[#39575C] hover:bg-[#F5F5F5] disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              ←
+              <IconArrowLeft />
             </button>
             <button
               onClick={() => goTo(activeIndex + 1)}
               disabled={!canGoNext}
               aria-label="Next milestone"
-              className="w-9 h-9 rounded-full border bg-[#39575C] border-[#39575C] flex items-center justify-center text-white transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+              className="cursor-pointer w-9 h-9 rounded-full border bg-[#39575C] border-[#39575C] flex items-center justify-center text-white transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              →
+              <IconArrowRight />
             </button>
           </div>
         </div>

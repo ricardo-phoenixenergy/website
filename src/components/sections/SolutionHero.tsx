@@ -1,4 +1,5 @@
-// src/components/sections/SolutionHero.tsx
+import Image from 'next/image';
+import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/Button';
 
 interface CtaLink {
@@ -7,22 +8,23 @@ interface CtaLink {
 }
 
 export interface SolutionHeroProps {
-  title: string;       // HTML string — <em> tags render at opacity 0.45
+  title: string;       // HTML string — <em> renders in accent colour
   subtitle: string;
-  accent: string;      // hex, used for badge border
+  accent: string;      // hex — badge border + em colour
   badge: string;       // e.g. 'C&I Solar & Storage'
-  heroBg: string;      // CSS gradient placeholder until real photo supplied
+  heroImage?: string;  // path to real photo e.g. '/hero-solar.png'
+  heroBg: string;      // CSS gradient fallback when no photo
   primaryCta: CtaLink;
-  secondaryCta: CtaLink;
+  children?: ReactNode; // calculator slot
 }
 
-function renderTitle(raw: string) {
+function renderTitle(raw: string, accent: string) {
   const parts = raw.split(/(<em>.*?<\/em>)/g);
   return parts.map((part, i) => {
     const match = part.match(/^<em>(.*)<\/em>$/);
     if (match) {
       return (
-        <em key={i} style={{ opacity: 0.45, fontStyle: 'normal' }}>
+        <em key={i} style={{ color: accent, fontStyle: 'normal' }}>
           {match[1]}
         </em>
       );
@@ -36,62 +38,76 @@ export function SolutionHero({
   subtitle,
   accent,
   badge,
+  heroImage,
   heroBg,
   primaryCta,
-  secondaryCta,
+  children,
 }: SolutionHeroProps) {
   return (
-    <section
-      className="relative flex items-end"
-      style={{
-        minHeight: 'clamp(260px, 36vw, 340px)',
-        background: heroBg,
-      }}
-    >
-      {/* Overlay */}
+    <section className="relative" style={{ minHeight: 'clamp(580px, 75vw, 760px)' }}>
+      {/* Background */}
+      {heroImage ? (
+        <Image
+          src={heroImage}
+          alt={badge}
+          fill
+          priority
+          className="object-cover"
+          sizes="100vw"
+        />
+      ) : (
+        <div className="absolute inset-0" style={{ background: heroBg }} />
+      )}
+
+      {/* Overlay — darker on left (text), softer on right (calculator has its own card) */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            'linear-gradient(180deg, rgba(13,31,34,0.15) 0%, rgba(13,31,34,0.92) 100%)',
+            'linear-gradient(105deg, rgba(13,31,34,0.97) 0%, rgba(13,31,34,0.92) 45%, rgba(13,31,34,0.78) 100%)',
         }}
       />
 
       {/* Content */}
-      <div className="relative z-10 max-w-[960px] mx-auto px-5 pb-10 pt-16 w-full">
-        {/* Vertical badge */}
-        <span
-          className="inline-block font-body text-xs font-semibold px-3 py-1 rounded-full mb-4"
-          style={{
-            border: `1px solid ${accent}`,
-            color: accent,
-            background: `${accent}1a`,
-          }}
-        >
-          {badge}
-        </span>
+      <div
+        className="page-container relative z-10 flex items-center"
+        style={{ minHeight: 'inherit', paddingTop: 96, paddingBottom: 72 }}
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_440px] gap-10 xl:gap-16 items-center w-full">
 
-        {/* Headline */}
-        <h1 className="font-display font-extrabold text-[1.625rem] md:text-[2rem] text-white leading-[1.2] mb-3 max-w-[640px]">
-          {renderTitle(title)}
-        </h1>
+          {/* Left: copy */}
+          <div>
+            <span
+              className="inline-block font-body text-xs font-semibold px-3 py-1 rounded-full mb-5"
+              style={{
+                border: `1px solid ${accent}`,
+                color: accent,
+                background: `${accent}1a`,
+              }}
+            >
+              {badge}
+            </span>
 
-        {/* Subtitle */}
-        <p
-          className="font-body text-sm md:text-base leading-[1.75] mb-7 max-w-[520px]"
-          style={{ color: 'rgba(255,255,255,0.70)' }}
-        >
-          {subtitle}
-        </p>
+            <h1 className="font-display font-extrabold text-[1.875rem] md:text-[2.625rem] text-white leading-[1.18] mb-4 max-w-[560px]">
+              {renderTitle(title, accent)}
+            </h1>
 
-        {/* CTAs */}
-        <div className="flex flex-wrap gap-3">
-          <Button variant="light" href={primaryCta.href}>
-            {primaryCta.label}
-          </Button>
-          <Button variant="ghost" href={secondaryCta.href}>
-            {secondaryCta.label}
-          </Button>
+            <p
+              className="font-body text-sm md:text-base leading-[1.75] mb-6 max-w-[460px]"
+              style={{ color: 'rgba(255,255,255,0.70)' }}
+            >
+              {subtitle}
+            </p>
+
+            <Button variant="light" href={primaryCta.href}>
+              {primaryCta.label}
+            </Button>
+          </div>
+
+          {/* Right: calculator slot */}
+          {children && (
+            <div className="w-full">{children}</div>
+          )}
         </div>
       </div>
     </section>

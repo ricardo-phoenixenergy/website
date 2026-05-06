@@ -9,9 +9,10 @@ import { categoryStyle, formatDate } from '@/lib/blogUtils';
 interface ArticleCardProps {
   post: BlogPostCard;
   delay?: number;
+  className?: string;
 }
 
-export function ArticleCard({ post, delay = 0 }: ArticleCardProps) {
+export function ArticleCard({ post, delay = 0, className }: ArticleCardProps) {
   const cs = categoryStyle(post.category);
   const imgSrc = post.heroImage?.asset
     ? urlFor(post.heroImage).width(400).height(320).auto('format').url()
@@ -19,7 +20,7 @@ export function ArticleCard({ post, delay = 0 }: ArticleCardProps) {
   const blurSrc = post.heroImage?.asset?.metadata?.lqip;
 
   return (
-    <AnimatedSection delay={delay}>
+    <AnimatedSection delay={delay} className={className}>
       <Link href={`/blog/${post.slug.current}`} className="group block h-full">
         <article
           className="bg-white rounded-2xl overflow-hidden h-full flex flex-col transition-all duration-200 group-hover:-translate-y-[5px] group-hover:shadow group-hover:border-[#cccccc]"

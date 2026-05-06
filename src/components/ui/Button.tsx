@@ -30,7 +30,7 @@ const variants: Record<NonNullable<BaseProps['variant']>, string> = {
 };
 
 const base =
-  'inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 font-body text-[0.8125rem] font-semibold leading-none transition-all duration-200 select-none disabled:pointer-events-none disabled:opacity-50';
+  'inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 font-body text-sm font-semibold leading-none transition-all duration-200 select-none disabled:pointer-events-none disabled:opacity-50';
 
 export function Button(props: ButtonProps) {
   const { variant = 'primary', className, children, ...rest } = props;

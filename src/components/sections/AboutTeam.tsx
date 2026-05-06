@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { TeamMember } from '@/types/sanity';
 import type { TeamCategory } from '@/types/sanity';
+import { IconArrowRight } from '../ui/Icons';
 
 interface AboutTeamProps {
   members: TeamMember[];
@@ -29,8 +30,8 @@ export function AboutTeam({ members }: AboutTeamProps) {
     activeCat === 'all' ? members : members.filter((m) => m.category === activeCat);
 
   return (
-    <section className="bg-[#F5F5F5] px-6 py-[52px]">
-      <div className="max-w-[960px] mx-auto">
+    <section className="bg-[#F5F5F5] py-[52px]">
+      <div className="page-container">
         <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-3">
           The team
         </p>
@@ -45,7 +46,7 @@ export function AboutTeam({ members }: AboutTeamProps) {
             <button
               key={cat.value}
               onClick={() => setActiveCat(cat.value)}
-              className="rounded-full font-body font-medium text-sm px-4 py-1.5 transition-all duration-200 flex-shrink-0"
+              className="cursor-pointer rounded-full font-body font-medium text-sm px-4 py-1.5 transition-all duration-200 flex-shrink-0"
               style={{
                 background: activeCat === cat.value ? '#39575C' : '#ffffff',
                 color: activeCat === cat.value ? '#ffffff' : '#6B7280',
@@ -118,10 +119,26 @@ export function AboutTeam({ members }: AboutTeamProps) {
 
           {/* Join the journey card */}
           <div
-            className="rounded-2xl p-5 flex items-center justify-between gap-4 md:col-span-3"
+            className="group relative rounded-2xl p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:col-span-3 overflow-hidden"
             style={{ background: '#0d1f22' }}
           >
-            <div className="flex-1 min-w-0">
+            {/* Gradient overlay — fades in on hover */}
+            <div
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+              style={{ background: 'linear-gradient(140deg, #1a4a52 0%, #0f2d33 100%)' }}
+            />
+            {/* Radial teal glow */}
+            <span
+              aria-hidden
+              className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+              style={{
+                top: -24, right: -24,
+                width: 96, height: 96,
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(112,157,169,0.25) 0%, transparent 70%)',
+              }}
+            />
+            <div className="relative z-10 min-w-0">
               <p className="font-display font-bold text-base text-white mb-1">
                 Become a part of our journey
               </p>
@@ -133,9 +150,9 @@ export function AboutTeam({ members }: AboutTeamProps) {
               href="https://linkedin.com/company/105465145"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-shrink-0 rounded-full px-4 py-2 font-body font-semibold text-sm text-[#0d1f22] bg-[#F5F5F5] hover:bg-white transition-colors duration-200"
+              className="relative z-10 flex flex-row gap-2 items-center self-start md:self-auto flex-shrink-0 rounded-full px-4 py-2 font-body font-semibold text-sm text-[#0d1f22] bg-[#F5F5F5] hover:bg-white transition-colors duration-200"
             >
-              See career opportunities →
+              See career opportunities <IconArrowRight />
             </Link>
           </div>
         </div>

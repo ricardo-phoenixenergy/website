@@ -1,0 +1,189 @@
+<style>
+  body { font-family: 'Inter', sans-serif; background: #F5F5F5; }
+  .approach-wrap { display: flex; flex-direction: column; gap: 28px; margin-top: 8px; }
+  .approach { border-radius: 14px; overflow: hidden; border: 2px solid transparent; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; background: white; }
+  .approach:hover { border-color: #39575C; box-shadow: 0 4px 20px rgba(57,87,92,0.12); }
+  .approach.selected { border-color: #39575C; box-shadow: 0 4px 20px rgba(57,87,92,0.18); }
+  .approach-label { display: flex; align-items: center; gap: 10px; padding: 14px 18px 10px; }
+  .approach-letter { width: 26px; height: 26px; border-radius: 50%; background: #39575C; color: white; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .approach-title { font-weight: 700; font-size: 14px; color: #1A1A1A; }
+  .approach-desc { font-size: 12px; color: #6B7280; margin-left: 36px; padding: 0 18px 10px; line-height: 1.5; }
+  .mockup-wrap { margin: 0 18px 16px; border-radius: 10px; overflow: hidden; border: 1px solid #E5E7EB; }
+  .mockup-header-bar { background: #0d1f22; padding: 8px 14px; }
+  .mockup-header-inner { display: flex; align-items: center; justify-content: space-between; }
+  .mock-eyebrow { font-size: 8px; font-weight: 700; letter-spacing: 0.12em; color: rgba(255,255,255,0); background: transparent; }
+  .section-bg { background: white; padding: 14px; }
+
+  /* Shared track styles */
+  .track-row { display: flex; align-items: flex-start; gap: 0; border-top: 2px solid #E5E7EB; padding-top: 10px; overflow: hidden; }
+  .track-card { flex-shrink: 0; width: 100px; padding-right: 8px; position: relative; }
+  .track-card.active .card-img { background: linear-gradient(135deg, #39575C, #0d1f22); }
+  .track-card.done .line-fill { width: 100%; background: #709DA9; }
+  .track-card.active .line-fill { width: 100%; background: #39575C; }
+  .line-fill { position: absolute; top: -12px; left: 0; height: 2px; width: 0; transition: width 0.4s; }
+  .dot { position: absolute; top: -16px; left: 10px; width: 8px; height: 8px; border-radius: 50%; background: #E5E7EB; }
+  .track-card.active .dot { background: #39575C; }
+  .track-card.done .dot { background: #709DA9; }
+  .card-img { height: 48px; border-radius: 6px; background: linear-gradient(135deg, #E5E7EB, #F5F5F5); margin-bottom: 5px; width: 100%; }
+  .card-date { font-size: 8px; font-weight: 700; color: #709DA9; margin-bottom: 2px; }
+  .card-title { font-size: 7px; color: #1A1A1A; line-height: 1.35; opacity: 0.6; }
+  .track-card.active .card-title { opacity: 1; }
+
+  /* Approach A — buttons top-right */
+  .heading-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .mock-h2 { font-size: 13px; font-weight: 800; color: #1A1A1A; }
+  .mock-h2 em { color: #709DA9; font-style: normal; }
+  .btn-group { display: flex; gap: 6px; }
+  .nav-btn { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid #E5E7EB; background: white; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #39575C; font-weight: 700; }
+  .nav-btn.active-btn { background: #39575C; color: white; border-color: #39575C; }
+
+  /* Approach B — flanking arrows */
+  .flanking-wrap { display: flex; align-items: center; gap: 8px; }
+  .side-btn { width: 28px; height: 28px; border-radius: 50%; background: white; border: 1.5px solid #E5E7EB; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #39575C; flex-shrink: 0; }
+  .flanking-track { flex: 1; border-top: 2px solid #E5E7EB; padding-top: 10px; display: flex; gap: 0; overflow: hidden; }
+
+  /* Approach C — centered focus */
+  .focus-wrap { display: flex; align-items: flex-end; gap: 6px; padding: 4px 0; }
+  .focus-card { border-radius: 8px; overflow: hidden; }
+  .focus-card.main { flex: 0 0 140px; }
+  .focus-card.peek { flex: 0 0 72px; opacity: 0.45; }
+  .focus-card .card-img-tall { height: 70px; border-radius: 6px; margin-bottom: 5px; }
+  .focus-card.main .card-img-tall { background: linear-gradient(135deg, #39575C, #0d1f22); }
+  .focus-card.peek .card-img-tall { background: linear-gradient(135deg, #E5E7EB, #F5F5F5); }
+  .focus-dots { display: flex; gap: 4px; margin-top: 10px; justify-content: center; }
+  .fdot { width: 18px; height: 5px; border-radius: 3px; background: #39575C; }
+  .fdot.sm { width: 5px; background: #E5E7EB; }
+  .focus-nav { display: flex; gap: 6px; justify-content: center; margin-top: 8px; }
+
+  .badge { display: inline-block; font-size: 9px; padding: 2px 8px; border-radius: 99px; margin-left: 8px; font-weight: 600; }
+  .badge-rec { background: rgba(57,87,92,0.1); color: #39575C; }
+  .trade-row { display: flex; gap: 12px; padding: 0 18px 14px; }
+  .trade-col { flex: 1; }
+  .trade-col h5 { font-size: 10px; font-weight: 700; margin-bottom: 4px; }
+  .trade-col.pros h5 { color: #39575C; }
+  .trade-col.cons h5 { color: #9B7A7A; }
+  .trade-col li { font-size: 10px; color: #6B7280; line-height: 1.6; }
+</style>
+
+<h2>Timeline carousel layout — 3 approaches</h2>
+<p class="subtitle">Click to select the one you prefer</p>
+
+<div class="approach-wrap">
+
+  <!-- APPROACH A -->
+  <div class="approach" data-choice="a" onclick="toggleSelect(this)">
+    <div class="approach-label">
+      <div class="approach-letter">A</div>
+      <div class="approach-title">Buttons top-right, inline with heading <span class="badge badge-rec">Recommended</span></div>
+    </div>
+    <p class="approach-desc">Prev/Next arrows sit in the same row as "Our story so far". Track fills the full width below. Consistent with modern marketing sites and the greenlyte.tech aesthetic.</p>
+    <div class="mockup-wrap">
+      <div class="section-bg">
+        <div class="heading-row">
+          <div>
+            <div style="font-size:7px;font-weight:700;letter-spacing:0.12em;color:#6B7280;text-transform:uppercase;margin-bottom:4px;">Roadmap</div>
+            <div class="mock-h2">Our story <em>so far</em></div>
+          </div>
+          <div class="btn-group">
+            <div class="nav-btn">←</div>
+            <div class="nav-btn active-btn">→</div>
+          </div>
+        </div>
+        <div class="track-row">
+          <div class="track-card done"><div class="line-fill"></div><div class="dot"></div><div class="card-img"></div><div class="card-date">2019</div><div class="card-title">Founded with a vision to transform African energy</div></div>
+          <div class="track-card done"><div class="line-fill"></div><div class="dot"></div><div class="card-img"></div><div class="card-date">2020</div><div class="card-title">First C&I solar installation commissioned</div></div>
+          <div class="track-card active"><div class="line-fill"></div><div class="dot"></div><div class="card-img"></div><div class="card-date">2021</div><div class="card-title">BESS offering launched — first battery + solar hybrid</div></div>
+          <div class="track-card"><div class="line-fill"></div><div class="dot"></div><div class="card-img"></div><div class="card-date">2022</div><div class="card-title">Wheeling vertical launched — first PPA signed</div></div>
+          <div class="track-card"><div class="line-fill"></div><div class="dot"></div><div class="card-img"></div><div class="card-date">2023</div><div class="card-title">Carbon credits — Gold Standard certification</div></div>
+        </div>
+        <div style="display:flex;gap:5px;margin-top:10px;">
+          <div style="width:18px;height:5px;border-radius:3px;background:#E5E7EB;"></div>
+          <div style="width:18px;height:5px;border-radius:3px;background:#E5E7EB;"></div>
+          <div style="width:22px;height:5px;border-radius:3px;background:#39575C;"></div>
+          <div style="width:5px;height:5px;border-radius:99px;background:#E5E7EB;"></div>
+          <div style="width:5px;height:5px;border-radius:99px;background:#E5E7EB;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="trade-row">
+      <div class="trade-col pros"><h5>Pros</h5><ul><li>Full timeline visible at a glance</li><li>Matches existing site patterns</li><li>Clean heading row, no clutter</li></ul></div>
+      <div class="trade-col cons"><h5>Cons</h5><ul><li>Buttons detached from track</li><li>Less obvious on first visit</li></ul></div>
+    </div>
+  </div>
+
+  <!-- APPROACH B -->
+  <div class="approach" data-choice="b" onclick="toggleSelect(this)">
+    <div class="approach-label">
+      <div class="approach-letter">B</div>
+      <div class="approach-title">Flanking side arrows</div>
+    </div>
+    <p class="approach-desc">Left and right arrow buttons sit on either side of the scroll track. Intuitive — the arrows point at the content they control. Works well when the track is narrower than the viewport.</p>
+    <div class="mockup-wrap">
+      <div class="section-bg">
+        <div style="margin-bottom:10px;">
+          <div style="font-size:7px;font-weight:700;letter-spacing:0.12em;color:#6B7280;text-transform:uppercase;margin-bottom:4px;">Roadmap</div>
+          <div class="mock-h2">Our story <em>so far</em></div>
+        </div>
+        <div class="flanking-wrap">
+          <div class="side-btn" style="opacity:0.35;">←</div>
+          <div class="flanking-track">
+            <div class="track-card done"><div class="line-fill"></div><div class="dot"></div><div class="card-img"></div><div class="card-date">2019</div><div class="card-title">Founded with a vision to transform African energy</div></div>
+            <div class="track-card done"><div class="line-fill"></div><div class="dot"></div><div class="card-img"></div><div class="card-date">2020</div><div class="card-title">First C&I solar commissioned</div></div>
+            <div class="track-card active"><div class="line-fill"></div><div class="dot"></div><div class="card-img"></div><div class="card-date">2021</div><div class="card-title">BESS offering launched</div></div>
+            <div class="track-card"><div class="line-fill"></div><div class="dot"></div><div class="card-img"></div><div class="card-date">2022</div><div class="card-title">Wheeling vertical launched</div></div>
+          </div>
+          <div class="side-btn active-btn">→</div>
+        </div>
+        <div style="display:flex;gap:5px;margin-top:10px;padding-left:36px;">
+          <div style="width:18px;height:5px;border-radius:3px;background:#E5E7EB;"></div>
+          <div style="width:18px;height:5px;border-radius:3px;background:#E5E7EB;"></div>
+          <div style="width:22px;height:5px;border-radius:3px;background:#39575C;"></div>
+          <div style="width:5px;height:5px;border-radius:99px;background:#E5E7EB;"></div>
+          <div style="width:5px;height:5px;border-radius:99px;background:#E5E7EB;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="trade-row">
+      <div class="trade-col pros"><h5>Pros</h5><ul><li>Arrows spatially adjacent to track</li><li>Immediately obvious interaction</li></ul></div>
+      <div class="trade-col cons"><h5>Cons</h5><ul><li>Eats horizontal space from cards</li><li>Arrows can feel cramped on mobile</li></ul></div>
+    </div>
+  </div>
+
+  <!-- APPROACH C -->
+  <div class="approach" data-choice="c" onclick="toggleSelect(this)">
+    <div class="approach-label">
+      <div class="approach-letter">C</div>
+      <div class="approach-title">Centred focus card with peek</div>
+    </div>
+    <p class="approach-desc">One milestone takes centre stage with partial views of neighbours peeking in. Taller cards, one at a time. More dramatic — suits a storytelling tone but shows less of the timeline at once.</p>
+    <div class="mockup-wrap">
+      <div class="section-bg">
+        <div style="margin-bottom:10px;">
+          <div style="font-size:7px;font-weight:700;letter-spacing:0.12em;color:#6B7280;text-transform:uppercase;margin-bottom:4px;">Roadmap</div>
+          <div class="mock-h2">Our story <em>so far</em></div>
+        </div>
+        <div class="focus-wrap">
+          <div class="focus-card peek"><div class="card-img-tall"></div><div class="card-date">2019</div><div class="card-title" style="font-size:7px;color:#1A1A1A;">Founded with a vision</div></div>
+          <div class="focus-card main">
+            <div class="card-img-tall"></div>
+            <div class="card-date" style="font-size:9px;font-weight:700;color:#39575C;">2021</div>
+            <div class="card-title" style="font-size:8px;color:#1A1A1A;opacity:1;line-height:1.4;">BESS offering launched — first battery + solar hybrid project delivered</div>
+          </div>
+          <div class="focus-card peek"><div class="card-img-tall"></div><div class="card-date">2022</div><div class="card-title" style="font-size:7px;color:#1A1A1A;">Wheeling vertical launched</div></div>
+        </div>
+        <div class="focus-dots">
+          <div class="fdot sm"></div><div class="fdot sm"></div><div class="fdot"></div><div class="fdot sm"></div><div class="fdot sm"></div>
+        </div>
+        <div class="focus-nav">
+          <div class="nav-btn">←</div>
+          <div class="nav-btn active-btn">→</div>
+        </div>
+      </div>
+    </div>
+    <div class="trade-row">
+      <div class="trade-col pros"><h5>Pros</h5><ul><li>Dramatic, story-forward feel</li><li>Works naturally on mobile</li></ul></div>
+      <div class="trade-col cons"><h5>Cons</h5><ul><li>Timeline context lost (can't see all milestones)</li><li>More steps to reach milestone 8</li><li>Biggest departure from current design</li></ul></div>
+    </div>
+  </div>
+
+</div>

@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 const STORY_STATS = [
   { value: 'R380M', label: 'Client savings', featured: true  },
@@ -17,6 +18,7 @@ const STAGGER_DELAYS  = [0, 0.15, 0.3, 0.45] as const;
 export function AboutStory() {
   const panelRef = useRef<HTMLDivElement>(null);
   const inView   = useInView(panelRef, { once: true, margin: '-60px' });
+  const reduced  = useReducedMotion();
 
   return (
     <section className="bg-white py-[52px]">
@@ -43,9 +45,9 @@ export function AboutStory() {
               <motion.div
                 key={stat.value}
                 className="shimmer-tile"
-                initial={{ opacity: 0, scale: 0.85, y: 4 }}
-                animate={inView ? { opacity: 1, scale: 1, y: 0 } : {}}
-                transition={{ type: 'spring', stiffness: 300, damping: 24, delay: STAGGER_DELAYS[i] }}
+                initial={reduced ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.85, y: 4 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={reduced ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 24, delay: STAGGER_DELAYS[i] }}
                 style={{
                   borderRadius: 8,
                   background: stat.featured
@@ -97,36 +99,12 @@ export function AboutStory() {
             ))}
           </div>
 
-          {/* Badge — bottom-left anchor */}
-          <div
-            className="absolute z-10"
-            style={{
-              bottom: 8, left: 8,
-              background: '#39575C',
-              border: '2px solid white',
-              borderRadius: 7,
-              padding: '5px 9px',
-            }}
-          >
-            <p
-              className="font-display font-extrabold text-white"
-              style={{ fontSize: 10, lineHeight: 1.2 }}
-            >
-              Since 2019
-            </p>
-            <p
-              className="font-body font-normal uppercase"
-              style={{ fontSize: 8, color: 'rgba(255,255,255,0.6)', marginTop: 1 }}
-            >
-              Our impact
-            </p>
-          </div>
         </div>
 
         {/* ── Right — copy ────────────────────────────────────────────────────── */}
         <AnimatedSection delay={0.6}>
           <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-3">
-            Our story
+            Impact
           </p>
           <h2 className="font-display font-extrabold text-3xl text-[#1A1A1A] leading-[1.2] mb-4">
             Built to make clean energy{' '}

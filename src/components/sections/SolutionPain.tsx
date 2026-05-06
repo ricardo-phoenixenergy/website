@@ -39,10 +39,9 @@ export function SolutionPain({
   return (
     <section
       id={id}
-      className="px-5"
-      style={{ background: '#0d1f22', padding: '52px 20px' }}
+      style={{ background: '#0d1f22', paddingTop: 52, paddingBottom: 52 }}
     >
-      <div className="max-w-[960px] mx-auto grid md:grid-cols-2 gap-10 md:gap-16 items-start">
+      <div className="page-container grid md:grid-cols-2 gap-10 md:gap-16 items-start">
         {/* Left: copy */}
         <AnimatedSection>
           <p className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-3" style={{ color: 'rgba(255,255,255,0.45)' }}>
@@ -56,7 +55,7 @@ export function SolutionPain({
           </p>
           {/* Pills — hidden on mobile */}
           {pills.length > 0 && (
-            <div className="hidden md:flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2">
               {pills.map((pill) => (
                 <span
                   key={pill}

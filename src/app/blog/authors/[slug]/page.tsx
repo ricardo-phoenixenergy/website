@@ -109,7 +109,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
       </section>
 
       {/* Breadcrumb */}
-      <div className="max-w-[960px] mx-auto px-6 py-3" style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <div className="page-container py-3" style={{ borderBottom: '1px solid #E5E7EB' }}>
         <nav aria-label="Breadcrumb" className="font-body text-[10px] text-[#6B7280] flex items-center gap-1">
           <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
           <span>/</span>
@@ -120,8 +120,8 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
       </div>
 
       {/* Posts grid */}
-      <section style={{ background: '#F5F5F5', padding: '32px 24px 48px' }}>
-        <div className="max-w-[960px] mx-auto mb-6">
+      <section style={{ background: '#F5F5F5', paddingTop: 32, paddingBottom: 48 }}>
+        <div className="page-container mb-6">
           <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-1">
             Articles
           </p>
@@ -130,11 +130,11 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
           </h2>
         </div>
         {posts.length === 0 ? (
-          <div className="max-w-[960px] mx-auto py-16 text-center">
+          <div className="page-container py-16 text-center">
             <p className="font-body text-sm text-[#9CA3AF]">No articles yet.</p>
           </div>
         ) : (
-          <div className="max-w-[960px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          <div className="page-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {posts.map((post, i) => (
               <ArticleCard key={post._id} post={post} delay={i * 0.04} />
             ))}

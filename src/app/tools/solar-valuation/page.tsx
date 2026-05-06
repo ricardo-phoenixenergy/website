@@ -47,43 +47,40 @@ export default function SolarValuationPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
       />
 
-      {/* Breadcrumb */}
-      <div className="max-w-[960px] mx-auto px-6 pt-4">
-        <nav
-          aria-label="Breadcrumb"
-          className="font-body text-[10px] text-[#6B7280] flex items-center gap-1"
-        >
-          <Link href="/" className="hover:text-[#39575C] transition-colors">
-            Home
-          </Link>
-          <span aria-hidden="true">/</span>
-          <Link href="/tools" className="hover:text-[#39575C] transition-colors">
-            Tools
-          </Link>
-          <span aria-hidden="true">/</span>
-          <span className="text-[#1A1A1A]">Solar Asset Valuation</span>
-        </nav>
-      </div>
+      <main className="bg-[#F5F5F5] min-h-screen">
+        <div className="page-container pt-24 pb-6">
 
-      {/* Page header */}
-      <section className="max-w-[600px] mx-auto px-6 py-10 text-center">
-        <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-2">
-          WeBuySolar Tool
-        </p>
-        <h1 className="font-display font-extrabold text-3xl text-[#1A1A1A] mb-3 leading-tight">
-          What is your solar system{' '}
-          <span style={{ color: '#709DA9' }}>worth?</span>
-        </h1>
-        <p className="font-body text-sm text-[#6B7280] leading-[1.75]">
-          Get an indicative buyback valuation in under 2 minutes. Based on real SA market
-          data, DCF analysis, and WeBuySolar transaction comparables.
-        </p>
-      </section>
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-1.5 font-body text-sm text-[#6B7280] mb-6">
+            <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
+            <span>/</span>
+            <Link href="/tools" className="hover:text-[#39575C] transition-colors">Tools</Link>
+            <span>/</span>
+            <span className="font-semibold text-[#39575C]">Solar Asset Valuation</span>
+          </nav>
 
-      {/* Tool */}
-      <section className="px-6 pb-16" style={{ background: '#F5F5F5' }}>
-        <SolarValuationTool />
-      </section>
+          {/* Page header — centred for tool pages */}
+          <div className="max-w-[600px] mx-auto text-center mb-10">
+            <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-2">
+              WeBuySolar Tool
+            </p>
+            <h1 className="font-display font-extrabold text-4xl text-[#1A1A1A] leading-[1.2] mb-3">
+              What is your solar system{' '}
+              <em style={{ color: '#709DA9', fontStyle: 'normal' }}>worth?</em>
+            </h1>
+            <p className="font-body text-base text-[#6B7280] leading-[1.75]">
+              Get an indicative buyback valuation in under 2 minutes. Based on real SA market
+              data, DCF analysis, and WeBuySolar transaction comparables.
+            </p>
+          </div>
+
+        </div>
+
+        {/* Tool */}
+        <div className="page-container pb-16">
+          <SolarValuationTool />
+        </div>
+      </main>
 
       <CTABanner />
     </>

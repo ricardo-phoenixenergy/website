@@ -54,7 +54,18 @@ export function AboutValues() {
               {/* Gradient overlay — opacity-0 at rest, fades in on hover */}
               <div
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                style={{ background: 'linear-gradient(135deg, #39575C 0%, #0d1f22 100%)' }}
+                style={{ background: 'linear-gradient(140deg, #1a4a52 0%, #0f2d33 100%)' }}
+              />
+              {/* Radial teal glow in top-left corner — mirrors stats tile */}
+              <span
+                aria-hidden
+                className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                style={{
+                  top: -24, right: -24,
+                  width: 96, height: 96,
+                  borderRadius: '50%',
+                  background: 'radial-gradient(circle, rgba(112,157,169,0.25) 0%, transparent 70%)',
+                }}
               />
 
               {/* Content sits above the overlay */}

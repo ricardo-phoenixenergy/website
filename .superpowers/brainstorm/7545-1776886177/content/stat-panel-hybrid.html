@@ -1,0 +1,240 @@
+<style>
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; }
+
+  .panel-wrap {
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s, transform 0.15s;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+  }
+  .panel-wrap:hover { transform: translateY(-2px); }
+  .panel-wrap.selected { border-color: #39575C; }
+  .panel-img { height: 220px; position: relative; overflow: hidden; }
+  .panel-label { padding: 14px 16px 4px; font-size: 14px; font-weight: 600; color: #1A1A1A; background: white; }
+  .panel-sub { padding: 0 16px 14px; font-size: 11px; color: #6B7280; line-height: 1.6; background: white; }
+
+  /* ── HYBRID 1: 2×2 grid, featured tile top-left ── */
+  .h1-grid {
+    background: #0d1f22;
+    width: 100%; height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 3px;
+    padding: 3px;
+    box-sizing: border-box;
+  }
+  .h1-tile {
+    border-radius: 8px;
+    background: rgba(255,255,255,0.04);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 12px 8px;
+    position: relative; overflow: hidden;
+  }
+  /* Featured tile */
+  .h1-tile.featured {
+    background: linear-gradient(140deg, #1a4a52 0%, #0f2d33 100%);
+  }
+  .h1-tile.featured::before {
+    content: '';
+    position: absolute;
+    top: -20px; left: -20px;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(112,157,169,0.25) 0%, transparent 70%);
+  }
+  /* Shimmer line */
+  .h1-tile::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(112,157,169,0.5), transparent);
+    transform: translateX(-100%);
+  }
+  .h1-tile.featured::after { animation: sh 2.5s ease-in-out 0.2s infinite; }
+  .h1-tile:nth-child(2)::after { animation: sh 2.5s ease-in-out 0.8s infinite; }
+  .h1-tile:nth-child(3)::after { animation: sh 2.5s ease-in-out 1.4s infinite; }
+  .h1-tile:nth-child(4)::after { animation: sh 2.5s ease-in-out 2.0s infinite; }
+  @keyframes sh { 0%{transform:translateX(-100%)} 40%,100%{transform:translateX(100%)} }
+
+  .h1-val {
+    font-size: 24px; font-weight: 800; color: white; line-height: 1;
+    animation: pop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    opacity: 0;
+  }
+  .h1-tile.featured .h1-val { font-size: 26px; color: #ffffff; }
+  .h1-tile:nth-child(1) .h1-val { animation-delay: 0.0s; }
+  .h1-tile:nth-child(2) .h1-val { animation-delay: 0.15s; }
+  .h1-tile:nth-child(3) .h1-val { animation-delay: 0.3s; }
+  .h1-tile:nth-child(4) .h1-val { animation-delay: 0.45s; }
+  @keyframes pop { 0%{opacity:0;transform:scale(0.85) translateY(4px)} 100%{opacity:1;transform:scale(1) translateY(0)} }
+
+  .h1-lbl { font-size: 8px; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.38); margin-top: 4px; text-align: center; }
+  .h1-tile.featured .h1-lbl { color: rgba(255,255,255,0.55); }
+
+  .h1-badge {
+    position: absolute; bottom: 8px; left: 8px;
+    background: #39575C; border: 2px solid rgba(255,255,255,0.9);
+    border-radius: 7px; padding: 5px 9px;
+    color: white; font-size: 10px; font-weight: 700; line-height: 1.2;
+    z-index: 10;
+  }
+  .h1-badge span { display: block; font-size: 8px; font-weight: 400; opacity: 0.6; text-transform: uppercase; }
+
+  /* ── HYBRID 2: Hero right column + 3 left ── */
+  .h2-grid {
+    background: #0d1f22;
+    width: 100%; height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 3px;
+    padding: 3px;
+    box-sizing: border-box;
+  }
+  .h2-left {
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .h2-small {
+    flex: 1;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.04);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 8px;
+    position: relative; overflow: hidden;
+  }
+  .h2-small::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(112,157,169,0.4), transparent);
+    transform: translateX(-100%);
+  }
+  .h2-small:nth-child(1)::after { animation: sh2 2.8s ease-in-out 0.1s infinite; }
+  .h2-small:nth-child(2)::after { animation: sh2 2.8s ease-in-out 0.9s infinite; }
+  .h2-small:nth-child(3)::after { animation: sh2 2.8s ease-in-out 1.7s infinite; }
+  @keyframes sh2 { 0%{transform:translateX(-100%)} 40%,100%{transform:translateX(100%)} }
+
+  .h2-s-val {
+    font-size: 17px; font-weight: 800; color: white; line-height: 1;
+    animation: pop2 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    opacity: 0;
+  }
+  .h2-small:nth-child(1) .h2-s-val { animation-delay: 0.1s; color: #709DA9; }
+  .h2-small:nth-child(2) .h2-s-val { animation-delay: 0.25s; }
+  .h2-small:nth-child(3) .h2-s-val { animation-delay: 0.4s; }
+  @keyframes pop2 { 0%{opacity:0;transform:scale(0.85) translateY(4px)} 100%{opacity:1;transform:scale(1) translateY(0)} }
+  .h2-s-lbl { font-size: 7px; text-transform: uppercase; letter-spacing: 0.07em; color: rgba(255,255,255,0.35); margin-top: 3px; text-align: center; }
+
+  .h2-hero {
+    border-radius: 8px;
+    background: linear-gradient(150deg, #1b4f57 0%, #0d2a30 60%, #0a2028 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    padding: 12px;
+  }
+  .h2-hero::before {
+    content: '';
+    position: absolute;
+    top: -10px; right: -10px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(112,157,169,0.2) 0%, transparent 70%);
+  }
+  .h2-hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(112,157,169,0.6), transparent);
+    animation: sh3 2s ease-in-out 0.5s infinite;
+    top: 0; height: 1px;
+  }
+  @keyframes sh3 { 0%{transform:translateX(-100%)} 40%,100%{transform:translateX(100%)} }
+
+  .h2-hero-val {
+    font-size: 34px; font-weight: 800; color: white; line-height: 1;
+    position: relative;
+    animation: pop3 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.55s forwards;
+    opacity: 0;
+  }
+  @keyframes pop3 { 0%{opacity:0;transform:scale(0.8) translateY(6px)} 100%{opacity:1;transform:scale(1) translateY(0)} }
+  .h2-hero-lbl { font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.45); margin-top: 6px; position: relative; text-align: center; }
+  .h2-hero-sub { font-size: 8px; color: rgba(255,255,255,0.2); margin-top: 2px; position: relative; }
+
+  .h2-badge {
+    position: absolute; bottom: 8px; left: 8px;
+    background: #39575C; border: 2px solid rgba(255,255,255,0.9);
+    border-radius: 7px; padding: 5px 9px;
+    color: white; font-size: 10px; font-weight: 700; line-height: 1.2;
+    z-index: 10;
+  }
+  .h2-badge span { display: block; font-size: 8px; font-weight: 400; opacity: 0.6; text-transform: uppercase; }
+</style>
+
+<h2>A + B hybrid — two options</h2>
+<p class="subtitle">Dark glass aesthetic from A, editorial hierarchy from B. Which layout do you prefer?</p>
+
+<div class="cards">
+
+  <!-- Hybrid 1 -->
+  <div class="panel-wrap" data-choice="a" onclick="toggleSelect(this)">
+    <div class="panel-img">
+      <div class="h1-grid">
+        <div class="h1-tile featured">
+          <div class="h1-val">R380M</div>
+          <div class="h1-lbl">Client savings</div>
+        </div>
+        <div class="h1-tile">
+          <div class="h1-val">48MW</div>
+          <div class="h1-lbl">Deployed</div>
+        </div>
+        <div class="h1-tile">
+          <div class="h1-val">120+</div>
+          <div class="h1-lbl">Projects</div>
+        </div>
+        <div class="h1-tile">
+          <div class="h1-val">12kt</div>
+          <div class="h1-lbl">CO₂ saved / yr</div>
+        </div>
+        <div class="h1-badge">Since 2019 <span>Our impact</span></div>
+      </div>
+    </div>
+    <div class="panel-label">Hybrid 1 — 2×2 with featured tile</div>
+    <div class="panel-sub">Keeps the symmetric grid from A. R380M tile has a subtle radial glow and gradient to pull focus. All 4 stats equal weight in layout, but one visually leads. Shimmer + stagger pop-in on scroll.</div>
+  </div>
+
+  <!-- Hybrid 2 -->
+  <div class="panel-wrap" data-choice="b" onclick="toggleSelect(this)">
+    <div class="panel-img">
+      <div class="h2-grid">
+        <div class="h2-left">
+          <div class="h2-small">
+            <div class="h2-s-val">48MW</div>
+            <div class="h2-s-lbl">Deployed</div>
+          </div>
+          <div class="h2-small">
+            <div class="h2-s-val">120+</div>
+            <div class="h2-s-lbl">Projects</div>
+          </div>
+          <div class="h2-small">
+            <div class="h2-s-val">12kt</div>
+            <div class="h2-s-lbl">CO₂ / yr</div>
+          </div>
+        </div>
+        <div class="h2-hero">
+          <div class="h2-hero-val">R380M</div>
+          <div class="h2-hero-lbl">Client savings</div>
+          <div class="h2-hero-sub">since founding</div>
+          <div class="h2-badge">Since 2019 <span>Our impact</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel-label">Hybrid 2 — 3 small left, hero right</div>
+    <div class="panel-sub">Takes B's asymmetric layout with A's dark glass finish and shimmer animation. R380M dominates the right column at full height. Supporting stats stagger in first, hero pops last.</div>
+  </div>
+
+</div>

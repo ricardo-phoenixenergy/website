@@ -9,7 +9,7 @@ export function Footer() {
       style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
     >
       {/* Desktop single row */}
-      <div className="hidden md:flex items-center justify-between max-w-7xl mx-auto px-5 py-4">
+      <div className="page-container hidden md:flex items-center justify-between py-4">
         <Link
           href="/"
           className="font-display font-[800] text-xl flex-shrink-0 flex items-center gap-1.5"

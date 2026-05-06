@@ -1,0 +1,208 @@
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .change-block {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #E5E7EB;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .change-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid #E5E7EB;
+    background: #FAFAFA;
+  }
+  .change-tag {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    border-radius: 99px;
+  }
+  .tag-remove { background: #FEE2E2; color: #B91C1C; }
+  .tag-replace { background: #FEF3C7; color: #92400E; }
+  .tag-add { background: #DCFCE7; color: #166534; }
+  .change-title { font-weight: 600; font-size: 14px; color: #1A1A1A; }
+  .change-body { padding: 18px; }
+
+  /* Story stats mockup */
+  .story-mockup {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+  .stat-panel {
+    border-radius: 12px;
+    overflow: hidden;
+    height: 160px;
+    position: relative;
+    background: #F5F5F5;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  .s-tile {
+    border-radius: 8px;
+    background: #0d1f22;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+  }
+  .s-tile.light { background: rgba(57,87,92,0.1); border: 1px solid rgba(57,87,92,0.15); }
+  .s-tile .v { color: white; font-weight: 800; font-size: 16px; line-height: 1; }
+  .s-tile.light .v { color: #39575C; }
+  .s-tile .l { color: rgba(255,255,255,0.45); font-size: 8px; text-transform: uppercase; letter-spacing: 0.06em; text-align: center; }
+  .s-tile.light .l { color: #6B7280; }
+  .stat-badge {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    background: #39575C;
+    border: 2px solid white;
+    border-radius: 7px;
+    padding: 5px 9px;
+    font-size: 10px;
+    font-weight: 700;
+    color: white;
+    line-height: 1.2;
+  }
+  .stat-badge span { display: block; font-size: 8px; font-weight: 400; opacity: 0.6; text-transform: uppercase; }
+  .story-copy { padding-top: 4px; }
+  .eyebrow { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: #6B7280; margin-bottom: 6px; }
+  .story-h2 { font-size: 16px; font-weight: 800; color: #1A1A1A; line-height: 1.3; margin-bottom: 8px; }
+  .story-h2 em { color: #709DA9; font-style: normal; }
+  .story-body { font-size: 11px; color: #6B7280; line-height: 1.7; margin-bottom: 8px; }
+  .pull-quote { border-left: 3px solid #709DA9; background: rgba(112,157,169,0.07); border-radius: 0 6px 6px 0; padding: 8px 12px; font-size: 11px; font-weight: 700; color: #1A1A1A; font-style: italic; line-height: 1.5; }
+
+  /* Values mockup */
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .v-card {
+    background: #0d1f22;
+    border-radius: 10px;
+    padding: 14px;
+  }
+  .v-num { font-size: 22px; font-weight: 800; color: rgba(255,255,255,0.08); line-height: 1; margin-bottom: 6px; }
+  .v-title { font-size: 12px; font-weight: 700; color: white; margin-bottom: 4px; }
+  .v-text { font-size: 10px; color: rgba(255,255,255,0.45); line-height: 1.6; }
+  .v-card.ubuntu { background: rgba(57,87,92,0.15); border: 1px solid rgba(57,87,92,0.25); }
+  .v-card.ubuntu .v-num { color: rgba(57,87,92,0.35); }
+  .v-card.ubuntu .v-title { color: #39575C; }
+  .v-card.ubuntu .v-text { color: #6B7280; }
+
+  /* Section flow */
+  .flow { display: flex; flex-direction: column; gap: 6px; }
+  .flow-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+  }
+  .flow-item.keep { background: #F0FDF4; border: 1px solid #BBF7D0; color: #166534; }
+  .flow-item.removed { background: #FEF2F2; border: 1px dashed #FECACA; color: #9CA3AF; text-decoration: line-through; }
+  .flow-item.changed { background: #FFFBEB; border: 1px solid #FDE68A; color: #92400E; }
+  .flow-num { font-weight: 700; width: 20px; flex-shrink: 0; }
+  .desc { font-size: 10px; margin-top: 2px; opacity: 0.7; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .note { font-size: 11px; color: #6B7280; line-height: 1.6; margin-top: 10px; }
+  .note strong { color: #39575C; }
+</style>
+
+<h2>About Page — Design Proposal</h2>
+<p class="subtitle">4 targeted changes. Everything else stays as-is.</p>
+
+<!-- Change 1: Story section -->
+<div class="change-block">
+  <div class="change-header">
+    <span class="change-tag tag-replace">Replace</span>
+    <span class="change-title">1 — Our Story: dark gradient → impact stats grid</span>
+  </div>
+  <div class="change-body">
+    <div class="story-mockup">
+      <div class="stat-panel">
+        <div class="s-tile"><div class="v">48MW</div><div class="l">Deployed</div></div>
+        <div class="s-tile light"><div class="v">120+</div><div class="l">Projects</div></div>
+        <div class="s-tile light"><div class="v">12kt</div><div class="l">CO₂ saved / yr</div></div>
+        <div class="s-tile"><div class="v">R380M</div><div class="l">Client savings</div></div>
+        <div class="stat-badge">Since 2019 <span>Our impact</span></div>
+      </div>
+      <div class="story-copy">
+        <div class="eyebrow">Our story</div>
+        <div class="story-h2">Built to make clean energy <em>accessible</em> across Africa</div>
+        <div class="story-body">Phoenix Energy was created to make renewable energy both accessible and transformative across Africa…</div>
+        <div class="pull-quote">"For us, it's not just about saving — it's about empowering businesses to earn, grow, and thrive sustainably."</div>
+      </div>
+    </div>
+    <p class="note">Left panel becomes a 2×2 stat tile grid on <strong>#F5F5F5</strong> background. Dark tiles for 48 MW + R380M, tinted tiles for 120+ + 12kt. Badge anchors bottom-left. Stats sourced from CTABanner (already live on site).</p>
+  </div>
+</div>
+
+<!-- Change 2: Stats strip -->
+<div class="change-block">
+  <div class="change-header">
+    <span class="change-tag tag-remove">Remove</span>
+    <span class="change-title">2 — Stats strip: dropped entirely</span>
+  </div>
+  <div class="change-body">
+    <p class="note">The strip below the hero (<strong>3 Co-founders · 6+ Solutions · Southern · Net 0</strong>) is removed. Hero flows directly into the Story section. The real impact numbers now live in the story panel above, so this strip has nothing to add.</p>
+  </div>
+</div>
+
+<!-- Change 3: Values -->
+<div class="change-block">
+  <div class="change-header">
+    <span class="change-tag tag-replace">Replace</span>
+    <span class="change-title">3 — Values: "Join the team" card → Ubuntu value</span>
+  </div>
+  <div class="change-body">
+    <div class="values-grid">
+      <div class="v-card"><div class="v-num">01</div><div class="v-title">Empathy</div><div class="v-text">We put people first, understanding our clients' unique needs…</div></div>
+      <div class="v-card"><div class="v-num">02</div><div class="v-title">Pioneering</div><div class="v-text">We break new ground with advanced renewable solutions…</div></div>
+      <div class="v-card"><div class="v-num">03</div><div class="v-title">Trust</div><div class="v-text">We build lasting partnerships rooted in integrity…</div></div>
+      <div class="v-card"><div class="v-num">04</div><div class="v-title">Conscience</div><div class="v-text">Everything we do is driven by our commitment to positive change…</div></div>
+      <div class="v-card"><div class="v-num">05</div><div class="v-title">Inspiration</div><div class="v-text">We inspire businesses by creating new opportunities…</div></div>
+      <div class="v-card ubuntu"><div class="v-num">06</div><div class="v-title">Ubuntu</div><div class="v-text">We are rooted in the African belief that we grow stronger together — alongside our clients, communities, and continent.</div></div>
+    </div>
+    <p class="note">Ubuntu card uses the same tinted style as the old join card (<strong>rgba(57,87,92,0.12)</strong>) but with a real value — feels intentional, not a leftover slot. The 3×2 grid is now complete.</p>
+  </div>
+</div>
+
+<!-- Change 4: CareersBand -->
+<div class="change-block">
+  <div class="change-header">
+    <span class="change-tag tag-remove">Remove</span>
+    <span class="change-title">4 — CareersBand section: dropped entirely</span>
+  </div>
+  <div class="change-body">
+    <div class="two-col">
+      <div>
+        <div class="flow">
+          <div class="flow-item keep"><span class="flow-num">9</span><div><div>Team section</div><div class="desc">↳ "Become a part of our journey" banner stays here ✓</div></div></div>
+          <div class="flow-item keep"><span class="flow-num">10</span><div>Trust section</div></div>
+          <div class="flow-item removed"><span class="flow-num">11</span><div>CareersBand — removed</div></div>
+          <div class="flow-item keep"><span class="flow-num">12</span><div>CTA Banner</div></div>
+        </div>
+      </div>
+      <div>
+        <p class="note">The team section's full-width "Become a part of our journey" card is the single careers touchpoint on the page. Trust → CTA flows without interruption.</p>
+        <p class="note" style="margin-top:8px">The CTA Banner subtext currently reads <em>"…or future team member…"</em> — recommend removing that phrase too so careers messaging is consolidated entirely to the team section.</p>
+      </div>
+    </div>
+  </div>
+</div>

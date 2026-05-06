@@ -115,6 +115,12 @@ export const ALL_PROJECT_SLUGS_QUERY = `
 
 /* ─── Blog ───────────────────────────────────────────────────────────────── */
 
+export const POSTS_BY_VERTICAL_QUERY = `
+  *[_type == "blogPost" && $tag in tags] | order(publishedAt desc) [0..2] {
+    ${BLOG_CARD_FIELDS}
+  }
+`;
+
 export const BLOG_INDEX_QUERY = `
   *[_type == "blogPost"
     && ($category == "" || category == $category)

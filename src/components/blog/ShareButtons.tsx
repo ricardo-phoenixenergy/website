@@ -18,12 +18,12 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
   };
 
   const btnBase =
-    'w-7 h-7 rounded-full flex items-center justify-center transition-all duration-150 font-body font-bold text-[10px]';
+    'w-8 h-8 rounded-full flex items-center justify-center transition-all duration-150 font-body font-bold text-xs';
   const btnStyle = { border: '1px solid #E5E7EB', background: '#fff', color: '#6B7280' };
 
   return (
     <div className="flex items-center gap-2">
-      <span className="font-body text-[10px] text-[#9CA3AF]">Share:</span>
+      <span className="font-body text-xs text-[#9CA3AF]">Share:</span>
 
       {/* LinkedIn */}
       <a

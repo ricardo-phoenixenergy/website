@@ -1,0 +1,101 @@
+<h2>Featured project card — which layout?</h2>
+<p class="subtitle">The featured project pins above the grid. Which shape feels right?</p>
+
+<div class="cards">
+
+  <!-- Option A: Blog mirror — 50/50 split -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#f0f0f0;border-radius:8px 8px 0 0;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;min-height:180px;background:#fff;">
+        <!-- Left: photo -->
+        <div style="background:linear-gradient(135deg,#2a4a50 0%,#709DA9 100%);position:relative;display:flex;align-items:flex-end;padding:12px;">
+          <span style="background:#39575C;color:#fff;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:99px;">★ Featured</span>
+          <span style="position:absolute;bottom:12px;right:12px;background:rgba(227,197,141,.9);color:#7a5c1e;font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:99px;">C&amp;I Solar &amp; Storage</span>
+        </div>
+        <!-- Right: body -->
+        <div style="padding:18px 16px;display:flex;flex-direction:column;justify-content:space-between;">
+          <div>
+            <p style="font-size:9px;font-weight:700;letter-spacing:.1em;color:#709DA9;text-transform:uppercase;margin-bottom:6px;">C&amp;I Solar &amp; Storage</p>
+            <p style="font-weight:800;font-size:15px;color:#1A1A1A;line-height:1.3;margin-bottom:8px;">Clariant Sasol — Sasolburg Industrial Complex</p>
+            <p style="font-size:11px;color:#6B7280;line-height:1.6;margin-bottom:10px;">A 2.4 MW rooftop installation delivering over 90% peak demand coverage and R720K annual energy cost savings.</p>
+          </div>
+          <div>
+            <div style="display:flex;gap:20px;margin-bottom:10px;">
+              <div><p style="font-weight:800;font-size:14px;color:#39575C;margin:0;">R720K</p><p style="font-size:10px;color:#6B7280;margin:0;">Annual Saving</p></div>
+              <div><p style="font-weight:800;font-size:14px;color:#39575C;margin:0;">&gt;90%</p><p style="font-size:10px;color:#6B7280;margin:0;">Peak Coverage</p></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid #E5E7EB;padding-top:8px;">
+              <span style="font-size:10px;color:#6B7280;">Sasolburg</span>
+              <span style="font-size:10px;font-weight:600;color:#39575C;">View case study →</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Blog mirror (50 / 50)</h3>
+      <p>Exact same shape as the featured blog article. Photo left, details right. Familiar, consistent with the rest of the site.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Cinematic — 60/40, taller -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#f0f0f0;border-radius:8px 8px 0 0;">
+      <div style="display:grid;grid-template-columns:3fr 2fr;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;min-height:200px;background:#fff;">
+        <!-- Left: photo (wider) -->
+        <div style="background:linear-gradient(135deg,#1a3035 0%,#709DA9 100%);position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:14px;">
+          <span style="background:#39575C;color:#fff;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:99px;align-self:flex-start;">★ Featured</span>
+          <div>
+            <p style="color:rgba(255,255,255,.7);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">C&amp;I Solar &amp; Storage</p>
+            <p style="color:#fff;font-weight:800;font-size:16px;line-height:1.25;margin-bottom:0;">Clariant Sasol</p>
+            <p style="color:rgba(255,255,255,.6);font-size:10px;margin-top:2px;">Sasolburg</p>
+          </div>
+        </div>
+        <!-- Right: stats panel -->
+        <div style="padding:18px 14px;display:flex;flex-direction:column;justify-content:space-between;background:#fafafa;border-left:1px solid #E5E7EB;">
+          <div>
+            <p style="font-size:10px;color:#6B7280;line-height:1.6;margin-bottom:12px;">A 2.4 MW rooftop installation delivering peak demand coverage and significant energy savings.</p>
+          </div>
+          <div>
+            <div style="margin-bottom:10px;">
+              <p style="font-weight:800;font-size:18px;color:#39575C;margin:0;">R720K</p><p style="font-size:10px;color:#6B7280;margin:0 0 8px;">Annual Saving</p>
+              <p style="font-weight:800;font-size:18px;color:#39575C;margin:0;">&gt;90%</p><p style="font-size:10px;color:#6B7280;margin:0;">Peak Coverage</p>
+            </div>
+            <div style="background:#39575C;color:#fff;font-size:10px;font-weight:700;text-align:center;padding:8px;border-radius:8px;">View case study →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Cinematic (60 / 40, taller)</h3>
+      <p>Photo dominates left — title and location overlay the image. Stats strip on the right. More dramatic, projects-portfolio feel.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Full-width banner with overlay text -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#f0f0f0;border-radius:8px 8px 0 0;">
+      <div style="border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;min-height:160px;background:linear-gradient(135deg,#1a3035 0%,#709DA9 100%);position:relative;display:flex;align-items:flex-end;padding:20px;">
+        <span style="position:absolute;top:14px;left:14px;background:#39575C;color:#fff;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:99px;">★ Featured</span>
+        <span style="position:absolute;top:14px;right:14px;background:rgba(227,197,141,.9);color:#7a5c1e;font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:99px;">C&amp;I Solar &amp; Storage</span>
+        <!-- Bottom text overlay -->
+        <div style="width:100%;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;">
+          <div>
+            <p style="color:#fff;font-weight:800;font-size:18px;line-height:1.2;margin:0 0 4px;">Clariant Sasol</p>
+            <p style="color:rgba(255,255,255,.7);font-size:11px;margin:0;">Sasolburg · 2.4 MW rooftop</p>
+          </div>
+          <div style="display:flex;gap:20px;flex-shrink:0;">
+            <div style="text-align:center;"><p style="color:#fff;font-weight:800;font-size:16px;margin:0;">R720K</p><p style="color:rgba(255,255,255,.6);font-size:9px;margin:0;">Annual Saving</p></div>
+            <div style="text-align:center;"><p style="color:#fff;font-weight:800;font-size:16px;margin:0;">&gt;90%</p><p style="color:rgba(255,255,255,.6);font-size:9px;margin:0;">Peak Coverage</p></div>
+            <div style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:10px;font-weight:700;padding:8px 14px;border-radius:8px;display:flex;align-items:center;">View case study →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Full-width banner with overlay</h3>
+      <p>Photo fills the whole card, title and stats overlay the bottom. Boldest visual impact — more like a hero section than a card.</p>
+    </div>
+  </div>
+
+</div>

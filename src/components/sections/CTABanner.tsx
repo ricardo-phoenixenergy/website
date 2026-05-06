@@ -1,52 +1,63 @@
 import { Button } from '@/components/ui/Button';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 
-const STATS = [
+export interface CTAStat { value: string; label: string; }
+
+const DEFAULT_STATS: CTAStat[] = [
   { value: '120+', label: 'Projects completed' },
   { value: '48 MW', label: 'Deployed' },
   { value: '12k t', label: 'CO₂ saved / yr' },
   { value: 'R380M', label: 'Client savings' },
 ];
 
-export function CTABanner() {
+interface CTABannerProps {
+  eyebrow?: string;
+  heading?: string;
+  body?: string;
+  primaryCta?: { label: string; href: string; };
+  stats?: CTAStat[];
+}
+
+export function CTABanner({
+  eyebrow    = 'Start today',
+  heading    = "Ignite what's possible for your business",
+  body       = "Get a free energy assessment from Phoenix Energy's certified engineers — no commitment, no cost, results delivered in 48 hours.",
+  primaryCta = { label: 'Get a Free Quote', href: '/contact' },
+  stats      = DEFAULT_STATS,
+}: CTABannerProps = {}) {
   return (
-    <section className="bg-[#0d1f22] px-5 py-12 md:py-[48px]">
-      <div
-        className="max-w-[960px] mx-auto grid gap-10 md:grid-cols-2 md:items-center"
-      >
+    <section
+      className="py-12 md:py-[48px]"
+      style={{ background: 'linear-gradient(135deg, #39575C 0%, #0d1f22 100%)' }}
+    >
+      <div className="page-container grid gap-10 md:grid-cols-2 md:items-center">
+
         {/* Left — copy */}
         <AnimatedSection delay={0}>
           <p
             className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-3"
             style={{ color: 'rgba(255,255,255,0.35)' }}
           >
-            Start today
+            {eyebrow}
           </p>
-          <h2
-            className="font-display font-extrabold text-3xl text-white leading-[1.2] mb-4"
-          >
-            Ignite what's possible for your business
+          <h2 className="font-display font-extrabold text-3xl text-white leading-[1.2] mb-4">
+            {heading}
           </h2>
           <p
             className="font-body text-sm leading-[1.75] mb-6"
             style={{ color: 'rgba(255,255,255,0.55)' }}
           >
-            Get a free energy assessment from Phoenix Energy's certified engineers — no commitment, no cost, results delivered in 48 hours.
+            {body}
           </p>
-          <div className="flex flex-wrap gap-3">
-            <Button variant="light" href="/contact">
-              Get a Free Quote
-            </Button>
-            <Button variant="ghost" href="/solutions">
-              Explore solutions
-            </Button>
-          </div>
+          <Button variant="light" href={primaryCta.href}>
+            {primaryCta.label}
+          </Button>
         </AnimatedSection>
 
         {/* Right — stats grid */}
         <AnimatedSection delay={0.1}>
           <div className="grid grid-cols-2 gap-2.5">
-            {STATS.map((stat) => (
+            {stats.map((stat) => (
               <div
                 key={stat.label}
                 className="rounded-xl p-3.5 flex flex-col gap-1"
@@ -68,6 +79,7 @@ export function CTABanner() {
             ))}
           </div>
         </AnimatedSection>
+
       </div>
     </section>
   );

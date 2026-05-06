@@ -16,7 +16,7 @@ export function StatsStrip({ stats, className, responsive = false }: StatsStripP
     <div className={cn('bg-[#39575C]', className)}>
       <div
         className={cn(
-          'max-w-[960px] mx-auto px-5 py-3.5',
+          'page-container py-3.5',
           responsive
             ? 'grid grid-cols-2 md:grid-cols-4 gap-y-3'
             : 'grid',

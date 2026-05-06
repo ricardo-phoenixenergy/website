@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Timeline Design</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #F5F5F5; padding: 32px 24px; }
+
+  h2.page-title { font-size: 18px; font-weight: 700; color: #1A1A1A; margin-bottom: 6px; }
+  p.subtitle { font-size: 13px; color: #6B7280; margin-bottom: 32px; }
+
+  .section-label { font-size: 10px; font-weight: 700; color: #6B7280; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px; padding-bottom: 8px; border-bottom: 1px solid #E5E7EB; }
+
+  /* ─── Timeline section mockup ─── */
+  .timeline-section {
+    background: white;
+    border-radius: 16px;
+    padding: 40px 36px;
+    max-width: 960px;
+    margin: 0 auto 40px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  }
+
+  .heading-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: #6B7280;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .section-title {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: #1A1A1A;
+    line-height: 1.2;
+  }
+  .section-title em { color: #709DA9; font-style: normal; }
+
+  .btn-group { display: flex; gap: 8px; align-items: center; }
+  .nav-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1.5px solid #E5E7EB;
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.18s;
+    font-size: 14px;
+    color: #39575C;
+  }
+  .nav-btn:hover { background: #F5F5F5; border-color: #39575C; }
+  .nav-btn.active { background: #39575C; color: white; border-color: #39575C; }
+  .nav-btn.disabled { opacity: 0.3; cursor: default; }
+
+  /* ─── Track ─── */
+  .track-container {
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-top: 2px solid #E5E7EB;
+    padding-top: 0;
+  }
+  .track-container::-webkit-scrollbar { display: none; }
+  .track-inner {
+    display: flex;
+    min-width: max-content;
+  }
+
+  .milestone {
+    flex-shrink: 0;
+    width: 180px;
+    padding-top: 20px;
+    padding-right: 16px;
+    position: relative;
+    cursor: pointer;
+  }
+
+  /* Line fill */
+  .milestone::before {
+    content: '';
+    position: absolute;
+    top: -2px; left: 0;
+    height: 2px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .milestone.done::before { width: 100%; background: #709DA9; }
+  .milestone.active::before { width: 100%; background: #39575C; }
+
+  /* Future milestone — dashed top line segment */
+  .milestone.future::before { display: none; }
+  .milestone.future .future-dash {
+    position: absolute;
+    top: -2px; left: 0; right: 0;
+    height: 2px;
+    background-image: repeating-linear-gradient(to right, #709DA9 0, #709DA9 6px, transparent 6px, transparent 12px);
+    opacity: 0.5;
+  }
+
+  /* Dot */
+  .milestone::after {
+    content: '';
+    position: absolute;
+    top: -7px; left: 18px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: #E5E7EB;
+    border: 2px solid #E5E7EB;
+    transition: all 0.3s;
+  }
+  .milestone.done::after { background: #709DA9; border-color: #709DA9; }
+  .milestone.active::after { background: #39575C; border-color: #39575C; box-shadow: 0 0 0 3px rgba(57,87,92,0.15); }
+
+  /* Future dot — hollow ring */
+  .milestone.future::after {
+    background: white;
+    border: 2px dashed #709DA9;
+    opacity: 0.7;
+  }
+
+  /* Gradient box */
+  .card-img {
+    width: 100%;
+    height: 80px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+    background: linear-gradient(135deg, #E5E7EB 0%, #F5F5F5 100%);
+    transform: scale(0.97);
+  }
+  .milestone.done .card-img {
+    background: linear-gradient(135deg, #E5E7EB 0%, #F5F5F5 100%);
+    transform: scale(0.97);
+  }
+  .milestone.active .card-img {
+    background: linear-gradient(135deg, #39575C 0%, #0d1f22 100%);
+    transform: scale(1);
+  }
+  /* Future card — lighter, muted gradient with subtle shimmer border */
+  .milestone.future .card-img {
+    background: linear-gradient(135deg, #1a3a3e 0%, #0d1f22 100%);
+    opacity: 0.45;
+    transform: scale(0.96);
+    border: 1px dashed rgba(112,157,169,0.4);
+  }
+  .milestone.future.active .card-img {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+
+  /* Future badge */
+  .future-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #709DA9;
+    background: rgba(112,157,169,0.1);
+    border: 1px solid rgba(112,157,169,0.25);
+    border-radius: 99px;
+    padding: 2px 7px;
+    margin-bottom: 4px;
+  }
+
+  .card-date {
+    font-size: 11px;
+    font-weight: 700;
+    color: #709DA9;
+    margin-bottom: 4px;
+    transition: color 0.3s;
+  }
+  .milestone.active .card-date { color: #39575C; }
+  .milestone.future .card-date { color: #709DA9; font-style: italic; }
+
+  .card-title {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #1A1A1A;
+    line-height: 1.4;
+    opacity: 0.55;
+    transition: opacity 0.3s, transform 0.3s;
+    transform: translateY(4px);
+  }
+  .milestone.active .card-title { opacity: 1; transform: translateY(0); }
+  .milestone.future .card-title { opacity: 0.45; font-style: italic; }
+
+  /* ─── Progress dots ─── */
+  .dots-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 20px;
+  }
+  .progress-dot {
+    height: 6px;
+    border-radius: 3px;
+    background: #E5E7EB;
+    transition: all 0.3s;
+    width: 6px;
+  }
+  .progress-dot.active { width: 20px; background: #39575C; }
+  .progress-dot.done { background: #C5D5D7; }
+
+  /* ─── Annotation callouts ─── */
+  .annotations { display: flex; gap: 20px; margin-top: 28px; flex-wrap: wrap; }
+  .annotation {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: #F5F5F5; border-radius: 10px; padding: 12px 14px;
+    flex: 1; min-width: 200px;
+  }
+  .ann-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+  .ann-label { font-size: 11px; font-weight: 700; color: #1A1A1A; margin-bottom: 2px; }
+  .ann-desc { font-size: 10px; color: #6B7280; line-height: 1.5; }
+
+  /* Mobile callout */
+  .mobile-note {
+    background: white;
+    border-radius: 16px;
+    padding: 28px 36px;
+    max-width: 960px;
+    margin: 0 auto 40px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  }
+  .mobile-strip {
+    display: flex;
+    gap: 10px;
+    border-top: 2px solid #E5E7EB;
+    padding-top: 20px;
+    overflow: hidden;
+    margin-top: 20px;
+  }
+  .mobile-card {
+    flex-shrink: 0;
+    border-radius: 10px;
+    padding: 0;
+    overflow: hidden;
+  }
+  .mobile-card.main { width: 72%; position: relative; }
+  .mobile-card.main::before { content: ''; position: absolute; top: -22px; left: 0; right: 0; height: 2px; background: #39575C; }
+  .mobile-card.main::after { content: ''; position: absolute; top: -27px; left: 16px; width: 10px; height: 10px; border-radius: 50%; background: #39575C; box-shadow: 0 0 0 3px rgba(57,87,92,0.15); }
+  .mobile-card.peek { width: 20%; opacity: 0.4; }
+  .mobile-card-img { height: 80px; border-radius: 10px; margin-bottom: 8px; }
+  .mobile-card.main .mobile-card-img { background: linear-gradient(135deg, #39575C 0%, #0d1f22 100%); }
+  .mobile-card.peek .mobile-card-img { background: linear-gradient(135deg, #E5E7EB 0%, #F5F5F5 100%); }
+  .snap-label {
+    font-size: 9px; font-weight: 700; color: #709DA9;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    background: rgba(112,157,169,0.1);
+    border: 1px solid rgba(112,157,169,0.2);
+    border-radius: 99px; padding: 3px 10px;
+    display: inline-block; margin-top: 14px;
+  }
+</style>
+</head>
+<body>
+
+<h2 class="page-title">Timeline — interaction & visual design</h2>
+<p class="subtitle">Desktop mockup above, mobile behaviour below. Let me know if anything needs adjusting.</p>
+
+<!-- Desktop mockup -->
+<div class="section-label">Desktop — Approach A (buttons top-right)</div>
+<div class="timeline-section">
+  <div class="heading-row">
+    <div>
+      <div class="eyebrow">Roadmap</div>
+      <div class="section-title">Our story <em>so far</em></div>
+    </div>
+    <div class="btn-group">
+      <div class="nav-btn disabled">←</div>
+      <div class="nav-btn active">→</div>
+    </div>
+  </div>
+
+  <div class="track-container">
+    <div class="track-inner">
+
+      <div class="milestone done">
+        <div class="card-img"></div>
+        <div class="card-date">2019</div>
+        <div class="card-title">Founded by Erin, Ricardo & Russel with a vision to transform African energy</div>
+      </div>
+
+      <div class="milestone done">
+        <div class="card-img"></div>
+        <div class="card-date">2020</div>
+        <div class="card-title">First C&I solar installation commissioned in Gauteng</div>
+      </div>
+
+      <div class="milestone active">
+        <div class="card-img"></div>
+        <div class="card-date">2021</div>
+        <div class="card-title">BESS offering launched — first battery + solar hybrid project delivered</div>
+      </div>
+
+      <div class="milestone">
+        <div class="card-img"></div>
+        <div class="card-date">2022</div>
+        <div class="card-title">Wheeling vertical launched — first PPA agreement signed</div>
+      </div>
+
+      <div class="milestone">
+        <div class="card-img"></div>
+        <div class="card-date">2023</div>
+        <div class="card-title">Carbon credits programme — Gold Standard certification achieved</div>
+      </div>
+
+      <div class="milestone future">
+        <div class="future-dash"></div>
+        <div class="card-img"></div>
+        <div class="future-badge">✦ Vision</div>
+        <div class="card-date">2030</div>
+        <div class="card-title">Net Zero roadmap delivered for 1,000+ Southern African businesses</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Progress dots -->
+  <div class="dots-row">
+    <div class="progress-dot done"></div>
+    <div class="progress-dot done"></div>
+    <div class="progress-dot active"></div>
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+  </div>
+</div>
+
+<!-- Annotations -->
+<div class="annotations" style="max-width:960px;margin:0 auto 40px;">
+  <div class="annotation">
+    <div class="ann-dot" style="background:#39575C;"></div>
+    <div>
+      <div class="ann-label">Active milestone</div>
+      <div class="ann-desc">Deep Teal gradient, full opacity, dot with glow ring. Title slides up to full opacity.</div>
+    </div>
+  </div>
+  <div class="annotation">
+    <div class="ann-dot" style="background:#709DA9;"></div>
+    <div>
+      <div class="ann-label">Past milestone</div>
+      <div class="ann-desc">Light grey gradient, Dusty Blue dot & line fill. Title at 55% opacity.</div>
+    </div>
+  </div>
+  <div class="annotation">
+    <div class="ann-dot" style="background:white;border:2px dashed #709DA9;"></div>
+    <div>
+      <div class="ann-label">Future / Vision milestone</div>
+      <div class="ann-desc">Dashed top line, hollow dashed dot, muted dark gradient at 45% opacity, "✦ Vision" badge. Italic date & title.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile mockup -->
+<div class="section-label">Mobile — scroll-snap swipe, no buttons</div>
+<div class="mobile-note">
+  <div class="heading-row">
+    <div>
+      <div class="eyebrow">Roadmap</div>
+      <div class="section-title" style="font-size:20px;">Our story <em>so far</em></div>
+    </div>
+  </div>
+  <p style="font-size:12px;color:#6B7280;line-height:1.6;">On mobile the track becomes a scroll-snap container: each card snaps cleanly into place as the user swipes. The active card fills ~80vw with the next card peeking in at 15% — a clear affordance that more content exists. Prev/next buttons are hidden; dots remain as position indicators.</p>
+  <div class="mobile-strip" style="position:relative;">
+    <div class="mobile-card main">
+      <div class="mobile-card-img"></div>
+      <div class="card-date">2021</div>
+      <div class="card-title" style="opacity:1;transform:none;font-size:12px;font-family:sans-serif;font-weight:700;color:#1A1A1A;line-height:1.4;">BESS offering launched — first battery + solar hybrid project delivered</div>
+    </div>
+    <div class="mobile-card peek">
+      <div class="mobile-card-img"></div>
+      <div class="card-date" style="font-size:10px;font-weight:700;color:#709DA9;margin-bottom:3px;">2022</div>
+    </div>
+  </div>
+  <div class="snap-label">↔ scroll-snap • swipeable</div>
+  <div class="dots-row" style="margin-top:14px;">
+    <div class="progress-dot done"></div>
+    <div class="progress-dot done"></div>
+    <div class="progress-dot active"></div>
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+  </div>
+</div>
+
+</body>
+</html>

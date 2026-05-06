@@ -1,0 +1,218 @@
+<style>
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+
+  /* Shared panel wrapper */
+  .panel-wrap {
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s, transform 0.15s;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  }
+  .panel-wrap:hover { transform: translateY(-2px); }
+  .panel-wrap.selected { border-color: #39575C; }
+  .panel-img { height: 200px; position: relative; overflow: hidden; }
+  .panel-label { padding: 12px 14px; font-size: 13px; font-weight: 600; color: #1A1A1A; background: white; }
+  .panel-sub { padding: 0 14px 12px; font-size: 11px; color: #6B7280; line-height: 1.5; background: white; }
+
+  /* ── OPTION A: Dark glass 2×2 with count-up ── */
+  .opt-a {
+    background: #0d1f22;
+    width: 100%; height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background-color: rgba(255,255,255,0.05);
+  }
+  .a-tile {
+    background: #0d1f22;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  .a-tile::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(112,157,169,0.4), transparent);
+    transform: translateX(-100%);
+    animation: shimmer-a 3s ease-in-out infinite;
+  }
+  .a-tile:nth-child(1)::after { animation-delay: 0s; }
+  .a-tile:nth-child(2)::after { animation-delay: 0.6s; }
+  .a-tile:nth-child(3)::after { animation-delay: 1.2s; }
+  .a-tile:nth-child(4)::after { animation-delay: 1.8s; }
+  @keyframes shimmer-a { 0%{transform:translateX(-100%)} 40%,100%{transform:translateX(100%)} }
+  .a-val {
+    font-size: 22px; font-weight: 800; color: white; line-height: 1;
+    animation: countup 1.2s ease-out forwards;
+  }
+  .a-tile:nth-child(1) .a-val { animation-delay: 0.1s; }
+  .a-tile:nth-child(2) .a-val { animation-delay: 0.3s; }
+  .a-tile:nth-child(3) .a-val { animation-delay: 0.5s; }
+  .a-tile:nth-child(4) .a-val { animation-delay: 0.7s; }
+  @keyframes countup { 0%{opacity:0;transform:translateY(6px) scale(0.9)} 100%{opacity:1;transform:translateY(0) scale(1)} }
+  .a-lbl { font-size: 8px; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.4); margin-top: 4px; text-align: center; }
+  .a-badge {
+    position: absolute; bottom: 8px; left: 8px;
+    background: #39575C; border: 2px solid white;
+    border-radius: 7px; padding: 5px 9px;
+    color: white; font-size: 10px; font-weight: 700; line-height: 1.2;
+    pointer-events: none;
+  }
+  .a-badge span { display: block; font-size: 8px; font-weight: 400; opacity: 0.6; text-transform: uppercase; }
+  .a-accent { background: linear-gradient(135deg, #0d1f22 0%, #162630 100%); }
+  .a-accent .a-val { color: #709DA9; }
+
+  /* ── OPTION B: Asymmetric editorial ── */
+  .opt-b {
+    background: #0d1f22;
+    width: 100%; height: 100%;
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 4px;
+    padding: 4px;
+    box-sizing: border-box;
+  }
+  .b-hero {
+    grid-row: span 2;
+    background: linear-gradient(160deg, #1a4a50 0%, #0d2a30 100%);
+    border-radius: 10px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .b-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 30%, rgba(112,157,169,0.15), transparent 60%);
+  }
+  .b-hero-val { font-size: 32px; font-weight: 800; color: white; line-height: 1; position: relative; }
+  .b-hero-lbl { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.45); margin-top: 5px; position: relative; }
+  .b-hero-sub { font-size: 8px; color: rgba(255,255,255,0.25); margin-top: 2px; position: relative; }
+  .b-small {
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.06);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 6px;
+  }
+  .b-small-val { font-size: 16px; font-weight: 800; color: white; line-height: 1; }
+  .b-small:nth-child(3) .b-small-val { color: #709DA9; }
+  .b-small-lbl { font-size: 7px; text-transform: uppercase; letter-spacing: 0.07em; color: rgba(255,255,255,0.35); margin-top: 3px; text-align: center; }
+  .b-badge {
+    position: absolute; bottom: 10px; left: 10px;
+    background: #39575C; border: 2px solid white;
+    border-radius: 7px; padding: 5px 9px;
+    color: white; font-size: 10px; font-weight: 700; line-height: 1.2;
+  }
+  .b-badge span { display: block; font-size: 8px; font-weight: 400; opacity: 0.6; text-transform: uppercase; }
+
+  /* ── OPTION C: Progress bars ── */
+  .opt-c {
+    background: white;
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    justify-content: center;
+    padding: 14px 16px;
+    gap: 12px;
+    box-sizing: border-box;
+    border: 1px solid #E5E7EB;
+  }
+  .c-row { display: flex; flex-direction: column; gap: 5px; }
+  .c-row-top { display: flex; justify-content: space-between; align-items: baseline; }
+  .c-val { font-size: 15px; font-weight: 800; color: #1A1A1A; line-height: 1; }
+  .c-lbl { font-size: 8px; text-transform: uppercase; letter-spacing: 0.08em; color: #6B7280; }
+  .c-bar-track { background: #F3F4F6; border-radius: 99px; height: 4px; overflow: hidden; }
+  .c-bar-fill {
+    height: 100%; border-radius: 99px; background: #39575C;
+    animation: bar-grow 1.4s cubic-bezier(0.4,0,0.2,1) forwards;
+    transform-origin: left;
+  }
+  @keyframes bar-grow { 0%{width:0%} }
+  .c-row:nth-child(1) .c-bar-fill { width: 78%; animation-delay: 0.1s; }
+  .c-row:nth-child(2) .c-bar-fill { width: 92%; animation-delay: 0.3s; background: #709DA9; }
+  .c-row:nth-child(3) .c-bar-fill { width: 65%; animation-delay: 0.5s; background: #9CAF88; }
+  .c-row:nth-child(4) .c-bar-fill { width: 85%; animation-delay: 0.7s; background: #E3C58D; }
+  .c-badge {
+    position: absolute; bottom: 8px; left: 8px;
+    background: #39575C; border: 2px solid white;
+    border-radius: 7px; padding: 5px 9px;
+    color: white; font-size: 10px; font-weight: 700; line-height: 1.2;
+  }
+  .c-badge span { display: block; font-size: 8px; font-weight: 400; opacity: 0.6; text-transform: uppercase; }
+</style>
+
+<h2>Story panel — visual &amp; animation options</h2>
+<p class="subtitle">Three directions for the left column. All use Framer Motion on scroll-in.</p>
+
+<div class="cards">
+
+  <!-- Option A -->
+  <div class="panel-wrap" data-choice="a" onclick="toggleSelect(this)">
+    <div class="panel-img">
+      <div class="opt-a">
+        <div class="a-tile a-accent"><div class="a-val">48MW</div><div class="a-lbl">Deployed</div></div>
+        <div class="a-tile"><div class="a-val">120+</div><div class="a-lbl">Projects</div></div>
+        <div class="a-tile"><div class="a-val">12kt</div><div class="a-lbl">CO₂ saved / yr</div></div>
+        <div class="a-tile a-accent"><div class="a-val">R380M</div><div class="a-lbl">Client savings</div></div>
+        <div class="a-badge">Since 2019 <span>Our impact</span></div>
+      </div>
+    </div>
+    <div class="panel-label">A — Dark 2×2, staggered pop-in</div>
+    <div class="panel-sub">Each tile fades + scales in with a 0.1s stagger. Shimmer line runs across the top of each tile. Minimal, numbers are dominant.</div>
+  </div>
+
+  <!-- Option B -->
+  <div class="panel-wrap" data-choice="b" onclick="toggleSelect(this)">
+    <div class="panel-img">
+      <div class="opt-b">
+        <div class="b-hero">
+          <div class="b-hero-val">R380M</div>
+          <div class="b-hero-lbl">Client savings</div>
+          <div class="b-hero-sub">since founding</div>
+          <div class="b-badge">Since 2019 <span>Our impact</span></div>
+        </div>
+        <div class="b-small"><div class="b-small-val">48MW</div><div class="b-small-lbl">Deployed</div></div>
+        <div class="b-small"><div class="b-small-val">120+</div><div class="b-small-lbl">Projects</div></div>
+      </div>
+    </div>
+    <div class="panel-label">B — Asymmetric editorial</div>
+    <div class="panel-sub">Biggest stat (R380M) spans full height on left. Two supporting stats stack right. Most impactful number leads.</div>
+  </div>
+
+  <!-- Option C -->
+  <div class="panel-wrap" data-choice="c" onclick="toggleSelect(this)">
+    <div class="panel-img" style="position:relative">
+      <div class="opt-c">
+        <div class="c-row">
+          <div class="c-row-top"><div class="c-val">48 MW</div><div class="c-lbl">Deployed</div></div>
+          <div class="c-bar-track"><div class="c-bar-fill"></div></div>
+        </div>
+        <div class="c-row">
+          <div class="c-row-top"><div class="c-val">120+</div><div class="c-lbl">Projects completed</div></div>
+          <div class="c-bar-track"><div class="c-bar-fill"></div></div>
+        </div>
+        <div class="c-row">
+          <div class="c-row-top"><div class="c-val">12k t</div><div class="c-lbl">CO₂ saved / yr</div></div>
+          <div class="c-bar-track"><div class="c-bar-fill"></div></div>
+        </div>
+        <div class="c-row">
+          <div class="c-row-top"><div class="c-val">R380M</div><div class="c-lbl">Client savings</div></div>
+          <div class="c-bar-track"><div class="c-bar-fill"></div></div>
+        </div>
+      </div>
+      <div class="c-badge">Since 2019 <span>Our impact</span></div>
+    </div>
+    <div class="panel-label">C — Progress bars, light background</div>
+    <div class="panel-sub">Each metric has an animated fill bar. Accent colours per bar (teal, dusty blue, sage, amber). Light panel — contrasts well against the white section background.</div>
+  </div>
+
+</div>

@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { Partner } from '@/types/sanity';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 type Tab = 'investors' | 'partners' | 'media';
 
@@ -21,14 +23,107 @@ function initials(name: string) {
     .toUpperCase();
 }
 
+const gridVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.05 } },
+  exit: { opacity: 0, transition: { duration: 0.12 } },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.26, ease: [0.25, 0.1, 0.25, 1] as const } },
+};
+
 interface Props {
   partners: Partner[];
 }
 
 export function AboutTrust({ partners }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('investors');
+  const reduced = useReducedMotion();
 
   const items = partners.filter((p) => p.category === activeTab);
+
+  const renderCard = (partner: Partner) => {
+    const logoSrc = partner.logo?.asset?.url ?? null;
+
+    const sharedMotionProps = {
+      variants: reduced ? undefined : cardVariants,
+      whileHover: reduced ? undefined : {
+        y: -4,
+        borderColor: '#709DA970',
+        boxShadow: `0 10px 28px rgba(57,87,92,0.1), 0 1px 4px rgba(0,0,0,0.05)`,
+        transition: { type: 'spring' as const, stiffness: 420, damping: 28 },
+      },
+      className: 'flex flex-col rounded-xl overflow-hidden',
+      style: {
+        borderWidth: 1,
+        borderStyle: 'solid' as const,
+        borderColor: '#E5E7EB',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+        background: 'white',
+      },
+    };
+
+    const cardInner = (
+      <>
+        {/* Logo zone */}
+        <div
+          className="relative w-full flex items-center justify-center px-6 pt-6 pb-5"
+          style={{ background: 'rgba(245,245,245,0.55)', minHeight: 140 }}
+        >
+          {logoSrc ? (
+            <div className="relative w-full h-24">
+              <Image
+                src={logoSrc}
+                alt={partner.logo?.alt ?? partner.name}
+                fill
+                className="object-contain"
+                sizes="(max-width: 640px) 40vw, (max-width: 1024px) 25vw, 200px"
+              />
+            </div>
+          ) : (
+            <div
+              className="w-11 h-11 rounded-xl flex items-center justify-center font-display font-extrabold text-sm"
+              style={{ background: 'rgba(57,87,92,0.08)', color: '#39575C' }}
+            >
+              {initials(partner.name)}
+            </div>
+          )}
+        </div>
+
+        {/* Name footer */}
+        <div
+          className="w-full px-4 py-2.5 text-center"
+          style={{ borderTop: '1px solid #EFEFEF' }}
+        >
+          <p className="font-body text-xs font-semibold text-[#6B7280] leading-tight truncate">
+            {partner.name}
+          </p>
+        </div>
+      </>
+    );
+
+    if (partner.website) {
+      return (
+        <motion.a
+          key={partner._id}
+          {...sharedMotionProps}
+          href={partner.website}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {cardInner}
+        </motion.a>
+      );
+    }
+
+    return (
+      <motion.div key={partner._id} {...sharedMotionProps}>
+        {cardInner}
+      </motion.div>
+    );
+  };
 
   return (
     <section className="bg-white py-[52px]" style={{ borderTop: '1px solid #E5E7EB' }}>
@@ -54,7 +149,7 @@ export function AboutTrust({ partners }: Props) {
               <button
                 key={tab.value}
                 onClick={() => setActiveTab(tab.value)}
-                className="flex-shrink-0 flex items-center gap-2 font-body font-semibold text-sm px-5 py-3 transition-colors duration-150 whitespace-nowrap"
+                className="cursor-pointer flex-shrink-0 flex items-center gap-2 font-body font-semibold text-sm px-5 py-3 transition-colors duration-150 whitespace-nowrap"
                 style={{
                   color: isActive ? '#39575C' : '#6B7280',
                   borderBottom: isActive ? '2px solid #39575C' : '2px solid transparent',
@@ -79,72 +174,36 @@ export function AboutTrust({ partners }: Props) {
         </div>
 
         {/* Logo grid */}
-        {items.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {items.map((partner) => {
-              const logoSrc = partner.logo?.asset?.url ?? null;
-
-              const card = (
-                <div
-                  className="group flex flex-col items-center justify-center gap-3 rounded-2xl p-6 bg-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-                  style={{ border: '1px solid #E5E7EB', minHeight: 120 }}
-                >
-                  {/* Logo or initials fallback */}
-                  <div className="relative w-full flex items-center justify-center" style={{ height: 52 }}>
-                    {logoSrc ? (
-                      <Image
-                        src={logoSrc}
-                        alt={partner.logo?.alt ?? partner.name}
-                        fill
-                        className="object-contain transition-opacity duration-200 group-hover:opacity-80"
-                        sizes="(max-width: 640px) 40vw, (max-width: 1024px) 25vw, 200px"
-                      />
-                    ) : (
-                      <div
-                        className="w-12 h-12 rounded-xl flex items-center justify-center font-display font-extrabold text-base"
-                        style={{ background: 'rgba(57,87,92,0.08)', color: '#39575C' }}
-                      >
-                        {initials(partner.name)}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Name */}
-                  <p className="font-body text-xs text-[#6B7280] text-center leading-tight">
-                    {partner.name}
-                  </p>
-                </div>
-              );
-
-              return partner.website ? (
-                <a
-                  key={partner._id}
-                  href={partner.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block"
-                >
-                  {card}
-                </a>
-              ) : (
-                <div key={partner._id}>{card}</div>
-              );
-            })}
-          </div>
-        ) : (
-          /* Empty state */
-          <div
-            className="rounded-2xl py-16 text-center"
-            style={{ border: '1px dashed #E5E7EB' }}
-          >
-            <p className="font-display font-bold text-base text-[#1A1A1A] mb-1.5">
-              Coming soon
-            </p>
-            <p className="font-body text-sm text-[#6B7280]">
-              Our {TABS.find((t) => t.value === activeTab)?.label.toLowerCase()} will be listed here shortly.
-            </p>
-          </div>
-        )}
+        <AnimatePresence mode="wait">
+          {items.length > 0 ? (
+            <motion.div
+              key={activeTab}
+              variants={reduced ? undefined : gridVariants}
+              initial={reduced ? false : 'hidden'}
+              animate={reduced ? undefined : 'show'}
+              exit={reduced ? undefined : 'exit'}
+              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"
+            >
+              {items.map((partner) => renderCard(partner))}
+            </motion.div>
+          ) : (
+            <motion.div
+              key={`empty-${activeTab}`}
+              initial={reduced ? false : { opacity: 0 }}
+              animate={reduced ? undefined : { opacity: 1 }}
+              exit={reduced ? undefined : { opacity: 0, transition: { duration: 0.12 } }}
+              className="rounded-2xl py-16 text-center"
+              style={{ border: '1px dashed #E5E7EB' }}
+            >
+              <p className="font-display font-bold text-base text-[#1A1A1A] mb-1.5">
+                Coming soon
+              </p>
+              <p className="font-body text-sm text-[#6B7280]">
+                Our {TABS.find((t) => t.value === activeTab)?.label.toLowerCase()} will be listed here shortly.
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
       </div>
     </section>

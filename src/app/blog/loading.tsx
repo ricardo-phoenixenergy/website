@@ -1,7 +1,7 @@
 export default function BlogLoading() {
   return (
     <div className="min-h-screen" style={{ background: '#F5F5F5', paddingTop: '80px' }}>
-      <div className="max-w-content mx-auto px-6 py-10">
+      <div className="page-container py-10">
         {/* Header skeleton */}
         <div className="grid gap-8 mb-8" style={{ gridTemplateColumns: '1fr 1fr' }}>
           <div>

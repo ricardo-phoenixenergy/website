@@ -2,8 +2,8 @@ import { AnimatedSection } from '@/components/ui/AnimatedSection';
 
 export function AboutMission() {
   return (
-    <section className="bg-[#0d1f22] px-6 py-[52px]">
-      <div className="grid gap-10 md:grid-cols-[1fr_2fr] md:items-center max-w-[960px] mx-auto">
+    <section className="bg-[#0d1f22] py-[52px]">
+      <div className="page-container grid gap-10 md:grid-cols-[1fr_2fr] md:items-center">
         {/* Left */}
         <AnimatedSection delay={0}>
           <p

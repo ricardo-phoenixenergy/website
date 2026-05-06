@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ContactForm } from '@/components/sections/ContactForm';
 import { SOLUTION_META, SOLUTION_VERTICALS } from '@/types/solutions';
-import { IconMail, IconPhone, IconMapPin, IconClipboardCheck } from '@/components/ui/Icons';
+import { IconMail, IconPhone, IconMapPin, IconClipboardCheck, IconLinkedIn } from '@/components/ui/Icons';
 
 export const metadata: Metadata = {
   title: 'Contact Phoenix Energy — Get a Free Energy Assessment',
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <main className="bg-[#F5F5F5] min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+      <div className="page-container pt-24 pb-16">
 
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1.5 font-body text-sm text-[#6B7280] mb-6">
@@ -45,10 +45,12 @@ export default function ContactPage() {
           <div className="flex flex-col gap-4">
 
             {/* Contact info card */}
-            <div className="rounded-2xl p-6 bg-[#39575C]">
+            <div className="rounded-2xl p-6 bg-[#39575C]"
+            style={{ background: 'linear-gradient(135deg, #39575C 0%, #0d1f22 100%)' }}>
               <p
                 className="font-body text-lg font-bold uppercase tracking-[0.14em] mb-4"
-                style={{ color: '#F5F5F5' }}
+                style={{ color: 'rgba(255,255,255,0.35)' }}
+                
               >
                 Contact details
               </p>
@@ -100,7 +102,33 @@ export default function ContactPage() {
               </div>
             </div>
 
-            
+            {/* Connect With Us card */}
+            <div className="rounded-2xl p-6 bg-white" style={{ border: '1px solid #E5E7EB' }}>
+              <p
+                className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-4"
+              >
+                Connect with us
+              </p>
+              <Link
+                href="https://www.linkedin.com/company/phoenix-energy-solutions"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 group"
+              >
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors duration-200"
+                  style={{ background: '#EBF4F6', color: '#39575C' }}
+                >
+                  <IconLinkedIn size={18} />
+                </div>
+                <div>
+                  <p className="font-display font-semibold text-sm text-[#1A1A1A] group-hover:text-[#39575C] transition-colors duration-200">
+                    Phoenix Energy Solutions
+                  </p>
+                  <p className="font-body text-xs text-[#6B7280]">Follow us on LinkedIn</p>
+                </div>
+              </Link>
+            </div>
 
           </div>
         </div>

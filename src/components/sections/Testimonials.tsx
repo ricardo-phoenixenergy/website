@@ -25,8 +25,8 @@ function initials(name: string): string {
 
 export function Testimonials({ quotes, accent, id }: TestimonialsProps) {
   return (
-    <section id={id} className="bg-[#F5F5F5] px-5 py-12 md:py-[52px]">
-      <div className="max-w-[960px] mx-auto">
+    <section id={id} className="bg-[#F5F5F5] py-12 md:py-[52px]">
+      <div className="page-container">
         <AnimatedSection className="text-center mb-10">
           <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-2">
             What clients say
