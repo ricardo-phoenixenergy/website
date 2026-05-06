@@ -2,6 +2,7 @@
 'use client';
 import { useState } from 'react';
 import type { SolarInputs, BessInputs, ConditionInputs, ValuationResult } from '@/lib/valuation/types';
+import { dlPush } from '@/lib/analytics';
 
 interface SoftPaywallProps {
   result: ValuationResult;
@@ -81,6 +82,10 @@ export function SoftPaywall({ result, solar, bess, cond, onUnlock }: SoftPaywall
       });
 
       if (!res.ok) throw new Error('Submission failed');
+      const band = result.rangeLow >= 1_000_000
+        ? `R${Math.round(result.rangeLow / 1_000_000)}M–R${Math.round(result.rangeHigh / 1_000_000)}M`
+        : `R${Math.round(result.rangeLow / 1_000)}k–R${Math.round(result.rangeHigh / 1_000)}k`;
+      dlPush({ event: 'paywall_unlock', estimated_value_band: band });
       onUnlock();
     } catch {
       setError('Something went wrong. Please try again.');
