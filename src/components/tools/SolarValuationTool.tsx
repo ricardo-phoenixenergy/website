@@ -2,6 +2,7 @@
 'use client';
 import { useState } from 'react';
 import type { SolarInputs, BessInputs, ConditionInputs } from '@/lib/valuation/types';
+import { dlPush } from '@/lib/analytics';
 import { useValuation } from './useValuation';
 import { StepIndicator } from './StepIndicator';
 import { Step1SystemDetails } from './Step1SystemDetails';
@@ -41,6 +42,16 @@ export function SolarValuationTool() {
 
   const result = useValuation(solar, bess, cond);
 
+  const handleValuationComplete = () => {
+    setStep(3);
+    dlPush({
+      event: 'valuation_complete',
+      kw: solar.kw,
+      bess_kwh: bess.enabled ? bess.kWh : 0,
+      install_year: solar.installYear,
+    });
+  };
+
   return (
     <div
       className="bg-white rounded-2xl p-6 md:p-8 mx-auto"
@@ -67,7 +78,7 @@ export function SolarValuationTool() {
           cond={cond}
           onChange={patch => setCond(prev => ({ ...prev, ...patch }))}
           onBack={() => setStep(1)}
-          onNext={() => setStep(3)}
+          onNext={handleValuationComplete}
         />
       )}
 
