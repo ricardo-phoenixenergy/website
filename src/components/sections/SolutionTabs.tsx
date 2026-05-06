@@ -1,12 +1,37 @@
-// src/components/sections/SolutionTabs.tsx
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { dlPush } from '@/lib/analytics';
 import { FinancingCards } from './FinancingCards';
+import {
+  IconArrowRight,
+  IconSun, IconBattery, IconDollarSign, IconLeaf, IconGlobe,
+  IconActivity, IconThermometer, IconBuilding, IconMonitor,
+  IconZap, IconClipboardCheck,
+} from '@/components/ui/Icons';
+
+export type IconName =
+  | 'Sun' | 'Battery' | 'DollarSign' | 'Leaf' | 'Globe'
+  | 'Activity' | 'Thermometer' | 'Building' | 'Monitor'
+  | 'Zap' | 'ClipboardCheck';
+
+const ICON_MAP: Record<IconName, (size: number) => React.ReactNode> = {
+  Sun:           (s) => <IconSun size={s} />,
+  Battery:       (s) => <IconBattery size={s} />,
+  DollarSign:    (s) => <IconDollarSign size={s} />,
+  Leaf:          (s) => <IconLeaf size={s} />,
+  Globe:         (s) => <IconGlobe size={s} />,
+  Activity:      (s) => <IconActivity size={s} />,
+  Thermometer:   (s) => <IconThermometer size={s} />,
+  Building:      (s) => <IconBuilding size={s} />,
+  Monitor:       (s) => <IconMonitor size={s} />,
+  Zap:           (s) => <IconZap size={s} />,
+  ClipboardCheck:(s) => <IconClipboardCheck size={s} />,
+};
 
 export interface TabItem {
   label: string;
-  icon: string;
+  icon: IconName;
   iconBg: string;
   title: string;
   body: string;
@@ -20,9 +45,10 @@ export interface SolutionTabsProps {
   tabs: TabItem[];
   accent: string;
   id?: string;
+  vertical?: string;
 }
 
-export function SolutionTabs({ tabs, accent, id }: SolutionTabsProps) {
+export function SolutionTabs({ tabs, accent, id, vertical = '' }: SolutionTabsProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [openIndex, setOpenIndex] = useState(0);
@@ -40,54 +66,47 @@ export function SolutionTabs({ tabs, accent, id }: SolutionTabsProps) {
   function renderPanelBody(tab: TabItem) {
     if (tab.type === 'financing') return <FinancingCards />;
     return (
-      <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-start">
-        <div className="flex-1">
-          <h3 className="font-display font-extrabold text-xl text-[#1A1A1A] mb-3">{tab.title}</h3>
-          <p className="font-body text-sm text-[#374151] leading-[1.75] mb-4">{tab.body}</p>
-          <ul className="space-y-2">
-            {tab.bullets.map((b) => (
-              <li key={b} className="flex items-start gap-2 font-body text-sm text-[#374151]">
-                <span style={{ color: accent }} className="mt-0.5 flex-shrink-0 font-bold">✓</span>
-                {b}
-              </li>
-            ))}
-          </ul>
-        </div>
-        {tab.imageBg && (
-          <div
-            className="w-full md:w-[220px] h-[160px] md:h-[180px] rounded-2xl flex items-center justify-center flex-shrink-0 text-5xl"
-            style={{ background: tab.imageBg }}
-          >
-            {tab.imageEmoji}
-          </div>
-        )}
+      <div className="max-w-[640px]">
+        <h3 className="font-display font-extrabold text-xl text-[#1A1A1A] mb-3">{tab.title}</h3>
+        <p className="font-body text-sm text-[#374151] leading-[1.75] mb-4">{tab.body}</p>
+        <ul className="space-y-2">
+          {tab.bullets.map((b) => (
+            <li key={b} className="flex items-start gap-2 font-body text-sm text-[#374151]">
+              <span style={{ color: accent }} className="mt-0.5 flex-shrink-0 font-bold">✓</span>
+              {b}
+            </li>
+          ))}
+        </ul>
       </div>
     );
   }
 
   return (
-    <section id={id} className="bg-white px-5 py-12 md:py-[52px]">
-      <div className="max-w-[960px] mx-auto">
+    <section id={id} className="bg-white py-12 md:py-[52px]">
+      <div className="page-container">
         {/* Desktop tabs */}
         {!isMobile && (
           <>
-            <div className="flex gap-1 border-b border-[#E5E7EB] mb-8 overflow-x-auto">
+            <div className="flex gap-1 border-b border-[#E5E7EB] mb-8">
               {tabs.map((tab, i) => (
                 <button
                   key={tab.label}
-                  onClick={() => setActiveTab(i)}
+                  onClick={() => {
+                    setActiveTab(i);
+                    dlPush({ event: 'tab_change', vertical, tab_label: tab.label });
+                  }}
                   className="flex items-center gap-2 px-4 py-3 font-body text-sm font-medium whitespace-nowrap transition-colors duration-200 border-b-2 -mb-px"
                   style={{
                     borderBottomColor: i === activeTab ? accent : 'transparent',
                     color: i === activeTab ? '#1A1A1A' : '#6B7280',
                   }}
                 >
-                  <span
-                    className="w-7 h-7 rounded-lg flex items-center justify-center text-base"
-                    style={{ background: tab.iconBg }}
+                  <div
+                    className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{ background: tab.iconBg, color: accent }}
                   >
-                    {tab.icon}
-                  </span>
+                    {ICON_MAP[tab.icon](15)}
+                  </div>
                   {tab.label}
                 </button>
               ))}
@@ -105,23 +124,29 @@ export function SolutionTabs({ tabs, accent, id }: SolutionTabsProps) {
                 <div key={tab.label} className="border border-[#E5E7EB] rounded-xl overflow-hidden">
                   <button
                     className="w-full flex items-center justify-between px-4 py-4 text-left"
-                    onClick={() => setOpenIndex(isOpen ? -1 : i)}
+                    onClick={() => {
+                      const next = openIndex === i ? -1 : i;
+                      setOpenIndex(next);
+                      if (next !== -1) {
+                        dlPush({ event: 'tab_change', vertical, tab_label: tabs[i].label });
+                      }
+                    }}
                     aria-expanded={isOpen}
                   >
                     <span className="flex items-center gap-3">
-                      <span
-                        className="w-8 h-8 rounded-lg flex items-center justify-center text-base"
-                        style={{ background: tab.iconBg }}
+                      <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style={{ background: tab.iconBg, color: accent }}
                       >
-                        {tab.icon}
-                      </span>
+                        {ICON_MAP[tab.icon](16)}
+                      </div>
                       <span className="font-body text-sm font-semibold text-[#1A1A1A]">{tab.label}</span>
                     </span>
                     <span
-                      className="text-[#6B7280] transition-transform duration-300 text-xs"
-                      style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                      className="text-[#6B7280] transition-transform duration-300 flex-shrink-0"
+                      style={{ transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}
                     >
-                      ▼
+                      <IconArrowRight size={14} />
                     </span>
                   </button>
                   <div

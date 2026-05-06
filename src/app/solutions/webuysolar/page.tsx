@@ -1,19 +1,15 @@
 // src/app/solutions/webuysolar/page.tsx
 import type { Metadata } from 'next';
 import { SolutionHero } from '@/components/sections/SolutionHero';
-import { SolutionSubNav } from '@/components/sections/SolutionSubNav';
-import { SolutionPain } from '@/components/sections/SolutionPain';
 import { SolutionTabs } from '@/components/sections/SolutionTabs';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
-import { Testimonials } from '@/components/sections/Testimonials';
+import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { CTABanner } from '@/components/sections/CTABanner';
-import { StatsStrip } from '@/components/ui/StatsStrip';
 import { WeBuySolarCalculator } from '@/components/sections/calculators/WeBuySolarCalculator';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import type { TabItem } from '@/components/sections/SolutionTabs';
-import type { TestimonialQuote } from '@/components/sections/Testimonials';
 
 const vertical = 'webuysolar' as const;
 const cfg = VERTICAL_CONFIG[vertical];
@@ -26,18 +22,10 @@ export const metadata: Metadata = {
   openGraph: { title: cfg.seoTitle, description: cfg.seoDescription, url: `https://phoenixenergy.solutions/solutions/${vertical}` },
 };
 
-const subNavLinks = [
-  { label: 'Overview', href: '#pain' },
-  { label: 'How It Works', href: '#how-it-works' },
-  { label: 'What We Accept', href: '#tabs' },
-  { label: 'Projects', href: '#projects' },
-  { label: 'Testimonials', href: '#testimonials' },
-];
-
 const tabs: TabItem[] = [
   {
     label: 'Rooftop Systems',
-    icon: '🏭',
+    icon: 'Building',
     iconBg: 'rgba(201,122,64,0.18)',
     title: 'Commercial Rooftop Solar',
     body: 'We purchase rooftop solar installations of any size from commercial and industrial facilities. Reason for selling does not matter — relocation, upgrade, closure, or portfolio rationalisation all qualify.',
@@ -47,7 +35,7 @@ const tabs: TabItem[] = [
   },
   {
     label: 'Ground-Mount',
-    icon: '🌾',
+    icon: 'Sun',
     iconBg: 'rgba(201,122,64,0.18)',
     title: 'Ground-Mount & Farm Systems',
     body: 'Agricultural and ground-mount solar installations are assessed on a case-by-case basis. We handle all decommissioning, transport, and repowering logistics.',
@@ -57,7 +45,7 @@ const tabs: TabItem[] = [
   },
   {
     label: 'Battery Storage',
-    icon: '🔋',
+    icon: 'Battery',
     iconBg: 'rgba(201,122,64,0.18)',
     title: 'BESS & Hybrid Systems',
     body: 'Battery systems paired with solar installations are purchased as a bundle. We assess state-of-health and offer fair buyback based on remaining capacity.',
@@ -72,12 +60,6 @@ const steps = [
   { label: 'Site Inspection', description: 'Our technician visits within 48 hours, assesses condition, and prepares an offer.', tag: '48 hours' },
   { label: 'Offer & Sign', description: "You receive a written offer. No obligation — accept if it works for you.", tag: 'Your choice' },
   { label: 'Cash & Removal', description: 'Payment is transferred within 14 days. Our team handles all decommissioning.', tag: '14 days' },
-];
-
-const testimonials: TestimonialQuote[] = [
-  { text: 'We relocated our head office and had no use for the solar system. Phoenix made a fair offer within 48 hours and their team removed everything cleanly within a week.', author: 'Siya Mthembu', role: 'Facilities Director', company: 'Mthembu Group' },
-  { text: "Upgrading to a larger system, we sold the old installation to Phoenix. The process was effortless — one site visit, one offer, one bank transfer. Exactly what you'd want.", author: 'Karen Fourie', role: 'COO', company: 'Fourie Industrial' },
-  { text: 'Phoenix paid significantly more than the scrap quotes we received elsewhere. They clearly know the second-life value of solar assets and price accordingly.', author: 'Rajesh Pillay', role: 'Managing Director', company: 'Pillay Manufacturing' },
 ];
 
 export default function WeBuySolarPage() {
@@ -98,22 +80,13 @@ export default function WeBuySolarPage() {
         subtitle="Fast valuation, fair price, full decommissioning. Any brand, any size, any reason for selling."
         accent={meta.accent}
         badge={meta.label}
+        heroImage="/hero-webuysolar.png"
         heroBg="linear-gradient(135deg, #1a0f00 0%, #3a2000 50%, #5a3a10 100%)"
         primaryCta={{ label: 'Get a Valuation', href: '/contact' }}
-        secondaryCta={{ label: 'What We Accept', href: '#tabs' }}
-      />
-      <SolutionSubNav links={subNavLinks} />
-      <StatsStrip stats={cfg.stats} />
-      <SolutionPain
-        id="pain"
-        eyebrow="The situation"
-        headline="Your solar system has <em>real second-life value</em>"
-        body="Businesses relocating, upgrading, or closing often leave solar assets stranded. Scrap dealers undervalue them; brokers take months. Phoenix Energy buys directly — a fair offer based on generation potential and component condition, settled fast."
-        pills={['Business Relocation', 'System Upgrade', 'Portfolio Sale', 'Business Closure']}
-        accent={meta.accent}
       >
         <WeBuySolarCalculator />
-      </SolutionPain>
+      </SolutionHero>
+      <SolutionTabs id="tabs" tabs={tabs} accent={meta.accent} vertical="webuysolar" />
       <div id="how-it-works">
         <HowItWorks
           title="From enquiry to cash <em>in 14 days</em>"
@@ -123,12 +96,22 @@ export default function WeBuySolarPage() {
           ctaHref="/contact"
         />
       </div>
-      <SolutionTabs id="tabs" tabs={tabs} accent={meta.accent} />
       <div id="projects">
         <FeaturedProjects vertical={vertical} />
       </div>
-      <Testimonials id="testimonials" quotes={testimonials} accent={meta.accent} />
-      <CTABanner />
+      <RelatedArticles vertical={vertical} />
+      <CTABanner
+        eyebrow="Sell today"
+        heading="Get paid for your solar asset within 5 business days"
+        body="Receive a fair-market offer on your existing solar or BESS system. No agents, no delays — just a transparent valuation and fast settlement."
+        primaryCta={{ label: 'Get an Asset Valuation', href: '/tools/solar-asset-valuation' }}
+        stats={[
+          { value: '42',   label: 'Systems acquired' },
+          { value: 'R85M', label: 'Assets purchased' },
+          { value: '5d',   label: 'Avg settlement' },
+          { value: '98%',  label: 'Offer acceptance rate' },
+        ]}
+      />
     </>
   );
 }
