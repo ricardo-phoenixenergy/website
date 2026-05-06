@@ -11,6 +11,7 @@ import { ProjectCard } from './ProjectCard';
 import { ProjectDrawer } from '@/components/ui/ProjectDrawer';
 import { FilterPills } from '@/components/ui/FilterPills';
 import { IconArrowRight } from '../ui/Icons';
+import { dlPush } from '@/lib/analytics';
 
 /* ── Filter pills ────────────────────────────────────────────────────────────── */
 
@@ -84,6 +85,7 @@ export function ProjectsGrid({ projects }: ProjectsGridProps) {
     if (filter === activeFilter) return;
     setActiveFilter(filter);
     setVisibleCount(6);
+    dlPush({ event: 'filter_change', filter_value: filter });
   }, [activeFilter]);
 
   const pills = useMemo(() => FILTER_PILLS.map(pill => {
