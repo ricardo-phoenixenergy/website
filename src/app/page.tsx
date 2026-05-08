@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     siteName: 'Phoenix Energy',
     images: [
       {
-        url: 'https://phoenixenergy.solutions/og-home.jpg',
+        url: 'https://phoenixenergy.solutions/og-default.png',
         width: 1200,
         height: 630,
         alt: 'Phoenix Energy — Clean Energy Solutions for Southern Africa',
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     title: 'Phoenix Energy — Save, Earn & Grow with Renewable Energy',
     description:
       'Six clean energy verticals. One partner. End-to-end solutions for Southern African businesses.',
-    images: ['https://phoenixenergy.solutions/og-home.jpg'],
+    images: ['https://phoenixenergy.solutions/og-default.png'],
   },
 };
 

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     description:
       "The story, mission and team behind Southern Africa's leading integrated clean energy company.",
     url: 'https://phoenixenergy.solutions/about',
-    images: [{ url: 'https://phoenixenergy.solutions/og-about.jpg', width: 1200, height: 630 }],
+    images: [{ url: 'https://phoenixenergy.solutions/og-default.png', width: 1200, height: 630 }],
   },
 };
 

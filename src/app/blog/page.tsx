@@ -63,6 +63,7 @@ export async function generateMetadata({
       title: 'Blog & Insights | Phoenix Energy',
       description: 'Expert perspectives on clean energy, SA market trends, project spotlights and company news.',
       url: canonical,
+      images: [{ url: 'https://phoenixenergy.solutions/og-default.png', width: 1200, height: 630 }],
     },
   };
 }

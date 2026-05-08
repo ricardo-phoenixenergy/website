@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     description:
       'Free tools to help you make smarter energy decisions. Calculate the value of your solar system, model energy savings, and more.',
     url: 'https://phoenixenergy.solutions/tools',
+    images: [{ url: 'https://phoenixenergy.solutions/og-default.png', width: 1200, height: 630 }],
   },
 };
 

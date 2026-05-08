@@ -9,6 +9,12 @@ export const metadata: Metadata = {
   description:
     'Reach out to Phoenix Energy to discuss C&I solar, wheeling, carbon credits, EV fleets and more. Free energy assessments for Southern African businesses.',
   alternates: { canonical: 'https://phoenixenergy.solutions/contact' },
+  openGraph: {
+    title: 'Contact Phoenix Energy — Get a Free Energy Assessment',
+    description: 'Reach out to Phoenix Energy to discuss C&I solar, wheeling, carbon credits, EV fleets and more.',
+    url: 'https://phoenixenergy.solutions/contact',
+    images: [{ url: 'https://phoenixenergy.solutions/og-default.png', width: 1200, height: 630 }],
+  },
 };
 
 export default function ContactPage() {

@@ -8,6 +8,13 @@ export const metadata: Metadata = {
   title: 'Projects & Installations | Phoenix Energy',
   description:
     'Explore Phoenix Energy\'s portfolio of completed renewable energy projects across Southern Africa — solar, wheeling, EV fleets, carbon credits, and more.',
+  alternates: { canonical: 'https://phoenixenergy.solutions/projects' },
+  openGraph: {
+    title: 'Projects & Installations | Phoenix Energy',
+    description: 'Explore Phoenix Energy\'s portfolio of completed renewable energy projects across Southern Africa.',
+    url: 'https://phoenixenergy.solutions/projects',
+    images: [{ url: 'https://phoenixenergy.solutions/og-default.png', width: 1200, height: 630 }],
+  },
 };
 
 export default async function ProjectsPage() {

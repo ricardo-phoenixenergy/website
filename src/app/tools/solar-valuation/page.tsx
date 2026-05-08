@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description:
     'Get an instant indicative buyback valuation for your solar system and BESS. Based on DCF analysis, SA market rates, and WeBuySolar transaction data.',
   openGraph: {
-    images: [{ url: '/og-tools-valuation.jpg' }],
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },
   alternates: {
     canonical: 'https://phoenixenergy.solutions/tools/solar-valuation',
