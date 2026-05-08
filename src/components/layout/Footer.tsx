@@ -28,18 +28,25 @@ export function Footer() {
 
         <div className="flex items-center gap-3.5">
           <Link
-            href="/privacy"
+            href="/privacy-policy"
             className="font-body text-xs"
             style={{ color: 'rgba(255,255,255,0.35)' }}
           >
             Privacy Policy
           </Link>
           <Link
-            href="/legal"
+            href="/terms-of-use"
             className="font-body text-xs"
             style={{ color: 'rgba(255,255,255,0.35)' }}
           >
-            Legal
+            Terms of Use
+          </Link>
+          <Link
+            href="/disclaimer"
+            className="font-body text-xs"
+            style={{ color: 'rgba(255,255,255,0.35)' }}
+          >
+            Disclaimer
           </Link>
         </div>
       </div>
@@ -56,11 +63,14 @@ export function Footer() {
           © {year} Phoenix Energy. All rights reserved.
         </p>
         <div className="flex items-center gap-3">
-          <Link href="/privacy" className="font-body text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          <Link href="/privacy-policy" className="font-body text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
             Privacy Policy
           </Link>
-          <Link href="/legal" className="font-body text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            Legal
+          <Link href="/terms-of-use" className="font-body text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            Terms of Use
+          </Link>
+          <Link href="/disclaimer" className="font-body text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            Disclaimer
           </Link>
         </div>
       </div>
