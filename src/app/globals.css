@@ -53,6 +53,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ─── Pointer cursor on all interactive elements ──────────────────────────── */
+button:not(:disabled),
+[role="button"],
+[role="tab"],
+[role="checkbox"],
+[role="switch"],
+summary,
+select,
+label[for] {
+  cursor: pointer;
+}
+
 /* ─── iOS Safari — prevent auto-zoom on input focus ───────────────────────── */
 @media (max-width: 768px) {
   input,
