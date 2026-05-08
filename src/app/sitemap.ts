@@ -20,6 +20,9 @@ const STATIC: MetadataRoute.Sitemap = [
   { url: `${SITE}/blog`,                                priority: 0.8, changeFrequency: 'weekly' },
   { url: `${SITE}/tools`,                               priority: 0.7, changeFrequency: 'monthly' },
   { url: `${SITE}/tools/solar-valuation`,               priority: 0.7, changeFrequency: 'monthly' },
+  { url: `${SITE}/privacy-policy`,        priority: 0.3, changeFrequency: 'yearly' as const },
+  { url: `${SITE}/terms-of-use`,          priority: 0.3, changeFrequency: 'yearly' as const },
+  { url: `${SITE}/disclaimer`,            priority: 0.3, changeFrequency: 'yearly' as const },
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
