@@ -37,17 +37,18 @@ export function Card({ variant = 'light', pattern = 1, overlay = true, className
 
   return (
     <div className={`${base} ${variantClass} ${patternClass} ${className}`}>
-      {/* Dark gradient overlay — Pattern 1 dark cards only, when overlay is enabled */}
+      {/* Dark gradient overlay — z-index:-1 keeps it behind all content without needing z-index on siblings */}
       {variant === 'dark' && pattern === 1 && overlay && (
         <>
           <div
-            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-0"
-            style={{ background: 'linear-gradient(140deg, #1a4a52 0%, #0f2d33 100%)' }}
+            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+            style={{ background: 'linear-gradient(140deg, #1a4a52 0%, #0f2d33 100%)', zIndex: -1 }}
           />
           <span
             aria-hidden
-            className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-0"
+            className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
             style={{
+              zIndex: -1,
               top: -24,
               right: -24,
               width: 96,
@@ -89,7 +90,7 @@ export function CardImage({
   children,
 }: CardImageProps) {
   return (
-    <div className="relative overflow-hidden flex-shrink-0 z-10" style={{ height }}>
+    <div className="relative overflow-hidden flex-shrink-0" style={{ height }}>
       {src ? (
         <>
           <Image
@@ -102,9 +103,9 @@ export function CardImage({
             placeholder="blur"
             blurDataURL={blurDataURL ?? DEFAULT_LQIP}
           />
-          {/* Gradient scrim over real image */}
+          {/* Gradient scrim over real image — no z-index needed, DOM order puts it above the Image */}
           <div
-            className="absolute inset-0 z-10"
+            className="absolute inset-0"
             style={{
               background:
                 'linear-gradient(to top, rgba(13,31,34,0.65) 0%, rgba(13,31,34,0.08) 55%, transparent 100%)',
@@ -117,9 +118,9 @@ export function CardImage({
           style={placeholderStyle ?? { background: '#E5E7EB' }}
         />
       )}
-      {/* Badge slots — rendered above scrim */}
+      {/* Badge slots — DOM order puts this above scrim, no z-index needed */}
       {children && (
-        <div className="absolute inset-0 z-20 pointer-events-none">{children}</div>
+        <div className="absolute inset-0 pointer-events-none">{children}</div>
       )}
     </div>
   );
@@ -136,7 +137,7 @@ export interface CardBodyProps {
 export function CardBody({ padding = 'sm', className = '', children }: CardBodyProps) {
   return (
     <div
-      className={`${padding === 'sm' ? 'p-4' : 'p-6'} flex flex-col flex-1 relative z-10 ${className}`}
+      className={`${padding === 'sm' ? 'p-4' : 'p-6'} flex flex-col flex-1 ${className}`}
     >
       {children}
     </div>
@@ -153,7 +154,7 @@ export interface CardFooterProps {
 export function CardFooter({ variant = 'light', className = '', children }: CardFooterProps) {
   return (
     <div
-      className={`px-4 py-3 flex items-center justify-between relative z-10 ${
+      className={`px-4 py-3 flex items-center justify-between ${
         variant === 'light'
           ? 'border-t border-[#E5E7EB]'
           : 'border-t border-[rgba(255,255,255,0.08)]'
