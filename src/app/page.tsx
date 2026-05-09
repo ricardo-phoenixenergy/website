@@ -85,7 +85,7 @@ export default async function HomePage() {
       />
       <main>
         <HeroAccordion />
-        <AboutTrust partners={partners} />
+        <AboutTrust partners={partners} showTabs={false} />
         <HowItWorks
           title="Your path to energy <em>independence</em>"
           steps={HOME_HIW_STEPS}

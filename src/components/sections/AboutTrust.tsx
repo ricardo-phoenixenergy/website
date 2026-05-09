@@ -36,13 +36,15 @@ const cardVariants = {
 
 interface Props {
   partners: Partner[];
+  /** When false, shows all partners in one flat grid with centred heading. Default: true */
+  showTabs?: boolean;
 }
 
-export function AboutTrust({ partners }: Props) {
+export function AboutTrust({ partners, showTabs = true }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('investors');
   const reduced = useReducedMotion();
 
-  const items = partners.filter((p) => p.category === activeTab);
+  const items = showTabs ? partners.filter((p) => p.category === activeTab) : partners;
 
   const renderCard = (partner: Partner) => {
     const logoSrc = partner.logo?.asset?.url ?? null;
@@ -130,48 +132,52 @@ export function AboutTrust({ partners }: Props) {
       <div className="page-container">
 
         {/* Heading */}
-        <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-3">
-          Trusted by the best
-        </p>
-        <h2 className="font-display font-extrabold text-3xl text-[#1A1A1A] leading-[1.2]">
-          Our <em style={{ color: '#709DA9', fontStyle: 'normal' }}>network</em>
-        </h2>
-
-        {/* Tab strip */}
-        <div
-          className="flex overflow-x-auto scrollbar-none mt-7 mb-8"
-          style={{ borderBottom: '1px solid #E5E7EB' }}
-        >
-          {TABS.map((tab) => {
-            const count = partners.filter((p) => p.category === tab.value).length;
-            const isActive = activeTab === tab.value;
-            return (
-              <button
-                key={tab.value}
-                onClick={() => setActiveTab(tab.value)}
-                className="cursor-pointer flex-shrink-0 flex items-center gap-2 font-body font-semibold text-sm px-5 py-3 transition-colors duration-150 whitespace-nowrap"
-                style={{
-                  color: isActive ? '#39575C' : '#6B7280',
-                  borderBottom: isActive ? '2px solid #39575C' : '2px solid transparent',
-                  marginBottom: -1,
-                }}
-              >
-                {tab.label}
-                {count > 0 && (
-                  <span
-                    className="font-body font-semibold text-[10px] rounded-full px-1.5 py-0.5 leading-none"
-                    style={{
-                      background: isActive ? 'rgba(57,87,92,0.1)' : '#F5F5F5',
-                      color: isActive ? '#39575C' : '#9CA3AF',
-                    }}
-                  >
-                    {count}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+        <div className={showTabs ? '' : 'text-center mb-10 md:mb-12'}>
+          <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-3">
+            Trusted by the best
+          </p>
+          <h2 className="font-display font-extrabold text-3xl text-[#1A1A1A] leading-[1.2]">
+            Our <em style={{ color: '#709DA9', fontStyle: 'normal' }}>network</em>
+          </h2>
         </div>
+
+        {/* Tab strip — only shown when showTabs is true */}
+        {showTabs && (
+          <div
+            className="flex overflow-x-auto scrollbar-none mt-7 mb-8"
+            style={{ borderBottom: '1px solid #E5E7EB' }}
+          >
+            {TABS.map((tab) => {
+              const count = partners.filter((p) => p.category === tab.value).length;
+              const isActive = activeTab === tab.value;
+              return (
+                <button
+                  key={tab.value}
+                  onClick={() => setActiveTab(tab.value)}
+                  className="cursor-pointer flex-shrink-0 flex items-center gap-2 font-body font-semibold text-sm px-5 py-3 transition-colors duration-150 whitespace-nowrap"
+                  style={{
+                    color: isActive ? '#39575C' : '#6B7280',
+                    borderBottom: isActive ? '2px solid #39575C' : '2px solid transparent',
+                    marginBottom: -1,
+                  }}
+                >
+                  {tab.label}
+                  {count > 0 && (
+                    <span
+                      className="font-body font-semibold text-[10px] rounded-full px-1.5 py-0.5 leading-none"
+                      style={{
+                        background: isActive ? 'rgba(57,87,92,0.1)' : '#F5F5F5',
+                        color: isActive ? '#39575C' : '#9CA3AF',
+                      }}
+                    >
+                      {count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* Logo grid */}
         <AnimatePresence mode="wait">
