@@ -29,8 +29,8 @@ export function Card({ variant = 'light', pattern = 1, overlay = true, className
   const patternClass =
     pattern === 1
       ? variant === 'light'
-        ? 'group cursor-pointer hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(57,87,92,0.10)] hover:border-[#cccccc]'
-        : 'group cursor-pointer hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(13,31,34,0.25)]'
+        ? 'group cursor-pointer [will-change:transform] hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(57,87,92,0.10)] hover:border-[#cccccc]'
+        : 'group cursor-pointer [will-change:transform] hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(13,31,34,0.25)]'
       : pattern === 2
       ? 'cursor-default hover:shadow-[0_4px_16px_rgba(57,87,92,0.07)]'
       : 'cursor-default';
