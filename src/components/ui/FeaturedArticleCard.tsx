@@ -26,7 +26,7 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
   return (
     <Link href={`/blog/${post.slug.current}`} className="block">
       <Card variant="light" pattern={1}>
-        <div className="grid overflow-hidden" style={{ gridTemplateColumns: '1fr 1fr', minHeight: 240 }}>
+        <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', minHeight: 240 }}>
           {/* Left: Photo */}
           <div className="relative overflow-hidden z-10" style={{ minHeight: 240 }}>
             {imgSrc ? (
