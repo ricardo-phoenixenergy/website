@@ -1,3 +1,4 @@
+// src/components/sections/AboutTeam.tsx
 'use client';
 
 import { useState } from 'react';
@@ -6,6 +7,7 @@ import Link from 'next/link';
 import type { TeamMember } from '@/types/sanity';
 import type { TeamCategory } from '@/types/sanity';
 import { IconArrowRight } from '../ui/Icons';
+import { Card, CardImage, CardBody } from '../ui/Card';
 
 interface AboutTeamProps {
   members: TeamMember[];
@@ -21,7 +23,6 @@ const ALL_CATS: { value: 'all' | TeamCategory; label: string }[] = [
 export function AboutTeam({ members }: AboutTeamProps) {
   const [activeCat, setActiveCat] = useState<'all' | TeamCategory>('all');
 
-  // Only show tabs for categories that have members
   const availableCats = ALL_CATS.filter(
     (c) => c.value === 'all' || members.some((m) => m.category === c.value),
   );
@@ -30,7 +31,7 @@ export function AboutTeam({ members }: AboutTeamProps) {
     activeCat === 'all' ? members : members.filter((m) => m.category === activeCat);
 
   return (
-    <section className="bg-[#F5F5F5] py-[52px]">
+    <section className="bg-[#F5F5F5] py-16 md:py-24">
       <div className="page-container">
         <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-3">
           The team
@@ -41,7 +42,10 @@ export function AboutTeam({ members }: AboutTeamProps) {
         </h2>
 
         {/* Filter tabs */}
-        <div className="flex gap-2 mb-8 overflow-x-auto scrollbar-none pb-1" style={{ WebkitOverflowScrolling: 'touch', whiteSpace: 'nowrap' }}>
+        <div
+          className="flex gap-2 mb-8 overflow-x-auto scrollbar-none pb-1"
+          style={{ WebkitOverflowScrolling: 'touch', whiteSpace: 'nowrap' }}
+        >
           {availableCats.map((cat) => (
             <button
               key={cat.value}
@@ -62,48 +66,30 @@ export function AboutTeam({ members }: AboutTeamProps) {
         {/* Team grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {visible.map((member) => (
-            <div
-              key={member._id}
-              className="rounded-2xl overflow-hidden transition-transform duration-200 hover:-translate-y-1"
-              style={{ background: '#0d1f22' }}
-            >
-              {/* Photo */}
-              <div className="relative" style={{ height: 150 }}>
-                {member.photo ? (
-                  <Image
-                    src={member.photo.asset.url}
-                    alt={member.name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 320px"
-                    placeholder="blur"
-                    blurDataURL={member.photo.asset.metadata?.lqip ?? 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'}
-                  />
-                ) : (
-                  <div
-                    className="w-full h-full"
-                    style={{ background: 'linear-gradient(135deg, #162630, #0d1f22)' }}
-                  />
-                )}
+            <Card key={member._id} variant="dark" pattern={3}>
+              <CardImage
+                src={member.photo?.asset.url}
+                alt={member.name}
+                height={150}
+                blurDataURL={member.photo?.asset.metadata?.lqip}
+                sizes="(max-width: 768px) 100vw, 320px"
+                placeholderStyle={{ background: 'linear-gradient(135deg, #162630, #0d1f22)' }}
+              >
+                {/* LinkedIn badge — pointer-events-auto so it stays clickable */}
                 {member.linkedin && (
                   <Link
                     href={member.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full flex items-center justify-center font-body text-xs font-bold transition-colors duration-150"
-                    style={{
-                      background: 'rgba(255,255,255,0.1)',
-                      color: 'rgba(255,255,255,0.6)',
-                    }}
+                    className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full flex items-center justify-center font-body text-xs font-bold transition-colors duration-150 pointer-events-auto"
+                    style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}
                     onClick={(e) => e.stopPropagation()}
                   >
                     in
                   </Link>
                 )}
-              </div>
-
-              {/* Body */}
-              <div className="px-3.5 py-3">
+              </CardImage>
+              <CardBody padding="sm">
                 <p className="font-display font-bold text-base text-white mb-0.5">{member.name}</p>
                 {member.archetype && (
                   <p className="font-body font-semibold text-sm mb-0.5" style={{ color: '#709DA9' }}>
@@ -113,48 +99,32 @@ export function AboutTeam({ members }: AboutTeamProps) {
                 <p className="font-body text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
                   {member.role}
                 </p>
-              </div>
-            </div>
+              </CardBody>
+            </Card>
           ))}
 
-          {/* Join the journey card */}
-          <div
-            className="group relative rounded-2xl p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:col-span-3 overflow-hidden"
-            style={{ background: '#0d1f22' }}
-          >
-            {/* Gradient overlay — fades in on hover */}
-            <div
-              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-              style={{ background: 'linear-gradient(140deg, #1a4a52 0%, #0f2d33 100%)' }}
-            />
-            {/* Radial teal glow */}
-            <span
-              aria-hidden
-              className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-              style={{
-                top: -24, right: -24,
-                width: 96, height: 96,
-                borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(112,157,169,0.25) 0%, transparent 70%)',
-              }}
-            />
-            <div className="relative z-10 min-w-0">
-              <p className="font-display font-bold text-base text-white mb-1">
-                Become a part of our journey
-              </p>
-              <p className="font-body text-sm leading-[1.7]" style={{ color: 'rgba(255,255,255,0.45)' }}>
-                We're always looking for passionate, ambitious individuals who share our vision for a prosperous Africa.
-              </p>
-            </div>
-            <Link
-              href="https://linkedin.com/company/105465145"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative z-10 flex flex-row gap-2 items-center self-start md:self-auto flex-shrink-0 rounded-full px-4 py-2 font-body font-semibold text-sm text-[#0d1f22] bg-[#F5F5F5] hover:bg-white transition-colors duration-200"
-            >
-              See career opportunities <IconArrowRight />
-            </Link>
-          </div>
+          {/* Join the journey — Pattern 2: has button inside, shadow-only hover */}
+          <Card variant="dark" pattern={2} className="md:col-span-3">
+            <CardBody padding="lg" className="md:flex-row md:items-center md:justify-between gap-4">
+              <div className="min-w-0">
+                <p className="font-display font-bold text-base text-white mb-1">
+                  Become a part of our journey
+                </p>
+                <p className="font-body text-sm leading-[1.7]" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                  We&apos;re always looking for passionate, ambitious individuals who share our vision
+                  for a prosperous Africa.
+                </p>
+              </div>
+              <Link
+                href="https://linkedin.com/company/105465145"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-row gap-2 items-center self-start md:self-auto flex-shrink-0 rounded-full px-4 py-2 font-body font-semibold text-sm text-[#0d1f22] bg-[#F5F5F5] hover:bg-white transition-colors duration-200"
+              >
+                See career opportunities <IconArrowRight size={14} />
+              </Link>
+            </CardBody>
+          </Card>
         </div>
 
         {members.length === 0 && (

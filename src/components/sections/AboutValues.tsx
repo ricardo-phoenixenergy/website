@@ -1,4 +1,6 @@
+// src/components/sections/AboutValues.tsx
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
+import { Card, CardBody } from '@/components/ui/Card';
 
 const VALUES = [
   {
@@ -35,8 +37,8 @@ const VALUES = [
 
 export function AboutValues() {
   return (
-    <section className="bg-[#F5F5F5] py-[52px]">
-      <AnimatedSection className="page-container text-center mb-8">
+    <section className="bg-[#F5F5F5] py-16 md:py-24">
+      <AnimatedSection className="page-container text-center mb-10 md:mb-12">
         <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-3">
           What we stand for
         </p>
@@ -48,28 +50,8 @@ export function AboutValues() {
       <div className="page-container grid gap-3 grid-cols-1 md:grid-cols-3">
         {VALUES.map((v, i) => (
           <AnimatedSection key={v.num} delay={i * 0.04} as="div">
-            <div
-              className="group relative rounded-2xl p-[22px] h-full cursor-default overflow-hidden transition-transform duration-300 hover:-translate-y-[3px] bg-[#0d1f22]"
-            >
-              {/* Gradient overlay — opacity-0 at rest, fades in on hover */}
-              <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                style={{ background: 'linear-gradient(140deg, #1a4a52 0%, #0f2d33 100%)' }}
-              />
-              {/* Radial teal glow in top-left corner — mirrors stats tile */}
-              <span
-                aria-hidden
-                className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                style={{
-                  top: -24, right: -24,
-                  width: 96, height: 96,
-                  borderRadius: '50%',
-                  background: 'radial-gradient(circle, rgba(112,157,169,0.25) 0%, transparent 70%)',
-                }}
-              />
-
-              {/* Content sits above the overlay */}
-              <div className="relative z-10">
+            <Card variant="dark" pattern={3} className="h-full">
+              <CardBody padding="lg" className="h-full">
                 <p
                   className="font-display font-extrabold text-4xl leading-none mb-3"
                   style={{ color: 'rgba(255,255,255,0.08)' }}
@@ -77,14 +59,11 @@ export function AboutValues() {
                   {v.num}
                 </p>
                 <p className="font-display font-bold text-base text-white mb-2">{v.title}</p>
-                <p
-                  className="font-body text-sm leading-[1.75]"
-                  style={{ color: 'rgba(255,255,255,0.5)' }}
-                >
+                <p className="font-body text-sm leading-[1.75]" style={{ color: 'rgba(255,255,255,0.5)' }}>
                   {v.text}
                 </p>
-              </div>
-            </div>
+              </CardBody>
+            </Card>
           </AnimatedSection>
         ))}
       </div>
