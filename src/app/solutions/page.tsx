@@ -54,6 +54,12 @@ export default function SolutionsPage() {
       <section className="relative overflow-hidden" style={{ background: '#0d1f22', minHeight: 480 }}>
         <FloatingOrbs />
         <div className="page-container relative z-10 pt-28 pb-20 md:pt-36 md:pb-28">
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-1.5 font-body text-sm mb-8" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            <Link href="/" className="hover:text-white transition-colors">Home</Link>
+            <span>/</span>
+            <span className="font-semibold text-white">Solutions</span>
+          </nav>
           <AnimatedSection>
             <p
               className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-3"

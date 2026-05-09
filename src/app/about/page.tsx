@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { AnimatedSection } from '@/components/ui/AnimatedSection';
+import { FloatingOrbs } from '@/components/ui/FloatingOrbs';
+import { IconArrowRight } from '@/components/ui/Icons';
 import { sanityClient } from '@/lib/sanity';
 import { TEAM_MEMBERS_QUERY, MILESTONE_TIMELINE_QUERY, PARTNERS_QUERY } from '@/lib/queries';
 import { Button } from '@/components/ui/Button';
@@ -58,49 +61,52 @@ export default async function AboutPage() {
 
   return (
     <main>
-      {/* Hero — background stretches to top of screen */}
-      <div
-        className="relative overflow-hidden"
-        style={{ height: 448 }}
-      >
-        {/* Background gradient (replace with next/image when photo available) */}
-        <div
-          className="absolute inset-0"
-          style={{ background: 'linear-gradient(135deg, #39575C 0%, #0d1f22 100%)' }}
-        />
-        {/* Overlay */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'linear-gradient(180deg, rgba(13,31,34,0.2) 0%, rgba(13,31,34,0.9) 100%)',
-          }}
-        />
-        {/* Breadcrumb — same visual position, colours adapted for dark bg */}
-        <div className="page-container absolute inset-x-0 top-0 pt-[88px]">
-          <nav className="flex items-center gap-1.5 font-body text-sm pt-2" style={{ color: 'rgba(255,255,255,0.45)' }}>
+      {/* Hero — matches Solutions page: FloatingOrbs + dark background */}
+      <section className="relative overflow-hidden" style={{ background: '#0d1f22', minHeight: 480 }}>
+        <FloatingOrbs />
+        <div className="page-container relative z-10 pt-28 pb-20 md:pt-36 md:pb-28">
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-1.5 font-body text-sm mb-8" style={{ color: 'rgba(255,255,255,0.45)' }}>
             <Link href="/" className="hover:text-white transition-colors">Home</Link>
             <span>/</span>
             <span className="font-semibold text-white">About</span>
           </nav>
+          <AnimatedSection>
+            <p
+              className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-3"
+              style={{ color: 'rgba(255,255,255,0.50)' }}
+            >
+              The rise of Phoenix Energy
+            </p>
+            <h1 className="font-display font-extrabold text-4xl md:text-5xl text-white leading-[1.1] mb-5 max-w-[580px]">
+              Save, earn &amp; grow with renewable energy across{' '}
+              <em style={{ color: '#709DA9', fontStyle: 'normal' }}>Africa</em>
+            </h1>
+            <p
+              className="font-body text-base leading-[1.75] mb-8 max-w-[440px]"
+              style={{ color: 'rgba(255,255,255,0.60)' }}
+            >
+              Meet the team, story and values behind Southern Africa&apos;s leading integrated clean energy company.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 font-body text-sm font-semibold rounded-full px-5 py-2.5 transition-colors duration-200 hover:bg-white"
+                style={{ background: '#F5F5F5', color: '#0d1f22' }}
+              >
+                Get in touch <IconArrowRight size={13} />
+              </Link>
+              <Link
+                href="/projects"
+                className="inline-flex items-center gap-2 font-body text-sm font-semibold rounded-full px-5 py-2.5"
+                style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.80)', border: '1px solid rgba(255,255,255,0.15)' }}
+              >
+                View our projects <IconArrowRight size={13} />
+              </Link>
+            </div>
+          </AnimatedSection>
         </div>
-        {/* Content */}
-        <div className="page-container absolute inset-x-0 bottom-0 pb-8">
-          <p
-            className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-2.5"
-            style={{ color: 'rgba(255,255,255,0.4)' }}
-          >
-            The rise of Phoenix Energy
-          </p>
-          <h1
-            className="font-display font-extrabold text-4xl text-white leading-[1.2]"
-            style={{ maxWidth: 560 }}
-          >
-            Save, earn & grow with renewable energy across{' '}
-            <em style={{ color: '#709DA9', fontStyle: 'normal' }}>Africa</em>
-          </h1>
-        </div>
-      </div>
+      </section>
 
       {/* Sections */}
       <AboutStory />
