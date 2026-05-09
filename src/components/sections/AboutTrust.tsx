@@ -126,7 +126,7 @@ export function AboutTrust({ partners }: Props) {
   };
 
   return (
-    <section className="bg-white py-[52px]" style={{ borderTop: '1px solid #E5E7EB' }}>
+    <section className="bg-white py-16 md:py-24" style={{ borderTop: '1px solid #E5E7EB' }}>
       <div className="page-container">
 
         {/* Heading */}

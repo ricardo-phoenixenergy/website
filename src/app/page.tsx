@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { HeroAccordion } from '@/components/sections/HeroAccordion';
-import { PartnerCards } from '@/components/sections/PartnerCards';
+import { AboutTrust } from '@/components/sections/AboutTrust';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { LatestPosts } from '@/components/sections/LatestPosts';
@@ -85,7 +85,7 @@ export default async function HomePage() {
       />
       <main>
         <HeroAccordion />
-        <PartnerCards partners={partners} />
+        <AboutTrust partners={partners} />
         <HowItWorks
           title="Your path to energy <em>independence</em>"
           steps={HOME_HIW_STEPS}
