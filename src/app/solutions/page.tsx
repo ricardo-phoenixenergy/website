@@ -103,21 +103,13 @@ export default function SolutionsPage() {
             return (
               <AnimatedSection key={vertical} delay={i * 0.06} className="h-full">
                 <Link href={meta.slug} className="block h-full">
-                  <Card variant="dark" pattern={1} className="h-full">
+                  <Card variant="dark" pattern={1} overlay={false} className="h-full">
                     <CardImage
                       src={VERTICAL_IMAGE[vertical]}
                       alt={meta.label}
                       height={180}
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    >
-                      {/* Vertical label badge — bottom-left over gradient scrim */}
-                      <span
-                        className="absolute bottom-3 left-3 font-body font-bold text-[10px] uppercase tracking-[0.1em] px-2.5 py-1 rounded-full"
-                        style={{ background: meta.accent, color: meta.accentText }}
-                      >
-                        {meta.label}
-                      </span>
-                    </CardImage>
+                    />
 
                     <CardBody padding="sm">
                       <p

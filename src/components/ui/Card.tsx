@@ -14,11 +14,13 @@ export interface CardProps {
    * 3 = static display: no hover of any kind.
    */
   pattern?: 1 | 2 | 3;
+  /** Set false to suppress the teal gradient overlay on dark Pattern 1 cards. Default: true. */
+  overlay?: boolean;
   className?: string;
   children: React.ReactNode;
 }
 
-export function Card({ variant = 'light', pattern = 1, className = '', children }: CardProps) {
+export function Card({ variant = 'light', pattern = 1, overlay = true, className = '', children }: CardProps) {
   const base = 'relative flex flex-col overflow-hidden rounded-2xl transition-all duration-200';
 
   const variantClass =
@@ -35,8 +37,8 @@ export function Card({ variant = 'light', pattern = 1, className = '', children 
 
   return (
     <div className={`${base} ${variantClass} ${patternClass} ${className}`}>
-      {/* Dark gradient overlay — Pattern 1 dark cards only */}
-      {variant === 'dark' && pattern === 1 && (
+      {/* Dark gradient overlay — Pattern 1 dark cards only, when overlay is enabled */}
+      {variant === 'dark' && pattern === 1 && overlay && (
         <>
           <div
             className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-0"
