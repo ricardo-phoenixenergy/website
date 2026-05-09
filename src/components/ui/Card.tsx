@@ -90,20 +90,30 @@ export function CardImage({
   children,
 }: CardImageProps) {
   return (
-    <div className="relative overflow-hidden flex-shrink-0" style={{ height }}>
+    <div className="relative flex-shrink-0" style={{ height }}>
       {src ? (
         <>
-          <Image
-            src={src}
-            alt={alt}
-            fill
-            priority={priority}
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
-            sizes={sizes}
-            placeholder="blur"
-            blurDataURL={blurDataURL ?? DEFAULT_LQIP}
-          />
-          {/* Gradient scrim over real image — no z-index needed, DOM order puts it above the Image */}
+          {/*
+            Zoom wrapper: overflow-hidden AND scale are on the same element.
+            This is critical — if overflow-hidden is on the parent and scale is on
+            the child, the browser does cross-layer GPU clipping which causes a
+            1-frame artifact at the image bottom edge when the card lifts.
+            Keeping both on the same element means the clip rect scales with the
+            content inside a single compositing layer.
+          */}
+          <div className="absolute inset-0 overflow-hidden transition-transform duration-500 group-hover:scale-[1.05]">
+            <Image
+              src={src}
+              alt={alt}
+              fill
+              priority={priority}
+              className="object-cover"
+              sizes={sizes}
+              placeholder="blur"
+              blurDataURL={blurDataURL ?? DEFAULT_LQIP}
+            />
+          </div>
+          {/* Gradient scrim — outside zoom wrapper so it doesn't scale with the image */}
           <div
             className="absolute inset-0"
             style={{
@@ -114,11 +124,11 @@ export function CardImage({
         </>
       ) : (
         <div
-          className="w-full h-full"
+          className="absolute inset-0"
           style={placeholderStyle ?? { background: '#E5E7EB' }}
         />
       )}
-      {/* Badge slots — DOM order puts this above scrim, no z-index needed */}
+      {/* Badge slots — outside zoom wrapper so badges don't scale with the image */}
       {children && (
         <div className="absolute inset-0 pointer-events-none">{children}</div>
       )}
