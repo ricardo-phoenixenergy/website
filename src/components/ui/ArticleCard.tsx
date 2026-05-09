@@ -29,27 +29,31 @@ export function ArticleCard({ post, delay = 0, className }: ArticleCardProps) {
             height={160}
             blurDataURL={blurSrc}
             sizes="(max-width: 768px) 100vw, 400px"
-          />
+          >
+            {/* Category badge — bottom-left over gradient scrim */}
+            <span
+              className="absolute bottom-3 left-3 font-body font-bold text-[10px] uppercase tracking-[0.08em] rounded-full px-2.5 py-1"
+              style={{ background: cs.bg, color: cs.color }}
+            >
+              {post.category}
+            </span>
+          </CardImage>
 
           <CardBody padding="sm">
-            {/* Tags */}
-            <div className="flex flex-wrap gap-1.5 mb-2.5">
-              <span
-                className="font-body font-bold text-[10px] uppercase tracking-[0.08em] rounded-full px-2.5 py-1"
-                style={{ background: cs.bg, color: cs.color }}
-              >
-                {post.category}
-              </span>
-              {post.tags?.slice(0, 1).map((tag) => (
-                <span
-                  key={tag}
-                  className="font-body font-semibold text-[10px] rounded-full px-2.5 py-1"
-                  style={{ background: 'rgba(112,157,169,0.10)', color: '#39575C' }}
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+            {/* Secondary tags — only rendered if present */}
+            {post.tags && post.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-2.5">
+                {post.tags.slice(0, 1).map((tag) => (
+                  <span
+                    key={tag}
+                    className="font-body font-semibold text-[10px] rounded-full px-2.5 py-1"
+                    style={{ background: 'rgba(112,157,169,0.10)', color: '#39575C' }}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
 
             {/* Title */}
             <p className="font-display font-bold text-sm text-[#1A1A1A] leading-[1.4] mb-2 flex-1 line-clamp-2">
