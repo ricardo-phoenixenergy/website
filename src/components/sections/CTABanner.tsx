@@ -27,7 +27,7 @@ export function CTABanner({
 }: CTABannerProps = {}) {
   return (
     <section
-      className="py-12 md:py-[48px]"
+      className="py-16 md:py-24"
       style={{ background: 'linear-gradient(135deg, #39575C 0%, #0d1f22 100%)' }}
     >
       <div className="page-container grid gap-10 md:grid-cols-2 md:items-center">

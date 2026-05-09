@@ -20,7 +20,7 @@ export function SectionCarousel({
   children,
 }: SectionCarouselProps) {
   return (
-    <section className={`${bg === 'gray' ? 'bg-[#F5F5F5]' : 'bg-white'} py-12 md:py-[48px]`}>
+    <section className={`${bg === 'gray' ? 'bg-[#F5F5F5]' : 'bg-white'} py-16 md:py-24`}>
       <AnimatedSection>
         <div className="page-container flex items-end justify-between mb-6">
           <div>

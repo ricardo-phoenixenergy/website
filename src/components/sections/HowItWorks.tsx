@@ -77,7 +77,7 @@ export function HowItWorks({
   };
 
   return (
-    <section className="bg-[#F5F5F5] px-6 py-12 md:py-[48px]">
+    <section className="bg-[#F5F5F5] px-6 py-16 md:py-24">
       {/* Section header */}
       <AnimatedSection className="text-center mb-11">
         <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-3">

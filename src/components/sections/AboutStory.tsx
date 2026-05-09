@@ -21,7 +21,7 @@ export function AboutStory() {
   const reduced  = useReducedMotion();
 
   return (
-    <section className="bg-white py-[52px]">
+    <section className="bg-white py-16 md:py-24">
       <div className="page-container grid gap-11 md:grid-cols-2 md:items-start">
 
         {/* ── Left — animated stat panel ────────────────────────────────────── */}
