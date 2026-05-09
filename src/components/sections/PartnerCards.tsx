@@ -1,3 +1,4 @@
+// src/components/sections/PartnerCards.tsx
 import Image from 'next/image';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import type { Partner } from '@/types/sanity';
@@ -19,31 +20,35 @@ export function PartnerCards({ partners }: PartnerCardsProps) {
   if (partners.length === 0) return null;
 
   return (
-    <section className="bg-white px-5 py-8" style={{ borderBottom: '1px solid #E5E7EB' }}>
-      <AnimatedSection>
-        <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] text-center mb-4">
-          Our energy partners
-        </p>
-        <div className="flex flex-wrap gap-12 justify-center items-center">
-          {partners.map((p) => (
-            <div key={p._id}>
-              {p.logo ? (
+    <section className="bg-white py-10 md:py-12" style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <div className="page-container">
+        <AnimatedSection>
+          <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] text-center mb-6">
+            Trusted by leading energy businesses
+          </p>
+          <div className="flex flex-wrap justify-center items-center gap-10 md:gap-14">
+            {partners.map((p) =>
+              p.logo ? (
                 <Image
+                  key={p._id}
                   src={p.logo.asset.url}
                   alt={p.logo.alt ?? p.name}
-                  height={40}
-                  width={120}
-                  className="object-contain h-32 w-auto max-w-[120px]"
+                  height={32}
+                  width={140}
+                  className="h-8 w-auto max-w-[140px] object-contain opacity-50 hover:opacity-80 transition-opacity duration-200"
                 />
               ) : (
-                <div className="w-32 h-32 rounded-lg flex items-center justify-center font-display font-extrabold text-sm text-white flex-shrink-0 bg-[#1a3a6e]">
+                <span
+                  key={p._id}
+                  className="font-body font-bold text-sm text-[#6B7280] opacity-50"
+                >
                   {getInitials(p.name)}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </AnimatedSection>
+                </span>
+              )
+            )}
+          </div>
+        </AnimatedSection>
+      </div>
     </section>
   );
 }
