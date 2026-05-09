@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/Button';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { IconArrowRight } from '@/components/ui/Icons';
 
 interface Step {
   label: string;
@@ -27,7 +28,7 @@ export function HowItWorks({
   steps,
   autoAdvanceInterval = 2600,
   showCTA = true,
-  ctaLabel = 'Get a Free Assessment →',
+  ctaLabel = 'Get a Free Assessment',
   ctaHref = '/contact',
 }: HowItWorksProps) {
   const [activeStep, setActiveStep] = useState(0);
@@ -217,7 +218,7 @@ export function HowItWorks({
         {showCTA && (
           <div className="text-center mt-7">
             <Button variant="primary" href={ctaHref}>
-              {ctaLabel}
+              {ctaLabel} <IconArrowRight size={14} />
             </Button>
           </div>
         )}
@@ -308,7 +309,7 @@ export function HowItWorks({
         {showCTA && (
           <div className="text-center mt-7">
             <Button variant="primary" href={ctaHref}>
-              {ctaLabel}
+              {ctaLabel} <IconArrowRight size={14} />
             </Button>
           </div>
         )}

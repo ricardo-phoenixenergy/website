@@ -48,7 +48,7 @@ const INTENTS: IntentOption[] = [
     accentRgb: '112,157,169',
     step2Title: 'Tell us about your company',
     hint: "For partners: Tell us about your company and the type of collaboration you have in mind. Our partnerships team will be in touch.",
-    submitLabel: 'Send partnership enquiry →',
+    submitLabel: 'Send partnership enquiry',
   },
   {
     value: 'investor',
@@ -59,7 +59,7 @@ const INTENTS: IntentOption[] = [
     accentRgb: '112,157,169',
     step2Title: 'Tell us about yourself',
     hint: "For investors: Share your details and we'll connect you with our leadership team to discuss Phoenix Energy's growth trajectory.",
-    submitLabel: 'Send investor enquiry →',
+    submitLabel: 'Send investor enquiry',
   },
 ];
 

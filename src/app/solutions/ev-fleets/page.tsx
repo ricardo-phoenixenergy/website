@@ -93,7 +93,7 @@ export default function EvFleetsPage() {
           title="Your fleet electrified <em>in four steps</em>"
           steps={steps}
           showCTA
-          ctaLabel="Get a Fleet Assessment →"
+          ctaLabel="Get a Fleet Assessment"
           ctaHref="/contact"
         />
       </div>

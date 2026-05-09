@@ -9,6 +9,7 @@ import type { Author, BlogPostCard } from '@/types/sanity';
 import { ArticleCard } from '@/components/ui/ArticleCard';
 import { CTABanner } from '@/components/sections/CTABanner';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
+import { IconArrowRight } from '@/components/ui/Icons';
 import { cache } from 'react';
 
 const getAuthor = cache((slug: string) =>
@@ -102,7 +103,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
               className="inline-block mt-4 font-body font-semibold text-xs text-white rounded-full px-4 py-2 transition-opacity hover:opacity-80"
               style={{ border: '1px solid rgba(255,255,255,0.25)' }}
             >
-              LinkedIn →
+              LinkedIn <IconArrowRight size={14} />
             </a>
           )}
         </AnimatedSection>

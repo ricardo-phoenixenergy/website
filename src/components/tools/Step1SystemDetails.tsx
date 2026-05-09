@@ -4,6 +4,7 @@ import type { SolarInputs, BessInputs } from '@/lib/valuation/types';
 import { RangeSlider } from './RangeSlider';
 import { SegmentedControl } from './SegmentedControl';
 import { Toggle } from './Toggle';
+import { IconArrowRight } from '@/components/ui/Icons';
 
 interface Step1SystemDetailsProps {
   solar: SolarInputs;
@@ -152,7 +153,7 @@ export function Step1SystemDetails({
         className="mt-6 w-full font-body font-semibold text-sm text-white rounded-xl py-3 transition-opacity hover:opacity-90"
         style={{ background: '#39575C' }}
       >
-        Next: System condition →
+        Next: System condition <IconArrowRight size={14} />
       </button>
     </div>
   );

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { SolarInputs, BessInputs, ConditionInputs, ValuationResult } from '@/lib/valuation/types';
 import { dlPush } from '@/lib/analytics';
+import { IconArrowRight } from '@/components/ui/Icons';
 
 interface SoftPaywallProps {
   result: ValuationResult;
@@ -169,7 +170,7 @@ export function SoftPaywall({ result, solar, bess, cond, onUnlock }: SoftPaywall
             opacity: valid && !submitting ? 1 : 0.5,
           }}
         >
-          {submitting ? 'Sending…' : 'Unlock my full valuation →'}
+          {submitting ? 'Sending…' : <>Unlock my full valuation <IconArrowRight size={14} /></>}
         </button>
       </form>
 

@@ -92,7 +92,7 @@ export default function EnergyOptimisationPage() {
           title="From audit to savings <em>in two weeks</em>"
           steps={steps}
           showCTA
-          ctaLabel="Book a Free Audit →"
+          ctaLabel="Book a Free Audit"
           ctaHref="/contact"
         />
       </div>

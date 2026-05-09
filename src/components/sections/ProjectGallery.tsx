@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import type { SanityImage } from '@/types/sanity';
+import { IconArrowRight } from '@/components/ui/Icons';
 
 interface ProjectGalleryProps {
   images: SanityImage[];
@@ -115,7 +116,7 @@ export function ProjectGallery({ images }: ProjectGalleryProps) {
                 style={{ background: 'rgba(255,255,255,0.1)' }}
                 aria-label="Next photo"
               >
-                →
+                <IconArrowRight size={16} />
               </button>
             )}
 

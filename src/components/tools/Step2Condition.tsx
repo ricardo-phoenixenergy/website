@@ -2,6 +2,7 @@
 
 import type { ConditionInputs } from '@/lib/valuation/types';
 import { SegmentedControl } from './SegmentedControl';
+import { IconArrowRight } from '@/components/ui/Icons';
 
 interface Step2ConditionProps {
   cond: ConditionInputs;
@@ -126,7 +127,7 @@ export function Step2Condition({ cond, onChange, onBack, onNext }: Step2Conditio
           className="flex-1 font-body font-semibold text-sm text-white rounded-xl py-3 transition-opacity hover:opacity-90"
           style={{ background: '#39575C' }}
         >
-          View my valuation →
+          View my valuation <IconArrowRight size={14} />
         </button>
       </div>
     </div>

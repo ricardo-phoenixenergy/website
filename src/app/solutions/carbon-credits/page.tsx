@@ -93,7 +93,7 @@ export default function CarbonCreditsPage() {
           title="Credits in your account <em>within 90 days</em>"
           steps={steps}
           showCTA
-          ctaLabel="Check Eligibility →"
+          ctaLabel="Check Eligibility"
           ctaHref="/contact"
         />
       </div>

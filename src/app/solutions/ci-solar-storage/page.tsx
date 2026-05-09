@@ -93,7 +93,7 @@ export default function CiSolarStoragePage() {
           title="From assessment to <em>savings in weeks</em>"
           steps={steps}
           showCTA
-          ctaLabel="Get a Free Assessment →"
+          ctaLabel="Get a Free Assessment"
           ctaHref="/contact"
         />
       </div>

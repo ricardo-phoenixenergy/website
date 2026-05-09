@@ -93,7 +93,7 @@ export default function WheelingPage() {
           title="Wheeling made <em>straightforward</em>"
           steps={steps}
           showCTA
-          ctaLabel="Get a Wheeling Quote →"
+          ctaLabel="Get a Wheeling Quote"
           ctaHref="/contact"
         />
       </div>

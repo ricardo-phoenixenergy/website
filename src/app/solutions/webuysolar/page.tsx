@@ -92,7 +92,7 @@ export default function WeBuySolarPage() {
           title="From enquiry to cash <em>in 14 days</em>"
           steps={steps}
           showCTA
-          ctaLabel="Get a Valuation →"
+          ctaLabel="Get a Valuation"
           ctaHref="/contact"
         />
       </div>
