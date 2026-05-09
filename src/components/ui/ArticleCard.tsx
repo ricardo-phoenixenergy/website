@@ -1,10 +1,10 @@
 // src/components/ui/ArticleCard.tsx
-import Image from 'next/image';
 import Link from 'next/link';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import type { BlogPostCard } from '@/types/sanity';
 import { urlFor } from '@/lib/sanity';
 import { categoryStyle, formatDate } from '@/lib/blogUtils';
+import { Card, CardImage, CardBody, CardFooter } from '@/components/ui/Card';
 
 interface ArticleCardProps {
   post: BlogPostCard;
@@ -16,34 +16,22 @@ export function ArticleCard({ post, delay = 0, className }: ArticleCardProps) {
   const cs = categoryStyle(post.category);
   const imgSrc = post.heroImage?.asset
     ? urlFor(post.heroImage).width(400).height(320).auto('format').url()
-    : null;
+    : undefined;
   const blurSrc = post.heroImage?.asset?.metadata?.lqip;
 
   return (
     <AnimatedSection delay={delay} className={className}>
-      <Link href={`/blog/${post.slug.current}`} className="group block h-full">
-        <article
-          className="bg-white rounded-2xl overflow-hidden h-full flex flex-col transition-all duration-200 group-hover:-translate-y-[5px] group-hover:shadow group-hover:border-[#cccccc]"
-          style={{ border: '1px solid #E5E7EB' }}
-        >
-          {/* Photo */}
-          <div className="relative overflow-hidden flex-shrink-0" style={{ height: 160 }}>
-            {imgSrc ? (
-              <Image
-                src={imgSrc}
-                alt={post.heroImage?.alt ?? post.title}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
-                sizes="(max-width: 768px) 100vw, 400px"
-                {...(blurSrc ? { placeholder: 'blur', blurDataURL: blurSrc } : {})}
-              />
-            ) : (
-              <div className="w-full h-full bg-[#E5E7EB]" />
-            )}
-          </div>
+      <Link href={`/blog/${post.slug.current}`} className="block h-full">
+        <Card variant="light" pattern={1} className="h-full">
+          <CardImage
+            src={imgSrc}
+            alt={post.heroImage?.alt ?? post.title}
+            height={160}
+            blurDataURL={blurSrc}
+            sizes="(max-width: 768px) 100vw, 400px"
+          />
 
-          {/* Body */}
-          <div className="p-4 flex flex-col flex-1">
+          <CardBody padding="sm">
             {/* Tags */}
             <div className="flex flex-wrap gap-1.5 mb-2.5">
               <span
@@ -52,7 +40,7 @@ export function ArticleCard({ post, delay = 0, className }: ArticleCardProps) {
               >
                 {post.category}
               </span>
-              {post.tags?.slice(0, 1).map(tag => (
+              {post.tags?.slice(0, 1).map((tag) => (
                 <span
                   key={tag}
                   className="font-body font-semibold text-[10px] rounded-full px-2.5 py-1"
@@ -64,9 +52,7 @@ export function ArticleCard({ post, delay = 0, className }: ArticleCardProps) {
             </div>
 
             {/* Title */}
-            <p
-              className="font-display font-bold text-sm text-[#1A1A1A] leading-[1.4] mb-2 flex-1 line-clamp-2"
-            >
+            <p className="font-display font-bold text-sm text-[#1A1A1A] leading-[1.4] mb-2 flex-1 line-clamp-2">
               {post.title}
             </p>
 
@@ -74,19 +60,15 @@ export function ArticleCard({ post, delay = 0, className }: ArticleCardProps) {
             <p className="font-body text-xs text-[#6B7280] leading-[1.65] mb-3 line-clamp-2">
               {post.excerpt}
             </p>
+          </CardBody>
 
-            {/* Footer */}
-            <div
-              className="flex justify-between items-center pt-3"
-              style={{ borderTop: '1px solid #E5E7EB' }}
-            >
-              <span className="font-body text-xs text-[#9CA3AF]">{formatDate(post.publishedAt)}</span>
-              <span className="font-body text-xs font-medium" style={{ color: '#709DA9' }}>
-                {post.readTime} min read
-              </span>
-            </div>
-          </div>
-        </article>
+          <CardFooter variant="light">
+            <span className="font-body text-xs text-[#9CA3AF]">{formatDate(post.publishedAt)}</span>
+            <span className="font-body text-xs font-medium" style={{ color: '#709DA9' }}>
+              {post.readTime} min read
+            </span>
+          </CardFooter>
+        </Card>
       </Link>
     </AnimatedSection>
   );
