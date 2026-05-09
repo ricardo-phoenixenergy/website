@@ -7,7 +7,7 @@ export function FinancingCards() {
       {/* CapEx — light card */}
       <Card variant="light" pattern={2} className="flex-1">
         {/* 3px dusty-blue accent bar */}
-        <div className="h-[3px] rounded-full" style={{ background: '#709DA9' }} />
+        <div className="h-[3px]" style={{ background: '#709DA9' }} />
         <CardBody padding="lg">
           <p className="font-body text-xs font-bold uppercase tracking-[0.12em] text-[#6B7280] mb-1">
             CapEx
@@ -35,7 +35,7 @@ export function FinancingCards() {
       {/* OpEx — dark card */}
       <Card variant="dark" pattern={2} className="flex-1">
         {/* 3px dusty-blue accent bar */}
-        <div className="h-[3px] rounded-full" style={{ background: '#709DA9' }} />
+        <div className="h-[3px]" style={{ background: '#709DA9' }} />
         <CardBody padding="lg">
           <p
             className="font-body text-xs font-bold uppercase tracking-[0.12em] mb-1"
