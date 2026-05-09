@@ -105,13 +105,14 @@ Used by: FinancingCards (CapEx + OpEx), Tools cards, any card with an explicit C
 
 **Pattern 3 — Static / display only**
 - No interaction. The card is purely informational.
-- No lift, no border change, no `cursor-pointer`.
-- Dark variant cards (AboutValues) may retain their aesthetic gradient overlay on hover — this is visual polish only, not an interaction affordance. The card does NOT lift and has no `cursor-pointer`.
+- No hover effect of any kind — no lift, no gradient overlay, no border change, no shadow.
 - `cursor-default`
 
 ```
-Used by: Testimonials (light, no hover at all), AboutValues (dark, aesthetic gradient hover only — no lift)
+Used by: Testimonials, AboutValues
 ```
+
+> **Note:** `AboutValues.tsx` currently has a gradient overlay hover. This must be **removed** — it is inconsistent with Pattern 3 and gives the impression the card is interactive when it is not.
 
 ### 3.5 Shared hover tokens
 
@@ -304,7 +305,7 @@ Used by: SectionCarousel (LatestPosts, FeaturedProjects)
 
 ## 7. Dark Card Hover System
 
-Dark cards (AboutValues, AboutTeam) use a gradient overlay pattern rather than border highlight. The overlay structure is standardised:
+Dark Pattern 1 cards (AboutTeam) use a gradient overlay rather than a border highlight. Pattern 3 dark cards (AboutValues) have **no hover at all** — the gradient overlay currently in `AboutValues.tsx` is removed. The overlay structure for Pattern 1 dark cards is:
 
 ```tsx
 // Static gradient overlay — always present, opacity-0 at rest
@@ -343,7 +344,7 @@ This overlay is already in `AboutValues.tsx` and `AboutTeam.tsx`. It must be ext
 | `src/components/sections/FeaturedProjectCard.tsx` | Adopt `Card` base; remove text arrow |
 | `src/components/ui/FeaturedArticleCard.tsx` | Adopt `Card` base |
 | `src/components/sections/Testimonials.tsx` | Adopt `Card` base (Pattern 3 — no hover) |
-| `src/components/sections/AboutValues.tsx` | Adopt `Card` dark base (Pattern 3 — no hover); extract overlay to Card |
+| `src/components/sections/AboutValues.tsx` | Adopt `Card` dark base (Pattern 3 — no hover); **remove** gradient overlay and radial glow entirely |
 | `src/components/sections/AboutTeam.tsx` | Adopt `Card` dark base (Pattern 1 — full-card link); fix padding |
 | `src/components/sections/FinancingCards.tsx` | Adopt `Card` base (Pattern 2 — button only); fix hover to shadow-only |
 | `src/components/sections/HowItWorks.tsx` | Fix padding to `py-16 md:py-24`; replace `→` with `<IconArrowRight />` |
