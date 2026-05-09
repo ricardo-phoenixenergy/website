@@ -17,7 +17,7 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
   const cs = categoryStyle(post.category);
   const imgSrc = post.heroImage?.asset
     ? urlFor(post.heroImage).width(600).height(440).auto('format').url()
-    : null;
+    : undefined;
   const blurSrc = post.heroImage?.asset?.metadata?.lqip;
   const authorImgSrc = post.author.photo?.asset
     ? urlFor(post.author.photo).width(48).height(48).url()
