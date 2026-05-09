@@ -1,6 +1,7 @@
 // src/components/tools/Step3Results.tsx
 'use client';
 import type { SolarInputs, BessInputs, ConditionInputs, ValuationResult } from '@/lib/valuation/types';
+import { IconArrowLeft } from '@/components/ui/Icons';
 import { ResultsGrid } from './ResultsGrid';
 import { DCFBarChart } from './DCFBarChart';
 import { BreakdownRows } from './BreakdownRows';
@@ -106,7 +107,7 @@ export function Step3Results({
         onClick={onBack}
         className="mt-5 font-body text-xs text-[#6B7280] hover:text-[#39575C] transition-colors"
       >
-        ← Back
+        <IconArrowLeft size={14} /> Back
       </button>
     </div>
   );

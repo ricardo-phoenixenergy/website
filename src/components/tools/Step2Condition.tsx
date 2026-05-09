@@ -2,7 +2,7 @@
 
 import type { ConditionInputs } from '@/lib/valuation/types';
 import { SegmentedControl } from './SegmentedControl';
-import { IconArrowRight } from '@/components/ui/Icons';
+import { IconArrowLeft, IconArrowRight } from '@/components/ui/Icons';
 
 interface Step2ConditionProps {
   cond: ConditionInputs;
@@ -119,7 +119,7 @@ export function Step2Condition({ cond, onChange, onBack, onNext }: Step2Conditio
           className="font-body font-semibold text-sm text-[#6B7280] rounded-xl py-3 px-6 transition-colors hover:text-[#39575C]"
           style={{ border: '1px solid #E5E7EB', background: 'white' }}
         >
-          ← Back
+          <IconArrowLeft size={14} /> Back
         </button>
         <button
           type="button"

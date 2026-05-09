@@ -13,7 +13,7 @@ import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { FeaturedArticleCard } from '@/components/ui/FeaturedArticleCard';
 import { ArticleCard } from '@/components/ui/ArticleCard';
 import { CTABanner } from '@/components/sections/CTABanner';
-import { IconArrowRight } from '@/components/ui/Icons';
+import { IconArrowLeft, IconArrowRight } from '@/components/ui/Icons';
 import { BlogSearchInput } from '@/components/blog/BlogSearchInput';
 import { BlogFilterPills } from '@/components/blog/BlogFilterPills';
 import Link from 'next/link';
@@ -187,7 +187,7 @@ export default async function BlogPage({
                   href={buildBlogHref(page - 1, category, tag)}
                   className="font-body text-xs text-[#6B7280] px-4 py-2 rounded-full border border-[#E5E7EB] transition-colors hover:bg-white"
                 >
-                  ← Prev
+                  <IconArrowLeft size={14} /> Prev
                 </Link>
               )}
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
