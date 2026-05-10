@@ -38,9 +38,11 @@ interface Props {
   partners: Partner[];
   /** When false, shows all partners in one flat grid with centred heading. Default: true */
   showTabs?: boolean;
+  /** Alignment of the logo card row. Default: 'start' */
+  justify?: 'center' | 'start';
 }
 
-export function AboutTrust({ partners, showTabs = true }: Props) {
+export function AboutTrust({ partners, showTabs = true, justify = 'start' }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('investors');
   const reduced = useReducedMotion();
 
@@ -57,7 +59,7 @@ export function AboutTrust({ partners, showTabs = true }: Props) {
         boxShadow: `0 10px 28px rgba(57,87,92,0.1), 0 1px 4px rgba(0,0,0,0.05)`,
         transition: { type: 'spring' as const, stiffness: 420, damping: 28 },
       },
-      className: 'flex flex-col rounded-xl overflow-hidden',
+      className: 'flex flex-col rounded-xl overflow-hidden w-[calc(50%-6px)] sm:w-[280px]',
       style: {
         borderWidth: 1,
         borderStyle: 'solid' as const,
@@ -94,15 +96,6 @@ export function AboutTrust({ partners, showTabs = true }: Props) {
           )}
         </div>
 
-        {/* Name footer */}
-        <div
-          className="w-full px-4 py-2.5 text-center"
-          style={{ borderTop: '1px solid #EFEFEF' }}
-        >
-          <p className="font-body text-xs font-semibold text-[#6B7280] leading-tight truncate">
-            {partner.name}
-          </p>
-        </div>
       </>
     );
 
@@ -188,7 +181,7 @@ export function AboutTrust({ partners, showTabs = true }: Props) {
               initial={reduced ? false : 'hidden'}
               animate={reduced ? undefined : 'show'}
               exit={reduced ? undefined : 'exit'}
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"
+              className={`flex flex-wrap gap-3 ${justify === 'center' ? 'justify-center' : 'justify-start'}`}
             >
               {items.map((partner) => renderCard(partner))}
             </motion.div>
