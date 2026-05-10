@@ -5,13 +5,13 @@ import { FloatingOrbs } from '@/components/ui/FloatingOrbs';
 import { IconArrowRight } from '@/components/ui/Icons';
 import { sanityClient } from '@/lib/sanity';
 import { TEAM_MEMBERS_QUERY, MILESTONE_TIMELINE_QUERY, PARTNERS_QUERY } from '@/lib/queries';
-import { Button } from '@/components/ui/Button';
 import { AboutStory } from '@/components/sections/AboutStory';
 import { AboutMission } from '@/components/sections/AboutMission';
 import { AboutValues } from '@/components/sections/AboutValues';
 import { AboutTimeline } from '@/components/sections/AboutTimeline';
 import { AboutTeam } from '@/components/sections/AboutTeam';
 import { AboutTrust } from '@/components/sections/AboutTrust';
+import { PageFooter } from '@/components/layout/PageFooter';
 import type { TeamMember, MilestoneTimeline, Partner } from '@/types/sanity';
 
 export const metadata: Metadata = {
@@ -60,6 +60,7 @@ export default async function AboutPage() {
   ]);
 
   return (
+    <>
     <main>
       {/* Hero — matches Solutions page: FloatingOrbs + dark background */}
       <section className="relative overflow-hidden" style={{ background: '#0d1f22', minHeight: 480 }}>
@@ -116,24 +117,8 @@ export default async function AboutPage() {
       <AboutTeam members={teamMembers} />
       <AboutTrust partners={partners} />
 
-      {/* CTA Banner — teal variant */}
-      <section className="bg-[#39575C] px-6 py-[52px] text-center">
-        <div className="max-w-[520px] mx-auto">
-          <h2 className="font-display font-extrabold text-3xl text-white leading-[1.2] mb-3">
-            Work with us
-          </h2>
-          <p
-            className="font-body text-sm leading-[1.75] mb-6"
-            style={{ color: 'rgba(255,255,255,0.6)' }}
-          >
-            Whether you're a prospective client or a future partner — we'd love to hear from you.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <Button variant="light" href="/contact">Get in Touch</Button>
-            <Button variant="ghost" href="/projects">View our projects</Button>
-          </div>
-        </div>
-      </section>
     </main>
+    <PageFooter ctaVariant="centered" />
+    </>
   );
 }

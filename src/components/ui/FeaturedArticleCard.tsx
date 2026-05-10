@@ -64,7 +64,7 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
               {post.tags?.slice(0, 2).map((tag) => (
                 <span
                   key={tag}
-                  className="font-body font-semibold text-[10px] rounded-full px-2.5 py-1"
+                  className="font-body font-bold text-[10px] uppercase tracking-[0.08em] rounded-full px-2.5 py-1"
                   style={{ background: 'rgba(112,157,169,0.10)', color: '#39575C' }}
                 >
                   {tag}

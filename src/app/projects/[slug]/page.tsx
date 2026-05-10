@@ -11,6 +11,7 @@ import { ProjectCard } from '@/components/sections/ProjectCard';
 import { ProjectGallery } from '@/components/sections/ProjectGallery';
 import { IconArrowRight } from '@/components/ui/Icons';
 import type { Project } from '@/types/sanity';
+import { PageFooter } from '@/components/layout/PageFooter';
 
 export const revalidate = 3600;
 

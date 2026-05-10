@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { PageFooter } from '@/components/layout/PageFooter';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy | Phoenix Energy',
@@ -29,6 +30,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export default function PrivacyPolicyPage() {
   return (
+    <>
     <main className="bg-[#F5F5F5] min-h-screen">
       <div className="page-container pt-24 pb-16">
 
@@ -232,5 +234,7 @@ export default function PrivacyPolicyPage() {
         </div>
       </div>
     </main>
+    <PageFooter showCta={false} />
+    </>
   );
 }

@@ -12,7 +12,7 @@ import { TableOfContents, type TocItem } from '@/components/blog/TableOfContents
 import { ShareButtons } from '@/components/blog/ShareButtons';
 import { AuthorCard } from '@/components/blog/AuthorCard';
 import { RelatedPosts } from '@/components/blog/RelatedPosts';
-import { CTABanner } from '@/components/sections/CTABanner';
+import { PageFooter } from '@/components/layout/PageFooter';
 import { BlogReadDepth } from '@/components/analytics/BlogReadDepth';
 import { cache } from 'react';
 
@@ -327,7 +327,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </aside>
       </div>
 
-      <CTABanner />
+      <PageFooter ctaVariant="centered" />
     </>
   );
 }

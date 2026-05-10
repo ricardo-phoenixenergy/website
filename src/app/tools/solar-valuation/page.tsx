@@ -2,7 +2,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SolarValuationTool } from '@/components/tools/SolarValuationTool';
-import { CTABanner } from '@/components/sections/CTABanner';
+import { PageFooter } from '@/components/layout/PageFooter';
 
 export const metadata: Metadata = {
   title: 'Solar Asset Valuation Tool — What Is Your System Worth? | Phoenix Energy',
@@ -82,7 +82,7 @@ export default function SolarValuationPage() {
         </div>
       </main>
 
-      <CTABanner />
+      <PageFooter ctaVariant="centered" />
     </>
   );
 }

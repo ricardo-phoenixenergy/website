@@ -90,35 +90,25 @@ export function CardImage({
   children,
 }: CardImageProps) {
   return (
-    <div className="relative flex-shrink-0" style={{ height }}>
+    <div className="relative flex-shrink-0 overflow-hidden" style={{ height }}>
       {src ? (
         <>
-          {/*
-            Zoom wrapper: overflow-hidden AND scale are on the same element.
-            This is critical — if overflow-hidden is on the parent and scale is on
-            the child, the browser does cross-layer GPU clipping which causes a
-            1-frame artifact at the image bottom edge when the card lifts.
-            Keeping both on the same element means the clip rect scales with the
-            content inside a single compositing layer.
-          */}
-          <div className="absolute inset-0 overflow-hidden transition-transform duration-500 group-hover:scale-[1.05]">
-            <Image
-              src={src}
-              alt={alt}
-              fill
-              priority={priority}
-              className="object-cover"
-              sizes={sizes}
-              placeholder="blur"
-              blurDataURL={blurDataURL ?? DEFAULT_LQIP}
-            />
-          </div>
-          {/* Gradient scrim — outside zoom wrapper so it doesn't scale with the image */}
+          <Image
+            src={src}
+            alt={alt}
+            fill
+            priority={priority}
+            className="object-cover"
+            sizes={sizes}
+            placeholder="blur"
+            blurDataURL={blurDataURL ?? DEFAULT_LQIP}
+          />
+          {/* Gradient scrim */}
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                'linear-gradient(to top, rgba(13,31,34,0.65) 0%, rgba(13,31,34,0.08) 55%, transparent 100%)',
+                'linear-gradient(to top, rgba(13,31,34,0.92) 0%, rgba(13,31,34,0.55) 30%, rgba(13,31,34,0.08) 65%, transparent 100%)',
             }}
           />
         </>

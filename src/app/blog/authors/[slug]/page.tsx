@@ -7,7 +7,7 @@ import { sanityClient, urlFor } from '@/lib/sanity';
 import { AUTHOR_BY_SLUG_QUERY, POSTS_BY_AUTHOR_QUERY, ALL_AUTHOR_SLUGS_QUERY } from '@/lib/queries';
 import type { Author, BlogPostCard } from '@/types/sanity';
 import { ArticleCard } from '@/components/ui/ArticleCard';
-import { CTABanner } from '@/components/sections/CTABanner';
+import { PageFooter } from '@/components/layout/PageFooter';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { IconArrowRight } from '@/components/ui/Icons';
 import { cache } from 'react';
@@ -143,7 +143,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
         )}
       </section>
 
-      <CTABanner />
+      <PageFooter ctaVariant="centered" />
     </>
   );
 }

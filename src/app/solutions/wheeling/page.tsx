@@ -5,7 +5,7 @@ import { SolutionTabs } from '@/components/sections/SolutionTabs';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
-import { CTABanner } from '@/components/sections/CTABanner';
+import { PageFooter } from '@/components/layout/PageFooter';
 import { WheelingCalculator } from '@/components/sections/calculators/WheelingCalculator';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
@@ -101,7 +101,7 @@ export default function WheelingPage() {
         <FeaturedProjects vertical={vertical} />
       </div>
       <RelatedArticles vertical={vertical} />
-      <CTABanner
+      <PageFooter
         eyebrow="Start wheeling"
         heading="Access wholesale renewable energy without owning a single panel"
         body="Connect to Phoenix Energy's wheeling network and start purchasing clean energy at rates below Eskom's tariff — fully managed from PPA agreement to delivery."

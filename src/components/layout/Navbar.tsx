@@ -137,45 +137,67 @@ export function Navbar() {
             <AnimatePresence>
               {dropdownOpen && (
                 <motion.div
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0, transition: { duration: 0.22, ease: 'easeOut' } }}
-                  exit={{ opacity: 0, y: -4, transition: { duration: 0.15 } }}
-                  className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[440px] rounded-2xl border border-white/10 overflow-hidden"
-                  style={{ background: 'rgba(13,31,34,0.97)', backdropFilter: 'blur(16px)' }}
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0, transition: { duration: 0.2, ease: 'easeOut' } }}
+                  exit={{ opacity: 0, y: -4, transition: { duration: 0.14 } }}
+                  className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[500px] rounded-2xl overflow-hidden"
+                  style={{
+                    background: '#0d1f22',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    boxShadow: '0 24px 64px rgba(0,0,0,0.45), 0 4px 16px rgba(0,0,0,0.2)',
+                  }}
                   onMouseEnter={openDropdown}
                   onMouseLeave={closeDropdown}
                 >
-                  <div className="grid grid-cols-2 p-3 gap-1">
-                    {DROPDOWN_ITEMS.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-white/[0.06] transition-colors duration-150 group"
-                        onClick={() => setDropdownOpen(false)}
-                      >
-                        <span
-                          className="w-2 h-2 rounded-full flex-shrink-0"
-                          style={{ background: SOLUTION_META[item.vertical].accent }}
-                        />
-                        <span className="flex flex-col">
-                          <span className="font-body font-medium text-base text-white leading-none mb-0.5">
-                            {item.name}
-                          </span>
-                          <span className="font-body font-normal text-sm text-white/40 leading-none">
-                            {item.blurb}
-                          </span>
-                        </span>
-                      </Link>
-                    ))}
+                  {/* Panel header */}
+                  <div className="px-5 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                    <p className="font-body text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                      Our Solutions
+                    </p>
                   </div>
-                  <div className="border-t border-white/[0.07] py-2.5 text-center">
+
+                  {/* Solution items */}
+                  <div className="grid grid-cols-2 gap-px p-3">
+                    {DROPDOWN_ITEMS.map((item) => {
+                      const meta = SOLUTION_META[item.vertical];
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className="group flex items-start gap-3 px-3 py-3 rounded-xl transition-colors duration-150 hover:bg-white/[0.05]"
+                          onClick={() => setDropdownOpen(false)}
+                        >
+                          {/* Accent dot */}
+                          <span
+                            className="w-2 h-2 rounded-full flex-shrink-0 mt-[5px]"
+                            style={{ background: meta.accent }}
+                          />
+                          <span className="flex flex-col gap-0.5 min-w-0">
+                            <span className="font-display font-semibold text-sm text-white leading-snug group-hover:text-white transition-colors">
+                              {item.name}
+                            </span>
+                            <span className="font-body text-xs leading-snug" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                              {item.blurb}
+                            </span>
+                          </span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+
+                  {/* Footer CTA */}
+                  <div
+                    className="px-5 py-3 flex items-center justify-between"
+                    style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+                  >
                     <Link
                       href="/solutions"
-                      className="group inline-flex items-center gap-1.5 font-body text-sm font-medium text-white/50 hover:text-white/80 transition-colors"
+                      className="group inline-flex items-center gap-1.5 font-body text-sm font-semibold transition-colors duration-150"
+                      style={{ color: '#709DA9' }}
                       onClick={() => setDropdownOpen(false)}
                     >
                       View all solutions
-                      <span className="transition-transform duration-200 group-hover:translate-x-1">
+                      <span className="transition-transform duration-200 group-hover:translate-x-0.5">
                         <IconArrowRight size={13} />
                       </span>
                     </Link>

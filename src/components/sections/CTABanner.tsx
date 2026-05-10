@@ -38,22 +38,6 @@ export function CTABanner({
       className="py-16 md:py-24 relative overflow-visible"
       style={{ background: '#0d1f22', borderTop: '3px solid #709DA9' }}
     >
-      {/* Watermark — lives here, not in Footer, so it only appears when CTA is rendered */}
-      <img
-        src="/inverted-logo.svg"
-        alt=""
-        aria-hidden
-        className="absolute pointer-events-none select-none"
-        style={{
-          width: 'clamp(320px, 38vw, 520px)',
-          right: '-3%',
-          bottom: '-5%',
-          opacity: 0.07,
-          zIndex: 0,
-          maskImage: 'linear-gradient(to bottom, transparent 0%, black 35%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 35%)',
-        }}
-      />
 
       {variant === 'centered' ? (
         <AnimatedSection className="page-container relative z-10 text-center max-w-2xl mx-auto">

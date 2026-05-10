@@ -5,7 +5,7 @@ import { SolutionTabs } from '@/components/sections/SolutionTabs';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
-import { CTABanner } from '@/components/sections/CTABanner';
+import { PageFooter } from '@/components/layout/PageFooter';
 import { OptimisationCalculator } from '@/components/sections/calculators/OptimisationCalculator';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
@@ -100,7 +100,7 @@ export default function EnergyOptimisationPage() {
         <FeaturedProjects vertical={vertical} />
       </div>
       <RelatedArticles vertical={vertical} />
-      <CTABanner
+      <PageFooter
         eyebrow="Stop overpaying"
         heading="Reduce your energy costs without replacing your infrastructure"
         body="Our engineers analyse your load profile, identify hidden inefficiencies, and deliver a savings roadmap in 5 business days — at no cost to you."

@@ -12,7 +12,7 @@ import type { BlogPostCard } from '@/types/sanity';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { FeaturedArticleCard } from '@/components/ui/FeaturedArticleCard';
 import { ArticleCard } from '@/components/ui/ArticleCard';
-import { CTABanner } from '@/components/sections/CTABanner';
+import { PageFooter } from '@/components/layout/PageFooter';
 import { IconArrowLeft, IconArrowRight } from '@/components/ui/Icons';
 import { BlogSearchInput } from '@/components/blog/BlogSearchInput';
 import { BlogFilterPills } from '@/components/blog/BlogFilterPills';
@@ -217,7 +217,7 @@ export default async function BlogPage({
 
       </div>
 
-      <CTABanner />
+      <PageFooter ctaVariant="centered" />
     </>
   );
 }

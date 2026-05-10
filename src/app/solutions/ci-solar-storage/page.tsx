@@ -5,7 +5,7 @@ import { SolutionTabs } from '@/components/sections/SolutionTabs';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
-import { CTABanner } from '@/components/sections/CTABanner';
+import { PageFooter } from '@/components/layout/PageFooter';
 import { SolarCalculator } from '@/components/sections/calculators/SolarCalculator';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
@@ -101,7 +101,7 @@ export default function CiSolarStoragePage() {
         <FeaturedProjects vertical={vertical} />
       </div>
       <RelatedArticles vertical={vertical} />
-      <CTABanner
+      <PageFooter
         eyebrow="Start saving"
         heading="Cut your electricity bill — permanently"
         body="Get a free site assessment and energy yield simulation from our certified engineers. No commitment required — results delivered within 48 hours."

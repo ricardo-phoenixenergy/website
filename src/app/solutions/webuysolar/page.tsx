@@ -5,7 +5,7 @@ import { SolutionTabs } from '@/components/sections/SolutionTabs';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
-import { CTABanner } from '@/components/sections/CTABanner';
+import { PageFooter } from '@/components/layout/PageFooter';
 import { WeBuySolarCalculator } from '@/components/sections/calculators/WeBuySolarCalculator';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
@@ -100,7 +100,7 @@ export default function WeBuySolarPage() {
         <FeaturedProjects vertical={vertical} />
       </div>
       <RelatedArticles vertical={vertical} />
-      <CTABanner
+      <PageFooter
         eyebrow="Sell today"
         heading="Get paid for your solar asset within 5 business days"
         body="Receive a fair-market offer on your existing solar or BESS system. No agents, no delays — just a transparent valuation and fast settlement."

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ContactForm } from '@/components/sections/ContactForm';
+import { PageFooter } from '@/components/layout/PageFooter';
 import { SOLUTION_META, SOLUTION_VERTICALS } from '@/types/solutions';
 import { IconMail, IconPhone, IconMapPin, IconClipboardCheck, IconLinkedIn } from '@/components/ui/Icons';
 
@@ -19,6 +20,7 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
+    <>
     <main className="bg-[#F5F5F5] min-h-screen">
       <div className="page-container pt-24 pb-16">
 
@@ -51,8 +53,7 @@ export default function ContactPage() {
           <div className="flex flex-col gap-4">
 
             {/* Contact info card */}
-            <div className="rounded-2xl p-6 bg-[#39575C]"
-            style={{ background: 'linear-gradient(135deg, #39575C 0%, #0d1f22 100%)' }}>
+            <div className="rounded-2xl p-6" style={{ background: '#0d1f22' }}>
               <p
                 className="font-body text-lg font-bold uppercase tracking-[0.14em] mb-4"
                 style={{ color: 'rgba(255,255,255,0.35)' }}
@@ -76,9 +77,9 @@ export default function ContactPage() {
                   },
                   {
                     icon: <IconMapPin size={17} />,
-                    label: 'Location',
-                    value: 'South Africa',
-                    sub: 'Serving Southern Africa & beyond',
+                    label: 'Head Office',
+                    value: 'The Colosseum, Century City',
+                    sub: '1st Floor, Foyer 3, Cape Town, 7441',
                   },
                 ].map((row) => (
                   <div key={row.label} className="flex items-start gap-3">
@@ -140,5 +141,7 @@ export default function ContactPage() {
         </div>
       </div>
     </main>
+    <PageFooter showCta={false} />
+    </>
   );
 }

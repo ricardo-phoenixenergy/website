@@ -5,7 +5,7 @@ import { SolutionTabs } from '@/components/sections/SolutionTabs';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
-import { CTABanner } from '@/components/sections/CTABanner';
+import { PageFooter } from '@/components/layout/PageFooter';
 import { EvFleetsCalculator } from '@/components/sections/calculators/EvFleetsCalculator';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
@@ -101,7 +101,7 @@ export default function EvFleetsPage() {
         <FeaturedProjects vertical={vertical} />
       </div>
       <RelatedArticles vertical={vertical} />
-      <CTABanner
+      <PageFooter
         eyebrow="Electrify your fleet"
         heading="Future-proof your operations with clean charging infrastructure"
         body="From feasibility study to full commissioning — we design, fund, and operate EV charging networks for commercial and industrial fleets across Southern Africa."

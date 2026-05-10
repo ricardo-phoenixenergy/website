@@ -220,13 +220,6 @@ function DesktopAccordion() {
               }}
             />
 
-            {/* Collapsed label */}
-            <div
-              className="absolute top-4 left-3 font-display font-extrabold text-sm transition-opacity duration-300"
-              style={{ color: 'rgba(255,255,255,0.2)', opacity: isActive ? 0 : 1 }}
-            >
-              {panel.number}
-            </div>
             {!isActive && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <p
@@ -332,9 +325,6 @@ function MobileAccordion() {
               {/* Collapsed strip */}
               {!isActive && (
                 <div className="absolute inset-0 flex items-center px-5 gap-3 pointer-events-none">
-                  <span className="font-display font-extrabold text-xs flex-shrink-0" style={{ color: 'rgba(255,255,255,0.2)' }}>
-                    {panel.number}
-                  </span>
                   <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: meta.accent }} />
                   <p className="font-body text-xs font-bold uppercase tracking-[0.14em] truncate" style={{ color: 'rgba(255,255,255,0.5)' }}>
                     {meta.label}

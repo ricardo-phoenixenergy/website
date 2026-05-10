@@ -3,6 +3,7 @@ import { sanityClient } from '@/lib/sanity';
 import { ALL_PROJECTS_QUERY } from '@/lib/queries';
 import { ProjectsGrid } from '@/components/sections/ProjectsGrid';
 import type { ProjectPreview } from '@/types/sanity';
+import { PageFooter } from '@/components/layout/PageFooter';
 
 export const metadata: Metadata = {
   title: 'Projects & Installations | Phoenix Energy',
@@ -24,5 +25,10 @@ export default async function ProjectsPage() {
   } catch {
     // Graceful fallback — grid renders empty state
   }
-  return <ProjectsGrid projects={projects} />;
+  return (
+    <>
+      <ProjectsGrid projects={projects} />
+      <PageFooter showCta={false} />
+    </>
+  );
 }

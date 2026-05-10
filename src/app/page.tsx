@@ -4,7 +4,7 @@ import { AboutTrust } from '@/components/sections/AboutTrust';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { LatestPosts } from '@/components/sections/LatestPosts';
-import { CTABanner } from '@/components/sections/CTABanner';
+import { PageFooter } from '@/components/layout/PageFooter';
 import { sanityClient } from '@/lib/sanity';
 import { PARTNERS_QUERY } from '@/lib/queries';
 import type { Partner } from '@/types/sanity';
@@ -94,7 +94,7 @@ export default async function HomePage() {
         />
         <FeaturedProjects />
         <LatestPosts />
-        <CTABanner />
+        <PageFooter />
       </main>
     </>
   );

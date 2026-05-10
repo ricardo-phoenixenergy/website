@@ -2,7 +2,6 @@
 
 import { usePathname } from 'next/navigation';
 import { Navbar } from './Navbar';
-import { Footer } from './Footer';
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -14,7 +13,6 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
     <>
       <Navbar />
       {children}
-      <Footer />
     </>
   );
 }

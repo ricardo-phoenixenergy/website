@@ -28,7 +28,7 @@ export function FeaturedProjectCard({ project }: FeaturedProjectCardProps) {
                 alt={project.heroImage.alt ?? project.title}
                 fill
                 priority
-                className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+                className="object-cover"
                 sizes="(max-width: 640px) 100vw, 60vw"
                 placeholder="blur"
                 blurDataURL={project.heroImage.asset.metadata?.lqip ?? DEFAULT_LQIP}

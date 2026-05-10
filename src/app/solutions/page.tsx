@@ -4,7 +4,6 @@ import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { FloatingOrbs } from '@/components/ui/FloatingOrbs';
 import { SOLUTION_META, SOLUTION_VERTICALS } from '@/types/solutions';
 import { VERTICAL_CONFIG } from '@/config/verticals';
-import { CTABanner } from '@/components/sections/CTABanner';
 import { IconArrowRight } from '@/components/ui/Icons';
 import { Card, CardImage, CardBody, CardFooter } from '@/components/ui/Card';
 import type { SolutionVertical } from '@/types/solutions';
@@ -161,7 +160,6 @@ export default function SolutionsPage() {
         </div>
       </section>
 
-      <CTABanner />
     </>
   );
 }

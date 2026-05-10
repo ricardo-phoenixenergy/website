@@ -2,7 +2,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
-import { CTABanner } from '@/components/sections/CTABanner';
+import { PageFooter } from '@/components/layout/PageFooter';
 import { IconArrowRight } from '@/components/ui/Icons';
 
 export const metadata: Metadata = {
@@ -138,7 +138,7 @@ export default function ToolsPage() {
         </div>
       </main>
 
-      <CTABanner />
+      <PageFooter ctaVariant="centered" />
     </>
   );
 }
