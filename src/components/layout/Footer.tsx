@@ -5,11 +5,11 @@ export function Footer() {
 
   return (
     <footer
-      className="bg-[#0d1f22]"
+      className="bg-[#0d1f22] relative"
       style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
     >
       {/* Desktop single row */}
-      <div className="page-container hidden md:flex items-center justify-between py-4">
+      <div className="page-container hidden md:flex items-center justify-between py-4 relative z-10">
         <Link
           href="/"
           className="font-display font-[800] text-xl flex-shrink-0 flex items-center gap-1.5"
@@ -52,7 +52,7 @@ export function Footer() {
       </div>
 
       {/* Mobile centred stack */}
-      <div className="md:hidden flex flex-col items-center gap-2 py-3.5 px-4 text-center">
+      <div className="md:hidden flex flex-col items-center gap-2 py-3.5 px-4 text-center relative z-10">
         <Link
           href="/"
           className="font-display font-extrabold text-sm tracking-[0.04em] text-white"
