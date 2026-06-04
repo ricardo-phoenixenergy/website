@@ -3,13 +3,8 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { animate, motion, useInView } from 'framer-motion';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-
-const STORY_STATS = [
-  { value: '10 MWp + 8 MWh', label: 'Installed & under development' },
-  { value: '6',              label: 'Ecosystem partners' },
-  { value: '40',             label: 'Projects completed' },
-  { value: '10',             label: 'Projects under development' },
-] as const;
+import { DEFAULT_COMPANY_STATS } from '@/lib/companyStats';
+import type { CompanyStat } from '@/types/sanity';
 
 /* Counts a single integer from 0 → value once it scrolls into view. */
 function CountUpNumber({
@@ -85,7 +80,7 @@ function SouthAfricaMap({ fill }: { fill: string }) {
   );
 }
 
-export function AboutStory() {
+export function AboutStory({ stats = DEFAULT_COMPANY_STATS }: { stats?: CompanyStat[] }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: '-80px' });
   const reduced = useReducedMotion();
@@ -116,7 +111,7 @@ export function AboutStory() {
 
           {/* Stats column */}
           <div className="flex flex-col gap-7">
-            {STORY_STATS.map((stat, i) => (
+            {stats.map((stat, i) => (
               <motion.div
                 key={stat.label}
                 initial={reduced ? { opacity: 1, x: 0 } : { opacity: 0, x: -16 }}

@@ -5,6 +5,7 @@ import { FloatingOrbs } from '@/components/ui/FloatingOrbs';
 import { IconArrowRight } from '@/components/ui/Icons';
 import { sanityClient } from '@/lib/sanity';
 import { TEAM_MEMBERS_QUERY, MILESTONE_TIMELINE_QUERY, PARTNERS_QUERY } from '@/lib/queries';
+import { getCompanyStats } from '@/lib/getCompanyStats';
 import { AboutStory } from '@/components/sections/AboutStory';
 import { AboutMission } from '@/components/sections/AboutMission';
 import { AboutValues } from '@/components/sections/AboutValues';
@@ -57,10 +58,11 @@ async function getPartners(): Promise<Partner[]> {
 }
 
 export default async function AboutPage() {
-  const [teamMembers, milestones, partners] = await Promise.all([
+  const [teamMembers, milestones, partners, companyStats] = await Promise.all([
     getTeamMembers(),
     getMilestones(),
     getPartners(),
+    getCompanyStats(),
   ]);
 
   return (
@@ -114,7 +116,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Sections */}
-      <AboutStory />
+      <AboutStory stats={companyStats} />
       <AboutMission />
       <AboutValues />
       <AboutTimeline milestones={milestones} />

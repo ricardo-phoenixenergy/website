@@ -7,6 +7,7 @@ import { LatestPosts } from '@/components/sections/LatestPosts';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { sanityClient } from '@/lib/sanity';
 import { PARTNERS_QUERY } from '@/lib/queries';
+import { getCompanyStats } from '@/lib/getCompanyStats';
 import type { Partner } from '@/types/sanity';
 
 // Safety-net ISR: refresh hourly even if the Sanity revalidate webhook isn't
@@ -81,6 +82,8 @@ export default async function HomePage() {
     // Graceful fallback — renders empty
   }
 
+  const companyStats = await getCompanyStats();
+
   return (
     <>
       <script
@@ -98,7 +101,7 @@ export default async function HomePage() {
         />
         <FeaturedProjects />
         <LatestPosts />
-        <PageFooter />
+        <PageFooter stats={companyStats} />
       </main>
     </>
   );

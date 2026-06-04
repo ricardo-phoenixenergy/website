@@ -260,6 +260,14 @@ export const MILESTONE_TIMELINE_QUERY = `
   }
 `;
 
+/* ─── Company Stats ─────────────────────────────────────────────────────────── */
+
+export const COMPANY_STATS_QUERY = `
+  *[_type == "companyStats"][0] {
+    "stats": stats[]{ value, label }
+  }
+`;
+
 /* ─── Partners & Investors ──────────────────────────────────────────────────── */
 
 export const PARTNERS_QUERY = `

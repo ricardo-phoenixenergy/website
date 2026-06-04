@@ -149,6 +149,13 @@ export interface MilestoneTimeline {
   active:   boolean;
 }
 
+/* ─── Company Stats ──────────────────────────────────────────────────────────── */
+
+export interface CompanyStat {
+  value: string;   // headline figure — "40", "10 MWp + 8 MWh", "R380M"
+  label: string;   // short description beneath the value
+}
+
 /* ─── Partner / Investor ─────────────────────────────────────────────────────── */
 
 export interface Partner {

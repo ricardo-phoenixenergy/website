@@ -2,15 +2,10 @@ import Link from 'next/link';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { Button } from '@/components/ui/Button';
 import { IconArrowRight } from '@/components/ui/Icons';
+import { DEFAULT_COMPANY_STATS } from '@/lib/companyStats';
+import type { CompanyStat } from '@/types/sanity';
 
-export interface CTAStat { value: string; label: string; }
-
-const DEFAULT_STATS: CTAStat[] = [
-  { value: '120+', label: 'Projects completed' },
-  { value: '48 MW', label: 'Deployed' },
-  { value: '12k t', label: 'CO₂ saved / yr' },
-  { value: 'R380M', label: 'Client savings' },
-];
+export type CTAStat = CompanyStat;
 
 interface CTABannerProps {
   eyebrow?: string;
@@ -30,7 +25,7 @@ export function CTABanner({
   heading    = "Ignite what's possible for your business",
   body       = "Get a free energy assessment from Phoenix Energy's certified engineers — no commitment, no cost, results delivered in 48 hours.",
   primaryCta = { label: 'Get a Free Quote', href: '/contact' },
-  stats      = DEFAULT_STATS,
+  stats      = DEFAULT_COMPANY_STATS,
   variant    = 'stats',
 }: CTABannerProps = {}) {
   return (

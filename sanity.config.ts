@@ -33,6 +33,13 @@ export default defineConfig({
             S.documentTypeListItem('milestoneTimeline').title('Timeline Milestones'),
             S.divider(),
             S.documentTypeListItem('partner').title('Partners & Investors'),
+            S.divider(),
+            S.listItem()
+              .title('Company Stats')
+              .id('companyStats')
+              .child(
+                S.document().schemaType('companyStats').documentId('companyStats'),
+              ),
           ]),
     }),
     visionTool(),
