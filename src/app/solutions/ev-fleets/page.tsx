@@ -8,6 +8,7 @@ import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { EvFleetsCalculator } from '@/components/sections/calculators/EvFleetsCalculator';
 import { getHowItWorks } from '@/lib/getHowItWorks';
+import { getHeroImages } from '@/lib/getHeroImages';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import type { TabItem } from '@/components/sections/SolutionTabs';
@@ -61,6 +62,7 @@ const tabs: TabItem[] = [
 
 export default async function EvFleetsPage() {
   const howItWorks = await getHowItWorks(vertical);
+  const hero = (await getHeroImages())[vertical];
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -79,7 +81,8 @@ export default async function EvFleetsPage() {
         subtitle="SANS-certified EV charging infrastructure, fleet management dashboard, and full depot design — built for South African conditions."
         accent={meta.accent}
         badge={meta.label}
-        heroImage="/hero-ev.png"
+        heroImage={hero?.url}
+        heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #0d1f22 0%, #0f2a28 50%, #1a4040 100%)"
         primaryCta={{ label: 'Get a Fleet Assessment', href: '/contact' }}
       >

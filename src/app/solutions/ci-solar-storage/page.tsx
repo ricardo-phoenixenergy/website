@@ -8,6 +8,7 @@ import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { SolarCalculator } from '@/components/sections/calculators/SolarCalculator';
 import { getHowItWorks } from '@/lib/getHowItWorks';
+import { getHeroImages } from '@/lib/getHeroImages';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import type { TabItem } from '@/components/sections/SolutionTabs';
@@ -61,6 +62,7 @@ const tabs: TabItem[] = [
 
 export default async function CiSolarStoragePage() {
   const howItWorks = await getHowItWorks(vertical);
+  const hero = (await getHeroImages())[vertical];
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -79,7 +81,8 @@ export default async function CiSolarStoragePage() {
         subtitle="Commercial and industrial solar and battery storage — zero upfront capital with our PPA model."
         accent={meta.accent}
         badge={meta.label}
-        heroImage="/hero-solar.png"
+        heroImage={hero?.url}
+        heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #0d1f22 0%, #1a3a3f 50%, #2d5c63 100%)"
         primaryCta={{ label: 'Get a Free Assessment', href: '/contact' }}
       >

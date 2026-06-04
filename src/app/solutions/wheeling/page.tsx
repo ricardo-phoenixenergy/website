@@ -8,6 +8,7 @@ import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { WheelingCalculator } from '@/components/sections/calculators/WheelingCalculator';
 import { getHowItWorks } from '@/lib/getHowItWorks';
+import { getHeroImages } from '@/lib/getHeroImages';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import type { TabItem } from '@/components/sections/SolutionTabs';
@@ -61,6 +62,7 @@ const tabs: TabItem[] = [
 
 export default async function WheelingPage() {
   const howItWorks = await getHowItWorks(vertical);
+  const hero = (await getHeroImages())[vertical];
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -79,7 +81,8 @@ export default async function WheelingPage() {
         subtitle="Wheel clean power through the Eskom grid to your facility — fixed tariff, no infrastructure, 32% average saving."
         accent={meta.accent}
         badge={meta.label}
-        heroImage="/hero-wheeling.png"
+        heroImage={hero?.url}
+        heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #1a0f0f 0%, #3a1a18 50%, #5a2a28 100%)"
         primaryCta={{ label: 'Get a Wheeling Quote', href: '/contact' }}
       >
