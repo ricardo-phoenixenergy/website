@@ -174,8 +174,10 @@ export function PageFooter({
 
         {/* Mobile */}
         <div className="md:hidden flex flex-col items-center gap-2 py-3.5 px-4 text-center">
-          <Link href="/" className="font-display font-extrabold text-sm tracking-[0.04em] text-white">
-            PHOENIX<span style={{ color: '#709DA9' }}>.</span>ENERGY
+          <Link href="/" className="font-display font-[800] text-xl flex-shrink-0 flex items-center gap-1.5">
+            <img src="/inverted-logo.svg" alt="Phoenix Energy" className="flex-shrink-0 size-7" />
+            <span style={{ color: '#F5F5F5' }}>Phoenix</span>
+            <span style={{ color: '#F5F5F5' }}>Energy</span>
           </Link>
           <p className="font-body text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
             © {year} Phoenix Energy. All rights reserved.
