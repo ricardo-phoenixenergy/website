@@ -6,12 +6,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { Partner } from '@/types/sanity';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 
-type Tab = 'investors' | 'partners' | 'media';
+type Tab = 'investors' | 'partners';
 
 const TABS: { value: Tab; label: string }[] = [
   { value: 'investors', label: 'Investors & Financiers' },
   { value: 'partners', label: 'Partners' },
-  { value: 'media', label: 'Media & Press' },
 ];
 
 function initials(name: string) {
@@ -130,7 +129,7 @@ export function AboutTrust({ partners, showTabs = true, justify = 'start' }: Pro
             Trusted by the best
           </p>
           <h2 className="font-display font-extrabold text-3xl text-[#1A1A1A] leading-[1.2]">
-            Our <em style={{ color: '#709DA9', fontStyle: 'normal' }}>network</em>
+            Who we <em style={{ color: '#709DA9', fontStyle: 'normal' }}>work with</em>
           </h2>
         </div>
 
