@@ -56,6 +56,11 @@ export default defineConfig({
                     S.listItem().title('EV Fleets').child(S.document().schemaType('howItWorks').documentId('howItWorks.ev-fleets')),
                   ]),
               ),
+            S.divider(),
+            S.listItem()
+              .title('Hero Images')
+              .id('heroImages')
+              .child(S.document().schemaType('heroImages').documentId('heroImages')),
           ]),
     }),
     visionTool(),
