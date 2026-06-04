@@ -69,7 +69,7 @@ export function AboutTeam({ members }: AboutTeamProps) {
               <CardImage
                 src={member.photo?.asset.url}
                 alt={member.name}
-                height={150}
+                aspectRatio="1 / 1"
                 blurDataURL={member.photo?.asset.metadata?.lqip}
                 sizes="(max-width: 768px) 100vw, 320px"
                 placeholderStyle={{ background: 'linear-gradient(135deg, #162630, #0d1f22)' }}

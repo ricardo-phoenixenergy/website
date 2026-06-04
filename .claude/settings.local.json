@@ -43,7 +43,21 @@
       "Bash(mv \"Carbon Credits Hero.png\" \"hero-carbon.png\")",
       "Bash(mv \"Energy optimisation Hero.png\" \"hero-optimisation.png\")",
       "Bash(mv \"EV Hero.png\" \"hero-ev.png\")",
-      "Bash(mv \"WeBuySolar - Hero.png\" \"hero-webuysolar.png\")"
+      "Bash(mv \"WeBuySolar - Hero.png\" \"hero-webuysolar.png\")",
+      "PowerShell(Get-Random *)",
+      "Bash(Get-ChildItem *)",
+      "PowerShell(Test-Path *)",
+      "Bash(powershell *)",
+      "Bash(Select-String -Pattern \"page\\\\.tsx\")",
+      "Bash(grep -v \"//.*→\")",
+      "Bash(grep -v \"//.*[→←]\")",
+      "Bash(grep -v \"group-hover\\\\|group cursor\\\\|group $\\\\|// \\\\|group-hover\")",
+      "Bash(grep -v \"Card.tsx\\\\|import\\\\|//\")",
+      "Bash(gh --version)",
+      "Bash(gh auth *)",
+      "Bash(cmdkey /delete:git:https://github.com)",
+      "Bash(echo \"--- exit: $? ---\")",
+      "Bash(cmdkey /list)"
     ]
   }
 }

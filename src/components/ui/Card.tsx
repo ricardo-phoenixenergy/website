@@ -70,6 +70,8 @@ export interface CardImageProps {
   src?: string;
   alt?: string;
   height?: number;
+  /** CSS aspect-ratio (e.g. '9 / 16', '1 / 1'). Takes precedence over `height`. */
+  aspectRatio?: string;
   blurDataURL?: string;
   sizes?: string;
   priority?: boolean;
@@ -83,6 +85,7 @@ export function CardImage({
   src,
   alt = '',
   height = 168,
+  aspectRatio,
   blurDataURL,
   sizes = '400px',
   priority = false,
@@ -90,7 +93,10 @@ export function CardImage({
   children,
 }: CardImageProps) {
   return (
-    <div className="relative flex-shrink-0 overflow-hidden" style={{ height }}>
+    <div
+      className="relative w-full flex-shrink-0 overflow-hidden"
+      style={aspectRatio ? { aspectRatio } : { height }}
+    >
       {src ? (
         <>
           <Image
