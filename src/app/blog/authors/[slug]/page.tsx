@@ -3,7 +3,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { sanityClient, urlFor } from '@/lib/sanity';
+import { urlFor } from '@/lib/sanity';
+import { sanityServerClient } from '@/lib/sanity.server';
 import { AUTHOR_BY_SLUG_QUERY, POSTS_BY_AUTHOR_QUERY, ALL_AUTHOR_SLUGS_QUERY } from '@/lib/queries';
 import type { Author, BlogPostCard } from '@/types/sanity';
 import { ArticleCard } from '@/components/ui/ArticleCard';
@@ -13,7 +14,7 @@ import { IconArrowRight } from '@/components/ui/Icons';
 import { cache } from 'react';
 
 const getAuthor = cache((slug: string) =>
-  sanityClient.fetch<Author | null>(AUTHOR_BY_SLUG_QUERY, { slug }),
+  sanityServerClient.fetch<Author | null>(AUTHOR_BY_SLUG_QUERY, { slug }),
 );
 
 export const revalidate = 3600;
@@ -21,7 +22,7 @@ export const revalidate = 3600;
 const SITE = 'https://phoenixenergy.solutions';
 
 export async function generateStaticParams() {
-  const slugs = await sanityClient.fetch<{ slug: string }[]>(ALL_AUTHOR_SLUGS_QUERY);
+  const slugs = await sanityServerClient.fetch<{ slug: string }[]>(ALL_AUTHOR_SLUGS_QUERY);
   return slugs.map(({ slug }) => ({ slug }));
 }
 
@@ -48,7 +49,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
   const { slug } = await params;
   const [author, posts] = await Promise.all([
     getAuthor(slug),
-    sanityClient.fetch<BlogPostCard[]>(POSTS_BY_AUTHOR_QUERY, { slug }),
+    sanityServerClient.fetch<BlogPostCard[]>(POSTS_BY_AUTHOR_QUERY, { slug }),
   ]);
 
   if (!author) notFound();

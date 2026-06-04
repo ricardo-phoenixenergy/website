@@ -4,7 +4,8 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { PortableText } from '@portabletext/react';
-import { sanityClient, urlFor } from '@/lib/sanity';
+import { urlFor } from '@/lib/sanity';
+import { sanityServerClient } from '@/lib/sanity.server';
 import { POST_BY_SLUG_QUERY, ALL_BLOG_SLUGS_QUERY } from '@/lib/queries';
 import type { BlogPost, PortableTextBlock } from '@/types/sanity';
 import { portableTextComponents } from '@/lib/portableTextComponents';
@@ -17,7 +18,7 @@ import { BlogReadDepth } from '@/components/analytics/BlogReadDepth';
 import { cache } from 'react';
 
 const getPost = cache((slug: string) =>
-  sanityClient.fetch<BlogPost | null>(POST_BY_SLUG_QUERY, { slug }),
+  sanityServerClient.fetch<BlogPost | null>(POST_BY_SLUG_QUERY, { slug }),
 );
 
 export const revalidate = 3600;
@@ -25,7 +26,7 @@ export const revalidate = 3600;
 const SITE = 'https://phoenixenergy.solutions';
 
 export async function generateStaticParams() {
-  const slugs = await sanityClient.fetch<{ slug: string }[]>(ALL_BLOG_SLUGS_QUERY);
+  const slugs = await sanityServerClient.fetch<{ slug: string }[]>(ALL_BLOG_SLUGS_QUERY);
   return slugs.map(({ slug }) => ({ slug }));
 }
 

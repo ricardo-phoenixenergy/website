@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { sanityClient } from '@/lib/sanity';
+import { sanityServerClient } from '@/lib/sanity.server';
 
 const SITE = 'https://phoenixenergy.solutions';
 
@@ -30,7 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let projectEntries: { slug: string }[] = [];
 
   try {
-    blogEntries = await sanityClient.fetch<{ slug: string; publishedAt?: string }[]>(
+    blogEntries = await sanityServerClient.fetch<{ slug: string; publishedAt?: string }[]>(
       `*[_type == "blogPost"]{ "slug": slug.current, publishedAt }`,
     );
   } catch {
@@ -38,7 +38,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   try {
-    projectEntries = await sanityClient.fetch<{ slug: string }[]>(
+    projectEntries = await sanityServerClient.fetch<{ slug: string }[]>(
       `*[_type == "project"]{ "slug": slug.current }`,
     );
   } catch {

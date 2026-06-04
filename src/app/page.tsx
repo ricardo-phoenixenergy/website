@@ -5,7 +5,7 @@ import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { LatestPosts } from '@/components/sections/LatestPosts';
 import { PageFooter } from '@/components/layout/PageFooter';
-import { sanityClient } from '@/lib/sanity';
+import { sanityServerClient } from '@/lib/sanity.server';
 import { PARTNERS_QUERY } from '@/lib/queries';
 import { getCompanyStats } from '@/lib/getCompanyStats';
 import { getHowItWorks } from '@/lib/getHowItWorks';
@@ -60,7 +60,7 @@ const websiteJsonLd = {
 export default async function HomePage() {
   let partners: Partner[] = [];
   try {
-    partners = await sanityClient.fetch<Partner[]>(PARTNERS_QUERY);
+    partners = await sanityServerClient.fetch<Partner[]>(PARTNERS_QUERY);
   } catch {
     // Graceful fallback — renders empty
   }

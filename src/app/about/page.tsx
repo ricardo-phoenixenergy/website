@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { FloatingOrbs } from '@/components/ui/FloatingOrbs';
 import { IconArrowRight } from '@/components/ui/Icons';
-import { sanityClient } from '@/lib/sanity';
+import { sanityServerClient } from '@/lib/sanity.server';
 import { TEAM_MEMBERS_QUERY, MILESTONE_TIMELINE_QUERY, PARTNERS_QUERY } from '@/lib/queries';
 import { getCompanyStats } from '@/lib/getCompanyStats';
 import { AboutStory } from '@/components/sections/AboutStory';
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
 
 async function getTeamMembers(): Promise<TeamMember[]> {
   try {
-    return await sanityClient.fetch<TeamMember[]>(TEAM_MEMBERS_QUERY);
+    return await sanityServerClient.fetch<TeamMember[]>(TEAM_MEMBERS_QUERY);
   } catch {
     return [];
   }
@@ -43,7 +43,7 @@ async function getTeamMembers(): Promise<TeamMember[]> {
 
 async function getMilestones(): Promise<MilestoneTimeline[]> {
   try {
-    return await sanityClient.fetch<MilestoneTimeline[]>(MILESTONE_TIMELINE_QUERY);
+    return await sanityServerClient.fetch<MilestoneTimeline[]>(MILESTONE_TIMELINE_QUERY);
   } catch {
     return [];
   }
@@ -51,7 +51,7 @@ async function getMilestones(): Promise<MilestoneTimeline[]> {
 
 async function getPartners(): Promise<Partner[]> {
   try {
-    return await sanityClient.fetch<Partner[]>(PARTNERS_QUERY);
+    return await sanityServerClient.fetch<Partner[]>(PARTNERS_QUERY);
   } catch {
     return [];
   }

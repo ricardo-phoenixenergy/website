@@ -32,8 +32,10 @@ export function PageFooter({
 
   return (
     /* Single wrapper — overflow:clip clips without creating a scroll container,
-       so the watermark can't push the page height beyond the footer bottom. */
-    <div className="relative" style={{ overflow: 'clip', background: '#0d1f22' }}>
+       so the watermark can't push the page height beyond the footer bottom.
+       isolation:isolate contains the inner z-index:0/1 layers in their own
+       stacking context, so they don't paint over the fixed reCAPTCHA badge. */
+    <div className="relative" style={{ overflow: 'clip', background: '#0d1f22', isolation: 'isolate' }}>
 
       {/* Watermark — only shown alongside the CTA */}
       {showCta && (

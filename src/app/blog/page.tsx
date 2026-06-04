@@ -1,7 +1,7 @@
 // src/app/blog/page.tsx
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { sanityClient } from '@/lib/sanity';
+import { sanityServerClient } from '@/lib/sanity.server';
 import {
   BLOG_INDEX_QUERY,
   BLOG_COUNT_QUERY,
@@ -44,7 +44,7 @@ export async function generateMetadata({
   const q = qParam ? `${qParam.trim()}*` : '';
   const canonical = page > 1 ? `${SITE}/blog?page=${page}` : `${SITE}/blog`;
 
-  const total = await sanityClient.fetch<number>(BLOG_COUNT_QUERY, { category, tag, q } as Record<string, string>);
+  const total = await sanityServerClient.fetch<number>(BLOG_COUNT_QUERY, { category, tag, q } as Record<string, string>);
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return {
@@ -85,10 +85,10 @@ export default async function BlogPage({
   // so we cast the params objects to bypass the deprecation guard.
   type GroqParams = { [key: string]: string | number };
   const [posts, total, featured, tags] = await Promise.all([
-    sanityClient.fetch<BlogPostCard[]>(BLOG_INDEX_QUERY, { category, tag, offset, q } as GroqParams),
-    sanityClient.fetch<number>(BLOG_COUNT_QUERY, { category, tag, q } as GroqParams),
-    sanityClient.fetch<BlogPostCard | null>(FEATURED_POST_QUERY),
-    sanityClient.fetch<string[]>(ALL_BLOG_TAGS_QUERY),
+    sanityServerClient.fetch<BlogPostCard[]>(BLOG_INDEX_QUERY, { category, tag, offset, q } as GroqParams),
+    sanityServerClient.fetch<number>(BLOG_COUNT_QUERY, { category, tag, q } as GroqParams),
+    sanityServerClient.fetch<BlogPostCard | null>(FEATURED_POST_QUERY),
+    sanityServerClient.fetch<string[]>(ALL_BLOG_TAGS_QUERY),
   ]);
 
   const totalPages = Math.ceil(total / PAGE_SIZE);

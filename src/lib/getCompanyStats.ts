@@ -1,4 +1,4 @@
-import { sanityClient } from '@/lib/sanity';
+import { sanityServerClient } from '@/lib/sanity.server';
 import { COMPANY_STATS_QUERY } from '@/lib/queries';
 import { resolveCompanyStats } from '@/lib/companyStats';
 import type { CompanyStat } from '@/types/sanity';
@@ -9,7 +9,7 @@ import type { CompanyStat } from '@/types/sanity';
  */
 export async function getCompanyStats(): Promise<CompanyStat[]> {
   try {
-    const result = await sanityClient.fetch<{ stats?: CompanyStat[] }>(COMPANY_STATS_QUERY);
+    const result = await sanityServerClient.fetch<{ stats?: CompanyStat[] }>(COMPANY_STATS_QUERY);
     return resolveCompanyStats(result?.stats);
   } catch {
     return resolveCompanyStats(null);
