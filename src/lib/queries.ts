@@ -296,3 +296,16 @@ export const HOW_IT_WORKS_QUERY = `
     ctaHref
   }
 `;
+
+/* ─── Hero Images ───────────────────────────────────────────────────────────── */
+
+export const HERO_IMAGES_QUERY = `
+  *[_id == "heroImages"][0]{
+    "ci-solar-storage":    ciSolarStorage{ "url": asset->url, "lqip": asset->metadata.lqip },
+    "wheeling":            wheeling{ "url": asset->url, "lqip": asset->metadata.lqip },
+    "energy-optimisation": energyOptimisation{ "url": asset->url, "lqip": asset->metadata.lqip },
+    "carbon-credits":      carbonCredits{ "url": asset->url, "lqip": asset->metadata.lqip },
+    "webuysolar":          webuysolar{ "url": asset->url, "lqip": asset->metadata.lqip },
+    "ev-fleets":           evFleets{ "url": asset->url, "lqip": asset->metadata.lqip }
+  }
+`;
