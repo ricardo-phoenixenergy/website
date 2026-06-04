@@ -84,14 +84,14 @@ export default async function AboutPage() {
               The rise of Phoenix Energy
             </p>
             <h1 className="font-display font-extrabold text-4xl md:text-5xl text-white leading-[1.1] mb-5 max-w-[580px]">
-              Save, earn &amp; grow with renewable energy across{' '}
-              <em style={{ color: '#709DA9', fontStyle: 'normal' }}>Africa</em>
+              Powering Africa&apos;s{' '}
+              <em style={{ color: '#709DA9', fontStyle: 'normal' }}>energy transition</em>
             </h1>
             <p
               className="font-body text-base leading-[1.75] mb-8 max-w-[440px]"
               style={{ color: 'rgba(255,255,255,0.60)' }}
             >
-              Meet the team, story and values behind Southern Africa&apos;s leading integrated clean energy company.
+              Meet the team, story and values behind a company on a mission to become Africa&apos;s most innovative energy service provider.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
