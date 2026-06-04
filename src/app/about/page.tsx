@@ -14,6 +14,10 @@ import { AboutTrust } from '@/components/sections/AboutTrust';
 import { PageFooter } from '@/components/layout/PageFooter';
 import type { TeamMember, MilestoneTimeline, Partner } from '@/types/sanity';
 
+// Safety-net ISR: refresh hourly even if the Sanity revalidate webhook isn't
+// wired up, so partner/team/timeline changes eventually appear without a redeploy.
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: 'About Phoenix Energy — Our Story, Mission & Team',
   description:

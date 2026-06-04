@@ -52,6 +52,11 @@ export async function POST(req: NextRequest) {
     revalidatePath('/about');
   }
 
+  if (type === 'partner') {
+    revalidatePath('/about');
+    revalidatePath('/');         // homepage AboutTrust also lists partners
+  }
+
   return Response.json({
     revalidated: true,
     type,

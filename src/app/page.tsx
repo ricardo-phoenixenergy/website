@@ -9,6 +9,10 @@ import { sanityClient } from '@/lib/sanity';
 import { PARTNERS_QUERY } from '@/lib/queries';
 import type { Partner } from '@/types/sanity';
 
+// Safety-net ISR: refresh hourly even if the Sanity revalidate webhook isn't
+// wired up, so partner/featured changes eventually appear without a redeploy.
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: 'Phoenix Energy — Integrated Clean Energy Solutions for SA Businesses',
   description:
