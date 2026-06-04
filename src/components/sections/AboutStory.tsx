@@ -104,36 +104,16 @@ export function AboutStory() {
         {/* ── Right — copy ────────────────────────────────────────────────────── */}
         <AnimatedSection delay={0.6}>
           <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-3">
-            Impact
+            Who we are
           </p>
           <h2 className="font-display font-extrabold text-3xl text-[#1A1A1A] leading-[1.2] mb-4">
-            Built to make clean energy{' '}
-            <em style={{ color: '#709DA9', fontStyle: 'normal' }}>accessible</em>{' '}
-            across Africa
+            Phoenix at a <em style={{ color: '#709DA9', fontStyle: 'normal' }}>glance</em>
           </h2>
-          <p className="font-body text-sm leading-[1.8] text-[#6B7280] mb-3">
-            Phoenix Energy was created to make renewable energy both accessible and
-            transformative across Africa. We set ourselves apart by providing bespoke,
-            turnkey solutions that go beyond conventional energy savings.
-          </p>
-
-          <blockquote
-            className="my-3.5 rounded-r-lg px-4 py-3"
-            style={{ borderLeft: '3px solid #709DA9', background: 'rgba(112,157,169,0.07)' }}
-          >
-            <p className="font-display font-bold text-base text-[#1A1A1A] leading-[1.5] italic">
-              "For us, it's not just about saving — it's about empowering businesses to
-              earn, grow, and thrive sustainably."
-            </p>
-            <p className="font-body text-xs text-[#6B7280] mt-1.5">
-              — Phoenix Energy founding vision
-            </p>
-          </blockquote>
-
           <p className="font-body text-sm leading-[1.8] text-[#6B7280]">
-            Our approach gives businesses a comprehensive roadmap designed to drive Net
-            Zero Carbon Emissions, enhance efficiency, and unlock new revenue streams
-            across Southern Africa and beyond.
+            Phoenix Energy is a South African commercial and industrial energy company.{' '}
+            <strong className="font-semibold text-[#1A1A1A]">Not a solar installer. Not an equipment supplier.</strong>{' '}
+            A sophisticated energy partner that designs, finances, acquires and optimises
+            integrated energy ecosystems for businesses that are serious about their energy future.
           </p>
         </AnimatedSection>
 
