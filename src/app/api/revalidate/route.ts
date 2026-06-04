@@ -72,6 +72,13 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  if (type === 'heroImages') {
+    revalidatePath('/');
+    for (const v of ['ci-solar-storage', 'wheeling', 'energy-optimisation', 'carbon-credits', 'webuysolar', 'ev-fleets']) {
+      revalidatePath(`/solutions/${v}`);
+    }
+  }
+
   return Response.json({
     revalidated: true,
     type,
