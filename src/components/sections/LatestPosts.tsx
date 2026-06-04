@@ -1,4 +1,4 @@
-import { sanityClient } from '@/lib/sanity';
+import { sanityServerClient } from '@/lib/sanity.server';
 import { LATEST_POSTS_QUERY } from '@/lib/queries';
 import { ArticleCard } from '@/components/ui/ArticleCard';
 import { SectionCarousel } from '@/components/ui/SectionCarousel';
@@ -6,7 +6,7 @@ import type { BlogPostCard } from '@/types/sanity';
 
 async function getLatestPosts(): Promise<BlogPostCard[]> {
   try {
-    return await sanityClient.fetch<BlogPostCard[]>(LATEST_POSTS_QUERY);
+    return await sanityServerClient.fetch<BlogPostCard[]>(LATEST_POSTS_QUERY);
   } catch {
     return [];
   }

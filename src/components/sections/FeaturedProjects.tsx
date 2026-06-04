@@ -1,4 +1,4 @@
-import { sanityClient } from '@/lib/sanity';
+import { sanityServerClient } from '@/lib/sanity.server';
 import { FEATURED_PROJECTS_QUERY, PROJECTS_BY_VERTICAL_QUERY } from '@/lib/queries';
 import { ProjectCard } from './ProjectCard';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
@@ -13,9 +13,9 @@ interface FeaturedProjectsProps {
 async function getProjects(vertical?: SolutionVertical): Promise<ProjectCardType[]> {
   try {
     if (vertical) {
-      return await sanityClient.fetch<ProjectCardType[]>(PROJECTS_BY_VERTICAL_QUERY, { vertical });
+      return await sanityServerClient.fetch<ProjectCardType[]>(PROJECTS_BY_VERTICAL_QUERY, { vertical });
     }
-    return await sanityClient.fetch<ProjectCardType[]>(FEATURED_PROJECTS_QUERY);
+    return await sanityServerClient.fetch<ProjectCardType[]>(FEATURED_PROJECTS_QUERY);
   } catch {
     return [];
   }

@@ -1,4 +1,4 @@
-import { sanityClient } from '@/lib/sanity';
+import { sanityServerClient } from '@/lib/sanity.server';
 import { HOW_IT_WORKS_QUERY } from '@/lib/queries';
 import type { HowItWorksContent } from '@/types/sanity';
 
@@ -9,7 +9,7 @@ import type { HowItWorksContent } from '@/types/sanity';
  */
 export async function getHowItWorks(pageKey: string): Promise<HowItWorksContent | null> {
   try {
-    const data = await sanityClient.fetch<HowItWorksContent | null>(
+    const data = await sanityServerClient.fetch<HowItWorksContent | null>(
       HOW_IT_WORKS_QUERY,
       { id: `howItWorks.${pageKey}` },
     );

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { sanityClient } from '@/lib/sanity';
+import { sanityServerClient } from '@/lib/sanity.server';
 import { ALL_PROJECTS_QUERY } from '@/lib/queries';
 import { ProjectsGrid } from '@/components/sections/ProjectsGrid';
 import type { ProjectPreview } from '@/types/sanity';
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 export default async function ProjectsPage() {
   let projects: ProjectPreview[] = [];
   try {
-    projects = await sanityClient.fetch<ProjectPreview[]>(ALL_PROJECTS_QUERY);
+    projects = await sanityServerClient.fetch<ProjectPreview[]>(ALL_PROJECTS_QUERY);
   } catch {
     // Graceful fallback — grid renders empty state
   }

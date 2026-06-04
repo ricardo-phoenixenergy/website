@@ -1,4 +1,4 @@
-import { sanityClient } from '@/lib/sanity';
+import { sanityServerClient } from '@/lib/sanity.server';
 import { POSTS_BY_VERTICAL_QUERY } from '@/lib/queries';
 import { ArticleCard } from '@/components/ui/ArticleCard';
 import { SectionCarousel } from '@/components/ui/SectionCarousel';
@@ -22,7 +22,7 @@ interface RelatedArticlesProps {
 async function getPosts(vertical: SolutionVertical): Promise<BlogPostCard[]> {
   try {
     const tag = VERTICAL_CATEGORY_MAP[vertical];
-    return await sanityClient.fetch<BlogPostCard[]>(POSTS_BY_VERTICAL_QUERY, { tag } as Record<string, string>);
+    return await sanityServerClient.fetch<BlogPostCard[]>(POSTS_BY_VERTICAL_QUERY, { tag } as Record<string, string>);
   } catch {
     return [];
   }

@@ -3,7 +3,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PortableText } from '@portabletext/react';
-import { sanityClient, urlFor } from '@/lib/sanity';
+import { urlFor } from '@/lib/sanity';
+import { sanityServerClient } from '@/lib/sanity.server';
 import { PROJECT_BY_SLUG_QUERY, ALL_PROJECT_SLUGS_QUERY } from '@/lib/queries';
 import { SOLUTION_META } from '@/types/solutions';
 import { ProjectStatsTiles } from '@/components/ui/ProjectStatsTiles';
@@ -27,7 +28,7 @@ const PT_COMPONENTS = {
 
 export async function generateStaticParams() {
   try {
-    const slugs = await sanityClient.fetch<Array<{ slug: string }>>(ALL_PROJECT_SLUGS_QUERY);
+    const slugs = await sanityServerClient.fetch<Array<{ slug: string }>>(ALL_PROJECT_SLUGS_QUERY);
     return slugs.map(({ slug }) => ({ slug }));
   } catch {
     return [];
@@ -41,7 +42,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   try {
-    const project = await sanityClient.fetch<Project | null>(PROJECT_BY_SLUG_QUERY, { slug });
+    const project = await sanityServerClient.fetch<Project | null>(PROJECT_BY_SLUG_QUERY, { slug });
     if (!project) return { title: 'Project | Phoenix Energy' };
     return {
       title: `${project.title} | Phoenix Energy`,
@@ -64,7 +65,7 @@ export default async function ProjectPage({
 
   let project: Project | null = null;
   try {
-    project = await sanityClient.fetch<Project | null>(PROJECT_BY_SLUG_QUERY, { slug });
+    project = await sanityServerClient.fetch<Project | null>(PROJECT_BY_SLUG_QUERY, { slug });
   } catch {
     // fall through to notFound
   }
