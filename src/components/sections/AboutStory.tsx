@@ -112,7 +112,7 @@ export function AboutStory() {
         </div>
 
         {/* ── Stats + map ───────────────────────────────────────────────── */}
-        <div ref={ref} className="grid gap-12 md:grid-cols-2 md:items-center">
+        <div ref={ref} className="grid gap-y-12 gap-x-8 md:grid-cols-[auto_minmax(0,400px)] md:items-center md:justify-center">
 
           {/* Stats column */}
           <div className="flex flex-col gap-7">
@@ -136,7 +136,7 @@ export function AboutStory() {
           </div>
 
           {/* Map column */}
-          <div className="relative w-full max-w-[460px] mx-auto aspect-square">
+          <div className="relative w-full max-w-[400px] mx-auto aspect-square">
             <motion.div
               initial={reduced ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.96 }}
               animate={inView ? { opacity: 1, scale: 1 } : {}}
