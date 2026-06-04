@@ -36,12 +36,12 @@ const PANELS: Panel[] = [
     description: 'Access clean, cost-effective electricity through our established wheeling network — no equipment required.',
   },
   {
-    vertical: 'carbon-credits',
+    vertical: 'webuysolar',
     number: '03',
-    image: '/hero-carbon.png',
-    href: '/solutions/carbon-credits',
-    title: 'Turn clean energy into certified revenue',
-    description: 'Register, certify and monetise carbon credits from your renewable assets under the Gold Standard.',
+    image: '/hero-webuysolar.png',
+    href: '/solutions/webuysolar',
+    title: 'Sell your solar system fast & fair',
+    description: 'Get an instant valuation and formal offer within 5 business days. Phoenix Energy buys and redeploys solar assets.',
   },
   {
     vertical: 'energy-optimisation',
@@ -60,12 +60,12 @@ const PANELS: Panel[] = [
     description: 'End-to-end fleet electrification — infrastructure, vehicles, financing and management in one solution.',
   },
   {
-    vertical: 'webuysolar',
+    vertical: 'carbon-credits',
     number: '06',
-    image: '/hero-webuysolar.png',
-    href: '/solutions/webuysolar',
-    title: 'Sell your solar system fast & fair',
-    description: 'Get an instant valuation and formal offer within 5 business days. Phoenix Energy buys and redeploys solar assets.',
+    image: '/hero-carbon.png',
+    href: '/solutions/carbon-credits',
+    title: 'Turn clean energy into certified revenue',
+    description: 'Register, certify and monetise carbon credits from your renewable assets under the Gold Standard.',
   },
 ];
 
