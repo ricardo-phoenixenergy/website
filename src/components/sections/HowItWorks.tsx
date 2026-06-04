@@ -15,6 +15,7 @@ interface Step {
 interface HowItWorksProps {
   eyebrow?: string;
   title: string;
+  subtitle?: string;
   steps: Step[];
   autoAdvanceInterval?: number;
   showCTA?: boolean;
@@ -25,6 +26,7 @@ interface HowItWorksProps {
 export function HowItWorks({
   eyebrow = 'How it works',
   title,
+  subtitle,
   steps,
   autoAdvanceInterval = 2600,
   showCTA = true,
@@ -87,12 +89,14 @@ export function HowItWorks({
         <h2 className="font-display font-extrabold text-3xl md:text-4xl text-[#1A1A1A] leading-[1.15] mb-2">
           {renderTitle(title)}
         </h2>
-        <p
-          className="font-body text-base font-normal leading-[1.75] max-w-[440px] mx-auto"
-          style={{ color: '#6B7280' }}
-        >
-          A simple, transparent process — from first conversation to ongoing savings.
-        </p>
+        {subtitle && (
+          <p
+            className="font-body text-base font-normal leading-[1.75] max-w-[440px] mx-auto"
+            style={{ color: '#6B7280' }}
+          >
+            {subtitle}
+          </p>
+        )}
       </AnimatedSection>
 
       {/* Desktop 3+ column grid */}
