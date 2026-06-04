@@ -188,3 +188,12 @@ export interface HowItWorksContent {
   ctaLabel?: string;
   ctaHref?: string;
 }
+
+/* ─── Hero Images ───────────────────────────────────────────────────────────── */
+
+export interface HeroImageAsset {
+  url: string;
+  lqip?: string;
+}
+
+export type HeroImages = Partial<Record<SolutionVertical, HeroImageAsset | null>>;
