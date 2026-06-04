@@ -7,6 +7,7 @@ import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { EvFleetsCalculator } from '@/components/sections/calculators/EvFleetsCalculator';
+import { getHowItWorks } from '@/lib/getHowItWorks';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import type { TabItem } from '@/components/sections/SolutionTabs';
@@ -21,6 +22,8 @@ export const metadata: Metadata = {
   alternates: { canonical: `https://phoenixenergy.solutions/solutions/${vertical}` },
   openGraph: { title: cfg.seoTitle, description: cfg.seoDescription, url: `https://phoenixenergy.solutions/solutions/${vertical}`, images: [{ url: 'https://phoenixenergy.solutions/og-solutions-ev-fleets.png', width: 1200, height: 630 }] },
 };
+
+export const revalidate = 3600;
 
 const tabs: TabItem[] = [
   {
@@ -56,14 +59,9 @@ const tabs: TabItem[] = [
   },
 ];
 
-const steps = [
-  { label: 'Fleet Assessment', description: 'We analyse your fleet routes, duty cycles, and depot layout to design the right charging solution.', tag: 'Free' },
-  { label: 'Depot Design', description: 'Load flow study, charger placement plan, and grid connection sizing delivered in 7 days.', tag: '7 days' },
-  { label: 'Installation', description: 'SANS-certified electricians install chargers and connect fleet management software.', tag: '2–4 weeks' },
-  { label: 'Fleet Dashboard', description: 'Dashboard onboarding and driver training. Live savings reporting from day one.', tag: 'Ongoing' },
-];
+export default async function EvFleetsPage() {
+  const howItWorks = await getHowItWorks(vertical);
 
-export default function EvFleetsPage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Service',
@@ -87,19 +85,9 @@ export default function EvFleetsPage() {
       >
         <EvFleetsCalculator />
       </SolutionHero>
-      <SolutionTabs id="tabs" tabs={tabs} accent={meta.accent} vertical="ev-fleets" />
-      <div id="how-it-works">
-        <HowItWorks
-          title="Your fleet electrified <em>in four steps</em>"
-          steps={steps}
-          showCTA
-          ctaLabel="Get a Fleet Assessment"
-          ctaHref="/contact"
-        />
-      </div>
-      <div id="projects">
-        <FeaturedProjects vertical={vertical} />
-      </div>
+      <SolutionTabs tabs={tabs} accent={meta.accent} vertical="ev-fleets" />
+      {howItWorks && <HowItWorks {...howItWorks} />}
+      <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
       <PageFooter
         eyebrow="Electrify your fleet"

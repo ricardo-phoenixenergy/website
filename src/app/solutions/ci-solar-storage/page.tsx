@@ -7,6 +7,7 @@ import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { SolarCalculator } from '@/components/sections/calculators/SolarCalculator';
+import { getHowItWorks } from '@/lib/getHowItWorks';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import type { TabItem } from '@/components/sections/SolutionTabs';
@@ -21,6 +22,8 @@ export const metadata: Metadata = {
   alternates: { canonical: `https://phoenixenergy.solutions/solutions/${vertical}` },
   openGraph: { title: cfg.seoTitle, description: cfg.seoDescription, url: `https://phoenixenergy.solutions/solutions/${vertical}`, images: [{ url: 'https://phoenixenergy.solutions/og-solutions-ci-solar.png', width: 1200, height: 630 }] },
 };
+
+export const revalidate = 3600;
 
 const tabs: TabItem[] = [
   {
@@ -56,14 +59,9 @@ const tabs: TabItem[] = [
   },
 ];
 
-const steps = [
-  { label: 'Site Assessment', description: 'We audit your consumption data, roof or ground area, and grid connection details.', tag: 'Free' },
-  { label: 'System Design', description: 'Our engineers produce a yield simulation and NERSA-compliant single-line diagram.', tag: '5–7 days' },
-  { label: 'Installation', description: 'SAPVIA-certified teams install and commission with zero business disruption.', tag: '1–3 weeks' },
-  { label: 'Monitoring', description: '24/7 remote monitoring with monthly generation reports and annual preventive maintenance.', tag: 'Ongoing' },
-];
+export default async function CiSolarStoragePage() {
+  const howItWorks = await getHowItWorks(vertical);
 
-export default function CiSolarStoragePage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Service',
@@ -87,19 +85,9 @@ export default function CiSolarStoragePage() {
       >
         <SolarCalculator />
       </SolutionHero>
-      <SolutionTabs id="tabs" tabs={tabs} accent={meta.accent} vertical="ci-solar-storage" />
-      <div id="how-it-works">
-        <HowItWorks
-          title="From assessment to <em>savings in weeks</em>"
-          steps={steps}
-          showCTA
-          ctaLabel="Get a Free Assessment"
-          ctaHref="/contact"
-        />
-      </div>
-      <div id="projects">
-        <FeaturedProjects vertical={vertical} />
-      </div>
+      <SolutionTabs tabs={tabs} accent={meta.accent} vertical="ci-solar-storage" />
+      {howItWorks && <HowItWorks {...howItWorks} />}
+      <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
       <PageFooter
         eyebrow="Start saving"
