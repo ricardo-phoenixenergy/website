@@ -6,13 +6,13 @@ import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SOLUTION_META } from '@/types/solutions';
 import type { SolutionVertical } from '@/types/solutions';
+import type { HeroImages } from '@/types/sanity';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { IconArrowRight } from '@/components/ui/Icons';
 
 interface Panel {
   vertical: SolutionVertical;
   number: string;
-  image: string;
   href: string;
   title: string;
   description: string;
@@ -22,7 +22,6 @@ const PANELS: Panel[] = [
   {
     vertical: 'ci-solar-storage',
     number: '01',
-    image: '/hero-solar.png',
     href: '/solutions/ci-solar-storage',
     title: 'Power your business with solar & storage',
     description: 'Design, finance, install and operate solar + BESS systems for C&I clients across Southern Africa.',
@@ -30,7 +29,6 @@ const PANELS: Panel[] = [
   {
     vertical: 'wheeling',
     number: '02',
-    image: '/hero-wheeling.png',
     href: '/solutions/wheeling',
     title: 'Buy cheaper renewable energy via the grid',
     description: 'Access clean, cost-effective electricity through our established wheeling network — no equipment required.',
@@ -38,7 +36,6 @@ const PANELS: Panel[] = [
   {
     vertical: 'webuysolar',
     number: '03',
-    image: '/hero-webuysolar.png',
     href: '/solutions/webuysolar',
     title: 'Sell your solar system fast & fair',
     description: 'Get an instant valuation and formal offer within 5 business days. Phoenix Energy buys and redeploys solar assets.',
@@ -46,7 +43,6 @@ const PANELS: Panel[] = [
   {
     vertical: 'energy-optimisation',
     number: '04',
-    image: '/hero-optimisation.png',
     href: '/solutions/energy-optimisation',
     title: 'Eliminate energy waste intelligently',
     description: 'Expert audit, tariff restructuring and demand management — maximise every kilowatt at zero cost.',
@@ -54,7 +50,6 @@ const PANELS: Panel[] = [
   {
     vertical: 'ev-fleets',
     number: '05',
-    image: '/hero-ev.png',
     href: '/solutions/ev-fleets',
     title: 'Electrify your fleet from day one',
     description: 'End-to-end fleet electrification — infrastructure, vehicles, financing and management in one solution.',
@@ -62,7 +57,6 @@ const PANELS: Panel[] = [
   {
     vertical: 'carbon-credits',
     number: '06',
-    image: '/hero-carbon.png',
     href: '/solutions/carbon-credits',
     title: 'Turn clean energy into certified revenue',
     description: 'Register, certify and monetise carbon credits from your renewable assets under the Gold Standard.',
@@ -92,6 +86,38 @@ const barVariants = {
 } as const;
 
 // ─── Shared panel content (active state) ─────────────────────────────────────
+
+function PanelBackground({
+  img, alt, accent, isActive, sizes, priority,
+}: {
+  img: { url: string; lqip?: string } | null | undefined;
+  alt: string;
+  accent: string;
+  isActive: boolean;
+  sizes: string;
+  priority: boolean;
+}) {
+  if (!img?.url) {
+    return (
+      <div
+        className="absolute inset-0"
+        style={{ background: `linear-gradient(135deg, #0d1f22 0%, ${accent} 160%)` }}
+      />
+    );
+  }
+  return (
+    <Image
+      src={img.url}
+      alt={alt}
+      fill
+      className={`object-cover transition-transform duration-[800ms] ease-in-out ${isActive ? 'scale-105' : 'scale-100'}`}
+      sizes={sizes}
+      priority={priority}
+      quality={85}
+      {...(img.lqip ? { placeholder: 'blur' as const, blurDataURL: img.lqip } : {})}
+    />
+  );
+}
 
 function ActivePanelContent({ panel, i }: { panel: Panel; i: number }) {
   const meta = SOLUTION_META[panel.vertical];
@@ -147,7 +173,7 @@ function ActivePanelContent({ panel, i }: { panel: Panel; i: number }) {
 
 // ─── Desktop: horizontal accordion (hover + auto-advance) ────────────────────
 
-function DesktopAccordion() {
+function DesktopAccordion({ heroImages }: { heroImages: HeroImages }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [progressKey, setProgressKey] = useState(0);
   const isPausedRef = useRef(false);
@@ -202,14 +228,13 @@ function DesktopAccordion() {
             }}
             onMouseEnter={() => handlePanelEnter(i)}
           >
-            <Image
-              src={panel.image}
+            <PanelBackground
+              img={heroImages[panel.vertical]}
               alt={panel.title}
-              fill
-              className={`object-cover transition-transform duration-[800ms] ease-in-out ${isActive ? 'scale-105' : 'scale-100'}`}
+              accent={meta.accent}
+              isActive={isActive}
               sizes="(max-width: 768px) 100vw, 50vw"
               priority={i === 0}
-              quality={85}
             />
             <div
               className="absolute inset-0 transition-all duration-500"
@@ -257,7 +282,7 @@ function DesktopAccordion() {
 
 // ─── Mobile: vertical accordion driven by scroll ──────────────────────────────
 
-function MobileAccordion() {
+function MobileAccordion({ heroImages }: { heroImages: HeroImages }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const reduced = useReducedMotion();
@@ -304,14 +329,13 @@ function MobileAccordion() {
               }}
               onClick={() => !isActive && scrollToPanel(i)}
             >
-              <Image
-                src={panel.image}
+              <PanelBackground
+                img={heroImages[panel.vertical]}
                 alt={panel.title}
-                fill
-                className={`object-cover transition-transform duration-[800ms] ease-in-out ${isActive ? 'scale-105' : 'scale-100'}`}
+                accent={meta.accent}
+                isActive={isActive}
                 sizes="100vw"
                 priority={i === 0}
-                quality={85}
               />
               <div
                 className="absolute inset-0 transition-all duration-500"
@@ -365,14 +389,14 @@ function MobileAccordion() {
 
 // ─── Public export — responsive wrapper ──────────────────────────────────────
 
-export function HeroAccordion() {
+export function HeroAccordion({ heroImages }: { heroImages: HeroImages }) {
   return (
     <>
       <div className="hidden xl:block">
-        <DesktopAccordion />
+        <DesktopAccordion heroImages={heroImages} />
       </div>
       <div className="xl:hidden">
-        <MobileAccordion />
+        <MobileAccordion heroImages={heroImages} />
       </div>
     </>
   );
