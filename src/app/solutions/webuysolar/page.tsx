@@ -8,6 +8,7 @@ import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { WeBuySolarCalculator } from '@/components/sections/calculators/WeBuySolarCalculator';
 import { getHowItWorks } from '@/lib/getHowItWorks';
+import { getHeroImages } from '@/lib/getHeroImages';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import type { TabItem } from '@/components/sections/SolutionTabs';
@@ -60,6 +61,7 @@ const tabs: TabItem[] = [
 
 export default async function WeBuySolarPage() {
   const howItWorks = await getHowItWorks(vertical);
+  const hero = (await getHeroImages())[vertical];
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -78,7 +80,8 @@ export default async function WeBuySolarPage() {
         subtitle="Fast valuation, fair price, full decommissioning. Any brand, any size, any reason for selling."
         accent={meta.accent}
         badge={meta.label}
-        heroImage="/hero-webuysolar.png"
+        heroImage={hero?.url}
+        heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #1a0f00 0%, #3a2000 50%, #5a3a10 100%)"
         primaryCta={{ label: 'Get a Valuation', href: '/contact' }}
       >

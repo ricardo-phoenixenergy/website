@@ -9,6 +9,7 @@ import { sanityServerClient } from '@/lib/sanity.server';
 import { PARTNERS_QUERY } from '@/lib/queries';
 import { getCompanyStats } from '@/lib/getCompanyStats';
 import { getHowItWorks } from '@/lib/getHowItWorks';
+import { getHeroImages } from '@/lib/getHeroImages';
 import type { Partner } from '@/types/sanity';
 
 // Safety-net ISR: refresh hourly even if the Sanity revalidate webhook isn't
@@ -67,6 +68,7 @@ export default async function HomePage() {
 
   const companyStats = await getCompanyStats();
   const homeHowItWorks = await getHowItWorks('home');
+  const heroImages = await getHeroImages();
 
   return (
     <>
@@ -75,7 +77,7 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
       <main>
-        <HeroAccordion />
+        <HeroAccordion heroImages={heroImages} />
         <AboutTrust partners={partners} showTabs={false} justify="center" />
         {homeHowItWorks && <HowItWorks {...homeHowItWorks} autoAdvanceInterval={2600} />}
         <FeaturedProjects />

@@ -12,7 +12,8 @@ export interface SolutionHeroProps {
   subtitle: string;
   accent: string;      // hex — badge border + em colour
   badge: string;       // e.g. 'C&I Solar & Storage'
-  heroImage?: string;  // path to real photo e.g. '/hero-solar.png'
+  heroImage?: string;  // photo URL (Sanity) — falls back to heroBg gradient
+  heroBlur?: string;   // LQIP blur placeholder for heroImage
   heroBg: string;      // CSS gradient fallback when no photo
   primaryCta: CtaLink;
   children?: ReactNode; // calculator slot
@@ -39,6 +40,7 @@ export function SolutionHero({
   accent,
   badge,
   heroImage,
+  heroBlur,
   heroBg,
   primaryCta,
   children,
@@ -54,6 +56,7 @@ export function SolutionHero({
           priority
           className="object-cover"
           sizes="100vw"
+          {...(heroBlur ? { placeholder: 'blur' as const, blurDataURL: heroBlur } : {})}
         />
       ) : (
         <div className="absolute inset-0" style={{ background: heroBg }} />

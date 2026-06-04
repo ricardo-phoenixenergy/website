@@ -8,6 +8,7 @@ import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { CarbonCalculator } from '@/components/sections/calculators/CarbonCalculator';
 import { getHowItWorks } from '@/lib/getHowItWorks';
+import { getHeroImages } from '@/lib/getHeroImages';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import type { TabItem } from '@/components/sections/SolutionTabs';
@@ -61,6 +62,7 @@ const tabs: TabItem[] = [
 
 export default async function CarbonCreditsPage() {
   const howItWorks = await getHowItWorks(vertical);
+  const hero = (await getHeroImages())[vertical];
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -79,7 +81,8 @@ export default async function CarbonCreditsPage() {
         subtitle="Verra-certified carbon credits from your existing solar system — fully managed, zero admin, quarterly payouts."
         accent={meta.accent}
         badge={meta.label}
-        heroImage="/hero-carbon.png"
+        heroImage={hero?.url}
+        heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #0d1f22 0%, #182a1a 50%, #2a4a28 100%)"
         primaryCta={{ label: 'Check Eligibility', href: '/contact' }}
       >

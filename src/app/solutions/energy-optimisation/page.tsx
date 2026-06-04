@@ -8,6 +8,7 @@ import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { OptimisationCalculator } from '@/components/sections/calculators/OptimisationCalculator';
 import { getHowItWorks } from '@/lib/getHowItWorks';
+import { getHeroImages } from '@/lib/getHeroImages';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import type { TabItem } from '@/components/sections/SolutionTabs';
@@ -60,6 +61,7 @@ const tabs: TabItem[] = [
 
 export default async function EnergyOptimisationPage() {
   const howItWorks = await getHowItWorks(vertical);
+  const hero = (await getHeroImages())[vertical];
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -78,7 +80,8 @@ export default async function EnergyOptimisationPage() {
         subtitle="Real-time monitoring, smart HVAC control, and load-shifting — 28% average waste identified with zero capital outlay."
         accent={meta.accent}
         badge={meta.label}
-        heroImage="/hero-optimisation.png"
+        heroImage={hero?.url}
+        heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #0d1f22 0%, #1c3540 50%, #2a4a58 100%)"
         primaryCta={{ label: 'Book a Free Audit', href: '/contact' }}
       >
