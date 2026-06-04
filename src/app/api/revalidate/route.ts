@@ -57,6 +57,11 @@ export async function POST(req: NextRequest) {
     revalidatePath('/');         // homepage AboutTrust also lists partners
   }
 
+  if (type === 'companyStats') {
+    revalidatePath('/');         // home CTA footer stats
+    revalidatePath('/about');    // About "at a glance" stats
+  }
+
   return Response.json({
     revalidated: true,
     type,
