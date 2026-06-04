@@ -68,7 +68,7 @@ export default async function AboutPage() {
     <main>
       {/* Hero — matches Solutions page: FloatingOrbs + dark background */}
       <section className="relative overflow-hidden" style={{ background: '#0d1f22', minHeight: 480 }}>
-        <FloatingOrbs />
+        <FloatingOrbs showConstellation={false} />
         <div className="page-container relative z-10 pt-28 pb-20 md:pt-36 md:pb-28">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-1.5 font-body text-sm mb-8" style={{ color: 'rgba(255,255,255,0.45)' }}>
@@ -83,12 +83,12 @@ export default async function AboutPage() {
             >
               The rise of Phoenix Energy
             </p>
-            <h1 className="font-display font-extrabold text-4xl md:text-5xl text-white leading-[1.1] mb-5 max-w-[580px]">
+            <h1 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl text-white leading-[1.1] mb-5 max-w-[860px]">
               Powering Africa&apos;s{' '}
-              <em style={{ color: '#709DA9', fontStyle: 'normal' }}>energy transition</em>
+              <em className="whitespace-nowrap" style={{ color: '#709DA9', fontStyle: 'normal' }}>energy transition</em>
             </h1>
             <p
-              className="font-body text-base leading-[1.75] mb-8 max-w-[440px]"
+              className="font-body text-base md:text-lg leading-[1.75] mb-8 max-w-[560px]"
               style={{ color: 'rgba(255,255,255,0.60)' }}
             >
               Meet the team, story and values behind a company on a mission to become Africa&apos;s most innovative energy service provider.

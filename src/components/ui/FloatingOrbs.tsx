@@ -67,9 +67,11 @@ const PARTICLES = [
 
 interface FloatingOrbsProps {
   className?: string;
+  /** Show the animated constellation (connecting lines + pulsing nodes). */
+  showConstellation?: boolean;
 }
 
-export function FloatingOrbs({ className }: FloatingOrbsProps) {
+export function FloatingOrbs({ className, showConstellation = true }: FloatingOrbsProps) {
   const reduced   = useReducedMotion();
   const wrapRef   = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState({ w: 0, h: 0 });
@@ -135,7 +137,7 @@ export function FloatingOrbs({ className }: FloatingOrbsProps) {
       ))}
 
       {/* ── Layer 2: constellation (only once we have real dimensions) ── */}
-      {!reduced && dims.w > 0 && (
+      {showConstellation && !reduced && dims.w > 0 && (
         <svg
           width={dims.w}
           height={dims.h}
