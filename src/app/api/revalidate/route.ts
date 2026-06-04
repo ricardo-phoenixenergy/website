@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
 
   const type = typeof raw._type === 'string' ? raw._type : undefined;
   const slug = extractSlug(raw.slug);
+  const id = typeof raw._id === 'string' ? raw._id : undefined;
 
   if (type === 'blogPost') {
     if (slug) revalidatePath(`/blog/${slug}`);
@@ -60,6 +61,15 @@ export async function POST(req: NextRequest) {
   if (type === 'companyStats') {
     revalidatePath('/');         // home CTA footer stats
     revalidatePath('/about');    // About "at a glance" stats
+  }
+
+  if (type === 'howItWorks' && id) {
+    const key = id.replace(/^drafts\./, '').replace(/^howItWorks\./, '');
+    if (key === 'home') {
+      revalidatePath('/');
+    } else {
+      revalidatePath(`/solutions/${key}`);
+    }
   }
 
   return Response.json({
