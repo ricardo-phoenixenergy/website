@@ -29,7 +29,7 @@ export async function LatestPosts() {
           key={post._id}
           post={post}
           delay={i * 0.05}
-          className="flex-shrink-0 w-[260px]"
+          className="flex-shrink-0 w-[82vw] md:w-[calc((min(100vw,80rem)-4rem-28px)/3)]"
         />
       ))}
     </SectionCarousel>
