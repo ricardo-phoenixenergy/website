@@ -7,6 +7,7 @@ import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { OptimisationCalculator } from '@/components/sections/calculators/OptimisationCalculator';
+import { getHowItWorks } from '@/lib/getHowItWorks';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import type { TabItem } from '@/components/sections/SolutionTabs';
@@ -21,6 +22,8 @@ export const metadata: Metadata = {
   alternates: { canonical: `https://phoenixenergy.solutions/solutions/${vertical}` },
   openGraph: { title: cfg.seoTitle, description: cfg.seoDescription, url: `https://phoenixenergy.solutions/solutions/${vertical}`, images: [{ url: 'https://phoenixenergy.solutions/og-solutions-energy-optimisation.png', width: 1200, height: 630 }] },
 };
+
+export const revalidate = 3600;
 
 const tabs: TabItem[] = [
   {
@@ -55,14 +58,9 @@ const tabs: TabItem[] = [
   },
 ];
 
-const steps = [
-  { label: 'Energy Audit', description: 'A certified energy auditor walks your facility and identifies top waste sources.', tag: 'Free' },
-  { label: 'Sub-Meter Install', description: 'Circuit-level sub-meters and IoT sensors installed within 2–5 days.', tag: '2–5 days' },
-  { label: 'Tuning & Automation', description: 'BMS integration and load-shift automations deployed — savings start immediately.', tag: '1–2 weeks' },
-  { label: 'Continuous Reporting', description: 'Monthly savings reports with attributed ROI. We review and retune quarterly.', tag: 'Ongoing' },
-];
+export default async function EnergyOptimisationPage() {
+  const howItWorks = await getHowItWorks(vertical);
 
-export default function EnergyOptimisationPage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Service',
@@ -86,19 +84,9 @@ export default function EnergyOptimisationPage() {
       >
         <OptimisationCalculator />
       </SolutionHero>
-      <SolutionTabs id="tabs" tabs={tabs} accent={meta.accent} vertical="energy-optimisation" />
-      <div id="how-it-works">
-        <HowItWorks
-          title="From audit to savings <em>in two weeks</em>"
-          steps={steps}
-          showCTA
-          ctaLabel="Book a Free Audit"
-          ctaHref="/contact"
-        />
-      </div>
-      <div id="projects">
-        <FeaturedProjects vertical={vertical} />
-      </div>
+      <SolutionTabs tabs={tabs} accent={meta.accent} vertical="energy-optimisation" />
+      {howItWorks && <HowItWorks {...howItWorks} />}
+      <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
       <PageFooter
         eyebrow="Stop overpaying"

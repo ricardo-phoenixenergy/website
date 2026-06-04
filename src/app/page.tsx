@@ -8,6 +8,7 @@ import { PageFooter } from '@/components/layout/PageFooter';
 import { sanityClient } from '@/lib/sanity';
 import { PARTNERS_QUERY } from '@/lib/queries';
 import { getCompanyStats } from '@/lib/getCompanyStats';
+import { getHowItWorks } from '@/lib/getHowItWorks';
 import type { Partner } from '@/types/sanity';
 
 // Safety-net ISR: refresh hourly even if the Sanity revalidate webhook isn't
@@ -56,24 +57,6 @@ const websiteJsonLd = {
   },
 };
 
-const HOME_HIW_STEPS = [
-  {
-    label: 'Free assessment',
-    description: 'We visit your site and model three solution scenarios at no cost, no obligation.',
-    tag: 'No cost · No obligation',
-  },
-  {
-    label: 'Proposal & financing',
-    description: 'Full ROI model, payback period, and financing options delivered in 5 business days.',
-    tag: 'Delivered in 5 days',
-  },
-  {
-    label: 'Installation & beyond',
-    description: 'Certified install in 8–12 weeks, then 24/7 monitoring with a 25-year warranty.',
-    tag: '8–12 week commissioning',
-  },
-];
-
 export default async function HomePage() {
   let partners: Partner[] = [];
   try {
@@ -83,6 +66,7 @@ export default async function HomePage() {
   }
 
   const companyStats = await getCompanyStats();
+  const homeHowItWorks = await getHowItWorks('home');
 
   return (
     <>
@@ -93,12 +77,7 @@ export default async function HomePage() {
       <main>
         <HeroAccordion />
         <AboutTrust partners={partners} showTabs={false} justify="center" />
-        <HowItWorks
-          title="Your path to energy <em>independence</em>"
-          steps={HOME_HIW_STEPS}
-          autoAdvanceInterval={2600}
-          showCTA={false}
-        />
+        {homeHowItWorks && <HowItWorks {...homeHowItWorks} autoAdvanceInterval={2600} />}
         <FeaturedProjects />
         <LatestPosts />
         <PageFooter stats={companyStats} />

@@ -170,3 +170,21 @@ export interface Partner {
     alt?: string;
   };
 }
+
+/* ─── How It Works ───────────────────────────────────────────────────────────── */
+
+export interface HowItWorksStep {
+  label: string;
+  description: string;
+  tag?: string;
+}
+
+export interface HowItWorksContent {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  steps: HowItWorksStep[];
+  showCTA?: boolean;
+  ctaLabel?: string;
+  ctaHref?: string;
+}

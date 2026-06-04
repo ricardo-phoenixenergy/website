@@ -40,6 +40,22 @@ export default defineConfig({
               .child(
                 S.document().schemaType('companyStats').documentId('companyStats'),
               ),
+            S.divider(),
+            S.listItem()
+              .title('How It Works')
+              .child(
+                S.list()
+                  .title('How It Works')
+                  .items([
+                    S.listItem().title('Home').child(S.document().schemaType('howItWorks').documentId('howItWorks.home')),
+                    S.listItem().title('C&I Solar & Storage').child(S.document().schemaType('howItWorks').documentId('howItWorks.ci-solar-storage')),
+                    S.listItem().title('Wheeling').child(S.document().schemaType('howItWorks').documentId('howItWorks.wheeling')),
+                    S.listItem().title('Energy Optimisation').child(S.document().schemaType('howItWorks').documentId('howItWorks.energy-optimisation')),
+                    S.listItem().title('Carbon Credits').child(S.document().schemaType('howItWorks').documentId('howItWorks.carbon-credits')),
+                    S.listItem().title('WeBuySolar').child(S.document().schemaType('howItWorks').documentId('howItWorks.webuysolar')),
+                    S.listItem().title('EV Fleets').child(S.document().schemaType('howItWorks').documentId('howItWorks.ev-fleets')),
+                  ]),
+              ),
           ]),
     }),
     visionTool(),

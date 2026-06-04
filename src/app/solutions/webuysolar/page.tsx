@@ -7,6 +7,7 @@ import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { WeBuySolarCalculator } from '@/components/sections/calculators/WeBuySolarCalculator';
+import { getHowItWorks } from '@/lib/getHowItWorks';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import type { TabItem } from '@/components/sections/SolutionTabs';
@@ -21,6 +22,8 @@ export const metadata: Metadata = {
   alternates: { canonical: `https://phoenixenergy.solutions/solutions/${vertical}` },
   openGraph: { title: cfg.seoTitle, description: cfg.seoDescription, url: `https://phoenixenergy.solutions/solutions/${vertical}`, images: [{ url: 'https://phoenixenergy.solutions/og-solutions-webuysolar.png', width: 1200, height: 630 }] },
 };
+
+export const revalidate = 3600;
 
 const tabs: TabItem[] = [
   {
@@ -55,14 +58,9 @@ const tabs: TabItem[] = [
   },
 ];
 
-const steps = [
-  { label: 'Submit Details', description: 'Share your system specs and location — a 5-minute online form or a quick call.', tag: 'Online' },
-  { label: 'Site Inspection', description: 'Our technician visits within 48 hours, assesses condition, and prepares an offer.', tag: '48 hours' },
-  { label: 'Offer & Sign', description: "You receive a written offer. No obligation — accept if it works for you.", tag: 'Your choice' },
-  { label: 'Cash & Removal', description: 'Payment is transferred within 14 days. Our team handles all decommissioning.', tag: '14 days' },
-];
+export default async function WeBuySolarPage() {
+  const howItWorks = await getHowItWorks(vertical);
 
-export default function WeBuySolarPage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Service',
@@ -86,19 +84,9 @@ export default function WeBuySolarPage() {
       >
         <WeBuySolarCalculator />
       </SolutionHero>
-      <SolutionTabs id="tabs" tabs={tabs} accent={meta.accent} vertical="webuysolar" />
-      <div id="how-it-works">
-        <HowItWorks
-          title="From enquiry to cash <em>in 14 days</em>"
-          steps={steps}
-          showCTA
-          ctaLabel="Get a Valuation"
-          ctaHref="/contact"
-        />
-      </div>
-      <div id="projects">
-        <FeaturedProjects vertical={vertical} />
-      </div>
+      <SolutionTabs tabs={tabs} accent={meta.accent} vertical="webuysolar" />
+      {howItWorks && <HowItWorks {...howItWorks} />}
+      <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
       <PageFooter
         eyebrow="Sell today"

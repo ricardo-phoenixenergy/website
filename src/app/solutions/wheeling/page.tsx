@@ -7,6 +7,7 @@ import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { WheelingCalculator } from '@/components/sections/calculators/WheelingCalculator';
+import { getHowItWorks } from '@/lib/getHowItWorks';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import type { TabItem } from '@/components/sections/SolutionTabs';
@@ -21,6 +22,8 @@ export const metadata: Metadata = {
   alternates: { canonical: `https://phoenixenergy.solutions/solutions/${vertical}` },
   openGraph: { title: cfg.seoTitle, description: cfg.seoDescription, url: `https://phoenixenergy.solutions/solutions/${vertical}`, images: [{ url: 'https://phoenixenergy.solutions/og-solutions-wheeling.png', width: 1200, height: 630 }] },
 };
+
+export const revalidate = 3600;
 
 const tabs: TabItem[] = [
   {
@@ -56,14 +59,9 @@ const tabs: TabItem[] = [
   },
 ];
 
-const steps = [
-  { label: 'Consumption Audit', description: 'We analyse 12 months of interval meter data to quantify your wheeling opportunity.', tag: 'Free' },
-  { label: 'Generator Matching', description: 'Phoenix matches your load profile to available generators on our licensed platforms.', tag: '5–10 days' },
-  { label: 'Agreement Sign-off', description: 'NERSA-compliant wheeling agreement executed between generator, Eskom, and consumer.', tag: '2–4 weeks' },
-  { label: 'Live Settlement', description: 'T-day energy accounting with monthly consolidated invoicing and REC delivery.', tag: 'Ongoing' },
-];
+export default async function WheelingPage() {
+  const howItWorks = await getHowItWorks(vertical);
 
-export default function WheelingPage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Service',
@@ -87,19 +85,9 @@ export default function WheelingPage() {
       >
         <WheelingCalculator />
       </SolutionHero>
-      <SolutionTabs id="tabs" tabs={tabs} accent={meta.accent} vertical="wheeling" />
-      <div id="how-it-works">
-        <HowItWorks
-          title="Wheeling made <em>straightforward</em>"
-          steps={steps}
-          showCTA
-          ctaLabel="Get a Wheeling Quote"
-          ctaHref="/contact"
-        />
-      </div>
-      <div id="projects">
-        <FeaturedProjects vertical={vertical} />
-      </div>
+      <SolutionTabs tabs={tabs} accent={meta.accent} vertical="wheeling" />
+      {howItWorks && <HowItWorks {...howItWorks} />}
+      <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
       <PageFooter
         eyebrow="Start wheeling"

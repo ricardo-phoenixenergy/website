@@ -282,3 +282,17 @@ export const PARTNERS_QUERY = `
     "logo": logo { asset->, alt }
   }
 `;
+
+/* ─── How It Works ──────────────────────────────────────────────────────────── */
+
+export const HOW_IT_WORKS_QUERY = `
+  *[_id == $id][0]{
+    eyebrow,
+    title,
+    subtitle,
+    steps[]{ label, description, tag },
+    "showCTA": showCta,
+    ctaLabel,
+    ctaHref
+  }
+`;
