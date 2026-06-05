@@ -74,6 +74,7 @@ export async function POST(req: NextRequest) {
 
   if (type === 'heroImages') {
     revalidatePath('/');
+    revalidatePath('/solutions');   // overview page cards also use the hero images
     for (const v of ['ci-solar-storage', 'wheeling', 'energy-optimisation', 'carbon-credits', 'webuysolar', 'ev-fleets']) {
       revalidatePath(`/solutions/${v}`);
     }

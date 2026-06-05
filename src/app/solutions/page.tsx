@@ -6,16 +6,9 @@ import { SOLUTION_META, SOLUTION_VERTICALS } from '@/types/solutions';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { IconArrowRight } from '@/components/ui/Icons';
 import { Card, CardImage, CardBody, CardFooter } from '@/components/ui/Card';
-import type { SolutionVertical } from '@/types/solutions';
+import { getHeroImages } from '@/lib/getHeroImages';
 
-const VERTICAL_IMAGE: Record<SolutionVertical, string> = {
-  'ci-solar-storage':    '/hero-solar.png',
-  'wheeling':            '/hero-wheeling.png',
-  'energy-optimisation': '/hero-optimisation.png',
-  'carbon-credits':      '/hero-carbon.png',
-  'webuysolar':          '/hero-webuysolar.png',
-  'ev-fleets':           '/hero-ev.png',
-};
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'Energy Solutions | Phoenix Energy',
@@ -30,7 +23,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function SolutionsPage() {
+export default async function SolutionsPage() {
+  const heroImages = await getHeroImages();
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -110,7 +105,8 @@ export default function SolutionsPage() {
                 <Link href={meta.slug} className="block h-full">
                   <Card variant="dark" pattern={1} overlay={false} className="h-full">
                     <CardImage
-                      src={VERTICAL_IMAGE[vertical]}
+                      src={heroImages[vertical]?.url}
+                      blurDataURL={heroImages[vertical]?.lqip}
                       alt={meta.label}
                       height={180}
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
