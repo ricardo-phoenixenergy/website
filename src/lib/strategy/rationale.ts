@@ -7,7 +7,8 @@ const USAGE_PHRASE: Record<Usage, string> = {
 };
 
 export function buildRationale(answers: StrategyAnswers, result: StrategyResult): string {
-  const usage = USAGE_PHRASE[answers.usage];
+  // usage is only collected on the cut-bill path, where these branches use it.
+  const usage = answers.usage ? USAGE_PHRASE[answers.usage] : '';
 
   switch (result.primary) {
     case 'demand-shaving':
@@ -27,9 +28,9 @@ export function buildRationale(answers: StrategyAnswers, result: StrategyResult)
         ? `Solar offsets the power you use ${usage}, and a battery stores the daytime surplus so you can use it after dark.`
         : `Solar offsets the power you use ${usage}, with the grid staying as your simple backup.`;
     case 'backup-resilience':
-      return `Uptime is your priority. A grid-tied hybrid keeps you running ${usage} through loadshedding and outages — and trims your bill as a bonus.`;
+      return `Uptime is your priority. A grid-tied hybrid keeps you running through loadshedding and outages — and trims your bill from solar self-consumption as a bonus.`;
     case 'off-grid':
-      return `You want off the grid. Solar plus a large battery (and an optional generator) can take you there, covering your use ${usage}.`;
+      return `You want full energy independence. Solar plus a large battery (and an optional generator) can take you off the grid for good.`;
     default:
       return '';
   }

@@ -27,4 +27,15 @@ describe('buildRationale', () => {
       expect(buildRationale(a, recommendStrategy(a)).length).toBeGreaterThan(10);
     }
   });
+
+  it('backup/independence rationale works without a usage answer (no "undefined")', () => {
+    const backup = { goal: 'backup' } as const;
+    const indep = { goal: 'independence' } as const;
+    const backupText = buildRationale(backup, recommendStrategy(backup));
+    const indepText = buildRationale(indep, recommendStrategy(indep));
+    expect(backupText).not.toContain('undefined');
+    expect(indepText).not.toContain('undefined');
+    expect(backupText.length).toBeGreaterThan(10);
+    expect(indepText.length).toBeGreaterThan(10);
+  });
 });

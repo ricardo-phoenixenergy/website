@@ -17,6 +17,18 @@ describe('recommendStrategy — goal gate', () => {
     expect(r.primary).toBe('off-grid');
     expect(r.topology).toBe('off-grid');
   });
+
+  it('backup goal works without a usage answer', () => {
+    const r = recommendStrategy({ goal: 'backup' });
+    expect(r.primary).toBe('backup-resilience');
+    expect(r.topology).toBe('hybrid');
+  });
+
+  it('independence goal works without a usage answer', () => {
+    const r = recommendStrategy({ goal: 'independence' });
+    expect(r.primary).toBe('off-grid');
+    expect(r.topology).toBe('off-grid');
+  });
 });
 
 describe('recommendStrategy — cut-bill levers', () => {

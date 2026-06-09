@@ -18,7 +18,7 @@ export interface StrategyAnswers {
   goal: Goal;
   energyRate?: EnergyRate;     // present only when goal === 'cut-bill'
   demandCharge?: DemandCharge; // present only when goal === 'cut-bill'
-  usage: Usage;
+  usage?: Usage;               // present only when goal === 'cut-bill' (irrelevant for backup/independence)
 }
 
 export interface StrategyResult {
