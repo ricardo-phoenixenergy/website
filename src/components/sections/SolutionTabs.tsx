@@ -30,6 +30,7 @@ const ICON_MAP: Record<IconName, (size: number) => React.ReactNode> = {
 };
 
 export interface TabItem {
+  key?: string;        // stable anchor for deep-linking, e.g. 'strategy-demand-shaving'
   label: string;
   icon: IconName;
   iconBg: string;
@@ -53,6 +54,7 @@ export function SolutionTabs({ tabs, accent, id, vertical = '' }: SolutionTabsPr
   const [activeTab, setActiveTab] = useState(0);
   const [openIndex, setOpenIndex] = useState(0);
   const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const sectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -60,6 +62,23 @@ export function SolutionTabs({ tabs, accent, id, vertical = '' }: SolutionTabsPr
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
   }, []);
+
+  // Deep-link: when the URL hash matches a tab's key, open it and scroll into view.
+  useEffect(() => {
+    function applyHash() {
+      const hash = window.location.hash.replace('#', '');
+      if (!hash) return;
+      const idx = tabs.findIndex((t) => t.key === hash);
+      if (idx === -1) return;
+      setActiveTab(idx);
+      setOpenIndex(idx);
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      sectionRef.current?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    }
+    applyHash();
+    window.addEventListener('hashchange', applyHash);
+    return () => window.removeEventListener('hashchange', applyHash);
+  }, [tabs]);
 
   const activeItem = tabs[activeTab];
 
@@ -82,7 +101,7 @@ export function SolutionTabs({ tabs, accent, id, vertical = '' }: SolutionTabsPr
   }
 
   return (
-    <section id={id} className="bg-white py-12 md:py-[52px]">
+    <section ref={sectionRef} id={id} className="bg-white py-12 md:py-[52px]">
       <div className="page-container">
         {/* Desktop tabs */}
         {!isMobile && (

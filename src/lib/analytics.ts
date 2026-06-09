@@ -6,6 +6,9 @@ type DlEvent =
   | { event: 'paywall_unlock';      estimated_value_band: string }
   | { event: 'blog_read_complete';  post_slug: string; post_category?: string }
   | { event: 'tab_change';          vertical: string; tab_label: string }
+  | { event: 'strategy_finder_start';    vertical: string }
+  | { event: 'strategy_finder_complete'; vertical: string; goal: string; energy_rate: string; demand_charge: string; usage: string; strategy: string }
+  | { event: 'strategy_learn_more';      vertical: string; strategy: string }
   | { event: 'filter_change';       filter_value: string }
   | { event: 'scroll_depth';        depth_percentage: 25 | 50 | 75 | 90; page_path: string }
   | { event: 'web_vitals';          metric_name: string; metric_value: number; metric_rating: string };

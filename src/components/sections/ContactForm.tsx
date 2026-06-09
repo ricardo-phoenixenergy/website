@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { contactSchema } from '@/lib/validators/contact';
 import { dlPush } from '@/lib/analytics';
+import { contactMessageForStrategy } from '@/config/strategies';
 import {
   IconZap,
   IconUsers,
@@ -83,6 +84,17 @@ async function getRecaptchaToken(): Promise<string> {
   });
 }
 
+// Prefill from the Strategy Finder deep-link: /contact?intent=client&strategy=<key>
+function getQueryParams(): { intent: Intent | null; message: string } {
+  if (typeof window === 'undefined') return { intent: null, message: '' };
+  const params = new URLSearchParams(window.location.search);
+  const qsIntent = params.get('intent');
+  const qsStrategy = params.get('strategy');
+  const validIntent = INTENTS.find((i) => i.value === qsIntent);
+  const message = qsStrategy ? (contactMessageForStrategy(qsStrategy) ?? '') : '';
+  return { intent: validIntent ? validIntent.value : null, message };
+}
+
 export function ContactForm() {
   const [step, setStep] = useState<1 | 2>(1);
   const [intent, setIntent] = useState<Intent | null>(null);
@@ -99,6 +111,18 @@ export function ContactForm() {
     location: '',
     message: '',
   });
+
+  // Prefill once on mount (post-hydration, so no SSR mismatch) from the deep-link params.
+  useEffect(() => {
+    const { intent: qsIntent, message } = getQueryParams();
+    /* eslint-disable react-hooks/set-state-in-effect */
+    if (qsIntent) {
+      setIntent(qsIntent);
+      setStep(2);
+    }
+    if (message) setFields((prev) => ({ ...prev, message }));
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, []);
 
   const config = INTENTS.find((i) => i.value === intent) ?? INTENTS[0];
 
