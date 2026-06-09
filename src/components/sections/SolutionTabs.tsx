@@ -30,6 +30,7 @@ const ICON_MAP: Record<IconName, (size: number) => React.ReactNode> = {
 };
 
 export interface TabItem {
+  key?: string;        // stable anchor for deep-linking, e.g. 'strategy-demand-shaving'
   label: string;
   icon: IconName;
   iconBg: string;
