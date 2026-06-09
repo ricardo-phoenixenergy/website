@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { contactSchema } from '@/lib/validators/contact';
 import { dlPush } from '@/lib/analytics';
 import { contactMessageForStrategy } from '@/config/strategies';
@@ -96,11 +96,8 @@ function getQueryParams(): { intent: Intent | null; message: string } {
 }
 
 export function ContactForm() {
-  const [step, setStep] = useState<1 | 2>(() => {
-    const { intent } = getQueryParams();
-    return intent ? 2 : 1;
-  });
-  const [intent, setIntent] = useState<Intent | null>(() => getQueryParams().intent);
+  const [step, setStep] = useState<1 | 2>(1);
+  const [intent, setIntent] = useState<Intent | null>(null);
   const [status, setStatus] = useState<Status>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -112,8 +109,20 @@ export function ContactForm() {
     phone: '',
     company: '',
     location: '',
-    message: getQueryParams().message,
+    message: '',
   });
+
+  // Prefill once on mount (post-hydration, so no SSR mismatch) from the deep-link params.
+  useEffect(() => {
+    const { intent: qsIntent, message } = getQueryParams();
+    /* eslint-disable react-hooks/set-state-in-effect */
+    if (qsIntent) {
+      setIntent(qsIntent);
+      setStep(2);
+    }
+    if (message) setFields((prev) => ({ ...prev, message }));
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, []);
 
   const config = INTENTS.find((i) => i.value === intent) ?? INTENTS[0];
 
