@@ -52,27 +52,27 @@ describe('recommendStrategy — cut-bill levers', () => {
     expect(r.topology).toBe('hybrid');
   });
 
-  it('block tariff → grid-tied-solar (not caveated)', () => {
+  it('block tariff → self-consumption (not caveated)', () => {
     const r = recommendStrategy({ goal: 'cut-bill', demandCharge: 'no', energyRate: 'block', usage: 'daytime' });
-    expect(r.primary).toBe('grid-tied-solar');
+    expect(r.primary).toBe('self-consumption');
     expect(r.caveated).toBe(false);
     expect(r.topology).toBe('solar-only');
   });
 
-  it('flat tariff + evening usage → grid-tied-solar, hybrid topology', () => {
+  it('flat tariff + evening usage → self-consumption, hybrid topology', () => {
     const r = recommendStrategy({ goal: 'cut-bill', demandCharge: 'no', energyRate: 'flat', usage: 'evenings' });
-    expect(r.primary).toBe('grid-tied-solar');
+    expect(r.primary).toBe('self-consumption');
     expect(r.topology).toBe('hybrid');
   });
 
-  it('both unknown → grid-tied-solar, caveated hybrid default', () => {
+  it('both unknown → self-consumption, caveated hybrid default', () => {
     const r = recommendStrategy({ goal: 'cut-bill', demandCharge: 'unknown', energyRate: 'unknown', usage: 'daytime' });
-    expect(r.primary).toBe('grid-tied-solar');
+    expect(r.primary).toBe('self-consumption');
     expect(r.caveated).toBe(true);
   });
 });
 
-describe('recommendStrategy — topology from usage for grid-tied', () => {
+describe('recommendStrategy — topology from usage for self-consumption', () => {
   it('daytime → solar-only', () => {
     expect(recommendStrategy({ goal: 'cut-bill', demandCharge: 'no', energyRate: 'flat', usage: 'daytime' }).topology).toBe('solar-only');
   });

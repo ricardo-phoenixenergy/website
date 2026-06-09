@@ -6,7 +6,7 @@ export type Usage = 'daytime' | 'around-clock' | 'evenings';
 
 // The five strategies (also the Solution tab keys).
 export type StrategyKey =
-  | 'grid-tied-solar'
+  | 'self-consumption'
   | 'battery-arbitrage'
   | 'demand-shaving'
   | 'backup-resilience'

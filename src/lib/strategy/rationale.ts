@@ -17,16 +17,18 @@ export function buildRationale(answers: StrategyAnswers, result: StrategyResult)
         : `You pay demand charges, running ${usage}. Solar covers your daytime load while a battery flattens the demand spikes that drive your kVA charge — often the biggest line on the bill.`;
     case 'battery-arbitrage':
       return `Your Time-of-Use tariff makes power expensive at peak. Store cheap solar by day and use it when the rates bite, running ${usage}.`;
-    case 'grid-tied-solar':
+    case 'self-consumption': {
       if (result.caveated) {
-        return `Based on what you've told us, a hybrid solar-and-storage system is the flexible starting point — a free assessment will confirm the exact tactic for your site.`;
+        return `Based on what you've told us, a solar self-consumption system is the flexible starting point — a free assessment will confirm whether you need storage.`;
       }
-      if (answers.energyRate === 'block') {
-        return `On a block tariff every extra unit costs more — generating your own power, used ${usage}, shaves off the priciest units first.`;
-      }
+      const base =
+        answers.energyRate === 'block'
+          ? 'On a block tariff every extra unit costs more, so self-generating shaves off your priciest units first'
+          : `Solar offsets the power you use ${usage}`;
       return result.topology === 'hybrid'
-        ? `Solar offsets the power you use ${usage}, and a battery stores the daytime surplus so you can use it after dark.`
-        : `Solar offsets the power you use ${usage}, with the grid staying as your simple backup.`;
+        ? `${base}, and a battery stores the daytime surplus so you can keep using your own solar after dark.`
+        : `${base}, with the grid staying as your simple backup.`;
+    }
     case 'backup-resilience':
       return `Uptime is your priority. A grid-tied hybrid keeps you running through loadshedding and outages — and trims your bill from solar self-consumption as a bonus.`;
     case 'off-grid':
