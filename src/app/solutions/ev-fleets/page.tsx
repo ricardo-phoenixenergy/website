@@ -88,7 +88,14 @@ export default async function EvFleetsPage() {
       >
         <EvFleetsCalculator />
       </SolutionHero>
-      <SolutionTabs tabs={tabs} accent={meta.accent} vertical="ev-fleets" />
+      <SolutionTabs
+        tabs={tabs}
+        accent={meta.accent}
+        vertical="ev-fleets"
+        eyebrow="What's included"
+        heading="Everything your <em>fleet needs to electrify</em>"
+        subtitle="From charging hardware to live fleet visibility and the financing that makes the switch affordable."
+      />
       {howItWorks && <HowItWorks {...howItWorks} />}
       <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />

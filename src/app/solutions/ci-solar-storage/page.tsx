@@ -58,7 +58,14 @@ export default async function CiSolarStoragePage() {
       >
         <StrategyFinder vertical={vertical} />
       </SolutionHero>
-      <SolutionTabs tabs={tabs} accent={meta.accent} vertical="ci-solar-storage" />
+      <SolutionTabs
+        tabs={tabs}
+        accent={meta.accent}
+        vertical="ci-solar-storage"
+        eyebrow="The strategies"
+        heading="Every strategy, <em>explained</em>"
+        subtitle="Explore the ways to deploy solar and storage — including whichever approach the finder recommended for you."
+      />
       <FinancingBand />
       {howItWorks && <HowItWorks {...howItWorks} />}
       <FeaturedProjects vertical={vertical} />

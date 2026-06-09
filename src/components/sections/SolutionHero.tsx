@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/Button';
 
@@ -11,7 +12,7 @@ export interface SolutionHeroProps {
   title: string;       // HTML string — <em> renders in accent colour
   subtitle: string;
   accent: string;      // hex — badge border + em colour
-  badge: string;       // e.g. 'C&I Solar & Storage'
+  badge: string;       // current page label — shown as the final breadcrumb crumb, e.g. 'C&I Solar & Storage'
   heroImage?: string;  // photo URL (Sanity) — falls back to heroBg gradient
   heroBlur?: string;   // LQIP blur placeholder for heroImage
   heroBg: string;      // CSS gradient fallback when no photo
@@ -86,16 +87,18 @@ export function SolutionHero({
 
           {/* Left: copy */}
           <div>
-            <span
-              className="inline-block font-body text-xs font-semibold px-3 py-1 rounded-full mb-5"
-              style={{
-                border: `1px solid ${accent}`,
-                color: accent,
-                background: `${accent}1a`,
-              }}
+            {/* Breadcrumb — matches the dark-hero style used across the site */}
+            <nav
+              className="flex items-center gap-1.5 font-body text-sm mb-5"
+              style={{ color: 'rgba(255,255,255,0.45)' }}
+              aria-label="Breadcrumb"
             >
-              {badge}
-            </span>
+              <Link href="/" className="hover:text-white transition-colors">Home</Link>
+              <span aria-hidden>/</span>
+              <Link href="/solutions" className="hover:text-white transition-colors">Solutions</Link>
+              <span aria-hidden>/</span>
+              <span className="font-semibold text-white">{badge}</span>
+            </nav>
 
             <h1 className="font-display font-extrabold text-[1.875rem] md:text-[2.625rem] text-white leading-[1.18] mb-4 max-w-[560px]">
               {renderTitle(title, accent)}

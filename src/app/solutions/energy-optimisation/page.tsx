@@ -87,7 +87,14 @@ export default async function EnergyOptimisationPage() {
       >
         <OptimisationCalculator />
       </SolutionHero>
-      <SolutionTabs tabs={tabs} accent={meta.accent} vertical="energy-optimisation" />
+      <SolutionTabs
+        tabs={tabs}
+        accent={meta.accent}
+        vertical="energy-optimisation"
+        eyebrow="The levers"
+        heading="Where the <em>savings come from</em>"
+        subtitle="The monitoring, equipment tuning and load strategies we use to cut your energy spend — without new generation."
+      />
       {howItWorks && <HowItWorks {...howItWorks} />}
       <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />

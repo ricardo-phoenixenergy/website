@@ -88,7 +88,14 @@ export default async function WheelingPage() {
       >
         <WheelingCalculator />
       </SolutionHero>
-      <SolutionTabs tabs={tabs} accent={meta.accent} vertical="wheeling" />
+      <SolutionTabs
+        tabs={tabs}
+        accent={meta.accent}
+        vertical="wheeling"
+        eyebrow="The models"
+        heading="Two ways to <em>wheel clean power</em>"
+        subtitle="Direct or aggregated wheeling agreements — and the financing structures that make each one work."
+      />
       {howItWorks && <HowItWorks {...howItWorks} />}
       <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />

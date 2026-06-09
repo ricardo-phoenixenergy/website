@@ -88,7 +88,14 @@ export default async function CarbonCreditsPage() {
       >
         <CarbonCalculator />
       </SolutionHero>
-      <SolutionTabs tabs={tabs} accent={meta.accent} vertical="carbon-credits" />
+      <SolutionTabs
+        tabs={tabs}
+        accent={meta.accent}
+        vertical="carbon-credits"
+        eyebrow="What's involved"
+        heading="Turning reductions into <em>tradable credits</em>"
+        subtitle="The certification standards, measurement and funding that take you from emissions data to verified carbon credits."
+      />
       {howItWorks && <HowItWorks {...howItWorks} />}
       <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />

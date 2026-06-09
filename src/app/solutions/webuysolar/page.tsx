@@ -87,7 +87,14 @@ export default async function WeBuySolarPage() {
       >
         <WeBuySolarCalculator />
       </SolutionHero>
-      <SolutionTabs tabs={tabs} accent={meta.accent} vertical="webuysolar" />
+      <SolutionTabs
+        tabs={tabs}
+        accent={meta.accent}
+        vertical="webuysolar"
+        eyebrow="What we buy"
+        heading="The solar assets <em>we acquire</em>"
+        subtitle="Rooftop, ground-mount or storage — see the systems we purchase and how we value them."
+      />
       {howItWorks && <HowItWorks {...howItWorks} />}
       <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
