@@ -163,6 +163,7 @@ export function StrategyFinder({ vertical }: StrategyFinderProps) {
   function restart() {
     setAnswers({});
     setStepIndex(0);
+    setStarted(false);
   }
 
   return (
@@ -227,6 +228,14 @@ export function StrategyFinder({ vertical }: StrategyFinderProps) {
             style={{ border: `1px solid ${ACCENT}66`, background: 'linear-gradient(180deg,#0d1f22,#13262a)' }}
             aria-live="polite"
           >
+            <button
+              type="button"
+              onClick={back}
+              className="font-body text-xs mb-3"
+              style={{ color: 'rgba(255,255,255,0.5)' }}
+            >
+              ← Back
+            </button>
             <p className="font-body text-xs uppercase tracking-[0.12em] text-center mb-3" style={{ color: 'rgba(255,255,255,0.45)' }}>
               Your recommended strategy
             </p>
