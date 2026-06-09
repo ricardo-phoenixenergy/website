@@ -1,9 +1,16 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import { dlPush } from '@/lib/analytics';
 import { Button } from '@/components/ui/Button';
 import { FinancingCards } from './FinancingCards';
+
+// Charts are CI-only and pull in chart.js — load on the client, only when a tab has one.
+const StrategyProfileChart = dynamic(
+  () => import('./StrategyProfileChart').then((m) => m.StrategyProfileChart),
+  { ssr: false, loading: () => <div className="mt-6 h-[296px] rounded-xl bg-[#F5F5F5] animate-pulse" /> },
+);
 import {
   IconArrowRight,
   IconSun, IconBattery, IconDollarSign, IconLeaf, IconGlobe,
@@ -42,6 +49,7 @@ export interface TabItem {
   imageEmoji: string;
   type?: 'financing';
   cta?: { label: string; href: string }; // optional conversion button inside the panel
+  chartKey?: string;                      // optional strategy daily-profile chart
 }
 
 export interface SolutionTabsProps {
@@ -113,6 +121,7 @@ export function SolutionTabs({
             </li>
           ))}
         </ul>
+        {tab.chartKey && <StrategyProfileChart strategyKey={tab.chartKey} />}
         {tab.cta && (
           <Button variant="primary" href={tab.cta.href} className="mt-6">
             {tab.cta.label}

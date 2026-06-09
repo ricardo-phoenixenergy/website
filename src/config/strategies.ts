@@ -144,6 +144,7 @@ export function strategyTabs(): TabItem[] {
       label: s.label,
       icon: s.icon,
       ...s.tab,
+      chartKey: s.key,
       cta: { label: 'Get a free assessment', href: `/contact?intent=client&strategy=${s.key}` },
     };
   });
