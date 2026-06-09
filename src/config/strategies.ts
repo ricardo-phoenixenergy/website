@@ -20,22 +20,22 @@ export interface StrategyDef {
 const ICON_BG = 'rgba(227,197,141,0.18)';
 
 export const STRATEGIES: Record<StrategyKey, StrategyDef> = {
-  'grid-tied-solar': {
-    key: 'grid-tied-solar',
-    label: 'Grid-Tied Solar',
+  'self-consumption': {
+    key: 'self-consumption',
+    label: 'Solar Self-Consumption',
     icon: 'Sun',
-    bestFor: 'Daytime users on a simple tariff',
+    bestFor: 'Flat or tiered tariffs — use your own solar',
     contactSentence:
-      "I used the Strategy Finder on your C&I Solar & Storage page — my recommended strategy is Grid-Tied Solar (self-consumption). I'd like a free assessment.",
+      "I used the Strategy Finder on your C&I Solar & Storage page — my recommended strategy is Solar Self-Consumption (PV, with a battery if I run after dark). I'd like a free assessment.",
     tab: {
       iconBg: ICON_BG,
-      title: 'Tier 1 Panels & Hybrid Inverters',
-      body: 'We specify Tier 1 monocrystalline panels with string or hybrid inverters sized to your load profile — offsetting the power you use during the day, with the grid (and an optional battery) as backup.',
+      title: 'Use the Solar You Generate',
+      body: 'Tier 1 panels sized to your load offset the power you use as you make it. Run mostly in daylight and a grid-tied PV system is enough; run after dark or around the clock and we add a battery so you still use your own solar at night.',
       bullets: [
         'Tier 1 monocrystalline panels (JA, Longi, Jinko)',
+        'PV-only for daytime loads — lowest entry cost',
+        'Add a battery (hybrid) to self-consume after dark',
         'Hybrid inverters — battery-ready from day one',
-        'NERSA-compliant single-line diagram',
-        'Add storage later to use solar after dark (hybrid)',
       ],
       imageBg: 'linear-gradient(135deg, rgba(227,197,141,0.15) 0%, rgba(57,87,92,0.20) 100%)',
       imageEmoji: '🔆',
@@ -128,7 +128,7 @@ export const STRATEGIES: Record<StrategyKey, StrategyDef> = {
 };
 
 export const STRATEGY_ORDER: StrategyKey[] = [
-  'grid-tied-solar',
+  'self-consumption',
   'battery-arbitrage',
   'demand-shaving',
   'backup-resilience',

@@ -2,7 +2,7 @@ import type { StrategyAnswers, StrategyResult, StrategyKey, Topology, Usage } fr
 
 function deriveTopology(primary: StrategyKey, usage: Usage | undefined): Topology {
   if (primary === 'off-grid') return 'off-grid';
-  if (primary === 'grid-tied-solar') return usage === 'daytime' ? 'solar-only' : 'hybrid';
+  if (primary === 'self-consumption') return usage === 'daytime' ? 'solar-only' : 'hybrid';
   // battery-arbitrage, demand-shaving, backup-resilience all require storage
   return 'hybrid';
 }
@@ -26,10 +26,10 @@ export function recommendStrategy(answers: StrategyAnswers): StrategyResult {
     } else if (energyRate === 'tou') {
       primary = 'battery-arbitrage';
     } else if (energyRate === 'block' || energyRate === 'flat') {
-      primary = 'grid-tied-solar';
+      primary = 'self-consumption';
     } else {
       // energy rate unknown and no known demand charge → flexible hybrid default
-      primary = 'grid-tied-solar';
+      primary = 'self-consumption';
       caveated = true;
     }
   }
