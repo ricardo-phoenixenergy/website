@@ -16,7 +16,6 @@ export interface SolutionHeroProps {
   heroBlur?: string;   // LQIP blur placeholder for heroImage
   heroBg: string;      // CSS gradient fallback when no photo
   primaryCta: CtaLink;
-  secondaryLink?: { label: string; href: string }; // e.g. anchor to the strategy finder
   children?: ReactNode; // calculator slot
 }
 
@@ -44,7 +43,6 @@ export function SolutionHero({
   heroBlur,
   heroBg,
   primaryCta,
-  secondaryLink,
   children,
 }: SolutionHeroProps) {
   return (
@@ -107,16 +105,6 @@ export function SolutionHero({
             <Button variant="light" href={primaryCta.href}>
               {primaryCta.label}
             </Button>
-
-            {secondaryLink && (
-              <a
-                href={secondaryLink.href}
-                className="block mt-4 font-body text-sm underline transition-colors"
-                style={{ color: 'rgba(255,255,255,0.6)' }}
-              >
-                {secondaryLink.label}
-              </a>
-            )}
           </div>
 
           {/* Right: calculator slot */}
