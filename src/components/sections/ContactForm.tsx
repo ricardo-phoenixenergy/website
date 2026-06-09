@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { contactSchema } from '@/lib/validators/contact';
 import { dlPush } from '@/lib/analytics';
+import { contactMessageForStrategy } from '@/config/strategies';
 import {
   IconZap,
   IconUsers,
@@ -83,9 +84,23 @@ async function getRecaptchaToken(): Promise<string> {
   });
 }
 
+// Prefill from the Strategy Finder deep-link: /contact?intent=client&strategy=<key>
+function getQueryParams(): { intent: Intent | null; message: string } {
+  if (typeof window === 'undefined') return { intent: null, message: '' };
+  const params = new URLSearchParams(window.location.search);
+  const qsIntent = params.get('intent');
+  const qsStrategy = params.get('strategy');
+  const validIntent = INTENTS.find((i) => i.value === qsIntent);
+  const message = qsStrategy ? (contactMessageForStrategy(qsStrategy) ?? '') : '';
+  return { intent: validIntent ? validIntent.value : null, message };
+}
+
 export function ContactForm() {
-  const [step, setStep] = useState<1 | 2>(1);
-  const [intent, setIntent] = useState<Intent | null>(null);
+  const [step, setStep] = useState<1 | 2>(() => {
+    const { intent } = getQueryParams();
+    return intent ? 2 : 1;
+  });
+  const [intent, setIntent] = useState<Intent | null>(() => getQueryParams().intent);
   const [status, setStatus] = useState<Status>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -97,7 +112,7 @@ export function ContactForm() {
     phone: '',
     company: '',
     location: '',
-    message: '',
+    message: getQueryParams().message,
   });
 
   const config = INTENTS.find((i) => i.value === intent) ?? INTENTS[0];
