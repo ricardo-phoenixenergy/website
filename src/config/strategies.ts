@@ -5,7 +5,6 @@ export interface StrategyDef {
   key: StrategyKey;
   label: string;            // tab label + reveal name
   icon: IconName;
-  glyph: string;            // emoji used in the reveal diagram
   bestFor: string;
   contactSentence: string;  // pre-fills the contact "Tell us more" box
   tab: {
@@ -25,7 +24,6 @@ export const STRATEGIES: Record<StrategyKey, StrategyDef> = {
     key: 'grid-tied-solar',
     label: 'Grid-Tied Solar',
     icon: 'Sun',
-    glyph: '☀️',
     bestFor: 'Daytime users on a simple tariff',
     contactSentence:
       "I used the Strategy Finder on your C&I Solar & Storage page — my recommended strategy is Grid-Tied Solar (self-consumption). I'd like a free assessment.",
@@ -47,7 +45,6 @@ export const STRATEGIES: Record<StrategyKey, StrategyDef> = {
     key: 'battery-arbitrage',
     label: 'Battery Arbitrage',
     icon: 'Battery',
-    glyph: '🔋',
     bestFor: 'Time-of-Use tariffs — buy low, use high',
     contactSentence:
       "I used the Strategy Finder on your C&I Solar & Storage page — my recommended strategy is Battery Arbitrage. I'd like a free assessment.",
@@ -69,7 +66,6 @@ export const STRATEGIES: Record<StrategyKey, StrategyDef> = {
     key: 'demand-shaving',
     label: 'Demand Shaving',
     icon: 'Activity',
-    glyph: '📉',
     bestFor: 'Bills with demand / kVA charges',
     contactSentence:
       "I used the Strategy Finder on your C&I Solar & Storage page — my recommended strategy is Demand Shaving. I'd like a free assessment.",
@@ -91,7 +87,6 @@ export const STRATEGIES: Record<StrategyKey, StrategyDef> = {
     key: 'backup-resilience',
     label: 'Backup & Resilience',
     icon: 'Zap',
-    glyph: '🔋',
     bestFor: 'Uptime-critical sites; loadshedding hurts',
     contactSentence:
       "I used the Strategy Finder on your C&I Solar & Storage page — my priority is reliable backup / resilience. I'd like a free assessment.",
@@ -113,7 +108,6 @@ export const STRATEGIES: Record<StrategyKey, StrategyDef> = {
     key: 'off-grid',
     label: 'Off-Grid',
     icon: 'Globe',
-    glyph: '🔌',
     bestFor: 'Weak/no grid; full independence',
     contactSentence:
       "I used the Strategy Finder on your C&I Solar & Storage page — my priority is energy independence (off-grid). I'd like a free assessment.",

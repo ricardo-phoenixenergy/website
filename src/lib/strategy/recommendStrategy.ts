@@ -1,6 +1,6 @@
 import type { StrategyAnswers, StrategyResult, StrategyKey, Topology, Usage } from './types';
 
-function deriveTopology(primary: StrategyKey, usage: Usage): Topology {
+function deriveTopology(primary: StrategyKey, usage: Usage | undefined): Topology {
   if (primary === 'off-grid') return 'off-grid';
   if (primary === 'grid-tied-solar') return usage === 'daytime' ? 'solar-only' : 'hybrid';
   // battery-arbitrage, demand-shaving, backup-resilience all require storage
