@@ -9,7 +9,7 @@ import { FinancingCards } from './FinancingCards';
 // Charts are CI-only and pull in chart.js — load on the client, only when a tab has one.
 const StrategyProfileChart = dynamic(
   () => import('./StrategyProfileChart').then((m) => m.StrategyProfileChart),
-  { ssr: false, loading: () => <div className="mt-6 h-[296px] rounded-xl bg-[#F5F5F5] animate-pulse" /> },
+  { ssr: false, loading: () => <div className="h-[296px] rounded-xl bg-[#F5F5F5] animate-pulse" /> },
 );
 import {
   IconArrowRight,
@@ -109,8 +109,8 @@ export function SolutionTabs({
 
   function renderPanelBody(tab: TabItem) {
     if (tab.type === 'financing') return <FinancingCards />;
-    return (
-      <div className="max-w-[640px]">
+    const textBlock = (
+      <div>
         <h3 className="font-display font-extrabold text-xl text-[#1A1A1A] mb-3">{tab.title}</h3>
         <p className="font-body text-sm text-[#374151] leading-[1.75] mb-4">{tab.body}</p>
         <ul className="space-y-2">
@@ -121,7 +121,6 @@ export function SolutionTabs({
             </li>
           ))}
         </ul>
-        {tab.chartKey && <StrategyProfileChart strategyKey={tab.chartKey} />}
         {tab.cta && (
           <Button variant="primary" href={tab.cta.href} className="mt-6">
             {tab.cta.label}
@@ -129,6 +128,18 @@ export function SolutionTabs({
         )}
       </div>
     );
+
+    // With a chart: side-by-side on large screens (text left, chart right), stacked on mobile.
+    if (tab.chartKey) {
+      return (
+        <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
+          {textBlock}
+          <StrategyProfileChart strategyKey={tab.chartKey} />
+        </div>
+      );
+    }
+
+    return <div className="max-w-[640px]">{textBlock}</div>;
   }
 
   return (

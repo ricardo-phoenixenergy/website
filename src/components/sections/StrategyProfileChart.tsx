@@ -149,7 +149,7 @@ export function StrategyProfileChart({ strategyKey }: StrategyProfileChartProps)
   };
 
   return (
-    <div className="mt-6 rounded-xl border border-[#E5E7EB] p-4">
+    <div className="rounded-xl border border-[#E5E7EB] p-4">
       <p className="font-display font-bold text-[13px] text-[#1A1A1A] mb-3">A typical day</p>
       <div style={{ height: 200 }} aria-hidden="true">
         <Line data={{ labels: HOUR_LABELS, datasets }} options={options} />
