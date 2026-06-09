@@ -16,7 +16,8 @@ export interface SolutionHeroProps {
   heroBlur?: string;   // LQIP blur placeholder for heroImage
   heroBg: string;      // CSS gradient fallback when no photo
   primaryCta: CtaLink;
-  children?: ReactNode; // calculator slot
+  children?: ReactNode;  // calculator / interactive slot
+  wideRight?: boolean;   // give the right column more width (≈⅔) instead of the fixed 440px
 }
 
 function renderTitle(raw: string, accent: string) {
@@ -44,6 +45,7 @@ export function SolutionHero({
   heroBg,
   primaryCta,
   children,
+  wideRight = false,
 }: SolutionHeroProps) {
   return (
     <section className="relative" style={{ minHeight: 'clamp(580px, 75vw, 760px)' }}>
@@ -76,7 +78,11 @@ export function SolutionHero({
         className="page-container relative z-10 flex items-center"
         style={{ minHeight: 'inherit', paddingTop: 96, paddingBottom: 72 }}
       >
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_440px] gap-10 xl:gap-16 items-center w-full">
+        <div
+          className={`grid grid-cols-1 gap-10 xl:gap-16 items-center w-full ${
+            wideRight ? 'lg:grid-cols-[1fr_2fr]' : 'lg:grid-cols-[1fr_440px]'
+          }`}
+        >
 
           {/* Left: copy */}
           <div>

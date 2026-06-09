@@ -54,6 +54,7 @@ export default async function CiSolarStoragePage() {
         heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #0d1f22 0%, #1a3a3f 50%, #2d5c63 100%)"
         primaryCta={{ label: 'Get a Free Assessment', href: '/contact' }}
+        wideRight
       >
         <StrategyFinder vertical={vertical} />
       </SolutionHero>
