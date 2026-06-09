@@ -167,15 +167,18 @@ export function StrategyFinder({ vertical }: StrategyFinderProps) {
   }
 
   return (
-    <section id="strategy-finder" className="bg-[#0d1f22] py-12 md:py-[52px]">
-      <div className="page-container max-w-[680px]">
+    <div
+      id="strategy-finder"
+      className="w-full rounded-2xl p-6"
+      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)' }}
+    >
         <p className="font-body text-xs font-bold uppercase tracking-[0.12em] mb-2" style={{ color: ACCENT }}>
           Find my strategy
         </p>
-        <h2 className="font-display font-extrabold text-2xl md:text-3xl text-white mb-2">
-          Not sure which approach fits you?
-        </h2>
-        <p className="font-body text-sm mb-7" style={{ color: 'rgba(255,255,255,0.6)' }}>
+        <h3 className="font-display font-extrabold text-xl text-white mb-1">
+          Which approach fits you?
+        </h3>
+        <p className="font-body text-xs mb-5" style={{ color: 'rgba(255,255,255,0.6)' }}>
           A few quick questions — no bill needed. We&apos;ll point you to the strategy that suits you best.
         </p>
 
@@ -224,8 +227,8 @@ export function StrategyFinder({ vertical }: StrategyFinderProps) {
         {/* Reveal */}
         {current === 'reveal' && result && (
           <div
-            className="rounded-2xl p-6 md:p-8"
-            style={{ border: `1px solid ${ACCENT}66`, background: 'linear-gradient(180deg,#0d1f22,#13262a)' }}
+            className="rounded-xl p-5"
+            style={{ border: `1px solid ${ACCENT}66`, background: 'rgba(227,197,141,0.06)' }}
             aria-live="polite"
           >
             <button
@@ -289,8 +292,7 @@ export function StrategyFinder({ vertical }: StrategyFinderProps) {
             </button>
           </div>
         )}
-      </div>
-    </section>
+    </div>
   );
 }
 
