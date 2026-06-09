@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { dlPush } from '@/lib/analytics';
 import { recommendStrategy } from '@/lib/strategy/recommendStrategy';
 import { buildRationale } from '@/lib/strategy/rationale';
@@ -208,7 +207,7 @@ export function StrategyFinder({ vertical }: StrategyFinderProps) {
   return (
     <div
       id="strategy-finder"
-      className="w-full rounded-2xl p-6 lg:h-[480px] lg:overflow-y-auto"
+      className="w-full rounded-2xl p-6"
       style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)' }}
     >
         <p className="font-body text-xs font-bold uppercase tracking-[0.12em] mb-2" style={{ color: ACCENT }}>
@@ -302,31 +301,27 @@ export function StrategyFinder({ vertical }: StrategyFinderProps) {
               {buildRationale(answers as StrategyAnswers, result)}
             </p>
 
-            {[result.primary, ...result.secondary].map((s, idx) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => onLearnMore(`strategy-${s}`, s)}
-                className="flex w-full items-center justify-center gap-2 rounded-full py-3 font-display font-bold text-sm mb-2"
-                style={
-                  idx === 0
-                    ? { background: ACCENT, color: '#3a2c08' }
-                    : { background: 'transparent', color: ACCENT, border: `1.5px solid ${ACCENT}66` }
-                }
-              >
-                Read about {STRATEGIES[s].label}
-                <IconArrowRight size={15} />
-              </button>
-            ))}
-
-            <Link
-              href={`/contact?intent=client&strategy=${result.primary}`}
-              className="flex w-full items-center justify-center gap-2 rounded-full py-3 font-display font-bold text-sm text-center mt-3"
-              style={{ background: '#F5F5F5', color: '#0d1f22' }}
+            {/* Learn-more links — secondary, auto-width chips that don't compete with the CTA */}
+            <p
+              className="font-body text-[0.7rem] uppercase tracking-[0.12em] text-center mb-2.5"
+              style={{ color: 'rgba(255,255,255,0.4)' }}
             >
-              Get my free assessment
-              <IconArrowRight size={15} />
-            </Link>
+              Learn more
+            </p>
+            <div className="flex flex-wrap justify-center gap-2 mb-5">
+              {[result.primary, ...result.secondary].map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => onLearnMore(`strategy-${s}`, s)}
+                  className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 font-display font-bold text-xs transition-colors duration-200"
+                  style={{ border: `1.5px solid ${ACCENT}66`, color: ACCENT, background: 'rgba(227,197,141,0.06)' }}
+                >
+                  {STRATEGIES[s].label}
+                  <IconArrowRight size={13} />
+                </button>
+              ))}
+            </div>
 
             <button
               type="button"
