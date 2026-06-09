@@ -270,10 +270,17 @@ start at step 1.
   `StrategyFinder` section; pass the five strategy tabs (no financing tab) to `SolutionTabs`;
   add `FinancingBand` below; add the hero secondary "Find your strategy ↓" link.
 
+**Deleted**
+- `src/components/sections/calculators/SolarCalculator.tsx` — CI-only and now unused once the
+  finder replaces it; delete it and its import.
+
 **Untouched**
-- `SolarCalculator.tsx` is CI-only; it is removed from the CI page and either left in place
-  unused or deleted in cleanup (open item #4). Other verticals' calculators and pages:
-  unchanged. `FinancingCards.tsx`: unchanged.
+- Other verticals' calculators and pages: unchanged. `FinancingCards.tsx`: unchanged.
+
+**Copy:** strategy tab labels, titles and bullet content **reuse the current CI tab copy**
+(Solar Technology, Battery Storage) as the starting point, repurposed across the five
+strategies; refined after the build. New tabs (Demand Shaving, Backup & Resilience, Off-Grid)
+get concise initial copy in the same voice.
 
 ---
 
@@ -316,12 +323,12 @@ Extend existing `dlPush` usage:
 
 ## 13. Open items
 
-| # | Item | Owner |
-|---|---|---|
-| 1 | Final copy for the five strategy tabs (repurpose existing Solar/Battery copy) | Dev + Client |
-| 2 | Confirm tab order and labels ("Backup & Resilience" vs "Backup") | Client |
-| 3 | Update `specs/07-SOLUTIONS.md` CI tab list + pain-section note to reflect this change | Dev |
-| 4 | Decide whether to delete `SolarCalculator.tsx` or leave it unused | Dev |
+| # | Item | Owner | Status |
+|---|---|---|---|
+| 1 | Final copy for the five strategy tabs | Dev + Client | Build with existing CI copy reused; tweak after build |
+| 2 | Confirm tab order and labels ("Backup & Resilience" vs "Backup") | Client | Use current labels for now; revisit post-build |
+| 3 | Update `specs/07-SOLUTIONS.md` CI tab list + pain-section note to reflect this change | Dev | Open |
+| 4 | Delete `SolarCalculator.tsx` | Dev | Decided: delete |
 
 ---
 
