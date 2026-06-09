@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
 import { dlPush } from '@/lib/analytics';
+import { Button } from '@/components/ui/Button';
 import { FinancingCards } from './FinancingCards';
 import {
   IconArrowRight,
@@ -49,9 +49,24 @@ export interface SolutionTabsProps {
   accent: string;
   id?: string;
   vertical?: string;
+  eyebrow?: string;    // small uppercase kicker above the heading
+  heading?: string;    // section headline — supports <em> for accent colour
+  subtitle?: string;   // optional supporting line beneath the heading
 }
 
-export function SolutionTabs({ tabs, accent, id, vertical = '' }: SolutionTabsProps) {
+/* Splits a heading string on <em>…</em> and renders those parts in the accent colour. */
+function renderHeading(raw: string, accent: string) {
+  return raw.split(/(<em>.*?<\/em>)/g).map((part, i) => {
+    const match = part.match(/^<em>(.*)<\/em>$/);
+    return match
+      ? <em key={i} style={{ color: accent, fontStyle: 'normal' }}>{match[1]}</em>
+      : <span key={i}>{part}</span>;
+  });
+}
+
+export function SolutionTabs({
+  tabs, accent, id, vertical = '', eyebrow, heading, subtitle,
+}: SolutionTabsProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [openIndex, setOpenIndex] = useState(0);
@@ -99,14 +114,9 @@ export function SolutionTabs({ tabs, accent, id, vertical = '' }: SolutionTabsPr
           ))}
         </ul>
         {tab.cta && (
-          <Link
-            href={tab.cta.href}
-            className="inline-flex items-center gap-2 mt-6 rounded-full px-6 py-3 font-display font-bold text-sm text-white transition-transform duration-200 hover:-translate-y-px"
-            style={{ background: '#39575C' }}
-          >
+          <Button variant="primary" href={tab.cta.href} className="mt-6">
             {tab.cta.label}
-            <IconArrowRight size={15} />
-          </Link>
+          </Button>
         )}
       </div>
     );
@@ -115,6 +125,25 @@ export function SolutionTabs({ tabs, accent, id, vertical = '' }: SolutionTabsPr
   return (
     <section ref={sectionRef} id={id} className="bg-white py-12 md:py-[52px]">
       <div className="page-container">
+        {/* Section header — matches How It Works / Financing pattern */}
+        {heading && (
+          <div className="max-w-2xl mb-8 md:mb-10">
+            {eyebrow && (
+              <p className="font-body text-xs font-bold uppercase tracking-[0.12em] text-[#6B7280] mb-2">
+                {eyebrow}
+              </p>
+            )}
+            <h2 className="font-display font-extrabold text-2xl md:text-3xl text-[#1A1A1A] leading-[1.2]">
+              {renderHeading(heading, accent)}
+            </h2>
+            {subtitle && (
+              <p className="font-body text-sm md:text-base text-[#6B7280] leading-[1.7] mt-3">
+                {subtitle}
+              </p>
+            )}
+          </div>
+        )}
+
         {/* Desktop tabs */}
         {!isMobile && (
           <>
