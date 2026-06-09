@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { dlPush } from '@/lib/analytics';
 import { FinancingCards } from './FinancingCards';
 import {
@@ -40,6 +41,7 @@ export interface TabItem {
   imageBg: string;
   imageEmoji: string;
   type?: 'financing';
+  cta?: { label: string; href: string }; // optional conversion button inside the panel
 }
 
 export interface SolutionTabsProps {
@@ -96,6 +98,16 @@ export function SolutionTabs({ tabs, accent, id, vertical = '' }: SolutionTabsPr
             </li>
           ))}
         </ul>
+        {tab.cta && (
+          <Link
+            href={tab.cta.href}
+            className="inline-flex items-center gap-2 mt-6 rounded-full px-6 py-3 font-display font-bold text-sm text-white transition-transform duration-200 hover:-translate-y-px"
+            style={{ background: '#39575C' }}
+          >
+            {tab.cta.label}
+            <IconArrowRight size={15} />
+          </Link>
+        )}
       </div>
     );
   }

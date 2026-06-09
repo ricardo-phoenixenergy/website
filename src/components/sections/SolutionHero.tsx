@@ -17,7 +17,7 @@ export interface SolutionHeroProps {
   heroBg: string;      // CSS gradient fallback when no photo
   primaryCta: CtaLink;
   children?: ReactNode;  // calculator / interactive slot
-  wideRight?: boolean;   // give the right column more width (≈⅔) instead of the fixed 440px
+  wideRight?: boolean;   // 40/60 split — give the right column 60% instead of the fixed 440px
 }
 
 function renderTitle(raw: string, accent: string) {
@@ -80,7 +80,7 @@ export function SolutionHero({
       >
         <div
           className={`grid grid-cols-1 gap-10 xl:gap-16 items-center w-full ${
-            wideRight ? 'lg:grid-cols-[1fr_2fr]' : 'lg:grid-cols-[1fr_440px]'
+            wideRight ? 'lg:grid-cols-[2fr_3fr]' : 'lg:grid-cols-[1fr_440px]'
           }`}
         >
 
