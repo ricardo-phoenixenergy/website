@@ -9,6 +9,7 @@ import { STRATEGIES } from '@/config/strategies';
 import {
   IconDollarSign, IconZap, IconGlobe, IconMinus, IconClock, IconLayers,
   IconHelpCircle, IconCheck, IconX, IconSun, IconMoon, IconBattery,
+  IconArrowLeft, IconArrowRight,
 } from '@/components/ui/Icons';
 import type {
   Goal, EnergyRate, DemandCharge, Usage, StrategyAnswers,
@@ -194,7 +195,8 @@ export function StrategyFinder({ vertical }: StrategyFinderProps) {
 
   function onLearnMore(anchor: string, strategy: string) {
     dlPush({ event: 'strategy_learn_more', vertical, strategy });
-    window.location.hash = anchor;
+    // Hash navigation (fires `hashchange`, which SolutionTabs listens for to open + scroll).
+    window.location.assign(`#${anchor}`);
   }
 
   function restart() {
@@ -206,7 +208,7 @@ export function StrategyFinder({ vertical }: StrategyFinderProps) {
   return (
     <div
       id="strategy-finder"
-      className="w-full rounded-2xl p-6"
+      className="w-full rounded-2xl p-6 lg:h-[480px] lg:overflow-y-auto"
       style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)' }}
     >
         <p className="font-body text-xs font-bold uppercase tracking-[0.12em] mb-2" style={{ color: ACCENT }}>
@@ -271,10 +273,10 @@ export function StrategyFinder({ vertical }: StrategyFinderProps) {
             <button
               type="button"
               onClick={back}
-              className="font-body text-xs mb-3"
+              className="inline-flex items-center gap-1 font-body text-xs mb-3"
               style={{ color: 'rgba(255,255,255,0.5)' }}
             >
-              ← Back
+              <IconArrowLeft size={13} /> Back
             </button>
             <p className="font-body text-xs uppercase tracking-[0.12em] text-center mb-3" style={{ color: 'rgba(255,255,255,0.45)' }}>
               Your recommended strategy
@@ -300,33 +302,30 @@ export function StrategyFinder({ vertical }: StrategyFinderProps) {
               {buildRationale(answers as StrategyAnswers, result)}
             </p>
 
-            <button
-              type="button"
-              onClick={() => onLearnMore(result.tabAnchor, result.primary)}
-              className="block w-full rounded-full py-3 font-display font-bold text-sm mb-2"
-              style={{ background: ACCENT, color: '#3a2c08' }}
-            >
-              Read about {STRATEGIES[result.primary].label} →
-            </button>
-
-            {result.secondary.map((s) => (
+            {[result.primary, ...result.secondary].map((s, idx) => (
               <button
                 key={s}
                 type="button"
                 onClick={() => onLearnMore(`strategy-${s}`, s)}
-                className="block w-full text-center font-body text-xs underline mb-2"
-                style={{ color: ACCENT }}
+                className="flex w-full items-center justify-center gap-2 rounded-full py-3 font-display font-bold text-sm mb-2"
+                style={
+                  idx === 0
+                    ? { background: ACCENT, color: '#3a2c08' }
+                    : { background: 'transparent', color: ACCENT, border: `1.5px solid ${ACCENT}66` }
+                }
               >
-                Also relevant: {STRATEGIES[s].label} →
+                Read about {STRATEGIES[s].label}
+                <IconArrowRight size={15} />
               </button>
             ))}
 
             <Link
               href={`/contact?intent=client&strategy=${result.primary}`}
-              className="block w-full rounded-full py-3 font-display font-bold text-sm text-center mt-3"
+              className="flex w-full items-center justify-center gap-2 rounded-full py-3 font-display font-bold text-sm text-center mt-3"
               style={{ background: '#F5F5F5', color: '#0d1f22' }}
             >
-              Get my free assessment →
+              Get my free assessment
+              <IconArrowRight size={15} />
             </Link>
 
             <button
@@ -335,7 +334,7 @@ export function StrategyFinder({ vertical }: StrategyFinderProps) {
               className="block w-full text-center font-body text-xs mt-4"
               style={{ color: 'rgba(255,255,255,0.4)' }}
             >
-              ↺ Start over
+              Start over
             </button>
           </div>
         )}
@@ -362,7 +361,7 @@ function Question({
             className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
             style={{ border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.7)' }}
           >
-            ←
+            <IconArrowLeft size={14} />
           </button>
         )}
         <h3 className="font-display font-extrabold text-xl text-white">{title}</h3>
