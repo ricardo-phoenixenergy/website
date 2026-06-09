@@ -57,7 +57,29 @@
       "Bash(gh auth *)",
       "Bash(cmdkey /delete:git:https://github.com)",
       "Bash(echo \"--- exit: $? ---\")",
-      "Bash(cmdkey /list)"
+      "Bash(cmdkey /list)",
+      "PowerShell(npx tsc --noEmit; if \\($?\\) { \"TSC_OK\" }; git log --oneline -3)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(echo \"CHECK_EXIT=$?\")",
+      "Bash(echo \"EXIT_TSC=$?\")",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(grep -iE \"HeroAccordion|SolutionHero|getHeroImages|solutions[\\\\\\\\/].*page|app[\\\\\\\\/]page\")",
+      "Bash(echo \"--- tsc exit: $? ---\")",
+      "PowerShell(Set-Location \"C:\\\\Users\\\\ricar\\\\OneDrive\\\\Desktop\\\\Phoenix Energy\\\\Phoenix Website V3\\\\website\\\\phoenix-energy\"; try { Remove-Item -Recurse -Force .next -ErrorAction Stop } catch { Write-Output \"rm warn: $\\($_.Exception.Message\\)\" }; npx tsc --noEmit; Write-Output \"tsc exit: $LASTEXITCODE\")",
+      "Bash(Remove-Item \"src\\\\lib\\\\strategy\\\\smoke.test.ts\")",
+      "PowerShell(Remove-Item *)",
+      "Bash(findstr -i \"test\\\\|vitest\")",
+      "Bash(echo \"ESLint exit: $?\")",
+      "Bash(echo \"TSC exit: $?\")",
+      "Bash(Test-Path \"C:\\\\Users\\\\ricar\\\\OneDrive\\\\Desktop\\\\Phoenix Energy\\\\Phoenix Website V3\\\\website\\\\phoenix-energy\\\\src\\\\components\\\\sections\\\\StrategyFinder.tsx\")",
+      "Bash(Test-Path \"C:\\\\Users\\\\ricar\\\\OneDrive\\\\Desktop\\\\Phoenix Energy\\\\Phoenix Website V3\\\\website\\\\phoenix-energy\\\\src\\\\components\\\\sections\\\\FinancingBand.tsx\")",
+      "Bash(Test-Path \"C:\\\\Users\\\\ricar\\\\OneDrive\\\\Desktop\\\\Phoenix Energy\\\\Phoenix Website V3\\\\website\\\\phoenix-energy\\\\src\\\\config\\\\strategies.ts\")",
+      "Bash(echo \"TSC_EXIT:$?\")",
+      "Bash(echo \"ESLINT_EXIT:$?\")",
+      "Bash(curl -s \"http://localhost:3000/solutions/ci-solar-storage\" -o /tmp/ci.html)",
+      "Read(//tmp/**)",
+      "Bash(grep -oP \".{0,25}[\\\\x{1F300}-\\\\x{1FAFF}\\\\x{2600}-\\\\x{26FF}].{0,25}\")",
+      "Bash(curl -s \"http://localhost:3000/solutions/ci-solar-storage\")"
     ]
   }
 }
