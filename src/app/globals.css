@@ -228,3 +228,11 @@ label[for] {
   outline: 2px solid #39575C;
   outline-offset: 2px;
 }
+
+/* ─── Google reCAPTCHA v3 badge ────────────────────────────────────────────── */
+/* The sticky bottom-right badge is injected on <body>. Pin it above every
+   section/stacking context (the highest app z-index is z-[90]) so it never
+   slips behind content as the page scrolls. */
+.grecaptcha-badge {
+  z-index: 2147483647 !important;
+}
