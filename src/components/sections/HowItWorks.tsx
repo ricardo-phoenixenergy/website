@@ -80,7 +80,8 @@ export function HowItWorks({
   };
 
   return (
-    <section className="bg-[#F5F5F5] px-6 py-16 md:py-24">
+    <section className="bg-[#F5F5F5] py-16 md:py-24">
+      <div className="page-container">
       {/* Section header */}
       <AnimatedSection className="text-center mb-11">
         <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-3">
@@ -99,10 +100,15 @@ export function HowItWorks({
         )}
       </AnimatedSection>
 
-      {/* Desktop 3+ column grid */}
+      {/* Desktop 3+ column grid — width scales with the step count (≈220px each),
+          centred, and capped at the page-container width so it fills the section
+          like sibling sections once there are enough steps (≈6). */}
       <div
-        className="hidden md:block max-w-[760px] mx-auto"
-        style={{ '--step-count': steps.length } as React.CSSProperties}
+        className="hidden md:block mx-auto"
+        style={{
+          '--step-count': steps.length,
+          maxWidth: `min(100%, ${steps.length * 220}px)`,
+        } as React.CSSProperties}
       >
         <div
           className="relative"
@@ -143,7 +149,7 @@ export function HowItWorks({
             const isActive = i === activeStep;
             const isDone = i < activeStep;
             return (
-              <div key={i} className="flex flex-col items-center text-center">
+              <div key={i} className="flex flex-col items-center text-center max-w-[260px] mx-auto">
                 {/* Number circle */}
                 <div className="relative mb-4">
                   <div
@@ -317,6 +323,7 @@ export function HowItWorks({
             </Button>
           </div>
         )}
+      </div>
       </div>
     </section>
   );
