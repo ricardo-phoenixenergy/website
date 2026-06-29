@@ -46,14 +46,14 @@ export default async function CiSolarStoragePage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <SolutionHero
-        title="Cut your electricity bill by <em>up to 60%</em>"
-        subtitle="Commercial and industrial solar and battery storage — zero upfront capital with our PPA model."
+        title="Go solar with <em>zero upfront cost</em>"
+        subtitle="We fund, install and maintain your commercial solar and battery system — you simply buy cleaner power at a lower rate from day one."
         accent={meta.accent}
         badge={meta.label}
         heroImage={hero?.url}
         heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #0d1f22 0%, #1a3a3f 50%, #2d5c63 100%)"
-        primaryCta={{ label: 'Get a Free Assessment', href: '/contact' }}
+        primaryCta={{ label: 'Book a Discovery Meeting', href: '/contact' }}
         wideRight
       >
         <StrategyFinder vertical={vertical} />
@@ -64,7 +64,7 @@ export default async function CiSolarStoragePage() {
         vertical="ci-solar-storage"
         eyebrow="The strategies"
         heading="Every strategy, <em>explained</em>"
-        subtitle="Explore the ways to deploy solar and storage — including whichever approach the finder recommended for you."
+        subtitle="Explore the ways to deploy solar and storage — each matched to a different goal, from pure savings to full energy independence."
       />
       <FinancingBand />
       {howItWorks && <HowItWorks {...howItWorks} />}
@@ -74,7 +74,7 @@ export default async function CiSolarStoragePage() {
         eyebrow="Start saving"
         heading="Cut your electricity bill — permanently"
         body="Get a free site assessment and energy yield simulation from our certified engineers. No commitment required — results delivered within 48 hours."
-        primaryCta={{ label: 'Get a Free Assessment', href: '/contact' }}
+        primaryCta={{ label: 'Book a Discovery Meeting', href: '/contact' }}
         stats={[
           { value: '80+',   label: 'Solar installations' },
           { value: '48 MW', label: 'Peak capacity' },

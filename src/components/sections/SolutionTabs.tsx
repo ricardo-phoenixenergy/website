@@ -45,6 +45,7 @@ export interface TabItem {
   title: string;
   body: string;
   bullets: string[];
+  bulletsLabel?: string;                  // optional kicker above the bullets, e.g. 'Best suited for'
   imageBg: string;
   imageEmoji: string;
   type?: 'financing';
@@ -113,6 +114,11 @@ export function SolutionTabs({
       <div>
         <h3 className="font-display font-extrabold text-xl text-[#1A1A1A] mb-3">{tab.title}</h3>
         <p className="font-body text-sm text-[#374151] leading-[1.75] mb-4">{tab.body}</p>
+        {tab.bulletsLabel && (
+          <p className="font-body text-xs font-bold uppercase tracking-[0.1em] text-[#6B7280] mb-2.5">
+            {tab.bulletsLabel}
+          </p>
+        )}
         <ul className="space-y-2">
           {tab.bullets.map((b) => (
             <li key={b} className="flex items-start gap-2 font-body text-sm text-[#374151]">

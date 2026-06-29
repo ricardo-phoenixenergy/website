@@ -86,6 +86,7 @@ export function StrategyProfileChart({ strategyKey }: StrategyProfileChartProps)
     pointRadius: 0,
     fill: 'origin',
     tension: 0.4,
+    cubicInterpolationMode: 'monotone', // smooth but never overshoots → no phantom charge/discharge at sharp steps
     order: 5,
   });
 
@@ -99,6 +100,7 @@ export function StrategyProfileChart({ strategyKey }: StrategyProfileChartProps)
       pointRadius: 0,
       fill: false,
       tension: 0.4,
+      cubicInterpolationMode: 'monotone',
       order: 4,
     });
   }
@@ -160,12 +162,10 @@ export function StrategyProfileChart({ strategyKey }: StrategyProfileChartProps)
         <LegendItem color={C.solar} label="Solar" />
         <LegendItem color={C.battery} label="Battery (▲ discharge · ▼ charge)" />
         {gridSeries && <LegendItem color={C.grid} label="Grid" dashed line />}
-        {p.ceiling != null && <LegendItem color={C.ceiling} label="Demand ceiling" dashed line />}
-        {p.bands?.some((b) => b.tone === 'peak') && <LegendItem color="rgba(217,124,118,0.45)" label="Peak price" />}
-        {p.bands?.some((b) => b.tone === 'outage') && <LegendItem color="rgba(107,114,128,0.5)" label="Loadshedding" />}
+        {p.ceiling != null && <LegendItem color={C.ceiling} label="Demand Ceiling" dashed line />}
+        {p.bands?.some((b) => b.tone === 'peak') && <LegendItem color="rgba(217,124,118,0.45)" label="Peak Windows" />}
+        {p.bands?.some((b) => b.tone === 'outage') && <LegendItem color="rgba(107,114,128,0.5)" label="Grid Outage" />}
       </div>
-
-      <p className="font-body text-xs text-[#6B7280] leading-relaxed mt-3">{p.caption}</p>
     </div>
   );
 }
