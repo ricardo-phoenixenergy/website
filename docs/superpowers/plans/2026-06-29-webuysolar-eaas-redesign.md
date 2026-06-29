@@ -1012,10 +1012,9 @@ function getQueryParams(): { intent: Intent | null; message: string } {
 
 - [ ] **Step 2: Verify nothing reads webuysolar's stats array**
 
-Run: `npx grep -rn "VERTICAL_CONFIG" src` (or use the editor search) and confirm no consumer indexes `.stats` for a fixed length on the webuysolar vertical. The current solution pages render their footer stats from inline literals, not `cfg.stats`, so emptying it is safe.
+Run: `grep -rn "\.stats" src/app src/components` and confirm whether any consumer indexes `cfg.stats` for the webuysolar vertical.
 
-Run: `grep -rn "\.stats" src/app src/components`
-Expected: no usage that requires `VERTICAL_CONFIG[...].stats` to be non-empty for webuysolar. (If a consumer is found, stop and surface it rather than emptying the array.)
+**Finding (resolved):** `src/app/solutions/page.tsx:100-101` reads `cfg.stats[0]` and `cfg.stats[1]` for **every** vertical (the solutions overview hub renders a value/label pair per card, keyed on `s.label`). Emptying the array would crash the hub. Resolution: do NOT empty the array — replace it with truthful, non-numeric EaaS descriptors (keeps the "no fabricated numbers" intent and keeps the hub working). See Step 3.
 
 - [ ] **Step 3: Rewrite the webuysolar config**
 
@@ -1026,9 +1025,16 @@ In `verticals.ts`, replace the `webuysolar` block:
     seoTitle: 'Sell or Convert Your Commercial Solar System | Phoenix Energy',
     seoDescription:
       'We acquire and operate existing C&I solar and battery systems — fair-market valuation, flexible PPA or lease, and active optimisation. Free expert audit.',
-    stats: [],
+    stats: [
+      { value: 'Free', label: 'Expert audit' },
+      { value: 'PPA / Lease', label: 'Flexible buyback' },
+      { value: 'Operated', label: 'We run & optimise' },
+      { value: 'Any brand', label: 'Systems considered' },
+    ],
   },
 ```
+
+(Non-numeric descriptors — no fabricated counters. The hub uses `stats[0]`/`stats[1]`; the page itself renders no stat band.)
 
 - [ ] **Step 4: Type-check** — Run: `npx tsc --noEmit` — Expected: clean.
 - [ ] **Step 5: Lint** — Run: `npm run lint` — Expected: no errors.
