@@ -71,16 +71,11 @@ export default async function CiSolarStoragePage() {
       <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
       <PageFooter
-        eyebrow="Start saving"
-        heading="Cut your electricity bill — permanently"
-        body="Get a free site assessment and energy yield simulation from our certified engineers. No commitment required — results delivered within 48 hours."
+        ctaVariant="centered"
+        eyebrow="Start today"
+        heading="Find your optimal energy strategy"
+        body="Work with our engineers to identify the best energy strategy for your business. You'll receive a clear, data-driven roadmap to reduce costs and improve energy performance."
         primaryCta={{ label: 'Book a Discovery Meeting', href: '/contact' }}
-        stats={[
-          { value: '80+',   label: 'Solar installations' },
-          { value: '48 MW', label: 'Peak capacity' },
-          { value: '60%',   label: 'Avg bill reduction' },
-          { value: 'R280M', label: 'Client savings' },
-        ]}
       />
     </>
   );

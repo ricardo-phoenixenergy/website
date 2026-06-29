@@ -99,16 +99,11 @@ export default async function EnergyOptimisationPage() {
       <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
       <PageFooter
+        ctaVariant="centered"
         eyebrow="Stop overpaying"
         heading="Reduce your energy costs without replacing your infrastructure"
         body="Our engineers analyse your load profile, identify hidden inefficiencies, and deliver a savings roadmap in 5 business days — at no cost to you."
         primaryCta={{ label: 'Book a Free Energy Audit', href: '/contact' }}
-        stats={[
-          { value: '200+', label: 'Audits completed' },
-          { value: '35%',  label: 'Avg cost reduction' },
-          { value: 'R95M', label: 'Savings identified' },
-          { value: '48h',  label: 'Report turnaround' },
-        ]}
       />
     </>
   );
