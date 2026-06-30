@@ -21,7 +21,14 @@ export interface SolutionHeroProps {
   secondaryCta?: CtaLink;   // optional text link beside the primary button
   children?: ReactNode;  // calculator / interactive slot
   wideRight?: boolean;   // 40/60 split — give the right column 60% instead of the fixed 440px
+  imagePosition?: 'center' | 'top' | 'bottom';  // object-position of the hero photo (default center)
 }
+
+const HERO_OBJECT_POSITION: Record<NonNullable<SolutionHeroProps['imagePosition']>, string> = {
+  center: 'object-center',
+  top: 'object-top',
+  bottom: 'object-bottom',
+};
 
 function renderTitle(raw: string, accent: string) {
   const parts = raw.split(/(<em>.*?<\/em>)/g);
@@ -50,6 +57,7 @@ export function SolutionHero({
   secondaryCta,
   children,
   wideRight = false,
+  imagePosition = 'center',
 }: SolutionHeroProps) {
   return (
     <section className="relative" style={{ minHeight: 'clamp(580px, 75vw, 760px)' }}>
@@ -60,7 +68,7 @@ export function SolutionHero({
           alt={badge}
           fill
           priority
-          className="object-cover"
+          className={`object-cover ${HERO_OBJECT_POSITION[imagePosition]}`}
           sizes="100vw"
           {...(heroBlur ? { placeholder: 'blur' as const, blurDataURL: heroBlur } : {})}
         />

@@ -85,6 +85,7 @@ export default async function WeBuySolarPage() {
         heroImage={hero?.url}
         heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #1a0f00 0%, #3a2000 50%, #5a3a10 100%)"
+        imagePosition="bottom"
         primaryCta={{ label: 'Book your free audit', href: AUDIT_HREF }}
       >
         {/* Valuation-tool card */}
@@ -104,7 +105,7 @@ export default async function WeBuySolarPage() {
           <p className="font-body text-sm text-[#374151] leading-[1.7] mb-5">
             {WEBUYSOLAR.heroTool.body}
           </p>
-          <Button variant="primary" href="/tools/solar-asset-valuation" className="w-full">
+          <Button variant="primary" href="https://phoenixenergy.solutions/tools/solar-valuation" className="w-full">
             {WEBUYSOLAR.heroTool.ctaLabel} <IconArrowRight size={14} />
           </Button>
         </div>
