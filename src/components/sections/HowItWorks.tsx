@@ -25,6 +25,15 @@ interface HowItWorksProps {
   accentText?: string;   // legible text colour on top of the solid accent (default white)
 }
 
+// Perceived luminance of a #rrggbb hex (0 = black … 1 = white).
+function luminance(hex: string): number {
+  const n = hex.replace('#', '');
+  const r = parseInt(n.slice(0, 2), 16) / 255;
+  const g = parseInt(n.slice(2, 4), 16) / 255;
+  const b = parseInt(n.slice(4, 6), 16) / 255;
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
 export function HowItWorks({
   eyebrow = 'How it works',
   title,
@@ -42,6 +51,9 @@ export function HowItWorks({
   const PRIMARY = accent ?? '#39575C';
   const SECONDARY = accent ?? '#709DA9';
   const NUM_TEXT = accentText ?? '#ffffff';   // number colour inside filled circles
+  // Readable accent ink for small text on white (step labels, pills, dots): use the dark
+  // companion (accentText) when it's genuinely dark; otherwise the accent itself is dark enough.
+  const INK = accentText && luminance(accentText) < 0.6 ? accentText : (accent ?? '#39575C');
   const [activeStep, setActiveStep] = useState(0);
   const [sparkVisible, setSparkVisible] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -187,7 +199,7 @@ export function HowItWorks({
                 {/* Content */}
                 <p
                   className="font-display font-bold text-base leading-tight mb-1.5 transition-colors duration-300"
-                  style={{ color: isActive ? PRIMARY : '#1A1A1A' }}
+                  style={{ color: isActive ? INK : '#1A1A1A' }}
                 >
                   {step.label}
                 </p>
@@ -202,7 +214,7 @@ export function HowItWorks({
                     className="inline-block font-body font-semibold text-xs px-2.5 py-1 rounded-full transition-all duration-300"
                     style={{
                       background: `${PRIMARY}14`,
-                      color: PRIMARY,
+                      color: INK,
                       opacity: isActive || isDone ? 1 : 0,
                       transform: isActive || isDone ? 'translateY(0)' : 'translateY(4px)',
                       transitionDelay: '0.2s',
@@ -227,7 +239,7 @@ export function HowItWorks({
               style={{
                 width: i === activeStep ? 24 : 8,
                 height: 8,
-                background: i === activeStep ? PRIMARY : '#E5E7EB',
+                background: i === activeStep ? INK : '#E5E7EB',
                 borderRadius: i === activeStep ? 4 : 9999,
               }}
             />
@@ -281,7 +293,7 @@ export function HowItWorks({
                 <div className="pt-1">
                   <p
                     className="font-display font-bold text-base leading-tight mb-1 transition-colors duration-300"
-                    style={{ color: isActive ? PRIMARY : '#1A1A1A' }}
+                    style={{ color: isActive ? INK : '#1A1A1A' }}
                   >
                     {step.label}
                   </p>
@@ -293,7 +305,7 @@ export function HowItWorks({
                       className="inline-block font-body font-semibold text-xs px-2 py-0.5 rounded-full"
                       style={{
                         background: `${PRIMARY}14`,
-                        color: PRIMARY,
+                        color: INK,
                         opacity: isActive || isDone ? 1 : 0,
                         transition: 'opacity 0.3s ease 0.2s',
                       }}
@@ -318,7 +330,7 @@ export function HowItWorks({
               style={{
                 width: i === activeStep ? 24 : 8,
                 height: 8,
-                background: i === activeStep ? PRIMARY : '#E5E7EB',
+                background: i === activeStep ? INK : '#E5E7EB',
                 borderRadius: i === activeStep ? 4 : 9999,
               }}
             />
