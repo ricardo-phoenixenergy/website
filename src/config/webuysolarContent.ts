@@ -14,7 +14,7 @@ interface WebuysolarContent {
   whyNow: { eyebrow: string; heading: string; intro: string; cards: ExplainerCardItem[] };
   valueLost: { heading: string; intro: string; cards: ExplainerCardItem[]; pullQuote: string };
   comparison: { heading: string; columns: [string, string, string]; rows: ComparisonRow[] };
-  howItWorks: { eyebrow: string; title: string; subtitle: string; steps: ProcessStep[] };
+  howItWorks: { eyebrow: string; title: string; steps: ProcessStep[] };
   audit: { heading: string; subtitle: string; deliverables: string[] };
   faq: { heading: string; items: FaqItem[] };
 }
@@ -113,8 +113,6 @@ export const WEBUYSOLAR: WebuysolarContent = {
   howItWorks: {
     eyebrow: 'How it works',
     title: 'Built for the new energy market',
-    subtitle:
-      "We acquire, operate and continuously optimise existing solar assets — fair-market valuations, no inflated 100% or 110% buybacks. Here's the path from owned to operated.",
     steps: [
       {
         label: 'Free expert audit',
