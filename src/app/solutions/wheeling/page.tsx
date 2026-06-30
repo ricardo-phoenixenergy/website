@@ -96,7 +96,7 @@ export default async function WheelingPage() {
         heading="Two ways to <em>wheel clean power</em>"
         subtitle="Direct or aggregated wheeling agreements — and the financing structures that make each one work."
       />
-      {howItWorks && <HowItWorks {...howItWorks} />}
+      {howItWorks && <HowItWorks {...howItWorks} accent={meta.accent} accentText={meta.accentText} />}
       <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
       <PageFooter

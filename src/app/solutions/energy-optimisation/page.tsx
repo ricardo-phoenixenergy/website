@@ -95,7 +95,7 @@ export default async function EnergyOptimisationPage() {
         heading="Where the <em>savings come from</em>"
         subtitle="The monitoring, equipment tuning and load strategies we use to cut your energy spend — without new generation."
       />
-      {howItWorks && <HowItWorks {...howItWorks} />}
+      {howItWorks && <HowItWorks {...howItWorks} accent={meta.accent} accentText={meta.accentText} />}
       <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
       <PageFooter

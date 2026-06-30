@@ -128,6 +128,7 @@ export default async function WeBuySolarPage() {
         eyebrow={WEBUYSOLAR.howItWorks.eyebrow}
         title={WEBUYSOLAR.howItWorks.title}
         accent={meta.accent}
+        accentText={meta.accentText}
         steps={WEBUYSOLAR.howItWorks.steps}
         showCTA={false}
       />

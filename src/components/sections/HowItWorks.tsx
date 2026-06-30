@@ -21,7 +21,28 @@ interface HowItWorksProps {
   showCTA?: boolean;
   ctaLabel?: string;
   ctaHref?: string;
-  accent?: string;   // colour for <em> words in the title (default dusty blue)
+  accent?: string;       // solution accent — themes the whole step track (default teal/dusty-blue)
+  accentText?: string;   // legible text colour on top of the solid accent (default white)
+}
+
+// Perceived luminance of a #rrggbb hex (0 = black, 1 = white).
+function luminance(hex: string): number {
+  const n = hex.replace('#', '');
+  const r = parseInt(n.slice(0, 2), 16) / 255;
+  const g = parseInt(n.slice(2, 4), 16) / 255;
+  const b = parseInt(n.slice(4, 6), 16) / 255;
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function darken(hex: string, factor: number): string {
+  const n = hex.replace('#', '');
+  const c = [0, 2, 4].map((i) => Math.round(parseInt(n.slice(i, i + 2), 16) * factor));
+  return `#${c.map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+}
+
+// Accent as legible ink on a light background: darken only when the accent is light.
+function readableInk(hex: string): string {
+  return luminance(hex) > 0.62 ? darken(hex, 0.6) : hex;
 }
 
 export function HowItWorks({
@@ -34,11 +55,15 @@ export function HowItWorks({
   ctaLabel = 'Get a Free Assessment',
   ctaHref = '/contact',
   accent,
+  accentText,
 }: HowItWorksProps) {
   // Section theme: when an accent is passed, the whole step track adopts it;
   // otherwise the default teal (primary) / dusty-blue (secondary) palette is used.
   const PRIMARY = accent ?? '#39575C';
   const SECONDARY = accent ?? '#709DA9';
+  const NUM_TEXT = accentText ?? '#ffffff';                    // number colour inside filled circles
+  const INK = accent ? readableInk(accent) : '#39575C';        // accent-as-text, legible on light bg
+  const EM = accent ? INK : '#709DA9';                         // title <em> colour (default dusty blue)
   const [activeStep, setActiveStep] = useState(0);
   const [sparkVisible, setSparkVisible] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -79,7 +104,7 @@ export function HowItWorks({
     return parts.map((part, i) => {
       const match = part.match(/^<em>(.*)<\/em>$/);
       if (match) {
-        return <em key={i} style={{ color: SECONDARY, fontStyle: 'normal' }}>{match[1]}</em>;
+        return <em key={i} style={{ color: EM, fontStyle: 'normal' }}>{match[1]}</em>;
       }
       return <span key={i}>{part}</span>;
     });
@@ -163,7 +188,7 @@ export function HowItWorks({
                     style={{
                       background: isActive ? PRIMARY : isDone ? SECONDARY : '#ffffff',
                       border: `2px solid ${isActive ? PRIMARY : isDone ? SECONDARY : '#E5E7EB'}`,
-                      color: isActive || isDone ? '#ffffff' : '#6B7280',
+                      color: isActive || isDone ? NUM_TEXT : '#6B7280',
                       transform: isActive ? 'scale(1.08)' : 'scale(1)',
                     }}
                   >
@@ -184,7 +209,7 @@ export function HowItWorks({
                 {/* Content */}
                 <p
                   className="font-display font-bold text-base leading-tight mb-1.5 transition-colors duration-300"
-                  style={{ color: isActive ? PRIMARY : '#1A1A1A' }}
+                  style={{ color: isActive ? INK : '#1A1A1A' }}
                 >
                   {step.label}
                 </p>
@@ -199,7 +224,7 @@ export function HowItWorks({
                     className="inline-block font-body font-semibold text-xs px-2.5 py-1 rounded-full transition-all duration-300"
                     style={{
                       background: `${PRIMARY}14`,
-                      color: PRIMARY,
+                      color: INK,
                       opacity: isActive || isDone ? 1 : 0,
                       transform: isActive || isDone ? 'translateY(0)' : 'translateY(4px)',
                       transitionDelay: '0.2s',
@@ -224,7 +249,7 @@ export function HowItWorks({
               style={{
                 width: i === activeStep ? 24 : 8,
                 height: 8,
-                background: i === activeStep ? PRIMARY : '#E5E7EB',
+                background: i === activeStep ? INK : '#E5E7EB',
                 borderRadius: i === activeStep ? 4 : 9999,
               }}
             />
@@ -269,7 +294,7 @@ export function HowItWorks({
                   style={{
                     background: isActive ? PRIMARY : isDone ? SECONDARY : '#ffffff',
                     border: `2px solid ${isActive ? PRIMARY : isDone ? SECONDARY : '#E5E7EB'}`,
-                    color: isActive || isDone ? '#ffffff' : '#6B7280',
+                    color: isActive || isDone ? NUM_TEXT : '#6B7280',
                   }}
                 >
                   {String(i + 1).padStart(2, '0')}
@@ -278,7 +303,7 @@ export function HowItWorks({
                 <div className="pt-1">
                   <p
                     className="font-display font-bold text-base leading-tight mb-1 transition-colors duration-300"
-                    style={{ color: isActive ? PRIMARY : '#1A1A1A' }}
+                    style={{ color: isActive ? INK : '#1A1A1A' }}
                   >
                     {step.label}
                   </p>
@@ -290,7 +315,7 @@ export function HowItWorks({
                       className="inline-block font-body font-semibold text-xs px-2 py-0.5 rounded-full"
                       style={{
                         background: `${PRIMARY}14`,
-                        color: PRIMARY,
+                        color: INK,
                         opacity: isActive || isDone ? 1 : 0,
                         transition: 'opacity 0.3s ease 0.2s',
                       }}
@@ -315,7 +340,7 @@ export function HowItWorks({
               style={{
                 width: i === activeStep ? 24 : 8,
                 height: 8,
-                background: i === activeStep ? PRIMARY : '#E5E7EB',
+                background: i === activeStep ? INK : '#E5E7EB',
                 borderRadius: i === activeStep ? 4 : 9999,
               }}
             />

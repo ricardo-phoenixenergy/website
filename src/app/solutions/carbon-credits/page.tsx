@@ -96,7 +96,7 @@ export default async function CarbonCreditsPage() {
         heading="Turning reductions into <em>tradable credits</em>"
         subtitle="The certification standards, measurement and funding that take you from emissions data to verified carbon credits."
       />
-      {howItWorks && <HowItWorks {...howItWorks} />}
+      {howItWorks && <HowItWorks {...howItWorks} accent={meta.accent} accentText={meta.accentText} />}
       <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
       <PageFooter

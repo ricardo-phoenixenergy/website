@@ -96,7 +96,7 @@ export default async function EvFleetsPage() {
         heading="Everything your <em>fleet needs to electrify</em>"
         subtitle="From charging hardware to live fleet visibility and the financing that makes the switch affordable."
       />
-      {howItWorks && <HowItWorks {...howItWorks} />}
+      {howItWorks && <HowItWorks {...howItWorks} accent={meta.accent} accentText={meta.accentText} />}
       <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
       <PageFooter
