@@ -58,7 +58,7 @@ export const VERTICAL_CONFIG: Record<SolutionVertical, VerticalConfig> = {
     ],
   },
   webuysolar: {
-    seoTitle: 'Commercial Solar, Acquired & Operated | Phoenix Energy',
+    seoTitle: 'WeBuySolar — Commercial Solar, Acquired & Operated | Phoenix Energy',
     seoDescription:
       'We acquire and operate existing C&I solar and battery systems — fair-market valuation, flexible PPA or lease, and active optimisation. Free expert audit.',
     stats: [
