@@ -87,7 +87,7 @@ export default async function WeBuySolarPage() {
         heroBg="linear-gradient(135deg, #1a0f00 0%, #3a2000 50%, #5a3a10 100%)"
         imagePosition="top"
         primaryCta={{ label: 'Book your free audit', href: AUDIT_HREF }}
-        secondaryCta={{ label: 'Try the valuation tool', href: 'https://phoenixenergy.solutions/tools/solar-valuation' }}
+        secondaryCta={{ label: "What's my system worth?", href: 'https://phoenixenergy.solutions/tools/solar-valuation' }}
       />
 
       {/* §3 — Why now */}

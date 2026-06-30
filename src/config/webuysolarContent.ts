@@ -23,7 +23,7 @@ export const WEBUYSOLAR: WebuysolarContent = {
   hero: {
     title: "You own the solar asset.<br />But you're missing <em>the upside.</em>",
     subtitle:
-      "Sell us your existing commercial solar or battery system for a fair cash sum, then buy back the power it produces under a flexible PPA. The system never moves. You free up capital, keep your savings, and hand the running of it to specialists who'll make it earn more than it does now.",
+      "Most commercial solar was designed before batteries, wheeling and energy trading existed — so it captures only a fraction of what's now possible. Sell yours to Phoenix at fair market value. It stays exactly where it is, you keep buying its power for well below your utility tariff, and we take over running, optimising and evolving it to unlock the value it was never designed to.",
   },
 
   auditPrefill:
