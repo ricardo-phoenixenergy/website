@@ -92,7 +92,7 @@ export function HowItWorks({
         </h2>
         {subtitle && (
           <p
-            className="font-body text-base font-normal leading-[1.75] max-w-[440px] mx-auto"
+            className="font-body text-base font-normal leading-[1.75] max-w-[600px] mx-auto"
             style={{ color: '#6B7280' }}
           >
             {subtitle}
