@@ -112,7 +112,7 @@ export const WEBUYSOLAR: WebuysolarContent = {
 
   howItWorks: {
     eyebrow: 'How it works',
-    title: 'The path from owned to operated',
+    title: 'The path from <em>owned to operated</em>',
     steps: [
       {
         label: 'Free expert audit',

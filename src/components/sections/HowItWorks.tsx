@@ -21,6 +21,7 @@ interface HowItWorksProps {
   showCTA?: boolean;
   ctaLabel?: string;
   ctaHref?: string;
+  accent?: string;   // colour for <em> words in the title (default dusty blue)
 }
 
 export function HowItWorks({
@@ -32,6 +33,7 @@ export function HowItWorks({
   showCTA = true,
   ctaLabel = 'Get a Free Assessment',
   ctaHref = '/contact',
+  accent = '#709DA9',
 }: HowItWorksProps) {
   const [activeStep, setActiveStep] = useState(0);
   const [sparkVisible, setSparkVisible] = useState(false);
@@ -73,7 +75,7 @@ export function HowItWorks({
     return parts.map((part, i) => {
       const match = part.match(/^<em>(.*)<\/em>$/);
       if (match) {
-        return <em key={i} style={{ color: '#709DA9', fontStyle: 'normal' }}>{match[1]}</em>;
+        return <em key={i} style={{ color: accent, fontStyle: 'normal' }}>{match[1]}</em>;
       }
       return <span key={i}>{part}</span>;
     });
