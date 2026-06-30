@@ -28,14 +28,19 @@ export const revalidate = 3600;
 
 const tabs: TabItem[] = [
   {
-    label: 'Real-Time Monitoring',
-    icon: 'Activity',
+    label: 'Energy Efficiency & Process Optimisation',
+    icon: 'Sliders',
     iconBg: 'rgba(112,157,169,0.18)',
-    title: 'Sub-Meter Visibility at Every Circuit',
-    body: 'Phoenix installs sub-metering at circuit level and streams data to our cloud dashboard. Anomalies trigger instant alerts — before they become costly bills.',
-    bullets: ['Circuit-level sub-metering.', 'Real-time cloud dashboard.', 'Anomaly detection alerts via SMS/email.', 'Monthly benchmarking reports.'],
-    imageBg: 'linear-gradient(135deg, rgba(112,157,169,0.15) 0%, rgba(57,87,92,0.20) 100%)',
-    imageEmoji: '📊',
+    title: 'Use Less Energy for the Same Output',
+    body: 'The cheapest kilowatt-hour is the one you never consume. We upgrade the equipment that drives your consumption — motors, drives, power factor and lighting — so every process delivers the same output on materially less energy.',
+    bullets: [
+      'High-efficiency motors on your biggest electrical loads.',
+      'Variable speed drives (VSDs) that match motor speed to real demand.',
+      'Power-factor correction (PFC) to avoid penalties and free up capacity.',
+      'LED efficient lighting with smart controls.',
+    ],
+    imageBg: 'linear-gradient(135deg, rgba(112,157,169,0.18) 0%, rgba(57,87,92,0.22) 100%)',
+    imageEmoji: '⚙️',
   },
   {
     label: 'Demand Side Management',
@@ -52,19 +57,14 @@ const tabs: TabItem[] = [
     imageEmoji: '🔀',
   },
   {
-    label: 'Energy Efficiency & Process Optimisation',
-    icon: 'Sliders',
+    label: 'Real-Time Monitoring',
+    icon: 'Activity',
     iconBg: 'rgba(112,157,169,0.18)',
-    title: 'Use Less Energy for the Same Output',
-    body: 'The cheapest kilowatt-hour is the one you never consume. We upgrade the equipment that drives your consumption — motors, drives, power factor and lighting — so every process delivers the same output on materially less energy.',
-    bullets: [
-      'High-efficiency motors on your biggest electrical loads.',
-      'Variable speed drives (VSDs) that match motor speed to real demand.',
-      'Power-factor correction (PFC) to avoid penalties and free up capacity.',
-      'LED efficient lighting with smart controls.',
-    ],
-    imageBg: 'linear-gradient(135deg, rgba(112,157,169,0.18) 0%, rgba(57,87,92,0.22) 100%)',
-    imageEmoji: '⚙️',
+    title: 'Sub-Meter Visibility at Every Circuit',
+    body: 'Phoenix installs sub-metering at circuit level and streams data to our cloud dashboard. Anomalies trigger instant alerts — before they become costly bills.',
+    bullets: ['Circuit-level sub-metering.', 'Real-time cloud dashboard.', 'Anomaly detection alerts via SMS/email.', 'Monthly benchmarking reports.'],
+    imageBg: 'linear-gradient(135deg, rgba(112,157,169,0.15) 0%, rgba(57,87,92,0.20) 100%)',
+    imageEmoji: '📊',
   },
 ];
 
