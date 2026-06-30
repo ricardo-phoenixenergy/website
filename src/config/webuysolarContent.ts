@@ -64,7 +64,7 @@ export const WEBUYSOLAR: WebuysolarContent = {
         body: 'Systems can underperform without obvious symptoms. Inverter clipping, soiling losses and poor inverter configuration compound quietly. Without specialist monitoring and benchmarking, a system producing 78% of its potential looks identical to one producing 92%.',
       },
       {
-        icon: 'UserTie',
+        icon: 'Award',
         title: 'No one owns the energy strategy.',
         body: 'O&M contracts cover uptime and basic maintenance, and a site manager keeps the lights on — but neither owns the financial performance or the energy strategy, and neither is an energy specialist. Energy this valuable needs to be managed by energy experts.',
       },
