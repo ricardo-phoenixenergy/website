@@ -90,8 +90,13 @@ function getQueryParams(): { intent: Intent | null; message: string } {
   const params = new URLSearchParams(window.location.search);
   const qsIntent = params.get('intent');
   const qsStrategy = params.get('strategy');
+  const qsMessage = params.get('message');
   const validIntent = INTENTS.find((i) => i.value === qsIntent);
-  const message = qsStrategy ? (contactMessageForStrategy(qsStrategy) ?? '') : '';
+  const message = qsMessage
+    ? qsMessage
+    : qsStrategy
+      ? (contactMessageForStrategy(qsStrategy) ?? '')
+      : '';
   return { intent: validIntent ? validIntent.value : null, message };
 }
 

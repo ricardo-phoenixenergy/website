@@ -100,16 +100,11 @@ export default async function WheelingPage() {
       <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
       <PageFooter
+        ctaVariant="centered"
         eyebrow="Start wheeling"
         heading="Access wholesale renewable energy without owning a single panel"
         body="Connect to Phoenix Energy's wheeling network and start purchasing clean energy at rates below Eskom's tariff — fully managed from PPA agreement to delivery."
         primaryCta={{ label: 'Explore a Wheeling Agreement', href: '/contact' }}
-        stats={[
-          { value: '15+',   label: 'PPAs signed' },
-          { value: '12 MW', label: 'Wheeled capacity' },
-          { value: '20%',   label: 'Below Eskom tariff' },
-          { value: '8',     label: 'Corporate clients' },
-        ]}
       />
     </>
   );

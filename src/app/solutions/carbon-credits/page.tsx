@@ -100,16 +100,11 @@ export default async function CarbonCreditsPage() {
       <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
       <PageFooter
+        ctaVariant="centered"
         eyebrow="Start earning"
         heading="Turn your clean energy into verified revenue"
         body="We handle Gold Standard registration, annual verification, and credit trading on your behalf. Your sustainability generates income — we do the work."
         primaryCta={{ label: 'Get a Carbon Assessment', href: '/contact' }}
-        stats={[
-          { value: '12',    label: 'Registered projects' },
-          { value: '45k t', label: 'CO₂ offset' },
-          { value: 'R12M',  label: 'Credits traded' },
-          { value: 'GS',    label: 'Gold Standard certified' },
-        ]}
       />
     </>
   );

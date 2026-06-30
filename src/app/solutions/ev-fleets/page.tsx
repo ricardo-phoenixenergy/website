@@ -100,16 +100,11 @@ export default async function EvFleetsPage() {
       <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
       <PageFooter
+        ctaVariant="centered"
         eyebrow="Electrify your fleet"
         heading="Future-proof your operations with clean charging infrastructure"
         body="From feasibility study to full commissioning — we design, fund, and operate EV charging networks for commercial and industrial fleets across Southern Africa."
         primaryCta={{ label: 'Get a Fleet Assessment', href: '/contact' }}
-        stats={[
-          { value: '200+', label: 'Chargers installed' },
-          { value: '15+',  label: 'Fleet clients' },
-          { value: '8 MW', label: 'Charging capacity' },
-          { value: '5',    label: 'Provinces covered' },
-        ]}
       />
     </>
   );

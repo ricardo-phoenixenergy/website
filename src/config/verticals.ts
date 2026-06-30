@@ -58,14 +58,14 @@ export const VERTICAL_CONFIG: Record<SolutionVertical, VerticalConfig> = {
     ],
   },
   webuysolar: {
-    seoTitle: 'We Buy Solar Systems | Phoenix Energy',
+    seoTitle: 'Sell or Convert Your Commercial Solar System | Phoenix Energy',
     seoDescription:
-      'Sell your existing solar installation to Phoenix Energy. Fast valuation, cash within 14 days, any brand accepted. We handle the removal.',
+      'We acquire and operate existing C&I solar and battery systems — fair-market valuation, flexible PPA or lease, and active optimisation. Free expert audit.',
     stats: [
-      { value: '48hr', label: 'Free Valuation' },
-      { value: '14 days', label: 'Cash Payment' },
-      { value: 'Any Brand', label: 'Systems Accepted' },
-      { value: 'Included', label: 'Removal & Transport' },
+      { value: 'Free', label: 'Expert audit' },
+      { value: 'PPA / Lease', label: 'Flexible buyback' },
+      { value: 'Operated', label: 'We run & optimise' },
+      { value: 'Any brand', label: 'Systems considered' },
     ],
   },
   'ev-fleets': {

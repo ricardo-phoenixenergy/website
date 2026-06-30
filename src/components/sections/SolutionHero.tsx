@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/Button';
+import { IconArrowRight } from '@/components/ui/Icons';
 
 interface CtaLink {
   label: string;
@@ -17,6 +18,7 @@ export interface SolutionHeroProps {
   heroBlur?: string;   // LQIP blur placeholder for heroImage
   heroBg: string;      // CSS gradient fallback when no photo
   primaryCta: CtaLink;
+  secondaryCta?: CtaLink;   // optional text link beside the primary button
   children?: ReactNode;  // calculator / interactive slot
   wideRight?: boolean;   // 40/60 split — give the right column 60% instead of the fixed 440px
 }
@@ -45,6 +47,7 @@ export function SolutionHero({
   heroBlur,
   heroBg,
   primaryCta,
+  secondaryCta,
   children,
   wideRight = false,
 }: SolutionHeroProps) {
@@ -111,9 +114,20 @@ export function SolutionHero({
               {subtitle}
             </p>
 
-            <Button variant="light" href={primaryCta.href}>
-              {primaryCta.label}
-            </Button>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <Button variant="light" href={primaryCta.href}>
+                {primaryCta.label}
+              </Button>
+              {secondaryCta && (
+                <Link
+                  href={secondaryCta.href}
+                  className="font-body text-sm font-semibold inline-flex items-center gap-1.5 transition-colors"
+                  style={{ color: 'rgba(255,255,255,0.80)' }}
+                >
+                  {secondaryCta.label} <IconArrowRight size={13} />
+                </Link>
+              )}
+            </div>
           </div>
 
           {/* Right: calculator slot */}
