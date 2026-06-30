@@ -16,11 +16,19 @@ describe('evaluateWheeling — supply-point routing', () => {
     expect(r.verifyTariff).toBe(false);
   });
 
-  it('each supported metro → virtual with its label', () => {
-    for (const id of ['joburg', 'cape-town', 'tshwane', 'ekurhuleni', 'ethekwini', 'nmb']) {
+  it('each supported metro → virtual with the correct city label', () => {
+    const expected: Record<string, string> = {
+      joburg: 'Johannesburg',
+      'cape-town': 'Cape Town',
+      tshwane: 'Tshwane',
+      ekurhuleni: 'Ekurhuleni',
+      ethekwini: 'eThekwini',
+      nmb: 'Nelson Mandela Bay',
+    };
+    for (const [id, city] of Object.entries(expected)) {
       const r = evaluateWheeling({ tou: 'yes', supplyPointId: id });
       expect(r.status).toBe('virtual');
-      expect(r.supplyPointLabel).toBeTruthy();
+      expect(r.supplyPointLabel).toContain(city);
     }
   });
 
@@ -47,7 +55,9 @@ describe('evaluateWheeling — unsure tariff', () => {
     expect(r.verifyTariff).toBe(true);
   });
 
-  it('tou=unsure + other → not-available', () => {
-    expect(evaluateWheeling({ tou: 'unsure', supplyPointId: 'other' }).status).toBe('not-available');
+  it('tou=unsure + other → not-available, still carries verifyTariff', () => {
+    const r = evaluateWheeling({ tou: 'unsure', supplyPointId: 'other' });
+    expect(r.status).toBe('not-available');
+    expect(r.verifyTariff).toBe(true);
   });
 });
