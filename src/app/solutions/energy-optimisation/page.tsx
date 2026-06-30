@@ -65,6 +65,7 @@ const tabs: TabItem[] = [
     cta: AUDIT_CTA,
   },
   {
+    key: 'lever-tariff',
     label: 'Tariff Optimisation',
     icon: 'DollarSign',
     iconBg: 'rgba(112,157,169,0.18)',
