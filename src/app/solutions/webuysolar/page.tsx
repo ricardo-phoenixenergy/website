@@ -85,7 +85,7 @@ export default async function WeBuySolarPage() {
         heroImage={hero?.url}
         heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #1a0f00 0%, #3a2000 50%, #5a3a10 100%)"
-        imagePosition="bottom"
+        imagePosition="top"
         primaryCta={{ label: 'Book your free audit', href: AUDIT_HREF }}
       >
         {/* Valuation-tool card */}
