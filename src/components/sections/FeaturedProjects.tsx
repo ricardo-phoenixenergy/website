@@ -37,7 +37,7 @@ export async function FeaturedProjects({ vertical }: FeaturedProjectsProps = {})
   return (
     <SectionCarousel
       label="Featured projects"
-      title={<>Work that speaks <em style={{ color: '#709DA9', fontStyle: 'normal' }}>for itself</em></>}
+      title="Work that speaks for itself"
       viewAllHref="/projects"
       viewAllLabel="View all projects"
       bg="white"
