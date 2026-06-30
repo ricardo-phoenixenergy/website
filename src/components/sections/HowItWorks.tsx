@@ -33,8 +33,12 @@ export function HowItWorks({
   showCTA = true,
   ctaLabel = 'Get a Free Assessment',
   ctaHref = '/contact',
-  accent = '#709DA9',
+  accent,
 }: HowItWorksProps) {
+  // Section theme: when an accent is passed, the whole step track adopts it;
+  // otherwise the default teal (primary) / dusty-blue (secondary) palette is used.
+  const PRIMARY = accent ?? '#39575C';
+  const SECONDARY = accent ?? '#709DA9';
   const [activeStep, setActiveStep] = useState(0);
   const [sparkVisible, setSparkVisible] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -69,13 +73,13 @@ export function HowItWorks({
   const fillPct = steps.length > 1 ? (activeStep / (steps.length - 1)) * 100 : 0;
   const sparkLeft = fillPct;
 
-  // Parse title for <em> tags (rendered as Dusty Blue)
+  // Parse title for <em> tags (rendered in the accent / secondary colour)
   const renderTitle = (raw: string) => {
     const parts = raw.split(/(<em>.*?<\/em>)/g);
     return parts.map((part, i) => {
       const match = part.match(/^<em>(.*)<\/em>$/);
       if (match) {
-        return <em key={i} style={{ color: accent, fontStyle: 'normal' }}>{match[1]}</em>;
+        return <em key={i} style={{ color: SECONDARY, fontStyle: 'normal' }}>{match[1]}</em>;
       }
       return <span key={i}>{part}</span>;
     });
@@ -128,7 +132,7 @@ export function HowItWorks({
             <div
               className="absolute inset-y-0 left-0 origin-left"
               style={{
-                background: 'linear-gradient(90deg, #39575C, #709DA9)',
+                background: `linear-gradient(90deg, ${PRIMARY}, ${SECONDARY})`,
                 width: `${fillPct}%`,
                 transition: reduced ? 'none' : 'width 0.7s cubic-bezier(0.4, 0, 0.2, 1)',
               }}
@@ -139,7 +143,7 @@ export function HowItWorks({
                 className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-white"
                 style={{
                   left: `${sparkLeft}%`,
-                  boxShadow: '0 0 0 3px #709DA9, 0 0 12px 4px rgba(112,157,169,0.6)',
+                  boxShadow: `0 0 0 3px ${SECONDARY}, 0 0 12px 4px ${SECONDARY}99`,
                   transition: 'left 0.7s cubic-bezier(0.4, 0, 0.2, 1)',
                 }}
               />
@@ -157,8 +161,8 @@ export function HowItWorks({
                   <div
                     className="w-14 h-14 rounded-full flex items-center justify-center font-display font-extrabold text-lg select-none transition-all duration-[400ms]"
                     style={{
-                      background: isActive ? '#39575C' : isDone ? '#709DA9' : '#ffffff',
-                      border: `2px solid ${isActive ? '#39575C' : isDone ? '#709DA9' : '#E5E7EB'}`,
+                      background: isActive ? PRIMARY : isDone ? SECONDARY : '#ffffff',
+                      border: `2px solid ${isActive ? PRIMARY : isDone ? SECONDARY : '#E5E7EB'}`,
                       color: isActive || isDone ? '#ffffff' : '#6B7280',
                       transform: isActive ? 'scale(1.08)' : 'scale(1)',
                     }}
@@ -170,7 +174,7 @@ export function HowItWorks({
                     <div
                       className="absolute inset-0 rounded-full pointer-events-none"
                       style={{
-                        border: '2px solid rgba(57,87,92,0.25)',
+                        border: `2px solid ${PRIMARY}40`,
                         animation: 'pulseRing 1.8s ease-out infinite',
                       }}
                     />
@@ -180,7 +184,7 @@ export function HowItWorks({
                 {/* Content */}
                 <p
                   className="font-display font-bold text-base leading-tight mb-1.5 transition-colors duration-300"
-                  style={{ color: isActive ? '#39575C' : '#1A1A1A' }}
+                  style={{ color: isActive ? PRIMARY : '#1A1A1A' }}
                 >
                   {step.label}
                 </p>
@@ -194,8 +198,8 @@ export function HowItWorks({
                   <span
                     className="inline-block font-body font-semibold text-xs px-2.5 py-1 rounded-full transition-all duration-300"
                     style={{
-                      background: 'rgba(57,87,92,0.08)',
-                      color: '#39575C',
+                      background: `${PRIMARY}14`,
+                      color: PRIMARY,
                       opacity: isActive || isDone ? 1 : 0,
                       transform: isActive || isDone ? 'translateY(0)' : 'translateY(4px)',
                       transitionDelay: '0.2s',
@@ -220,7 +224,7 @@ export function HowItWorks({
               style={{
                 width: i === activeStep ? 24 : 8,
                 height: 8,
-                background: i === activeStep ? '#39575C' : '#E5E7EB',
+                background: i === activeStep ? PRIMARY : '#E5E7EB',
                 borderRadius: i === activeStep ? 4 : 9999,
               }}
             />
@@ -247,7 +251,7 @@ export function HowItWorks({
             <div
               className="absolute inset-x-0 top-0 origin-top"
               style={{
-                background: 'linear-gradient(180deg, #39575C, #709DA9)',
+                background: `linear-gradient(180deg, ${PRIMARY}, ${SECONDARY})`,
                 height: `${fillPct}%`,
                 transition: reduced ? 'none' : 'height 0.7s cubic-bezier(0.4, 0, 0.2, 1)',
               }}
@@ -263,8 +267,8 @@ export function HowItWorks({
                 <div
                   className="w-11 h-11 rounded-full flex-shrink-0 flex items-center justify-center font-display font-extrabold text-base transition-all duration-[400ms]"
                   style={{
-                    background: isActive ? '#39575C' : isDone ? '#709DA9' : '#ffffff',
-                    border: `2px solid ${isActive ? '#39575C' : isDone ? '#709DA9' : '#E5E7EB'}`,
+                    background: isActive ? PRIMARY : isDone ? SECONDARY : '#ffffff',
+                    border: `2px solid ${isActive ? PRIMARY : isDone ? SECONDARY : '#E5E7EB'}`,
                     color: isActive || isDone ? '#ffffff' : '#6B7280',
                   }}
                 >
@@ -274,7 +278,7 @@ export function HowItWorks({
                 <div className="pt-1">
                   <p
                     className="font-display font-bold text-base leading-tight mb-1 transition-colors duration-300"
-                    style={{ color: isActive ? '#39575C' : '#1A1A1A' }}
+                    style={{ color: isActive ? PRIMARY : '#1A1A1A' }}
                   >
                     {step.label}
                   </p>
@@ -285,8 +289,8 @@ export function HowItWorks({
                     <span
                       className="inline-block font-body font-semibold text-xs px-2 py-0.5 rounded-full"
                       style={{
-                        background: 'rgba(57,87,92,0.08)',
-                        color: '#39575C',
+                        background: `${PRIMARY}14`,
+                        color: PRIMARY,
                         opacity: isActive || isDone ? 1 : 0,
                         transition: 'opacity 0.3s ease 0.2s',
                       }}
@@ -311,7 +315,7 @@ export function HowItWorks({
               style={{
                 width: i === activeStep ? 24 : 8,
                 height: 8,
-                background: i === activeStep ? '#39575C' : '#E5E7EB',
+                background: i === activeStep ? PRIMARY : '#E5E7EB',
                 borderRadius: i === activeStep ? 4 : 9999,
               }}
             />

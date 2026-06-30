@@ -79,7 +79,7 @@ export const WEBUYSOLAR: WebuysolarContent = {
   },
 
   comparison: {
-    heading: "Your solar asset hasn't changed. Everything around it has.",
+    heading: "Your solar asset hasn't changed. <em>Everything around it has.</em>",
     columns: ['Dimension', 'The old model', 'The new model'],
     rows: [
       {
