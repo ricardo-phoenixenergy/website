@@ -46,7 +46,7 @@ export const WEBUYSOLAR: WebuysolarContent = {
         body: 'Wheeling, multi-site aggregation, licensed traders and the upcoming SAWEM wholesale market (Q3 2026) turn business energy from a passive grid bill into an active, optimisable position. A standalone system is now just one node in a much bigger picture.',
       },
       {
-        icon: 'Activity',
+        icon: 'Sliders',
         title: 'Operations became the differentiator.',
         body: "Active battery dispatch, performance benchmarking, energy trading and tariff optimisation are how value is captured now — and they need dedicated expertise that didn't exist in deployable form when most systems were installed.",
       },
@@ -59,19 +59,19 @@ export const WEBUYSOLAR: WebuysolarContent = {
       "Across the C&I solar owners we work with, three patterns recur. None are technology failures — they're failures of operational context.",
     cards: [
       {
-        icon: 'Activity',
+        icon: 'TrendingDown',
         title: 'Silent underperformance.',
-        body: 'Inverter clipping, soiling, module mismatch and suboptimal tilt compound quietly. Without operator-grade monitoring, a system producing 78% of its potential looks identical to one at 92%. The difference is enormous.',
+        body: 'Systems can underperform without obvious symptoms. Inverter clipping, soiling losses and poor inverter configuration compound quietly. Without specialist monitoring and benchmarking, a system producing 78% of its potential looks identical to one producing 92%.',
       },
       {
-        icon: 'Users',
-        title: 'No one owns the solar asset.',
-        body: "It's usually run by a site manager whose real job is something else, or by the installer under an uptime-focused O&M contract. Both leave value on the table — for different reasons.",
+        icon: 'UserTie',
+        title: 'No one owns the energy strategy.',
+        body: 'O&M contracts cover uptime and basic maintenance, and a site manager keeps the lights on — but neither owns the financial performance or the energy strategy, and neither is an energy specialist. Energy this valuable needs to be managed by energy experts.',
       },
       {
-        icon: 'Clock',
+        icon: 'Hourglass',
         title: 'Designed for a market that no longer exists.',
-        body: 'Systems sized in 2021–22 assumed no wheeling, no affordable storage, no smart optimisation. The assumptions were right then. Every month they run unchanged now, they forfeit revenue.',
+        body: 'Many existing systems were likely sized for self-consumption in a world without wheeling, without affordable storage, and without smart optimisation tools. The design assumptions were correct at the time. They are no longer correct. Every month a system operates under outdated assumptions, it forfeits revenue it could be earning.',
       },
     ],
     pullQuote:
