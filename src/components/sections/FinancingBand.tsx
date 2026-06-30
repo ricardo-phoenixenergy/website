@@ -1,4 +1,7 @@
 import { FinancingCards, type FinancingOption } from './FinancingCards';
+import { SOLUTION_META } from '@/types/solutions';
+
+const CI_META = SOLUTION_META['ci-solar-storage'];
 
 const CI_FINANCING: FinancingOption[] = [
   {
@@ -36,7 +39,7 @@ export function FinancingBand() {
         <h2 className="font-display font-extrabold text-2xl md:text-3xl text-[#1A1A1A] mb-6 max-w-xl">
           Three ways to fund it — pick what suits your balance sheet
         </h2>
-        <FinancingCards options={CI_FINANCING} />
+        <FinancingCards options={CI_FINANCING} accent={CI_META.accent} accentText={CI_META.accentText} />
       </div>
     </section>
   );

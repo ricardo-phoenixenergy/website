@@ -25,28 +25,36 @@ interface FinancingCardsProps {
    * financing tab of other solution verticals.
    */
   options?: FinancingOption[];
+  /** Accent for the bar/icon-chip/tag fills on the rich cards (default dusty blue). */
+  accent?: string;
+  /** Legible ink for the icon, tag text and benefit checks (default teal). */
+  accentText?: string;
 }
 
-export function FinancingCards({ options }: FinancingCardsProps = {}) {
+export function FinancingCards({
+  options,
+  accent = '#709DA9',
+  accentText = '#39575C',
+}: FinancingCardsProps = {}) {
   if (options && options.length > 0) {
     return (
       <div className="grid gap-4 md:grid-cols-3">
         {options.map((opt) => (
           <Card key={opt.title} variant="light" pattern={2} className="flex-1">
-            {/* 3px dusty-blue accent bar */}
-            <div className="h-[3px]" style={{ background: '#709DA9' }} />
+            {/* 3px accent bar */}
+            <div className="h-[3px]" style={{ background: accent }} />
             <CardBody padding="lg">
               <div className="flex items-center justify-between mb-4">
                 <div
                   className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                  style={{ background: 'rgba(112,157,169,0.12)', color: '#39575C' }}
+                  style={{ background: `${accent}1F`, color: accentText }}
                 >
                   {FINANCING_ICONS[opt.icon](20)}
                 </div>
                 {opt.tag && (
                   <span
                     className="font-body text-[0.7rem] font-bold uppercase tracking-[0.1em] px-2.5 py-1 rounded-full"
-                    style={{ background: 'rgba(57,87,92,0.10)', color: '#39575C' }}
+                    style={{ background: `${accent}1F`, color: accentText }}
                   >
                     {opt.tag}
                   </span>
@@ -67,7 +75,7 @@ export function FinancingCards({ options }: FinancingCardsProps = {}) {
                     key={b}
                     className="flex items-start gap-2.5 font-body text-sm font-semibold text-[#1A1A1A]"
                   >
-                    <span className="mt-0.5 flex-shrink-0" style={{ color: '#39575C' }}>
+                    <span className="mt-0.5 flex-shrink-0" style={{ color: accentText }}>
                       <IconCheck size={16} />
                     </span>
                     {b}
