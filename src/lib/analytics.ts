@@ -9,6 +9,8 @@ type DlEvent =
   | { event: 'strategy_finder_start';    vertical: string }
   | { event: 'strategy_finder_complete'; vertical: string; goal: string; energy_rate: string; demand_charge: string; usage: string; strategy: string }
   | { event: 'strategy_learn_more';      vertical: string; strategy: string }
+  | { event: 'wheeling_eligibility_start';    vertical: string }
+  | { event: 'wheeling_eligibility_complete'; vertical: string; tou: string; supply_point: string; status: string }
   | { event: 'filter_change';       filter_value: string }
   | { event: 'scroll_depth';        depth_percentage: 25 | 50 | 75 | 90; page_path: string }
   | { event: 'web_vitals';          metric_name: string; metric_value: number; metric_rating: string };
