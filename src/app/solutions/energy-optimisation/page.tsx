@@ -52,10 +52,10 @@ const tabs: TabItem[] = [
     imageEmoji: '🔀',
   },
   {
-    label: 'Energy Efficiency',
-    icon: 'Building',
+    label: 'Energy Efficiency & Process Optimisation',
+    icon: 'Sliders',
     iconBg: 'rgba(112,157,169,0.18)',
-    title: 'Energy Efficiency & Process Optimisation',
+    title: 'Use Less Energy for the Same Output',
     body: 'The cheapest kilowatt-hour is the one you never consume. We upgrade the equipment that drives your consumption — motors, drives, power factor and lighting — so every process delivers the same output on materially less energy.',
     bullets: [
       'High-efficiency motors on your biggest electrical loads.',
