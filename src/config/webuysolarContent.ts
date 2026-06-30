@@ -10,16 +10,14 @@ interface ProcessStep {
 
 interface WebuysolarContent {
   hero: { title: string; subtitle: string };
+  heroTool: { eyebrow: string; heading: string; body: string; ctaLabel: string };
   auditPrefill: string;
-  deal: { heading: string; intro: string; winCards: ExplainerCardItem[] };
   whyNow: { eyebrow: string; heading: string; intro: string; cards: ExplainerCardItem[] };
   valueLost: { heading: string; intro: string; cards: ExplainerCardItem[]; pullQuote: string };
   comparison: { heading: string; columns: [string, string, string]; rows: ComparisonRow[] };
-  difference: { heading: string; intro: string; cards: ExplainerCardItem[] };
-  process: { title: string; steps: ProcessStep[] };
+  howItWorks: { eyebrow: string; title: string; subtitle: string; steps: ProcessStep[] };
   audit: { heading: string; subtitle: string; deliverables: string[] };
   faq: { heading: string; items: FaqItem[] };
-  finalCta: { eyebrow: string; heading: string; body: string };
 }
 
 export const WEBUYSOLAR: WebuysolarContent = {
@@ -29,31 +27,15 @@ export const WEBUYSOLAR: WebuysolarContent = {
       "Sell us your existing commercial solar or battery system for a fair cash sum, then buy back the power it produces under a flexible PPA. The system never moves. You free up capital, keep your savings, and hand the running of it to specialists who'll make it earn more than it does now.",
   },
 
+  heroTool: {
+    eyebrow: 'Free valuation tool',
+    heading: 'What is your system worth?',
+    body: 'Get an indicative market value for your existing commercial solar or battery system in minutes.',
+    ctaLabel: 'Try the valuation tool',
+  },
+
   auditPrefill:
     "I'd like to book a free WeBuySolar audit of my existing solar / battery system.",
-
-  deal: {
-    heading: 'Sold, but never gone.',
-    intro:
-      "It's a sale-and-PPA-back. You sell us the system for cash, we take over ownership and running it, and you keep buying the power it makes — for less than the grid charges. The panels never leave your roof.",
-    winCards: [
-      {
-        icon: 'DollarSign',
-        title: 'Capital back.',
-        body: 'Recoup the money tied up in a depreciating roof asset — redeploy it in your core business.',
-      },
-      {
-        icon: 'TrendingUp',
-        title: 'Savings kept.',
-        body: 'Your power stays cheaper than the grid. The asset becomes a clean opex line, not a maintenance headache.',
-      },
-      {
-        icon: 'ClipboardCheck',
-        title: 'Risk gone.',
-        body: 'Performance, O&M and obsolescence become our problem. You stop managing something that was never your core business.',
-      },
-    ],
-  },
 
   whyNow: {
     eyebrow: 'Why now',
@@ -136,36 +118,11 @@ export const WEBUYSOLAR: WebuysolarContent = {
     ],
   },
 
-  difference: {
-    heading: 'Built for the new energy market.',
-    intro:
-      'Phoenix Energy is a C&I energy partner — not a solar installer, not an energy fund. We acquire, operate and continuously optimise existing assets for businesses serious about their energy future.',
-    cards: [
-      {
-        icon: 'ClipboardCheck',
-        title: 'Acquire & operate.',
-        body: 'We take over assets from owners ready to let specialists run them. Clean handover, measurably better outcomes.',
-      },
-      {
-        icon: 'DollarSign',
-        title: 'Transparent, fair valuations.',
-        body: 'Fair market value, flexible PPAs and leases, bespoke capex-free arrangements. No headline 100% or 110% buyback offers funded by inflated PPAs and high escalations. The model that works for you now and going forward.',
-      },
-      {
-        icon: 'Monitor',
-        title: 'Analyse & optimise.',
-        body: 'Proprietary tools run continuous performance analysis on every asset, surfacing revenue leakage standard reporting misses — then reconfiguring to capture it.',
-      },
-      {
-        icon: 'TrendingUp',
-        title: 'Build for what\'s next.',
-        body: 'We evolve your system as the market does, so it gets more valuable over time instead of ageing out.',
-      },
-    ],
-  },
-
-  process: {
-    title: 'The path from owned to operated, in six steps.',
+  howItWorks: {
+    eyebrow: 'How it works',
+    title: 'Built for the new energy market',
+    subtitle:
+      "We acquire, operate and continuously optimise existing solar assets — fair-market valuations, no inflated 100% or 110% buybacks. Here's the path from owned to operated.",
     steps: [
       {
         label: 'Free expert audit',
@@ -251,11 +208,5 @@ export const WEBUYSOLAR: WebuysolarContent = {
         answer: 'None. The audit and its report are yours to keep, with no obligation to proceed.',
       },
     ],
-  },
-
-  finalCta: {
-    eyebrow: 'Start today',
-    heading: 'Ready to find out what your system is really worth?',
-    body: 'Book a free, operator-grade audit of your existing solar or battery system. No cost, no commitment — just a clear picture of what it could earn under active operation.',
   },
 };

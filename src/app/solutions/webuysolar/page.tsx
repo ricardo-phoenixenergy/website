@@ -1,8 +1,6 @@
 // src/app/solutions/webuysolar/page.tsx
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { SolutionHero } from '@/components/sections/SolutionHero';
-import { DealExchange } from '@/components/sections/DealExchange';
 import { ExplainerCards } from '@/components/sections/ExplainerCards';
 import { ComparisonTable } from '@/components/sections/ComparisonTable';
 import { PullQuote } from '@/components/sections/PullQuote';
@@ -13,7 +11,7 @@ import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { Button } from '@/components/ui/Button';
 import { Card, CardBody } from '@/components/ui/Card';
-import { IconCheck, IconArrowRight } from '@/components/ui/Icons';
+import { IconCheck, IconArrowRight, IconDollarSign } from '@/components/ui/Icons';
 import { getHeroImages } from '@/lib/getHeroImages';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
@@ -88,26 +86,29 @@ export default async function WeBuySolarPage() {
         heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #1a0f00 0%, #3a2000 50%, #5a3a10 100%)"
         primaryCta={{ label: 'Book your free audit', href: AUDIT_HREF }}
-        secondaryCta={{ label: 'See how the deal works', href: '#how-the-deal-works' }}
       >
-        <DealExchange variant="compact" />
-      </SolutionHero>
-
-      {/* §1b — How the deal works */}
-      <ExplainerCards
-        id="how-the-deal-works"
-        background="white"
-        heading={WEBUYSOLAR.deal.heading}
-        subtitle={WEBUYSOLAR.deal.intro}
-        accent={meta.accent}
-        columns={3}
-        cards={WEBUYSOLAR.deal.winCards}
-        lead={
-          <div className="max-w-2xl mb-12">
-            <DealExchange variant="full" />
+        {/* Valuation-tool card */}
+        <div className="rounded-2xl bg-white p-6 shadow-[0_18px_50px_rgba(0,0,0,0.22)]">
+          <div
+            className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
+            style={{ background: `${meta.accent}1F`, color: meta.accent }}
+          >
+            <IconDollarSign size={20} />
           </div>
-        }
-      />
+          <p className="font-body text-xs font-bold uppercase tracking-[0.12em] mb-2" style={{ color: meta.accent }}>
+            {WEBUYSOLAR.heroTool.eyebrow}
+          </p>
+          <p className="font-display font-extrabold text-xl text-[#1A1A1A] mb-2 leading-tight">
+            {WEBUYSOLAR.heroTool.heading}
+          </p>
+          <p className="font-body text-sm text-[#374151] leading-[1.7] mb-5">
+            {WEBUYSOLAR.heroTool.body}
+          </p>
+          <Button variant="primary" href="/tools/solar-asset-valuation" className="w-full">
+            {WEBUYSOLAR.heroTool.ctaLabel} <IconArrowRight size={14} />
+          </Button>
+        </div>
+      </SolutionHero>
 
       {/* §3 — Why now */}
       <ExplainerCards
@@ -142,30 +143,32 @@ export default async function WeBuySolarPage() {
         accent={meta.accent}
       />
 
-      {/* §6 — What Phoenix does differently */}
-      <ExplainerCards
-        id="difference"
-        background="white"
-        heading={WEBUYSOLAR.difference.heading}
-        subtitle={WEBUYSOLAR.difference.intro}
-        accent={meta.accent}
-        columns={4}
-        cards={WEBUYSOLAR.difference.cards}
-      />
-
-      {/* §7 — Process */}
+      {/* How it works — differentiator framing + 6-step process */}
       <HowItWorks
-        eyebrow="The process"
-        title={WEBUYSOLAR.process.title}
-        steps={WEBUYSOLAR.process.steps}
+        eyebrow={WEBUYSOLAR.howItWorks.eyebrow}
+        title={WEBUYSOLAR.howItWorks.title}
+        subtitle={WEBUYSOLAR.howItWorks.subtitle}
+        steps={WEBUYSOLAR.howItWorks.steps}
         showCTA={false}
       />
 
       {/* Proof */}
       <FeaturedProjects vertical={vertical} />
 
-      {/* §8 — Audit deliverables + CTA */}
-      <section id="audit" className="bg-white py-16 md:py-24">
+      {/* Topical links */}
+      <RelatedArticles vertical={vertical} />
+
+      {/* FAQ (emits FAQPage JSON-LD) */}
+      <FaqAccordion
+        id="faq"
+        eyebrow="FAQ"
+        heading={WEBUYSOLAR.faq.heading}
+        items={WEBUYSOLAR.faq.items}
+        accent={meta.accent}
+      />
+
+      {/* Final CTA — audit deliverables + booking */}
+      <section id="audit" className="bg-[#F5F5F5] py-16 md:py-24">
         <div className="page-container">
           <div className="grid lg:grid-cols-2 gap-10 items-start">
             <div>
@@ -175,17 +178,9 @@ export default async function WeBuySolarPage() {
               <p className="font-body text-sm md:text-base leading-[1.75] text-[#6B7280] mb-6">
                 {WEBUYSOLAR.audit.subtitle}
               </p>
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-                <Button variant="primary" href={AUDIT_HREF}>
-                  Arrange your free audit <IconArrowRight size={14} />
-                </Button>
-                <Link
-                  href="/tools/solar-asset-valuation"
-                  className="font-body text-sm font-semibold inline-flex items-center gap-1.5 text-[#39575C] hover:text-[#2a4045] transition-colors"
-                >
-                  Try the solar asset valuation tool <IconArrowRight size={13} />
-                </Link>
-              </div>
+              <Button variant="primary" href={AUDIT_HREF}>
+                Arrange your free audit <IconArrowRight size={14} />
+              </Button>
             </div>
 
             <Card variant="light" pattern={3}>
@@ -210,26 +205,8 @@ export default async function WeBuySolarPage() {
         </div>
       </section>
 
-      {/* Topical links */}
-      <RelatedArticles vertical={vertical} />
-
-      {/* §9 — FAQ (emits FAQPage JSON-LD) */}
-      <FaqAccordion
-        id="faq"
-        eyebrow="FAQ"
-        heading={WEBUYSOLAR.faq.heading}
-        items={WEBUYSOLAR.faq.items}
-        accent={meta.accent}
-      />
-
-      {/* §10 — Final CTA */}
-      <PageFooter
-        ctaVariant="centered"
-        eyebrow={WEBUYSOLAR.finalCta.eyebrow}
-        heading={WEBUYSOLAR.finalCta.heading}
-        body={WEBUYSOLAR.finalCta.body}
-        primaryCta={{ label: 'Book your free audit', href: AUDIT_HREF }}
-      />
+      {/* Footer chrome (no CTA band — the audit section above is the final CTA) */}
+      <PageFooter showCta={false} />
     </>
   );
 }
