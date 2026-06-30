@@ -84,28 +84,28 @@ export const WEBUYSOLAR: WebuysolarContent = {
     rows: [
       {
         dimension: 'Where value is created',
-        oldModel: 'The technology brand on the spec sheet',
-        newModel: 'Configuration & operation — same hardware, materially better lifetime savings',
+        oldModel: 'The technology brand. Selecting premium hardware was treated as the decisive value lever.',
+        newModel: 'Configuration and operation. A well-configured system delivers materially better lifetime savings than the same hardware poorly configured.',
       },
       {
         dimension: 'Supplier relationship',
-        oldModel: 'Transactional installer ("I install, the deal closes")',
-        newModel: 'Energy-as-a-Service provider — we supply the power and own energy as an ongoing function',
+        oldModel: "Transactional installer. 'You buy from me, I install, the transaction closes.'",
+        newModel: 'Energy-as-a-Service (EaaS) provider. Install the system, supply the power, and take responsibility for energy as an ongoing function.',
       },
       {
         dimension: 'System management',
-        oldModel: 'Static — sized once, run as designed',
-        newModel: 'Dynamic — responsive to tariffs, load shifts and market signals',
+        oldModel: 'Static. Size the system once at purchase; run it as designed for the life of the asset.',
+        newModel: 'Dynamic. Continuously responsive to tariffs, load shifts, market signals, and new capabilities as they enter the market.',
       },
       {
         dimension: 'Capital structure',
-        oldModel: 'Outright cash purchase',
-        newModel: 'Zero-capex PPA or lease — recoup your capital today',
+        oldModel: 'Outright capital purchase. Cash on the balance sheet, depreciation on the books.',
+        newModel: 'Zero-capex Power Purchase Agreement (PPA) or lease. Recoup original capital today; access cheaper, more flexible terms.',
       },
       {
         dimension: 'Market integration',
-        oldModel: 'Standalone behind-the-meter',
-        newModel: 'Integrated: solar, storage, wheeling and trading as one optimised whole',
+        oldModel: 'Standalone behind-the-meter solar. A single asset operating in isolation from the wider energy market.',
+        newModel: 'An integrated energy position. Solar, storage, wheeling, and trading layers operating as one optimised whole.',
       },
     ],
   },
