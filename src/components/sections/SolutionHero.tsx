@@ -31,8 +31,11 @@ const HERO_OBJECT_POSITION: Record<NonNullable<SolutionHeroProps['imagePosition'
 };
 
 function renderTitle(raw: string, accent: string) {
-  const parts = raw.split(/(<em>.*?<\/em>)/g);
+  const parts = raw.split(/(<em>.*?<\/em>|<br\s*\/?>)/g);
   return parts.map((part, i) => {
+    if (/^<br\s*\/?>$/.test(part)) {
+      return <br key={i} />;
+    }
     const match = part.match(/^<em>(.*)<\/em>$/);
     if (match) {
       return (

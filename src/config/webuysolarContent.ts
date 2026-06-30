@@ -21,7 +21,7 @@ interface WebuysolarContent {
 
 export const WEBUYSOLAR: WebuysolarContent = {
   hero: {
-    title: 'Sell your commercial solar system and <em>keep its power for less than the grid.</em>',
+    title: "You own the solar asset.<br />But you're missing <em>the upside.</em>",
     subtitle:
       "Sell us your existing commercial solar or battery system for a fair cash sum, then buy back the power it produces under a flexible PPA. The system never moves. You free up capital, keep your savings, and hand the running of it to specialists who'll make it earn more than it does now.",
   },
