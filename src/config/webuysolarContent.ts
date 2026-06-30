@@ -10,7 +10,6 @@ interface ProcessStep {
 
 interface WebuysolarContent {
   hero: { title: string; subtitle: string };
-  heroTool: { eyebrow: string; heading: string; body: string; ctaLabel: string };
   auditPrefill: string;
   whyNow: { eyebrow: string; heading: string; intro: string; cards: ExplainerCardItem[] };
   valueLost: { heading: string; intro: string; cards: ExplainerCardItem[]; pullQuote: string };
@@ -25,13 +24,6 @@ export const WEBUYSOLAR: WebuysolarContent = {
     title: 'Sell your commercial solar system and <em>keep its power for less than the grid.</em>',
     subtitle:
       "Sell us your existing commercial solar or battery system for a fair cash sum, then buy back the power it produces under a flexible PPA. The system never moves. You free up capital, keep your savings, and hand the running of it to specialists who'll make it earn more than it does now.",
-  },
-
-  heroTool: {
-    eyebrow: 'Free valuation tool',
-    heading: 'What is your system worth?',
-    body: 'Get an indicative market value for your existing commercial solar or battery system in minutes.',
-    ctaLabel: 'Try the valuation tool',
   },
 
   auditPrefill:

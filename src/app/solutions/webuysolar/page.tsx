@@ -11,7 +11,7 @@ import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { Button } from '@/components/ui/Button';
 import { Card, CardBody } from '@/components/ui/Card';
-import { IconCheck, IconArrowRight, IconDollarSign } from '@/components/ui/Icons';
+import { IconCheck, IconArrowRight } from '@/components/ui/Icons';
 import { getHeroImages } from '@/lib/getHeroImages';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
@@ -87,29 +87,8 @@ export default async function WeBuySolarPage() {
         heroBg="linear-gradient(135deg, #1a0f00 0%, #3a2000 50%, #5a3a10 100%)"
         imagePosition="top"
         primaryCta={{ label: 'Book your free audit', href: AUDIT_HREF }}
-      >
-        {/* Valuation-tool card */}
-        <div className="rounded-2xl bg-white p-6 shadow-[0_18px_50px_rgba(0,0,0,0.22)]">
-          <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
-            style={{ background: `${meta.accent}1F`, color: meta.accent }}
-          >
-            <IconDollarSign size={20} />
-          </div>
-          <p className="font-body text-xs font-bold uppercase tracking-[0.12em] mb-2" style={{ color: meta.accent }}>
-            {WEBUYSOLAR.heroTool.eyebrow}
-          </p>
-          <p className="font-display font-extrabold text-xl text-[#1A1A1A] mb-2 leading-tight">
-            {WEBUYSOLAR.heroTool.heading}
-          </p>
-          <p className="font-body text-sm text-[#374151] leading-[1.7] mb-5">
-            {WEBUYSOLAR.heroTool.body}
-          </p>
-          <Button variant="primary" href="https://phoenixenergy.solutions/tools/solar-valuation" className="w-full">
-            {WEBUYSOLAR.heroTool.ctaLabel} <IconArrowRight size={14} />
-          </Button>
-        </div>
-      </SolutionHero>
+        secondaryCta={{ label: 'Try the valuation tool', href: 'https://phoenixenergy.solutions/tools/solar-valuation' }}
+      />
 
       {/* §3 — Why now */}
       <ExplainerCards

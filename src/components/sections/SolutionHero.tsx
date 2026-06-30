@@ -122,18 +122,14 @@ export function SolutionHero({
               {subtitle}
             </p>
 
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
               <Button variant="light" href={primaryCta.href}>
                 {primaryCta.label}
               </Button>
               {secondaryCta && (
-                <Link
-                  href={secondaryCta.href}
-                  className="font-body text-sm font-semibold inline-flex items-center gap-1.5 transition-colors"
-                  style={{ color: 'rgba(255,255,255,0.80)' }}
-                >
-                  {secondaryCta.label} <IconArrowRight size={13} />
-                </Link>
+                <Button variant="ghost" href={secondaryCta.href}>
+                  {secondaryCta.label} <IconArrowRight size={14} />
+                </Button>
               )}
             </div>
           </div>
