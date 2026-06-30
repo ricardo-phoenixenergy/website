@@ -93,13 +93,22 @@ export default async function WeBuySolarPage() {
       {/* §3 — Why now */}
       <ExplainerCards
         id="why-now"
-        background="gray"
+        background="white"
         eyebrow={WEBUYSOLAR.whyNow.eyebrow}
         heading={WEBUYSOLAR.whyNow.heading}
         subtitle={WEBUYSOLAR.whyNow.intro}
         accent={meta.accent}
         columns={3}
         cards={WEBUYSOLAR.whyNow.cards}
+      />
+
+      {/* §5 — Old vs new */}
+      <ComparisonTable
+        id="old-vs-new"
+        heading={WEBUYSOLAR.comparison.heading}
+        columns={WEBUYSOLAR.comparison.columns}
+        rows={WEBUYSOLAR.comparison.rows}
+        accent={meta.accent}
       />
 
       {/* §4 — Where value is lost */}
@@ -112,15 +121,6 @@ export default async function WeBuySolarPage() {
         columns={3}
         cards={WEBUYSOLAR.valueLost.cards}
         footer={<PullQuote accent={meta.accent}>{WEBUYSOLAR.valueLost.pullQuote}</PullQuote>}
-      />
-
-      {/* §5 — Old vs new */}
-      <ComparisonTable
-        id="old-vs-new"
-        heading={WEBUYSOLAR.comparison.heading}
-        columns={WEBUYSOLAR.comparison.columns}
-        rows={WEBUYSOLAR.comparison.rows}
-        accent={meta.accent}
       />
 
       {/* How it works — differentiator framing + 6-step process */}
