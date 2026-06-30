@@ -167,19 +167,15 @@ export const WEBUYSOLAR: WebuysolarContent = {
     items: [
       {
         question: 'Do you remove the system, or does it stay where it is?',
-        answer: "It stays on your roof and keeps operating exactly as before — that's the whole point. If you're relocating or closing the site and genuinely need it removed, we'll discuss a removal or buyout separately.",
+        answer: "It stays at your site — we're acquiring a working asset, not removing it. As we operate and optimise it we may upgrade or replace parts of the system over time, but it keeps powering your operations throughout. If you're relocating or closing the site and genuinely need it removed, we'll discuss a removal or buyout separately.",
       },
       {
         question: 'What brands and sizes do you accept?',
-        answer: 'All major inverter and module brands, from small commercial arrays up to multi-megawatt systems, with or without battery storage. Condition and configuration are assessed in the audit.',
+        answer: 'We acquire systems built on BloombergNEF Tier 1 equipment — from small commercial arrays up to multi-megawatt systems, with or without battery storage. Condition and configuration are confirmed in the audit.',
       },
       {
         question: 'How do you calculate the valuation?',
         answer: "Fair market value based on the system's condition, production and the savings it can generate under active operation — not an inflated headline buyback funded by a high PPA tariff.",
-      },
-      {
-        question: 'PPA, lease or outright sale — which do I get?',
-        answer: 'Whichever fits your balance sheet. We structure a fair-market sale with a flexible PPA or lease back; bespoke capex-free arrangements are available.',
       },
       {
         question: 'What does it cost me?',
@@ -188,10 +184,6 @@ export const WEBUYSOLAR: WebuysolarContent = {
       {
         question: "How long until I'm paid?",
         answer: 'On the settlement date agreed in the sale agreement, once contracting and handover are complete.',
-      },
-      {
-        question: "What happens to my site manager's involvement?",
-        answer: 'We take operational responsibility from day one, with monthly reporting. Your team stops managing something that was never their core job.',
       },
       {
         question: 'Is there any obligation after the audit?',
