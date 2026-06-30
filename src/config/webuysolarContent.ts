@@ -21,7 +21,7 @@ interface WebuysolarContent {
 
 export const WEBUYSOLAR: WebuysolarContent = {
   hero: {
-    title: "You own the solar asset.<br />But you're missing <em>the upside.</em>",
+    title: "You own the solar asset.<br /><em>But you're missing the upside.</em>",
     subtitle:
       "Most commercial solar was designed before batteries, wheeling and energy trading existed — so it captures only a fraction of what's now possible. Sell yours to Phoenix at fair market value. It stays exactly where it is, you keep buying its power for well below your utility tariff, and we take over running, optimising and evolving it to unlock the value it was never designed to.",
   },
