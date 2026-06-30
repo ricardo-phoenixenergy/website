@@ -29,17 +29,31 @@ const CI_FINANCING: FinancingOption[] = [
   },
 ];
 
-export function FinancingBand() {
+interface FinancingBandProps {
+  eyebrow?: string;
+  heading?: string;
+  options?: FinancingOption[];
+  accent?: string;
+  accentText?: string;
+}
+
+export function FinancingBand({
+  eyebrow = 'How to fund it',
+  heading = 'Three ways to fund it — pick what suits your balance sheet',
+  options = CI_FINANCING,
+  accent = CI_META.accent,
+  accentText = CI_META.accentText,
+}: FinancingBandProps = {}) {
   return (
     <section className="bg-[#F5F5F5] py-12 md:py-[52px]">
       <div className="page-container">
         <p className="font-body text-xs font-bold uppercase tracking-[0.12em] text-[#6B7280] mb-2">
-          How to fund it
+          {eyebrow}
         </p>
         <h2 className="font-display font-extrabold text-2xl md:text-3xl text-[#1A1A1A] mb-6 max-w-xl">
-          Three ways to fund it — pick what suits your balance sheet
+          {heading}
         </h2>
-        <FinancingCards options={CI_FINANCING} accent={CI_META.accent} accentText={CI_META.accentText} />
+        <FinancingCards options={options} accent={accent} accentText={accentText} />
       </div>
     </section>
   );

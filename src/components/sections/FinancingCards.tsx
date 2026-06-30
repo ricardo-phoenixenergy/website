@@ -37,8 +37,9 @@ export function FinancingCards({
   accentText = '#39575C',
 }: FinancingCardsProps = {}) {
   if (options && options.length > 0) {
+    const cols = options.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3';
     return (
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className={`grid gap-4 ${cols}`}>{/* 2 or 3 funding options */}
         {options.map((opt) => (
           <Card key={opt.title} variant="light" pattern={2} className="flex-1">
             {/* 3px accent bar */}

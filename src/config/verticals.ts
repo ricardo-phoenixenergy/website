@@ -38,7 +38,7 @@ export const VERTICAL_CONFIG: Record<SolutionVertical, VerticalConfig> = {
   'energy-optimisation': {
     seoTitle: 'Energy Optimisation Services | Phoenix Energy',
     seoDescription:
-      'Real-time monitoring, HVAC tuning, and load-shifting that cuts energy waste by up to 28% — zero capital outlay required.',
+      'Cut energy costs with high-efficiency WEG motors, VSDs, smart controls and demand management — outright purchase or a zero-capex efficiency lease. Book a free energy audit.',
     stats: [
       { value: '28%', label: 'Avg. Waste Identified' },
       { value: '<12mo', label: 'Typical ROI' },

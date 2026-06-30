@@ -22,6 +22,8 @@ export interface SolutionHeroProps {
   children?: ReactNode;  // calculator / interactive slot
   wideRight?: boolean;   // 40/60 split — give the right column 60% instead of the fixed 440px
   imagePosition?: 'center' | 'top' | 'bottom';  // object-position of the hero photo (default center)
+  primaryCtaArrow?: boolean;  // append a right-arrow icon to the primary CTA
+  copyOnly?: boolean;  // no right column — copy spans ~2/3 of the container (use when there are no children)
 }
 
 const HERO_OBJECT_POSITION: Record<NonNullable<SolutionHeroProps['imagePosition']>, string> = {
@@ -61,6 +63,8 @@ export function SolutionHero({
   children,
   wideRight = false,
   imagePosition = 'center',
+  primaryCtaArrow = false,
+  copyOnly = false,
 }: SolutionHeroProps) {
   return (
     <section className="relative" style={{ minHeight: 'clamp(580px, 75vw, 760px)' }}>
@@ -94,13 +98,17 @@ export function SolutionHero({
         style={{ minHeight: 'inherit', paddingTop: 96, paddingBottom: 72 }}
       >
         <div
-          className={`grid grid-cols-1 gap-10 xl:gap-16 items-center w-full ${
-            wideRight ? 'lg:grid-cols-[2fr_3fr]' : 'lg:grid-cols-[1fr_440px]'
-          }`}
+          className={
+            copyOnly
+              ? 'w-full'
+              : `grid grid-cols-1 gap-10 xl:gap-16 items-center w-full ${
+                  wideRight ? 'lg:grid-cols-[2fr_3fr]' : 'lg:grid-cols-[1fr_440px]'
+                }`
+          }
         >
 
           {/* Left: copy */}
-          <div>
+          <div className={copyOnly ? 'lg:max-w-[66%]' : undefined}>
             {/* Breadcrumb — matches the dark-hero style used across the site */}
             <nav
               className="flex items-center gap-1.5 font-body text-sm mb-5"
@@ -114,12 +122,12 @@ export function SolutionHero({
               <span className="font-semibold text-white">{badge}</span>
             </nav>
 
-            <h1 className="font-display font-extrabold text-[1.875rem] md:text-[2.625rem] text-white leading-[1.18] mb-4 max-w-[560px]">
+            <h1 className={`font-display font-extrabold text-[1.875rem] md:text-[2.625rem] text-white leading-[1.18] mb-4 ${copyOnly ? '' : 'max-w-[560px]'}`}>
               {renderTitle(title, accent)}
             </h1>
 
             <p
-              className="font-body text-sm md:text-base leading-[1.75] mb-6 max-w-[460px]"
+              className={`font-body text-sm md:text-base leading-[1.75] mb-6 whitespace-normal lg:whitespace-pre-line ${copyOnly ? 'max-w-[640px]' : 'max-w-[460px]'}`}
               style={{ color: 'rgba(255,255,255,0.70)' }}
             >
               {subtitle}
@@ -128,6 +136,7 @@ export function SolutionHero({
             <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
               <Button variant="light" href={primaryCta.href}>
                 {primaryCta.label}
+                {primaryCtaArrow && <IconArrowRight size={14} />}
               </Button>
               {secondaryCta && (
                 <Button variant="ghost" href={secondaryCta.href}>
