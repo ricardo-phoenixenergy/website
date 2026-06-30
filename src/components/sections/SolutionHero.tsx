@@ -81,7 +81,7 @@ export function SolutionHero({
         className="absolute inset-0"
         style={{
           background:
-            'linear-gradient(105deg, rgba(13,31,34,0.97) 0%, rgba(13,31,34,0.92) 45%, rgba(13,31,34,0.78) 100%)',
+            'linear-gradient(105deg, rgba(13,31,34,0.92) 0%, rgba(13,31,34,0.84) 45%, rgba(13,31,34,0.64) 100%)',
         }}
       />
 
