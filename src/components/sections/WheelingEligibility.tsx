@@ -134,7 +134,7 @@ export function WheelingEligibility() {
             </h4>
           </div>
           <p className="font-body text-xs mb-4 leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
-            A tariff where the unit price changes by time of day — peak, standard and off-peak. Common for larger commercial and industrial supplies.
+            A tariff where the unit price changes by time of day — peak, standard and off-peak. On Eskom, that&apos;s tariffs like Megaflex, Miniflex or Ruraflex.
           </p>
           <div className="flex flex-col gap-3" role="radiogroup">
             {TOU_OPTIONS.map((opt) => {
