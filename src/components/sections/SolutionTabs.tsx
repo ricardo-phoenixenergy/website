@@ -47,6 +47,8 @@ export interface TabItem {
   body: string;
   bullets: string[];
   bulletsLabel?: string;                  // optional kicker above the bullets, e.g. 'Best suited for'
+  benefits?: string[];                    // optional second bullet group (e.g. 'Benefits')
+  benefitsLabel?: string;                 // kicker above the second group
   imageBg: string;
   imageEmoji: string;
   type?: 'financing';
@@ -128,6 +130,23 @@ export function SolutionTabs({
             </li>
           ))}
         </ul>
+        {tab.benefits && tab.benefits.length > 0 && (
+          <div className="mt-4">
+            {tab.benefitsLabel && (
+              <p className="font-body text-xs font-bold uppercase tracking-[0.1em] text-[#6B7280] mb-2.5">
+                {tab.benefitsLabel}
+              </p>
+            )}
+            <ul className="space-y-2">
+              {tab.benefits.map((b) => (
+                <li key={b} className="flex items-start gap-2 font-body text-sm text-[#374151]">
+                  <span style={{ color: accent }} className="mt-0.5 flex-shrink-0 font-bold">✓</span>
+                  {b}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         {tab.cta && (
           <Button variant="primary" href={tab.cta.href} className="mt-6">
             {tab.cta.label}
