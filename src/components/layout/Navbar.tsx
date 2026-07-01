@@ -29,10 +29,10 @@ const DROPDOWN_ITEMS = [
     href: '/solutions/wheeling',
   },
   {
-    vertical: SOLUTION_VERTICALS[3],
-    name: 'Carbon Credits',
-    blurb: 'Monetise your clean energy projects',
-    href: '/solutions/carbon-credits',
+    vertical: SOLUTION_VERTICALS[4],
+    name: 'WeBuySolar',
+    blurb: 'Sell your solar system fast and fair',
+    href: '/solutions/webuysolar',
   },
   {
     vertical: SOLUTION_VERTICALS[2],
@@ -47,10 +47,10 @@ const DROPDOWN_ITEMS = [
     href: '/solutions/ev-fleets',
   },
   {
-    vertical: SOLUTION_VERTICALS[4],
-    name: 'WeBuySolar',
-    blurb: 'Sell your solar system fast and fair',
-    href: '/solutions/webuysolar',
+    vertical: SOLUTION_VERTICALS[3],
+    name: 'Carbon Credits',
+    blurb: 'Monetise your clean energy projects',
+    href: '/solutions/carbon-credits',
   },
 ] as const;
 
