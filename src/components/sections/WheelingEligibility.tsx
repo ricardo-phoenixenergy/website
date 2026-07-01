@@ -254,7 +254,7 @@ function Reveal({
                 key={m.anchor}
                 type="button"
                 onClick={() => window.location.assign(`#${m.anchor}`)}
-                className="flex items-center justify-center gap-1.5 w-full rounded-full px-5 py-3 font-display font-bold text-sm"
+                className="flex items-center justify-center gap-1.5 w-full rounded-full px-5 py-2.5 font-display font-bold text-sm"
                 style={
                   i === 0
                     ? { background: ACCENT, color: '#fff' }
@@ -280,7 +280,7 @@ function Reveal({
               <Link
                 key={link.href}
                 href={link.href}
-                className="flex items-center justify-center gap-1.5 w-full rounded-full px-5 py-3 font-display font-bold text-sm"
+                className="flex items-center justify-center gap-1.5 w-full rounded-full px-5 py-2.5 font-display font-bold text-sm"
                 style={
                   i === 0
                     ? { background: ACCENT, color: '#fff' }

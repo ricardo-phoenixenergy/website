@@ -367,14 +367,14 @@ export default async function ProjectPage({
             <div className="flex gap-3 flex-col sm:flex-row md:flex-col lg:flex-row flex-shrink-0">
               <Link
                 href="/contact"
-                className="flex items-center justify-center font-body font-semibold text-sm text-[#39575C] rounded-full px-6 py-3 transition-colors hover:bg-[#e8e8e8]"
+                className="flex items-center justify-center font-body font-semibold text-sm text-[#39575C] rounded-full px-5 py-2.5 transition-colors hover:bg-[#e8e8e8]"
                 style={{ background: '#F5F5F5' }}
               >
                 Get a Quote
               </Link>
               <Link
                 href="/projects"
-                className="flex items-center justify-center font-body font-semibold text-sm text-white rounded-full px-6 py-3 transition-all hover:bg-white/20"
+                className="flex items-center justify-center font-body font-semibold text-sm text-white rounded-full px-5 py-2.5 transition-all hover:bg-white/20"
                 style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
               >
                 View all projects
