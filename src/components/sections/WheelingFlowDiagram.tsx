@@ -22,6 +22,9 @@ export function WheelingFlowDiagram({ flow, accent }: WheelingFlowDiagramProps) 
       className="rounded-2xl border border-[#E5E7EB] bg-[#F5F5F5] p-5 md:p-6"
     >
       {/* Energy path — icon nodes, vertical stack with dashed connectors */}
+      <p className="font-body text-xs font-bold uppercase tracking-[0.1em] text-[#6B7280] mb-3">
+        {flow.energyTitle}
+      </p>
       <div className="mb-5">
         {flow.energy.map((node, i) => (
           <div key={node.label}>
