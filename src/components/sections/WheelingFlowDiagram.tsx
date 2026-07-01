@@ -1,11 +1,11 @@
 import type { WheelingFlow, FlowIcon } from '@/config/wheelingFlows';
-import { IconSun, IconGlobe, IconBuilding } from '@/components/ui/Icons';
+import { IconSolarPanel, IconPylon, IconBuilding } from '@/components/ui/Icons';
 
 const MONEY = '#39575C';
 
 const NODE_ICON: Record<FlowIcon, (size: number) => React.ReactNode> = {
-  sun: (s) => <IconSun size={s} />,
-  globe: (s) => <IconGlobe size={s} />,
+  solar: (s) => <IconSolarPanel size={s} />,
+  pylon: (s) => <IconPylon size={s} />,
   building: (s) => <IconBuilding size={s} />,
 };
 
@@ -52,7 +52,7 @@ export function WheelingFlowDiagram({ flow, accent }: WheelingFlowDiagramProps) 
       <p className="font-body text-xs font-bold uppercase tracking-[0.1em] text-[#6B7280] mb-2.5">
         {flow.moneyTitle}
       </p>
-      <div className="space-y-3 mb-4">
+      <div className="space-y-3">
         {flow.money.map((step) => (
           <div key={`${step.from}->${step.to}: ${step.label}`}>
             <div className="flex items-center gap-2 mb-0.5">
@@ -66,14 +66,6 @@ export function WheelingFlowDiagram({ flow, accent }: WheelingFlowDiagramProps) 
             <p className="font-body text-sm text-[#374151] leading-snug">{step.label}</p>
           </div>
         ))}
-      </div>
-
-      {/* Footer */}
-      <div
-        className="rounded-lg bg-white border border-[#E5E7EB] px-3 py-2"
-        style={{ borderLeft: `3px solid ${accent}` }}
-      >
-        <p className="font-body text-xs text-[#374151] leading-snug">{flow.footer}</p>
       </div>
     </div>
   );

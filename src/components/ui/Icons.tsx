@@ -172,6 +172,29 @@ export function IconSun({ size = 20, className }: IconProps) {
   );
 }
 
+export function IconSolarPanel({ size = 20, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>
+      <rect x="2.5" y="3" width="19" height="11" rx="1" />
+      <path d="M2.5 8.5h19" />
+      <path d="M9 3v11M15 3v11" />
+      <path d="M12 14v6" />
+      <path d="M8 20h8" />
+    </svg>
+  );
+}
+
+export function IconPylon({ size = 20, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>
+      <path d="M7 21 12 4 17 21" />
+      <path d="M12 4v17" />
+      <path d="M6.5 9h11" />
+      <path d="M8 14h8" />
+    </svg>
+  );
+}
+
 export function IconBattery({ size = 20, className }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>
