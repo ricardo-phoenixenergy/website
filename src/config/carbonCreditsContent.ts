@@ -1,18 +1,12 @@
 // src/config/carbonCreditsContent.ts
 import type { ExplainerCardItem } from '@/components/sections/ExplainerCards';
-import type { TabItem } from '@/components/sections/SolutionTabs';
 import type { FaqItem } from '@/components/sections/FaqAccordion';
-
-const TAB_ICON_BG = 'rgba(156,175,136,0.18)';
-const TAB_IMAGE_BG_A = 'linear-gradient(135deg, rgba(156,175,136,0.18) 0%, rgba(57,87,92,0.18) 100%)';
-const TAB_IMAGE_BG_B = 'linear-gradient(135deg, rgba(57,87,92,0.18) 0%, rgba(156,175,136,0.18) 100%)';
 
 export const CARBON_CREDITS: {
   hero: { title: string; subtitle: string };
   becomes: { eyebrow: string; heading: string; subtitle: string; cards: ExplainerCardItem[] };
   opportunity: { eyebrow: string; heading: string; cards: ExplainerCardItem[] };
   whyPhoenix: { eyebrow: string; heading: string; subtitle: string; cards: ExplainerCardItem[] };
-  tabs: TabItem[];
   faq: { heading: string; items: FaqItem[] };
   cta: { eyebrow: string; heading: string; body: string };
 } = {
@@ -55,39 +49,6 @@ export const CARBON_CREDITS: {
       { icon: 'TrendingUp', title: 'Trading & Payouts', body: 'We market your credits, manage buyer relationships and distribute proceeds with complete transparency.' },
     ],
   },
-
-  tabs: [
-    {
-      label: 'Measurement & MRV',
-      icon: 'Activity',
-      iconBg: TAB_ICON_BG,
-      title: 'Measurement, Reporting & Verification',
-      body: 'Automatic collection of inverter data, emissions calculations and audit-ready reporting throughout the life of the project.',
-      bullets: ['Automatic inverter data capture.', 'Baseline emission displacement calculation.', 'Audit-ready reports.', 'ESG dashboard for corporate reporting.'],
-      imageBg: TAB_IMAGE_BG_A,
-      imageEmoji: '📊',
-    },
-    {
-      label: 'Verification & Standards',
-      icon: 'ClipboardCheck',
-      iconBg: TAB_ICON_BG,
-      title: 'Independent verification against recognised standards',
-      body: 'Independent third-party verification against recognised international carbon standards. Phoenix selects the most appropriate methodology for your project.',
-      bullets: ['Independent third-party audit.', 'Recognised international standards.', 'Best-fit methodology per project.', 'Full documentation trail.'],
-      imageBg: TAB_IMAGE_BG_B,
-      imageEmoji: '🔍',
-    },
-    {
-      label: 'Trading & Payouts',
-      icon: 'DollarSign',
-      iconBg: TAB_ICON_BG,
-      title: 'Credit trading and transparent payouts',
-      body: 'Verified credits are sold through trusted carbon markets and buyer networks. You receive scheduled payouts together with complete reporting and transaction transparency.',
-      bullets: ['Access to vetted buyer networks.', 'Scheduled credit sales.', 'Transparent payouts.', 'Full transaction reporting.'],
-      imageBg: TAB_IMAGE_BG_A,
-      imageEmoji: '💰',
-    },
-  ],
 
   faq: {
     heading: 'Carbon credits, answered.',

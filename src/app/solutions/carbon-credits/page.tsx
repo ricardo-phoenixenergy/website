@@ -2,7 +2,6 @@
 import type { Metadata } from 'next';
 import { SolutionHero } from '@/components/sections/SolutionHero';
 import { ExplainerCards } from '@/components/sections/ExplainerCards';
-import { SolutionTabs } from '@/components/sections/SolutionTabs';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FaqAccordion } from '@/components/sections/FaqAccordion';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
@@ -96,15 +95,6 @@ export default async function CarbonCreditsPage() {
 
       {/* §5 — From generation to payout (Sanity-driven) */}
       {howItWorks && <HowItWorks {...howItWorks} accent={meta.accent} accentText={meta.accentText} />}
-
-      {/* §6 — Behind the scenes */}
-      <SolutionTabs
-        tabs={CARBON_CREDITS.tabs}
-        accent={meta.accent}
-        vertical="carbon-credits"
-        eyebrow="Behind the scenes"
-        heading="What it takes to turn generation into <em>verified credits</em>"
-      />
 
       {/* §7 — FAQ */}
       <FaqAccordion
