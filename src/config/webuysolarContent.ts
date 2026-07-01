@@ -155,7 +155,6 @@ export const WEBUYSOLAR: WebuysolarContent = {
       'System production review.',
       'Battery dispatch analysis (where applicable).',
       'Tariff structure & electricity bill review.',
-      'Quantified estimate of unrealised value.',
       'System valuation quote.',
       'Preliminary PPA/lease commercial offer.',
       'Tailored energy optimisation roadmap.',
