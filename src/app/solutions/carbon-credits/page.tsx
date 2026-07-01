@@ -1,17 +1,19 @@
 // src/app/solutions/carbon-credits/page.tsx
 import type { Metadata } from 'next';
 import { SolutionHero } from '@/components/sections/SolutionHero';
+import { ExplainerCards } from '@/components/sections/ExplainerCards';
 import { SolutionTabs } from '@/components/sections/SolutionTabs';
 import { HowItWorks } from '@/components/sections/HowItWorks';
+import { FaqAccordion } from '@/components/sections/FaqAccordion';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { PageFooter } from '@/components/layout/PageFooter';
-import { CarbonCalculator } from '@/components/sections/calculators/CarbonCalculator';
+import { CarbonRevenueEstimator } from '@/components/sections/calculators/CarbonRevenueEstimator';
 import { getHowItWorks } from '@/lib/getHowItWorks';
 import { getHeroImages } from '@/lib/getHeroImages';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
-import type { TabItem } from '@/components/sections/SolutionTabs';
+import { CARBON_CREDITS } from '@/config/carbonCreditsContent';
 
 const vertical = 'carbon-credits' as const;
 const cfg = VERTICAL_CONFIG[vertical];
@@ -25,40 +27,6 @@ export const metadata: Metadata = {
 };
 
 export const revalidate = 3600;
-
-const tabs: TabItem[] = [
-  {
-    label: 'Verra VCS',
-    icon: 'Leaf',
-    iconBg: 'rgba(156,175,136,0.18)',
-    title: 'Verra Verified Carbon Standard',
-    body: 'Phoenix registers your solar system under the Verra VCS methodology, the most widely accepted carbon standard globally. Credits are issued quarterly and tradeable on international markets.',
-    bullets: ['Gold Standard or Verra VCS certification.', 'Internationally tradeable credits.', 'Quarterly issuance and payout.', 'Independent third-party verification.'],
-    imageBg: 'linear-gradient(135deg, rgba(156,175,136,0.18) 0%, rgba(57,87,92,0.18) 100%)',
-    imageEmoji: '🌿',
-  },
-  {
-    label: 'MRV & Reporting',
-    icon: 'ClipboardCheck',
-    iconBg: 'rgba(156,175,136,0.18)',
-    title: 'Measurement, Reporting & Verification',
-    body: 'Our MRV platform automatically captures generation data from your inverters, calculates displacement emissions, and generates audit-ready reports — with zero manual effort on your part.',
-    bullets: ['Automatic inverter data capture.', 'Baseline emission displacement calculation.', 'Audit-ready MRV reports.', 'ESG dashboard for corporate reporting.'],
-    imageBg: 'linear-gradient(135deg, rgba(57,87,92,0.18) 0%, rgba(156,175,136,0.18) 100%)',
-    imageEmoji: '📋',
-  },
-  {
-    label: 'Financing',
-    icon: 'DollarSign',
-    iconBg: 'rgba(156,175,136,0.18)',
-    title: 'Financing Options',
-    body: '',
-    bullets: [],
-    imageBg: '',
-    imageEmoji: '',
-    type: 'financing',
-  },
-];
 
 export default async function CarbonCreditsPage() {
   const howItWorks = await getHowItWorks(vertical);
@@ -76,35 +44,88 @@ export default async function CarbonCreditsPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
+      {/* §1 — Hero + revenue estimator */}
       <SolutionHero
-        title="Turn your solar generation into <em>quarterly revenue</em>"
-        subtitle="Verra-certified carbon credits from your existing solar system — fully managed, zero admin, quarterly payouts."
+        title={CARBON_CREDITS.hero.title}
+        subtitle={CARBON_CREDITS.hero.subtitle}
         accent={meta.accent}
         badge={meta.label}
         heroImage={hero?.url}
         heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #0d1f22 0%, #182a1a 50%, #2a4a28 100%)"
-        primaryCta={{ label: 'Check Eligibility', href: '/contact' }}
+        primaryCta={{ label: 'Book a Carbon Assessment', href: '/contact' }}
       >
-        <CarbonCalculator />
+        <CarbonRevenueEstimator />
       </SolutionHero>
+
+      {/* §2 — How carbon becomes revenue */}
+      <ExplainerCards
+        id="how-it-earns"
+        background="white"
+        eyebrow={CARBON_CREDITS.becomes.eyebrow}
+        heading={CARBON_CREDITS.becomes.heading}
+        subtitle={CARBON_CREDITS.becomes.subtitle}
+        accent={meta.accent}
+        columns={3}
+        cards={CARBON_CREDITS.becomes.cards}
+      />
+
+      {/* §3 — Why your solar could be earning more */}
+      <ExplainerCards
+        id="opportunity"
+        background="gray"
+        eyebrow={CARBON_CREDITS.opportunity.eyebrow}
+        heading={CARBON_CREDITS.opportunity.heading}
+        accent={meta.accent}
+        columns={3}
+        cards={CARBON_CREDITS.opportunity.cards}
+      />
+
+      {/* §4 — Why Phoenix */}
+      <ExplainerCards
+        id="why-phoenix"
+        background="white"
+        eyebrow={CARBON_CREDITS.whyPhoenix.eyebrow}
+        heading={CARBON_CREDITS.whyPhoenix.heading}
+        subtitle={CARBON_CREDITS.whyPhoenix.subtitle}
+        accent={meta.accent}
+        columns={3}
+        cards={CARBON_CREDITS.whyPhoenix.cards}
+      />
+
+      {/* §5 — From generation to payout (Sanity-driven) */}
+      {howItWorks && <HowItWorks {...howItWorks} accent={meta.accent} accentText={meta.accentText} />}
+
+      {/* §6 — Behind the scenes */}
       <SolutionTabs
-        tabs={tabs}
+        tabs={CARBON_CREDITS.tabs}
         accent={meta.accent}
         vertical="carbon-credits"
-        eyebrow="What's involved"
-        heading="Turning reductions into <em>tradable credits</em>"
-        subtitle="The certification standards, measurement and funding that take you from emissions data to verified carbon credits."
+        eyebrow="Behind the scenes"
+        heading="What it takes to turn generation into <em>verified credits</em>"
       />
-      {howItWorks && <HowItWorks {...howItWorks} accent={meta.accent} accentText={meta.accentText} />}
+
+      {/* §7 — FAQ */}
+      <FaqAccordion
+        id="faq"
+        eyebrow="FAQ"
+        heading={CARBON_CREDITS.faq.heading}
+        items={CARBON_CREDITS.faq.items}
+        accent={meta.accent}
+      />
+
+      {/* §8 — Proof + insights */}
       <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
+
+      {/* §9 — Final CTA */}
       <PageFooter
         ctaVariant="centered"
-        eyebrow="Start earning"
-        heading="Turn your clean energy into verified revenue"
-        body="We handle Gold Standard registration, annual verification, and credit trading on your behalf. Your sustainability generates income — we do the work."
-        primaryCta={{ label: 'Get a Carbon Assessment', href: '/contact' }}
+        eyebrow={CARBON_CREDITS.cta.eyebrow}
+        heading={CARBON_CREDITS.cta.heading}
+        body={CARBON_CREDITS.cta.body}
+        primaryCta={{ label: 'Book a Carbon Assessment', href: '/contact' }}
       />
     </>
   );
