@@ -153,7 +153,6 @@ export default async function WeBuySolarPage() {
         body={WEBUYSOLAR.audit.subtitle}
         primaryCta={{ label: 'Arrange your free audit', href: AUDIT_HREF }}
         deliverables={WEBUYSOLAR.audit.deliverables}
-        accent={meta.accent}
       />
     </>
   );
