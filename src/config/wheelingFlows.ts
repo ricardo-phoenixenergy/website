@@ -59,15 +59,15 @@ export const VIRTUAL_FLOW: WheelingFlow = {
 export const MICRO_FLOW: WheelingFlow = {
   energyTitle: 'How it works',
   energy: [
-    { icon: 'solar', label: 'Your ~1 MW plant', desc: 'A dedicated plant you own generates the power.' },
-    { icon: 'pylon', label: 'The grid', desc: 'Fed into the grid and virtually allocated to your supply.' },
-    { icon: 'building', label: 'Your site', desc: 'Credited on your bill — you keep the full generation value.', emphasis: true },
+    { icon: 'solar', label: 'Your ~1 MW plant', desc: 'A dedicated renewable generation asset that you own produces electricity.' },
+    { icon: 'pylon', label: 'The grid', desc: 'The energy is exported into the electricity grid and allocated to your business through the approved wheeling framework.' },
+    { icon: 'building', label: 'Your site', desc: 'You receive bill credits reflecting the value of the energy generated. You retain the full economic benefit of the asset’s output.', emphasis: true },
   ],
   moneyTitle: 'How you pay',
   money: [
-    { from: 'You', to: 'Plant', label: 'Own the asset — buy or finance' },
-    { from: 'You', to: 'Grid', label: 'Network / wheeling charges only' },
+    { from: 'You', to: 'Plant', label: 'Own the asset — either through purchase or financing.' },
+    { from: 'You', to: 'Grid', label: 'Pay network and wheeling (generator use-of-system) charges for transporting electricity through the grid.' },
   ],
   summary:
-    'You own a dedicated ~1 MW plant whose output is fed into the grid and virtually allocated to your supply. You fund the plant and pay only network and wheeling charges — no third-party PPA.',
+    'You own a dedicated ~1 MW renewable plant whose output is exported into the grid and allocated to your business under the approved wheeling framework. You receive bill credits for the energy generated and retain the full economic benefit; you fund the plant and pay only network and wheeling (generator use-of-system) charges.',
 };
