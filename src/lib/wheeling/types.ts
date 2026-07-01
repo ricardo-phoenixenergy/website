@@ -1,6 +1,6 @@
 export type WheelingTou = 'yes' | 'no' | 'unsure';
 
-export type WheelingStatus = 'direct' | 'virtual' | 'not-available' | 'not-eligible-tou';
+export type WheelingStatus = 'eskom' | 'virtual' | 'not-available' | 'not-eligible-tou';
 
 export interface WheelingAnswers {
   supplyPointId: string;

@@ -1,17 +1,24 @@
 import { describe, it, expect } from 'vitest';
 import { evaluateWheeling } from './eligibility';
 
-describe('evaluateWheeling — supply-point routing', () => {
-  it('unsupported (other) → not-available', () => {
+describe('evaluateWheeling — unsupported supplier', () => {
+  it('other → not-available (regardless of ToU)', () => {
     expect(evaluateWheeling({ supplyPointId: 'other' }).status).toBe('not-available');
+    expect(evaluateWheeling({ supplyPointId: 'other', tou: 'yes' }).status).toBe('not-available');
   });
 
-  it('missing/unknown supply point → not-available', () => {
+  it('missing/unknown supplier → not-available', () => {
     expect(evaluateWheeling({ supplyPointId: '' }).status).toBe('not-available');
     expect(evaluateWheeling({ supplyPointId: 'nope' }).status).toBe('not-available');
   });
+});
 
-  it('each supported metro → virtual with the correct city label (no ToU needed)', () => {
+describe('evaluateWheeling — Time-of-Use gate (Eskom + municipalities)', () => {
+  it('eskom + ToU yes → eskom (Direct or Micro)', () => {
+    expect(evaluateWheeling({ supplyPointId: 'eskom', tou: 'yes' }).status).toBe('eskom');
+  });
+
+  it('each metro + ToU yes → virtual with the correct city label', () => {
     const expected: Record<string, string> = {
       joburg: 'Johannesburg',
       'cape-town': 'Cape Town',
@@ -21,27 +28,20 @@ describe('evaluateWheeling — supply-point routing', () => {
       nmb: 'Nelson Mandela Bay',
     };
     for (const [id, city] of Object.entries(expected)) {
-      const r = evaluateWheeling({ supplyPointId: id });
+      const r = evaluateWheeling({ supplyPointId: id, tou: 'yes' });
       expect(r.status).toBe('virtual');
       expect(r.supplyPointLabel).toContain(city);
     }
   });
-});
 
-describe('evaluateWheeling — Eskom Time-of-Use gate', () => {
-  it('eskom + ToU yes → direct', () => {
-    expect(evaluateWheeling({ supplyPointId: 'eskom', tou: 'yes' }).status).toBe('direct');
-  });
-
-  it('eskom + ToU no → not-eligible-tou', () => {
+  it('eskom + ToU no / unsure / absent → not-eligible-tou', () => {
     expect(evaluateWheeling({ supplyPointId: 'eskom', tou: 'no' }).status).toBe('not-eligible-tou');
-  });
-
-  it('eskom + ToU unsure → not-eligible-tou', () => {
     expect(evaluateWheeling({ supplyPointId: 'eskom', tou: 'unsure' }).status).toBe('not-eligible-tou');
+    expect(evaluateWheeling({ supplyPointId: 'eskom' }).status).toBe('not-eligible-tou');
   });
 
-  it('eskom with no ToU answer → not-eligible-tou', () => {
-    expect(evaluateWheeling({ supplyPointId: 'eskom' }).status).toBe('not-eligible-tou');
+  it('metro + ToU no / unsure → not-eligible-tou', () => {
+    expect(evaluateWheeling({ supplyPointId: 'cape-town', tou: 'no' }).status).toBe('not-eligible-tou');
+    expect(evaluateWheeling({ supplyPointId: 'cape-town', tou: 'unsure' }).status).toBe('not-eligible-tou');
   });
 });

@@ -22,11 +22,10 @@ const TOU_OPTIONS: { value: WheelingTou; label: string; icon: React.ReactNode }[
   { value: 'unsure', label: "I'm not sure", icon: <IconHelpCircle size={ICON} /> },
 ];
 
-const contactHref = (message: string) =>
-  `/contact?intent=client&message=${encodeURIComponent(message)}`;
-
-function isEskom(id: string) {
-  return supplyPointById(id)?.model === 'direct';
+// Eskom-direct and municipal supplies both need the Time-of-Use step; "other" skips it.
+function needsTou(id: string) {
+  const m = supplyPointById(id)?.model;
+  return m === 'direct' || m === 'virtual';
 }
 
 export function WheelingEligibility() {
@@ -43,8 +42,7 @@ export function WheelingEligibility() {
     }
     setSupplyPointId(id);
     setTou(null);
-    // Eskom-direct needs a Time-of-Use check; everything else routes straight to the reveal.
-    setStep(isEskom(id) ? 'tou' : 'reveal');
+    setStep(needsTou(id) ? 'tou' : 'reveal');
   }
 
   function pickTou(v: WheelingTou) {
@@ -171,13 +169,21 @@ export function WheelingEligibility() {
       {step === 'reveal' && outcome && (
         <Reveal
           outcome={outcome}
-          onBack={() => setStep(isEskom(supplyPointId) ? 'tou' : 'supply')}
+          onBack={() => setStep(needsTou(supplyPointId) ? 'tou' : 'supply')}
           onRestart={restart}
         />
       )}
     </div>
   );
 }
+
+const ELIGIBLE_MODELS: Record<'eskom' | 'virtual', { anchor: string; label: string }[]> = {
+  eskom: [
+    { anchor: 'model-direct', label: 'Direct Wheeling' },
+    { anchor: 'model-micro', label: 'Micro-Wheeling' },
+  ],
+  virtual: [{ anchor: 'model-virtual', label: 'Virtual Wheeling' }],
+};
 
 const NEGATIVE: Record<'not-eligible-tou' | 'not-available', {
   heading: string;
@@ -186,7 +192,7 @@ const NEGATIVE: Record<'not-eligible-tou' | 'not-available', {
 }> = {
   'not-eligible-tou': {
     heading: 'Let’s get you wheel-ready',
-    body: 'Direct Wheeling needs a Time-of-Use tariff. In the meantime, these can cut your costs:',
+    body: 'Wheeling needs a Time-of-Use tariff. Tariff Optimisation can move you onto the right tariff and get you wheel-ready — or you can generate on-site.',
     links: [
       { label: 'Explore Tariff Optimisation', href: '/solutions/energy-optimisation#lever-tariff' },
       { label: 'Explore C&I Solar & Storage', href: '/solutions/ci-solar-storage' },
@@ -209,9 +215,8 @@ function Reveal({
   onBack: () => void;
   onRestart: () => void;
 }) {
-  const eligible = outcome.status === 'direct' || outcome.status === 'virtual';
-  const modelLabel = outcome.status === 'direct' ? 'Direct Wheeling' : 'Virtual Wheeling';
-  const modelAnchor = outcome.status === 'direct' ? 'model-direct' : 'model-virtual';
+  const eligible = outcome.status === 'eskom' || outcome.status === 'virtual';
+  const models = eligible ? ELIGIBLE_MODELS[outcome.status as 'eskom' | 'virtual'] : [];
   const neg = outcome.status === 'not-eligible-tou' ? NEGATIVE['not-eligible-tou'] : NEGATIVE['not-available'];
 
   return (
@@ -232,40 +237,34 @@ function Reveal({
       {eligible ? (
         <>
           <div className="flex items-center justify-center mb-3" style={{ color: ACCENT }}>
-            {outcome.status === 'direct' ? <IconZap size={28} /> : <IconGlobe size={28} />}
+            {outcome.status === 'eskom' ? <IconZap size={28} /> : <IconGlobe size={28} />}
           </div>
           <p className="font-body text-xs uppercase tracking-[0.12em] text-center mb-2" style={{ color: 'rgba(255,255,255,0.45)' }}>
             You&apos;re eligible
           </p>
-          <h3 className="font-display font-extrabold text-2xl text-center mb-3" style={{ color: ACCENT }}>
-            {modelLabel}
-          </h3>
-          <p className="font-body text-sm text-center leading-relaxed mb-4" style={{ color: 'rgba(255,255,255,0.65)' }}>
-            {outcome.status === 'direct'
-              ? 'Because Eskom supplies you directly, we can wheel renewable power to you across the Eskom grid.'
-              : `${outcome.supplyPointLabel} supports virtual wheeling — we can wheel renewable power to you and have it netted against your municipal bill.`}
+          <p className="font-body text-sm text-center leading-relaxed mb-4" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            {outcome.status === 'eskom'
+              ? 'As an Eskom direct-billed business on a Time-of-Use tariff, you can buy wheeled power with Direct Wheeling — or own a dedicated plant with Micro-Wheeling.'
+              : `${outcome.supplyPointLabel} supports virtual wheeling. Here’s how the Virtual Wheeling model works.`}
           </p>
 
-          <Link
-            href={contactHref(
-              outcome.status === 'direct'
-                ? 'I’d like a wheeling quote. Eskom supplies me directly (Direct Wheeling).'
-                : `I’d like a wheeling quote. My supplier is ${outcome.supplyPointLabel} (Virtual Wheeling).`,
-            )}
-            className="flex items-center justify-center gap-2 w-full rounded-full px-5 py-3 font-display font-bold text-sm mb-2.5"
-            style={{ background: ACCENT, color: '#fff' }}
-          >
-            Get a wheeling quote <IconArrowRight size={14} />
-          </Link>
-
-          <button
-            type="button"
-            onClick={() => window.location.assign(`#${modelAnchor}`)}
-            className="flex items-center justify-center gap-1.5 w-full rounded-full px-4 py-2.5 font-display font-bold text-xs"
-            style={{ border: `1.5px solid ${ACCENT}66`, color: ACCENT, background: 'rgba(217,124,118,0.06)' }}
-          >
-            Learn about {modelLabel} <IconArrowRight size={13} />
-          </button>
+          <div className="flex flex-col gap-2.5">
+            {models.map((m, i) => (
+              <button
+                key={m.anchor}
+                type="button"
+                onClick={() => window.location.assign(`#${m.anchor}`)}
+                className="flex items-center justify-center gap-1.5 w-full rounded-full px-5 py-3 font-display font-bold text-sm"
+                style={
+                  i === 0
+                    ? { background: ACCENT, color: '#fff' }
+                    : { border: `1.5px solid ${ACCENT}66`, color: ACCENT, background: 'rgba(217,124,118,0.06)' }
+                }
+              >
+                {m.label} <IconArrowRight size={14} />
+              </button>
+            ))}
+          </div>
         </>
       ) : (
         <>
