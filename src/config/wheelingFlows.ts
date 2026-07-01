@@ -1,7 +1,10 @@
+export type FlowIcon = 'sun' | 'globe' | 'building';
+
 export interface FlowNode {
+  icon: FlowIcon;
   label: string;
-  sub?: string;
-  emphasis?: boolean; // highlights the "Your site" node
+  desc: string;          // one-line description of the node
+  emphasis?: boolean;    // highlights the "Your site" node
 }
 
 export interface MoneyStep {
@@ -11,7 +14,7 @@ export interface MoneyStep {
 }
 
 export interface WheelingFlow {
-  energy: FlowNode[];   // horizontal chain joined by energy arrows (2–3 nodes)
+  energy: FlowNode[];   // vertical icon-node chain
   moneyTitle: string;   // kicker above the money rows
   money: MoneyStep[];   // dashed money arrows (1–3 rows)
   footer: string;       // footer pill — Phoenix's role / the key distinction
@@ -20,9 +23,9 @@ export interface WheelingFlow {
 
 export const DIRECT_FLOW: WheelingFlow = {
   energy: [
-    { label: 'IPP', sub: 'renewable generator' },
-    { label: 'Eskom grid' },
-    { label: 'Your site', emphasis: true },
+    { icon: 'sun', label: 'IPP', desc: 'Independent renewable generator produces the power.' },
+    { icon: 'globe', label: 'Eskom grid', desc: "Wheeled to you across Eskom's transmission grid." },
+    { icon: 'building', label: 'Your site', desc: 'Uses the power at a fixed tariff below your Eskom rate.', emphasis: true },
   ],
   moneyTitle: 'How you pay',
   money: [
@@ -36,9 +39,9 @@ export const DIRECT_FLOW: WheelingFlow = {
 
 export const VIRTUAL_FLOW: WheelingFlow = {
   energy: [
-    { label: 'IPP', sub: 'renewable generator' },
-    { label: 'Grid', sub: 'virtually allocated' },
-    { label: 'Your site', emphasis: true },
+    { icon: 'sun', label: 'IPP', desc: 'Independent renewable generator produces the power.' },
+    { icon: 'globe', label: 'The grid', desc: 'Wheeled across the grid, virtually allocated to your meter.' },
+    { icon: 'building', label: 'Your site', desc: 'Uses the power at a lower effective rate.', emphasis: true },
   ],
   moneyTitle: "How you're credited",
   money: [
@@ -53,9 +56,9 @@ export const VIRTUAL_FLOW: WheelingFlow = {
 
 export const MICRO_FLOW: WheelingFlow = {
   energy: [
-    { label: 'Your ~1 MW plant', sub: 'you own it' },
-    { label: 'Grid' },
-    { label: 'Your site', emphasis: true },
+    { icon: 'sun', label: 'Your ~1 MW plant', desc: 'A dedicated plant you own generates the power.' },
+    { icon: 'globe', label: 'The grid', desc: 'Wheeled directly to your point of consumption.' },
+    { icon: 'building', label: 'Your site', desc: 'Powered by your own asset — you keep the full value.', emphasis: true },
   ],
   moneyTitle: 'How you pay',
   money: [

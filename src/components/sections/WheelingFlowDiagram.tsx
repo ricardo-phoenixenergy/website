@@ -1,6 +1,13 @@
-import type { WheelingFlow } from '@/config/wheelingFlows';
+import type { WheelingFlow, FlowIcon } from '@/config/wheelingFlows';
+import { IconSun, IconGlobe, IconBuilding } from '@/components/ui/Icons';
 
 const MONEY = '#39575C';
+
+const NODE_ICON: Record<FlowIcon, (size: number) => React.ReactNode> = {
+  sun: (s) => <IconSun size={s} />,
+  globe: (s) => <IconGlobe size={s} />,
+  building: (s) => <IconBuilding size={s} />,
+};
 
 interface WheelingFlowDiagramProps {
   flow: WheelingFlow;
@@ -14,36 +21,28 @@ export function WheelingFlowDiagram({ flow, accent }: WheelingFlowDiagramProps) 
       aria-label={flow.summary}
       className="rounded-2xl border border-[#E5E7EB] bg-[#F5F5F5] p-5 md:p-6"
     >
-      {/* Legend */}
-      <div className="flex items-center justify-end gap-4 mb-4">
-        <span className="flex items-center gap-1.5 font-body text-[0.7rem] text-[#6B7280]">
-          <span className="inline-block w-4" style={{ borderTop: `2px solid ${accent}` }} />
-          energy
-        </span>
-        <span className="flex items-center gap-1.5 font-body text-[0.7rem] text-[#6B7280]">
-          <span className="inline-block w-4" style={{ borderTop: `2px dashed ${MONEY}` }} />
-          money
-        </span>
-      </div>
-
-      {/* Energy path */}
-      <div className="flex flex-col sm:flex-row gap-2 mb-5">
+      {/* Energy path — icon nodes, vertical stack with dashed connectors */}
+      <div className="mb-5">
         {flow.energy.map((node, i) => (
-          <div key={node.label} className="flex flex-col sm:flex-row sm:items-center gap-2 sm:flex-1">
-            <div
-              className="w-full rounded-lg bg-white border border-[#E5E7EB] px-3 py-2"
-              style={node.emphasis ? { borderLeft: `3px solid ${accent}` } : undefined}
-            >
-              <p className="font-display font-bold text-sm text-[#1A1A1A] leading-tight">{node.label}</p>
-              {node.sub && (
-                <p className="font-body text-xs text-[#6B7280] leading-tight mt-0.5">{node.sub}</p>
-              )}
+          <div key={node.label}>
+            <div className="flex items-start gap-3">
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: node.emphasis ? 'rgba(217,124,118,0.20)' : 'rgba(217,124,118,0.14)',
+                  color: accent,
+                  ...(node.emphasis ? { boxShadow: `inset 3px 0 0 ${accent}` } : {}),
+                }}
+              >
+                {NODE_ICON[node.icon](20)}
+              </div>
+              <div className="pt-0.5">
+                <p className="font-display font-bold text-sm text-[#1A1A1A] leading-tight">{node.label}</p>
+                <p className="font-body text-xs text-[#6B7280] leading-snug mt-0.5">{node.desc}</p>
+              </div>
             </div>
             {i < flow.energy.length - 1 && (
-              <span aria-hidden className="self-center font-bold leading-none" style={{ color: accent }}>
-                <span className="hidden sm:inline">→</span>
-                <span className="sm:hidden">↓</span>
-              </span>
+              <div aria-hidden className="ml-5 my-1" style={{ height: 16, borderLeft: `2px dashed ${accent}` }} />
             )}
           </div>
         ))}
