@@ -81,7 +81,7 @@ export function PageFooter({
               </p>
               <Link
                 href={primaryCta.href}
-                className="inline-flex items-center gap-2 font-body font-semibold text-sm rounded-full px-5 py-2.5 bg-white text-[#0d1f22] hover:bg-[#F5F5F5] transition-colors duration-150"
+                className="inline-flex items-center gap-2 font-body font-semibold text-sm leading-none rounded-full px-5 py-2.5 bg-white text-[#0d1f22] hover:bg-[#F5F5F5] transition-colors duration-150"
               >
                 {primaryCta.label} <IconArrowRight size={13} />
               </Link>
