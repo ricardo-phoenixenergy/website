@@ -18,6 +18,7 @@ export interface WheelingFlow {
   energy: FlowNode[];   // vertical icon-node chain
   moneyTitle: string;   // kicker above the money rows
   money: MoneyStep[];   // dashed money arrows (1–3 rows)
+  stepped?: boolean;    // number the money rows as sequential steps
   summary: string;      // aria-label describing the whole flow
 }
 
@@ -40,18 +41,19 @@ export const DIRECT_FLOW: WheelingFlow = {
 export const VIRTUAL_FLOW: WheelingFlow = {
   energyTitle: 'How it works',
   energy: [
-    { icon: 'solar', label: 'IPP', desc: 'Independent renewable generator produces the power.' },
-    { icon: 'pylon', label: 'The grid', desc: 'Fed into the grid and virtually allocated to your account.' },
-    { icon: 'building', label: 'Your site', desc: 'Credited on your municipal bill at a lower effective rate.', emphasis: true },
+    { icon: 'solar', label: 'Independent Power Producer (IPP)', desc: 'Generates renewable electricity at an off-site solar or wind facility.' },
+    { icon: 'pylon', label: 'Municipal Grid', desc: 'The energy is fed into the grid and virtually allocated to your municipal account under an approved virtual wheeling framework.' },
+    { icon: 'building', label: 'Your Business', desc: 'You continue to receive electricity through your existing municipal supply. You will not see wheeling charges or credits on your municipal bill; these are settled separately through the wheeling/PPA arrangement.', emphasis: true },
   ],
   moneyTitle: "How you're credited",
+  stepped: true,
   money: [
-    { from: 'You', to: 'Municipality', label: 'Pay your municipal bill as normal' },
-    { from: 'Municipality', to: 'IPP', label: 'Wheeled generation credited to the IPP' },
-    { from: 'IPP', to: 'You', label: 'PPA withheld, balance refunded to you' },
+    { from: 'You', to: 'Municipality', label: 'You pay your municipal electricity bill as normal.' },
+    { from: 'Municipality', to: 'IPP', label: 'The wheeled energy allocation is credited through the municipal settlement process to the IPP.' },
+    { from: 'IPP', to: 'You', label: 'The IPP applies its PPA tariff and refunds or nets the remaining credit value back to you.' },
   ],
   summary:
-    'Renewable energy from the IPP is fed into the grid and virtually allocated to your account. You pay your municipal bill as normal, the municipality credits the IPP, and the IPP withholds its PPA amount and refunds the balance to you.',
+    'Renewable electricity from an independent power producer is fed into the grid and virtually allocated to your municipal account. You pay your municipal bill as normal; the wheeled allocation is credited to the IPP through municipal settlement; the IPP applies its PPA tariff and refunds or nets the remaining credit back to you. Wheeling charges and credits are settled separately, not shown on your municipal bill.',
 };
 
 export const MICRO_FLOW: WheelingFlow = {

@@ -56,9 +56,17 @@ export function WheelingFlowDiagram({ flow, accent }: WheelingFlowDiagramProps) 
         {flow.moneyTitle}
       </p>
       <div className="space-y-3">
-        {flow.money.map((step) => (
+        {flow.money.map((step, i) => (
           <div key={`${step.from}->${step.to}: ${step.label}`}>
             <div className="flex items-center gap-2 mb-0.5">
+              {flow.stepped && (
+                <span
+                  className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0"
+                  style={{ background: MONEY, color: '#fff' }}
+                >
+                  {i + 1}
+                </span>
+              )}
               <span className="font-body text-xs font-semibold text-[#1A1A1A]">{step.from}</span>
               <span aria-hidden className="inline-flex items-center" style={{ color: MONEY }}>
                 <span className="inline-block w-5" style={{ borderTop: `2px dashed ${MONEY}` }} />
