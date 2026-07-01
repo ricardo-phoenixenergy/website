@@ -66,7 +66,7 @@ export const MICRO_FLOW: WheelingFlow = {
   moneyTitle: 'How you pay',
   money: [
     { from: 'You', to: 'Plant', label: 'Own the asset — either through purchase or financing.' },
-    { from: 'You', to: 'Grid', label: 'Pay network and wheeling (generator use-of-system) charges for transporting electricity through the grid.' },
+    { from: 'You', to: 'Eskom', label: 'Pay network and wheeling (generator use-of-system) charges for transporting electricity through the grid.' },
   ],
   summary:
     'You own a dedicated ~1 MW renewable plant whose output is exported into the grid and allocated to your business under the approved wheeling framework. You receive bill credits for the energy generated and retain the full economic benefit; you fund the plant and pay only network and wheeling (generator use-of-system) charges.',
