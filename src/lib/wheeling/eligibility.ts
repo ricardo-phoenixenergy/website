@@ -2,19 +2,20 @@ import { supplyPointById } from '@/config/wheelingSupplyPoints';
 import type { WheelingAnswers, WheelingOutcome } from './types';
 
 export function evaluateWheeling(answers: WheelingAnswers): WheelingOutcome {
-  // ToU gate: 'no' short-circuits regardless of supply point.
-  if (answers.tou === 'no') {
-    return { status: 'not-eligible-tou', verifyTariff: false };
-  }
-
-  const verifyTariff = answers.tou === 'unsure';
   const sp = answers.supplyPointId ? supplyPointById(answers.supplyPointId) : undefined;
 
+  // Unknown / missing / unsupported supply point → not available.
   if (!sp || sp.model === 'none') {
-    return { status: 'not-available', verifyTariff };
+    return { status: 'not-available' };
   }
-  if (sp.model === 'direct') {
-    return { status: 'direct', verifyTariff };
+
+  // Municipality that supports virtual wheeling → Virtual (no ToU gate).
+  if (sp.model === 'virtual') {
+    return { status: 'virtual', supplyPointLabel: sp.label };
   }
-  return { status: 'virtual', supplyPointLabel: sp.label, verifyTariff };
+
+  // Eskom direct → qualifies for Direct Wheeling only on a Time-of-Use tariff.
+  return answers.tou === 'yes'
+    ? { status: 'direct' }
+    : { status: 'not-eligible-tou' };
 }

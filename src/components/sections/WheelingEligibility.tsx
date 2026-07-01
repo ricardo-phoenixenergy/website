@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { dlPush } from '@/lib/analytics';
 import { evaluateWheeling } from '@/lib/wheeling/eligibility';
-import { WHEELING_SUPPLY_POINTS } from '@/config/wheelingSupplyPoints';
+import { WHEELING_SUPPLY_POINTS, supplyPointById } from '@/config/wheelingSupplyPoints';
 import type { WheelingTou, WheelingOutcome } from '@/lib/wheeling/types';
 import {
   IconCheck, IconX, IconHelpCircle, IconArrowLeft, IconArrowRight, IconZap, IconGlobe,
@@ -14,7 +14,7 @@ const ACCENT = '#D97C76';
 const ICON = 18;
 const VERTICAL = 'wheeling';
 
-type Step = 'tou' | 'supply' | 'reveal';
+type Step = 'supply' | 'tou' | 'reveal';
 
 const TOU_OPTIONS: { value: WheelingTou; label: string; icon: React.ReactNode }[] = [
   { value: 'yes',    label: 'Yes',          icon: <IconCheck size={ICON} /> },
@@ -25,47 +25,53 @@ const TOU_OPTIONS: { value: WheelingTou; label: string; icon: React.ReactNode }[
 const contactHref = (message: string) =>
   `/contact?intent=client&message=${encodeURIComponent(message)}`;
 
+function isEskom(id: string) {
+  return supplyPointById(id)?.model === 'direct';
+}
+
 export function WheelingEligibility() {
-  const [step, setStep] = useState<Step>('tou');
-  const [tou, setTou] = useState<WheelingTou | null>(null);
+  const [step, setStep] = useState<Step>('supply');
   const [supplyPointId, setSupplyPointId] = useState<string>('');
+  const [tou, setTou] = useState<WheelingTou | null>(null);
   const [started, setStarted] = useState(false);
 
-  function pickTou(v: WheelingTou) {
+  function pickSupply(id: string) {
+    if (!id) return;
     if (!started) {
       setStarted(true);
       dlPush({ event: 'wheeling_eligibility_start', vertical: VERTICAL });
     }
-    setTou(v);
-    setSupplyPointId('');
-    setStep(v === 'no' ? 'reveal' : 'supply');
+    setSupplyPointId(id);
+    setTou(null);
+    // Eskom-direct needs a Time-of-Use check; everything else routes straight to the reveal.
+    setStep(isEskom(id) ? 'tou' : 'reveal');
   }
 
-  function pickSupply(id: string) {
-    setSupplyPointId(id);
-    if (id) setStep('reveal');
+  function pickTou(v: WheelingTou) {
+    setTou(v);
+    setStep('reveal');
   }
 
   function restart() {
-    setStep('tou');
-    setTou(null);
+    setStep('supply');
     setSupplyPointId('');
+    setTou(null);
     setStarted(false);
   }
 
   const outcome =
-    step === 'reveal' && tou
-      ? evaluateWheeling({ tou, supplyPointId: supplyPointId || undefined })
+    step === 'reveal' && supplyPointId
+      ? evaluateWheeling({ supplyPointId, tou: tou ?? undefined })
       : null;
 
   useEffect(() => {
-    if (step !== 'reveal' || !tou) return;
-    const o = evaluateWheeling({ tou, supplyPointId: supplyPointId || undefined });
+    if (step !== 'reveal' || !supplyPointId) return;
+    const o = evaluateWheeling({ supplyPointId, tou: tou ?? undefined });
     dlPush({
       event: 'wheeling_eligibility_complete',
       vertical: VERTICAL,
-      tou,
-      supply_point: supplyPointId || 'n/a',
+      tou: tou ?? 'n/a',
+      supply_point: supplyPointId,
       status: o.status,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -84,14 +90,49 @@ export function WheelingEligibility() {
         Are you eligible for wheeling?
       </h3>
       <p className="font-body text-xs mb-5" style={{ color: 'rgba(255,255,255,0.6)' }}>
-        Two quick questions to see which wheeling model fits your business.
+        A quick check to see which wheeling model fits your business.
       </p>
+
+      {step === 'supply' && (
+        <div>
+          <h4 className="font-display font-extrabold text-base text-white mb-3">
+            How is your business billed for electricity?
+          </h4>
+          <select
+            value={supplyPointId}
+            onChange={(e) => pickSupply(e.target.value)}
+            aria-label="How your business is billed for electricity"
+            className="w-full rounded-xl px-4 py-3.5 font-body text-sm"
+            style={{ background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(255,255,255,0.18)', color: '#fff' }}
+          >
+            <option value="" disabled style={{ color: '#0d1f22' }}>
+              Select your supplier…
+            </option>
+            {WHEELING_SUPPLY_POINTS.map((sp) => (
+              <option key={sp.id} value={sp.id} style={{ color: '#0d1f22' }}>
+                {sp.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {step === 'tou' && (
         <div>
-          <h4 className="font-display font-extrabold text-base text-white mb-1.5">
-            Are you on a Time-of-Use tariff?
-          </h4>
+          <div className="flex items-start gap-3 mb-4">
+            <button
+              type="button"
+              onClick={() => setStep('supply')}
+              aria-label="Back"
+              className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+              style={{ border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.7)' }}
+            >
+              <IconArrowLeft size={14} />
+            </button>
+            <h4 className="font-display font-extrabold text-base text-white">
+              Are you on a Time-of-Use tariff?
+            </h4>
+          </div>
           <p className="font-body text-xs mb-4 leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
             A tariff where the unit price changes by time of day — peak, standard and off-peak. Common for larger commercial and industrial supplies.
           </p>
@@ -127,47 +168,39 @@ export function WheelingEligibility() {
         </div>
       )}
 
-      {step === 'supply' && (
-        <div>
-          <div className="flex items-start gap-3 mb-4">
-            <button
-              type="button"
-              onClick={() => setStep('tou')}
-              aria-label="Back"
-              className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-              style={{ border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.7)' }}
-            >
-              <IconArrowLeft size={14} />
-            </button>
-            <h4 className="font-display font-extrabold text-base text-white">
-              Who supplies your electricity?
-            </h4>
-          </div>
-          <select
-            value={supplyPointId}
-            onChange={(e) => pickSupply(e.target.value)}
-            aria-label="Electricity supplier"
-            className="w-full rounded-xl px-4 py-3.5 font-body text-sm"
-            style={{ background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(255,255,255,0.18)', color: '#fff' }}
-          >
-            <option value="" disabled style={{ color: '#0d1f22' }}>
-              Select your supplier…
-            </option>
-            {WHEELING_SUPPLY_POINTS.map((sp) => (
-              <option key={sp.id} value={sp.id} style={{ color: '#0d1f22' }}>
-                {sp.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
       {step === 'reveal' && outcome && (
-        <Reveal outcome={outcome} onBack={() => setStep(tou === 'no' ? 'tou' : 'supply')} onRestart={restart} />
+        <Reveal
+          outcome={outcome}
+          onBack={() => setStep(isEskom(supplyPointId) ? 'tou' : 'supply')}
+          onRestart={restart}
+        />
       )}
     </div>
   );
 }
+
+const NEGATIVE: Record<'not-eligible-tou' | 'not-available', {
+  heading: string;
+  body: string;
+  links: { label: string; href: string }[];
+}> = {
+  'not-eligible-tou': {
+    heading: 'Let’s get you wheel-ready',
+    body: 'Direct Wheeling needs a Time-of-Use tariff. In the meantime, these can cut your costs:',
+    links: [
+      { label: 'Explore Tariff Optimisation', href: '/solutions/energy-optimisation#lever-tariff' },
+      { label: 'Explore C&I Solar & Storage', href: '/solutions/ci-solar-storage' },
+    ],
+  },
+  'not-available': {
+    heading: 'Not available in your area yet',
+    body: 'Wheeling isn’t available with your supplier yet — but our other solutions can still cut your energy costs today.',
+    links: [
+      { label: 'Explore C&I Solar & Storage', href: '/solutions/ci-solar-storage' },
+      { label: 'Explore Energy Optimisation', href: '/solutions/energy-optimisation' },
+    ],
+  },
+};
 
 function Reveal({
   outcome, onBack, onRestart,
@@ -179,6 +212,7 @@ function Reveal({
   const eligible = outcome.status === 'direct' || outcome.status === 'virtual';
   const modelLabel = outcome.status === 'direct' ? 'Direct Wheeling' : 'Virtual Wheeling';
   const modelAnchor = outcome.status === 'direct' ? 'model-direct' : 'model-virtual';
+  const neg = outcome.status === 'not-eligible-tou' ? NEGATIVE['not-eligible-tou'] : NEGATIVE['not-available'];
 
   return (
     <div
@@ -210,7 +244,6 @@ function Reveal({
             {outcome.status === 'direct'
               ? 'Because Eskom supplies you directly, we can wheel renewable power to you across the Eskom grid.'
               : `${outcome.supplyPointLabel} supports virtual wheeling — we can wheel renewable power to you and have it netted against your municipal bill.`}
-            {outcome.verifyTariff && ' We’ll confirm your tariff type during the quote.'}
           </p>
 
           <Link
@@ -237,35 +270,27 @@ function Reveal({
       ) : (
         <>
           <h3 className="font-display font-extrabold text-xl text-center mb-3 text-white">
-            {outcome.status === 'not-eligible-tou' ? 'Let’s get you wheel-ready' : 'Not available in your area yet'}
+            {neg.heading}
           </h3>
           <p className="font-body text-sm text-center leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.65)' }}>
-            {outcome.status === 'not-eligible-tou'
-              ? 'Wheeling needs a Time-of-Use / large-power-user tariff. Two routes can help — optimise your tariff, or generate on-site.'
-              : 'Wheeling isn’t live with your supplier yet. On-site solar and storage can cut your costs today.'}
+            {neg.body}
           </p>
 
           <div className="flex flex-col gap-2.5">
-            {outcome.status === 'not-eligible-tou' && (
+            {neg.links.map((link, i) => (
               <Link
-                href="/solutions/energy-optimisation#lever-tariff"
+                key={link.href}
+                href={link.href}
                 className="flex items-center justify-center gap-1.5 w-full rounded-full px-5 py-3 font-display font-bold text-sm"
-                style={{ background: ACCENT, color: '#fff' }}
+                style={
+                  i === 0
+                    ? { background: ACCENT, color: '#fff' }
+                    : { border: `1.5px solid ${ACCENT}66`, color: ACCENT, background: 'rgba(217,124,118,0.06)' }
+                }
               >
-                Explore Tariff Optimisation <IconArrowRight size={14} />
+                {link.label} <IconArrowRight size={14} />
               </Link>
-            )}
-            <Link
-              href="/solutions/ci-solar-storage"
-              className="flex items-center justify-center gap-1.5 w-full rounded-full px-5 py-3 font-display font-bold text-sm"
-              style={
-                outcome.status === 'not-eligible-tou'
-                  ? { border: `1.5px solid ${ACCENT}66`, color: ACCENT, background: 'rgba(217,124,118,0.06)' }
-                  : { background: ACCENT, color: '#fff' }
-              }
-            >
-              Explore C&amp;I Solar &amp; Storage <IconArrowRight size={14} />
-            </Link>
+            ))}
           </div>
         </>
       )}
