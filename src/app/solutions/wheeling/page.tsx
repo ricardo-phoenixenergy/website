@@ -150,8 +150,8 @@ export default async function WheelingPage() {
         ctaVariant="centered"
         eyebrow="Start wheeling"
         heading="Access lower-cost renewable electricity through a fully managed wheeling framework."
-        body="Connect your business to off-site renewable generation and reduce your electricity costs through structured wheeling agreements. We manage contracting, trading, and settlement end-to-end."
-        primaryCta={{ label: 'Request a Wheeling Proposal', href: '/contact' }}
+        body="Connect to off-site renewable generation and reduce your electricity costs through structured wheeling agreements — fully managed from contract to settlement."
+        primaryCta={{ label: 'Request a Proposal', href: '/contact' }}
       />
     </>
   );
