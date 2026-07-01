@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { Button } from '@/components/ui/Button';
-import { IconArrowRight } from '@/components/ui/Icons';
+import { IconArrowRight, IconCheck } from '@/components/ui/Icons';
 import { DEFAULT_COMPANY_STATS } from '@/lib/companyStats';
 import type { CompanyStat } from '@/types/sanity';
 
@@ -11,12 +11,17 @@ export type CTAStat = CompanyStat;
 
 export interface PageFooterProps {
   showCta?: boolean;
-  ctaVariant?: 'stats' | 'centered';
+  ctaVariant?: 'stats' | 'centered' | 'deliverables';
   eyebrow?: string;
   heading?: string;
   body?: string;
   primaryCta?: { label: string; href: string };
   stats?: CTAStat[];
+  /** Accent for the deliverables card top bar + check icons. */
+  accent?: string;
+  /** Bullet list shown in the right-hand card of the `deliverables` variant. */
+  deliverables?: string[];
+  deliverablesLabel?: string;
 }
 
 export function PageFooter({
@@ -27,6 +32,9 @@ export function PageFooter({
   body       = "Get a free energy assessment from Phoenix Energy's certified engineers — no commitment, no cost, results delivered in 48 hours.",
   primaryCta = { label: 'Get a Free Quote', href: '/contact' },
   stats      = DEFAULT_COMPANY_STATS,
+  accent     = '#709DA9',
+  deliverables = [],
+  deliverablesLabel = 'What you receive',
 }: PageFooterProps = {}) {
   const year = new Date().getFullYear();
 
@@ -86,6 +94,53 @@ export function PageFooter({
                 {primaryCta.label} <IconArrowRight size={13} />
               </Link>
             </AnimatedSection>
+          ) : ctaVariant === 'deliverables' ? (
+            <div className="page-container grid gap-10 md:grid-cols-2 md:items-center">
+              <AnimatedSection delay={0}>
+                <p
+                  className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-3"
+                  style={{ color: '#709DA9' }}
+                >
+                  {eyebrow}
+                </p>
+                <h2 className="font-display font-extrabold text-3xl text-white leading-[1.2] mb-4">
+                  {heading}
+                </h2>
+                <p
+                  className="font-body text-sm leading-[1.75] mb-6"
+                  style={{ color: 'rgba(255,255,255,0.55)' }}
+                >
+                  {body}
+                </p>
+                <Button variant="light" href={primaryCta.href}>
+                  {primaryCta.label} <IconArrowRight size={13} />
+                </Button>
+              </AnimatedSection>
+
+              <AnimatedSection delay={0.1}>
+                <div
+                  className="rounded-2xl overflow-hidden"
+                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.06)' }}
+                >
+                  <div className="h-[3px]" style={{ background: accent }} />
+                  <div className="p-6">
+                    <p className="font-body text-xs font-bold uppercase tracking-[0.1em] mb-4" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                      {deliverablesLabel}
+                    </p>
+                    <ul className="space-y-3">
+                      {deliverables.map((d) => (
+                        <li key={d} className="flex items-start gap-2.5 font-body text-sm font-semibold text-white">
+                          <span className="mt-0.5 flex-shrink-0" style={{ color: accent }}>
+                            <IconCheck size={16} />
+                          </span>
+                          {d}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </AnimatedSection>
+            </div>
           ) : (
             <div className="page-container grid gap-10 md:grid-cols-2 md:items-center">
               <AnimatedSection delay={0}>

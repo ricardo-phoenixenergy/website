@@ -9,9 +9,6 @@ import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { PageFooter } from '@/components/layout/PageFooter';
-import { Button } from '@/components/ui/Button';
-import { Card, CardBody } from '@/components/ui/Card';
-import { IconCheck, IconArrowRight } from '@/components/ui/Icons';
 import { getHeroImages } from '@/lib/getHeroImages';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
@@ -148,46 +145,16 @@ export default async function WeBuySolarPage() {
         accent={meta.accent}
       />
 
-      {/* Final CTA — audit deliverables + booking */}
-      <section id="audit" className="bg-[#F5F5F5] py-16 md:py-24">
-        <div className="page-container">
-          <div className="grid lg:grid-cols-2 gap-10 items-start">
-            <div>
-              <h2 className="font-display font-extrabold text-2xl md:text-3xl text-[#1A1A1A] leading-[1.2] mb-3">
-                {WEBUYSOLAR.audit.heading}
-              </h2>
-              <p className="font-body text-sm md:text-base leading-[1.75] text-[#6B7280] mb-6">
-                {WEBUYSOLAR.audit.subtitle}
-              </p>
-              <Button variant="primary" href={AUDIT_HREF}>
-                Arrange your free audit <IconArrowRight size={14} />
-              </Button>
-            </div>
-
-            <Card variant="light" pattern={3}>
-              <div className="h-[3px]" style={{ background: meta.accent }} />
-              <CardBody padding="lg">
-                <p className="font-body text-xs font-bold uppercase tracking-[0.1em] text-[#6B7280] mb-3">
-                  What you receive
-                </p>
-                <ul className="space-y-2.5">
-                  {WEBUYSOLAR.audit.deliverables.map((d) => (
-                    <li key={d} className="flex items-start gap-2.5 font-body text-sm font-semibold text-[#1A1A1A]">
-                      <span className="mt-0.5 flex-shrink-0" style={{ color: '#39575C' }}>
-                        <IconCheck size={16} />
-                      </span>
-                      {d}
-                    </li>
-                  ))}
-                </ul>
-              </CardBody>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer chrome (no CTA band — the audit section above is the final CTA) */}
-      <PageFooter showCta={false} />
+      {/* Final CTA — audit deliverables + booking (dark band, matches other solutions pages) */}
+      <PageFooter
+        ctaVariant="deliverables"
+        eyebrow="Start today"
+        heading={WEBUYSOLAR.audit.heading}
+        body={WEBUYSOLAR.audit.subtitle}
+        primaryCta={{ label: 'Arrange your free audit', href: AUDIT_HREF }}
+        deliverables={WEBUYSOLAR.audit.deliverables}
+        accent={meta.accent}
+      />
     </>
   );
 }
