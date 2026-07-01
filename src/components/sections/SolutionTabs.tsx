@@ -54,6 +54,7 @@ export interface TabItem {
   type?: 'financing';
   cta?: { label: string; href: string }; // optional conversion button inside the panel
   chartKey?: string;                      // optional strategy daily-profile chart
+  diagram?: React.ReactNode;              // optional visual rendered right of the panel text (two-column on lg)
 }
 
 export interface SolutionTabsProps {
@@ -161,6 +162,16 @@ export function SolutionTabs({
         <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
           {textBlock}
           <StrategyProfileChart strategyKey={tab.chartKey} />
+        </div>
+      );
+    }
+
+    // With a diagram (e.g. wheeling flow): text left, diagram right, top-aligned (panels have long lists).
+    if (tab.diagram) {
+      return (
+        <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
+          {textBlock}
+          {tab.diagram}
         </div>
       );
     }

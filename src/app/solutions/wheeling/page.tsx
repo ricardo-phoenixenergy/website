@@ -7,6 +7,8 @@ import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { WheelingEligibility } from '@/components/sections/WheelingEligibility';
+import { WheelingFlowDiagram } from '@/components/sections/WheelingFlowDiagram';
+import { DIRECT_FLOW, VIRTUAL_FLOW, MICRO_FLOW } from '@/config/wheelingFlows';
 import { getHowItWorks } from '@/lib/getHowItWorks';
 import { getHeroImages } from '@/lib/getHeroImages';
 import { VERTICAL_CONFIG } from '@/config/verticals';
@@ -49,6 +51,7 @@ const tabs: TabItem[] = [
     ],
     imageBg: 'linear-gradient(135deg, rgba(217,124,118,0.15) 0%, rgba(57,87,92,0.20) 100%)',
     imageEmoji: '🔌',
+    diagram: <WheelingFlowDiagram flow={DIRECT_FLOW} accent={meta.accent} />,
   },
   {
     key: 'model-virtual',
@@ -74,6 +77,7 @@ const tabs: TabItem[] = [
     ],
     imageBg: 'linear-gradient(135deg, rgba(57,87,92,0.20) 0%, rgba(217,124,118,0.15) 100%)',
     imageEmoji: '🌐',
+    diagram: <WheelingFlowDiagram flow={VIRTUAL_FLOW} accent={meta.accent} />,
   },
   {
     key: 'model-micro',
@@ -90,6 +94,7 @@ const tabs: TabItem[] = [
     ],
     imageBg: 'linear-gradient(135deg, rgba(217,124,118,0.15) 0%, rgba(57,87,92,0.20) 100%)',
     imageEmoji: '🏭',
+    diagram: <WheelingFlowDiagram flow={MICRO_FLOW} accent={meta.accent} />,
   },
 ];
 
