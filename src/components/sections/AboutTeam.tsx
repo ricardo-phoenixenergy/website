@@ -118,7 +118,7 @@ export function AboutTeam({ members }: AboutTeamProps) {
                 href="https://linkedin.com/company/105465145"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-row gap-2 items-center self-start md:self-auto flex-shrink-0 rounded-full px-4 py-2 font-body font-semibold text-sm text-[#0d1f22] bg-[#F5F5F5] hover:bg-white transition-colors duration-200"
+                className="flex flex-row gap-2 items-center self-start md:self-auto flex-shrink-0 rounded-full px-5 py-2.5 font-body font-semibold text-sm text-[#0d1f22] bg-[#F5F5F5] hover:bg-white transition-colors duration-200"
               >
                 See career opportunities <IconArrowRight size={14} />
               </Link>

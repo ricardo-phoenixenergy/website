@@ -180,7 +180,7 @@ export function ProjectDrawer({ project, onClose }: ProjectDrawerProps) {
                 </button>
                 <Link
                   href={`/contact?service=${project.vertical}`}
-                  className="flex-shrink-0 flex items-center justify-center px-4 rounded-full py-2.5 font-body font-semibold text-sm text-white transition-all duration-200 hover:bg-white/10"
+                  className="flex-shrink-0 flex items-center justify-center px-5 rounded-full py-2.5 font-body font-semibold text-sm text-white transition-all duration-200 hover:bg-white/10"
                   style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)' }}
                   onClick={onClose}
                 >

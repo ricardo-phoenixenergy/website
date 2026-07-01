@@ -273,7 +273,7 @@ export function ContactForm() {
             type="button"
             disabled={!intent}
             onClick={() => setStep(2)}
-            className="w-full flex items-center justify-center gap-2 rounded-xl py-3.5 font-display font-bold text-base transition-all duration-200 hover:-translate-y-px disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-display font-bold text-base transition-all duration-200 hover:-translate-y-px disabled:cursor-not-allowed"
             style={{
               background: intent ? '#39575C' : '#D1D5DB',
               color: '#fff',
@@ -383,7 +383,7 @@ export function ContactForm() {
           <button
             type="submit"
             disabled={status === 'submitting'}
-            className="w-full flex items-center justify-center gap-2 rounded-xl py-3.5 font-display font-bold text-base text-white transition-all duration-200 hover:brightness-90 disabled:opacity-60"
+            className="w-full flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-display font-bold text-base text-white transition-all duration-200 hover:brightness-90 disabled:opacity-60"
             style={{ background: '#39575C' }}
           >
             {status === 'submitting' ? 'Sending…' : config.submitLabel} <IconArrowRight size={16} />
