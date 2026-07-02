@@ -185,7 +185,7 @@ export function SolutionTabs({
   }
 
   return (
-    <section ref={sectionRef} id={id} className="bg-white py-12 md:py-[52px]">
+    <section ref={sectionRef} id={id} className="bg-white py-16 md:py-24">
       <div className="page-container">
         {/* Section header — matches How It Works / Financing pattern */}
         {heading && (

@@ -82,7 +82,7 @@ export function AboutTimeline({ milestones }: Props) {
   if (milestones.length === 0) return null;
 
   return (
-    <section className="bg-white py-[52px] overflow-hidden">
+    <section className="bg-white py-16 md:py-24 overflow-hidden">
       <div className="page-container">
 
         {/* Heading row — prev/next buttons visible on md+ only */}

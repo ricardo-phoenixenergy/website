@@ -55,7 +55,7 @@ export function FinancingBand({
   accentText = CI_META.accentText,
 }: FinancingBandProps = {}) {
   return (
-    <section className="bg-[#F5F5F5] py-12 md:py-[52px]">
+    <section className="bg-[#F5F5F5] py-16 md:py-24">
       <div className="page-container">
         <p className="font-body text-xs font-bold uppercase tracking-[0.12em] text-[#6B7280] mb-2">
           {eyebrow}
