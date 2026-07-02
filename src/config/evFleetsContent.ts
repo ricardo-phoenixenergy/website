@@ -150,7 +150,7 @@ export const EV_FLEETS: {
       { question: 'What happens during load-shedding?', answer: 'Your charging infrastructure can continue operating during load-shedding using on-site solar and battery storage, helping keep your fleet charged and your operations moving. One of the reasons we try to integrate renewable energy into every fleet electrification strategy.' },
       { question: 'Do we need upfront capital to get started?', answer: 'Not unless you want to. We offer flexible commercial models—from fully managed subscriptions with little to no upfront capital to outright ownership, whether self-funded or financed.' },
       { question: 'How much cheaper is it really?', answer: 'Across 12.5 million kilometres of South African operation, electric fleets have run 23–27% cheaper than diesel. Your saving depends on distance, vehicle type and whether you charge from solar — our estimator gives an indicative figure and the assessment confirms it.' },
-      { question: 'What about battery life and resale?', answer: 'Fleet EV batteries are warrantied for years of commercial use, and under Fleet-as-a-Service the battery and residual-value risk sits with us, not you.' },
+      { question: 'What about battery life and resale value?', answer: 'Modern EV batteries are designed for years of commercial operation and are backed by manufacturer warranties. With Fleet-as-a-Service, battery performance and residual-value risk remain with us. If you choose ownership, we’ll help you select vehicles with proven long-term value and warranty support.' },
     ],
   },
 
