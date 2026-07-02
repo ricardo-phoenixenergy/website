@@ -22,7 +22,7 @@ export interface SolutionHeroProps {
   children?: ReactNode;  // calculator / interactive slot
   wideRight?: boolean;   // 40/60 split — give the right column 60% instead of the fixed 440px
   imagePosition?: 'center' | 'top' | 'bottom';  // object-position of the hero photo (default center)
-  primaryCtaArrow?: boolean;  // append a right-arrow icon to the primary CTA
+  primaryCtaArrow?: boolean;  // append a right-arrow icon to the primary CTA (default true; pass false to omit)
   copyOnly?: boolean;  // no right column — copy spans ~2/3 of the container (use when there are no children)
 }
 
@@ -63,7 +63,7 @@ export function SolutionHero({
   children,
   wideRight = false,
   imagePosition = 'center',
-  primaryCtaArrow = false,
+  primaryCtaArrow = true,
   copyOnly = false,
 }: SolutionHeroProps) {
   return (
