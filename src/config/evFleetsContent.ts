@@ -33,13 +33,13 @@ export const EV_FLEETS: {
 
   whyNow: {
     eyebrow: 'Why now',
-    heading: 'The economics of running a diesel fleet have <em>turned</em>.',
+    heading: 'The economics of running a diesel fleet have <em>fundamentally changed</em>.',
     subtitle:
-      'Fuel and carbon costs are rising and volatile — while electric fleets charged from your own solar lock in a lower, stable cost per kilometre. In South Africa, the case is now proven at scale.',
+      'Electric vehicles paired with on-site solar and battery storage replace volatile fuel costs with low-cost, self-generated energy. As diesel prices and carbon taxes continue to rise, businesses can now significantly reduce the cost of every kilometre while improving energy security and cutting emissions.',
     cards: [
-      { icon: 'TrendingUp', title: 'Diesel is volatile and only taxed more', body: 'Diesel sits around R24 a litre and spiked near R32 in 2026. A carbon fuel levy is added at the pump, and the underlying carbon tax rises from R308 a tonne in 2026 to R462 by 2030.' },
-      { icon: 'Zap', title: 'Grid power keeps climbing', body: 'Eskom tariffs rise around 9% a year. Charging from on-site solar and battery storage fixes your energy cost and insulates the fleet from tariff hikes and grid risk.' },
-      { icon: 'Award', title: 'The savings are proven here', body: 'Across 12.5 million real South African kilometres, electric fleets run 23–27% cheaper than diesel — at Woolworths, DSV, Clicks and Takealot — with full operational availability.' },
+      { icon: 'TrendingUp', title: 'Diesel costs keep increasing', body: 'Diesel prices remain volatile, making fleet operating costs difficult to forecast. Carbon levies and the increasing national carbon tax continue to add further pressure, making every litre more expensive over time.' },
+      { icon: 'Zap', title: 'Generate your own fuel', body: 'Charge your fleet using electricity generated from your own solar system and battery storage instead of buying diesel. By producing the energy that powers your vehicles, you lock in a lower and more predictable cost per kilometre while reducing exposure to fuel price volatility.' },
+      { icon: 'Award', title: 'Proven by South African fleets', body: 'The business case is no longer theoretical. Across millions of kilometres driven, leading South African fleets have demonstrated lower operating costs while maintaining the performance and reliability required for commercial operations.' },
     ],
   },
 
