@@ -131,7 +131,7 @@ export function AboutTrust({ partners, showTabs = true, justify = 'start', stats
 
         {/* By the numbers — track-record stats, above the partner logos */}
         {stats && stats.length > 0 && (
-          <AnimatedSection className="mb-12 md:mb-16 pb-10 md:pb-12 border-b border-[#E5E7EB]">
+          <AnimatedSection className="mb-12 md:mb-16">
             <p className="text-center font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-8 md:mb-10">
               By the numbers
             </p>
