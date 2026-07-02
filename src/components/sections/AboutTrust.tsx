@@ -60,7 +60,7 @@ export function AboutTrust({ partners, showTabs = true, justify = 'start', flush
         boxShadow: `0 10px 28px rgba(57,87,92,0.1), 0 1px 4px rgba(0,0,0,0.05)`,
         transition: { type: 'spring' as const, stiffness: 420, damping: 28 },
       },
-      className: 'flex flex-col rounded-xl overflow-hidden w-full sm:w-[280px]',
+      className: 'flex flex-col rounded-xl overflow-hidden w-[calc(33.333%-8px)] sm:w-[280px]',
       style: {
         borderWidth: 1,
         borderStyle: 'solid' as const,
