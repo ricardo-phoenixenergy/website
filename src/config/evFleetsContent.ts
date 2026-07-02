@@ -26,9 +26,9 @@ export const EV_FLEETS: {
   cta: { eyebrow: string; heading: string; body: string };
 } = {
   hero: {
-    title: 'Electrify your fleet — <em>fully financed, end to end</em>.',
+    title: 'The complete <em>fleet electrification</em> solution.',
     subtitle:
-      'Phoenix supplies and funds the whole transition: electric vehicles, depot charging, and on-site solar and battery storage — as one managed package. Cut your fuel bill, fix your energy cost, and cut emissions, without the upfront capital.',
+      'From electric vehicles and charging infrastructure to on-site solar, battery storage and financing, we deliver everything you need to transition your fleet—reducing operating costs while simplifying the move to electric.',
   },
 
   whyNow: {

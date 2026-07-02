@@ -74,7 +74,7 @@ export default async function EvFleetsPage() {
         heroImage={hero?.url}
         heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #0d1f22 0%, #0f2a28 50%, #1a4040 100%)"
-        primaryCta={{ label: 'Book a Fleet Assessment', href: '/contact' }}
+        primaryCta={{ label: 'Get a Route Analysis', href: '/contact' }}
       >
         <FleetSavingsEstimator prices={prices} />
       </SolutionHero>
