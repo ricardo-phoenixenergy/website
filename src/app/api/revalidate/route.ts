@@ -80,6 +80,10 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  if (type === 'energyPrices') {
+    revalidatePath('/solutions/ev-fleets');   // EV Fleets cost-per-km comparator prices
+  }
+
   return Response.json({
     revalidated: true,
     type,
