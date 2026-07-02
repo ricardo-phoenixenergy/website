@@ -89,7 +89,7 @@ export const EV_FLEETS: {
         title: 'Last-mile & e-commerce delivery',
         body: 'Dense urban routes, constant stop-start running and a nightly return to the depot make last-mile the best-proven fit in South Africa — vehicles charge cheaply overnight from solar and cover high daily kilometres where the fuel saving is largest.',
         bullets: ['Fixed urban routes under ~220 km/day', 'Returns to the depot every night', 'Stop-start running where EVs beat diesel'],
-        proof: { client: 'Woolworths + DSV', stat: '41 electric vans', detail: '~400,000 kg of tailpipe CO₂ avoided a year, charged from depot solar.', image: '/proof/woolworths-dsv.jpg', imageAlt: 'Woolworths and DSV electric delivery vans' },
+        proof: { client: 'Woolworths + DSV', stat: '41 electric vans', detail: '~400,000 kg of tailpipe CO₂ avoided a year, charged from depot solar.', image: '/proof/woolworths-dsv.webp', imageAlt: 'Woolworths and DSV electric delivery vans' },
       },
       {
         key: 'industry-cold-chain',
@@ -124,7 +124,7 @@ export const EV_FLEETS: {
         title: 'Municipal & public transport',
         body: 'Scheduled urban routes, defined daily range and mandatory overnight depot returns make public and municipal fleets a strong fit — already live on South African roads.',
         bullets: ['Defined urban routes and depots', 'Overnight + off-peak charging', 'Strong public ESG mandate'],
-        proof: { client: 'Golden Arrow', stat: '120 electric buses', detail: 'Cape Town’s first electric public bus fleet, charged on solar and off-peak power.', image: '/proof/golden-arrow.jpg', imageAlt: 'Golden Arrow electric public bus' },
+        proof: { client: 'Golden Arrow', stat: '120 electric buses', detail: 'Cape Town’s first electric public bus fleet, charged on solar and off-peak power.', image: '/proof/golden-arrow.webp', imageAlt: 'Golden Arrow electric public bus' },
       },
       {
         key: 'industry-logistics',
@@ -133,7 +133,7 @@ export const EV_FLEETS: {
         title: 'Regional logistics',
         body: 'Depot-to-depot regional lanes with predictable distance and a return to base are viable for electric today — the sweet spot between short urban runs and true long-haul.',
         bullets: ['Depot-to-depot regional lanes', 'Predictable distance', 'Return-to-base charging'],
-        proof: { client: 'Vector Logistics', stat: 'Electric Volvo FH trucks', detail: 'South Africa’s first bumper-to-bumper net-zero cold-chain trucks.', image: '/proof/vector-logistics.jpg', imageAlt: 'Vector Logistics electric Volvo FH cold-chain truck' },
+        proof: { client: 'Vector Logistics', stat: 'Electric Volvo FH trucks', detail: 'South Africa’s first bumper-to-bumper net-zero cold-chain trucks.', image: '/proof/vector-logistics.jpeg', imageAlt: 'Vector Logistics electric Volvo FH cold-chain truck' },
       },
     ],
   },
