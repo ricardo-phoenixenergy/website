@@ -12,7 +12,7 @@ const NAV_LINKS = [
   { label: 'Projects', href: '/projects' },
   { label: 'About', href: '/about' },
   { label: 'Blog', href: '/blog' },
-  { label: 'Tools', href: '/tools' },
+  // { label: 'Tools', href: '/tools' }, // hidden for now
 ];
 
 const DROPDOWN_ITEMS = [
