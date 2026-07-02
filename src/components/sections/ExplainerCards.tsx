@@ -6,14 +6,14 @@ import {
   IconSun, IconBattery, IconDollarSign, IconLeaf, IconGlobe,
   IconActivity, IconThermometer, IconBuilding, IconMonitor, IconZap,
   IconClipboardCheck, IconTrendingUp, IconUsers, IconLayers, IconClock,
-  IconTrendingDown, IconHourglass, IconSliders, IconUserTie, IconAward,
+  IconTrendingDown, IconHourglass, IconSliders, IconUserTie, IconAward, IconTruck,
 } from '@/components/ui/Icons';
 
 export type ExplainerIcon =
   | 'Sun' | 'Battery' | 'DollarSign' | 'Leaf' | 'Globe' | 'Activity'
   | 'Thermometer' | 'Building' | 'Monitor' | 'Zap' | 'ClipboardCheck'
   | 'TrendingUp' | 'Users' | 'Layers' | 'Clock'
-  | 'TrendingDown' | 'Hourglass' | 'Sliders' | 'UserTie' | 'Award';
+  | 'TrendingDown' | 'Hourglass' | 'Sliders' | 'UserTie' | 'Award' | 'Truck';
 
 const ICONS: Record<ExplainerIcon, (s: number) => ReactNode> = {
   Sun: (s) => <IconSun size={s} />,
@@ -36,6 +36,7 @@ const ICONS: Record<ExplainerIcon, (s: number) => ReactNode> = {
   Sliders: (s) => <IconSliders size={s} />,
   UserTie: (s) => <IconUserTie size={s} />,
   Award: (s) => <IconAward size={s} />,
+  Truck: (s) => <IconTruck size={s} />,
 };
 
 export interface ExplainerCardItem {
