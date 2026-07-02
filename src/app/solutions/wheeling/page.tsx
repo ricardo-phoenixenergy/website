@@ -124,8 +124,8 @@ export default async function WheelingPage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <SolutionHero
-        title="Find the right <em>wheeling solution</em> for your business."
-        subtitle="From flexible Power Purchase Agreements to dedicated generation ownership, we help businesses access lower-cost renewable electricity through fully managed wheeling solutions."
+        title="Access lower-cost <em>renewable electricity</em> through the grid."
+        subtitle="From flexible Power Purchase Agreements to dedicated generation ownership, our wheeling solutions help businesses purchase renewable electricity beyond their premises through a fully managed commercial framework."
         accent={meta.accent}
         badge={meta.label}
         heroImage={hero?.url}
