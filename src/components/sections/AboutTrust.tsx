@@ -212,9 +212,9 @@ export function AboutTrust({ partners, showTabs = true, justify = 'start', stats
             <p className="text-center font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-8 md:mb-10">
               By the numbers
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-9 gap-x-4">
+            <div className="flex flex-col md:flex-row gap-8 md:gap-4">
               {stats.map((stat) => (
-                <div key={stat.label} className="flex flex-col items-center text-center">
+                <div key={stat.label} className="flex-1 flex flex-col items-center text-center">
                   <span className="font-display font-extrabold text-3xl md:text-4xl text-[#1A1A1A] leading-none">
                     {stat.value}
                   </span>
