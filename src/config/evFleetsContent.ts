@@ -11,7 +11,7 @@ interface IndustryTab {
   title: string;
   body: string;
   bullets: string[];
-  proof?: { client: string; stat: string; detail: string; image?: string; imageAlt?: string; imagePosition?: string };
+  proof?: { client: string; stat: string; detail: string; image?: string; imageAlt?: string; imagePosition?: string; kicker?: string };
 }
 
 export const EV_FLEETS: {
@@ -116,7 +116,7 @@ export const EV_FLEETS: {
         title: 'Staff & shuttle transport',
         body: 'Fixed, timetabled routes that return to base between shifts are a textbook fit for overnight depot charging — predictable daily distance makes range easy to plan.',
         bullets: ['Fixed timetabled routes', 'Returns to base between shifts', 'Overnight depot charging'],
-        proof: { client: 'eKamva', stat: 'SA’s first electric minibus taxi', detail: 'A locally built 15-seater electric minibus taxi with a 200 km range and 40–70% lower running costs — developed by a GoMetro-led South African consortium.', image: '/proof/ekamva.jpeg', imageAlt: 'eKamva electric minibus taxi' },
+        proof: { client: 'eKamva', kicker: 'Made in South Africa', stat: 'SA’s first electric minibus taxi', detail: 'A locally built 15-seater electric minibus taxi with a 200 km range and 40–70% lower running costs — developed by a GoMetro-led South African consortium.', image: '/proof/ekamva.jpeg', imageAlt: 'eKamva electric minibus taxi' },
       },
       {
         key: 'industry-municipal',

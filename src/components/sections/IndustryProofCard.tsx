@@ -14,17 +14,18 @@ interface IndustryProofCardProps {
   image?: string;          // path under /public, e.g. '/proof/woolworths-ev.jpg'
   imageAlt?: string;       // falls back to the client name
   imagePosition?: string;  // object-position for the crop; defaults to 'center'
+  kicker?: string;         // small uppercase label; defaults to 'Proven in South Africa'
 }
 
 export function IndustryProofCard({
-  client, stat, detail, accent, accentText, image, imageAlt, imagePosition,
+  client, stat, detail, accent, accentText, image, imageAlt, imagePosition, kicker,
 }: IndustryProofCardProps) {
   return (
     <div className="rounded-2xl overflow-hidden bg-[#F5F5F5] border border-[#E5E7EB]">
       <div className="h-[3px]" style={{ background: accent }} />
       <div className="p-6">
         <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-3">
-          Proven in South Africa
+          {kicker ?? 'Proven in South Africa'}
         </p>
         <p className="font-display font-extrabold text-2xl text-[#1A1A1A] leading-tight mb-1">
           {stat}
