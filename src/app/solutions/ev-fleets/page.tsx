@@ -13,6 +13,7 @@ import { PageFooter } from '@/components/layout/PageFooter';
 import { FleetSavingsEstimator } from '@/components/sections/calculators/FleetSavingsEstimator';
 import { getHowItWorks } from '@/lib/getHowItWorks';
 import { getHeroImages } from '@/lib/getHeroImages';
+import { getEnergyPrices } from '@/lib/getEnergyPrices';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import { EV_FLEETS } from '@/config/evFleetsContent';
@@ -33,6 +34,7 @@ export const revalidate = 3600;
 export default async function EvFleetsPage() {
   const howItWorks = await getHowItWorks(vertical);
   const hero = (await getHeroImages())[vertical];
+  const prices = await getEnergyPrices();
 
   const industryTabs: TabItem[] = EV_FLEETS.industries.tabs.map((t) => ({
     key: t.key,
@@ -74,7 +76,7 @@ export default async function EvFleetsPage() {
         heroBg="linear-gradient(135deg, #0d1f22 0%, #0f2a28 50%, #1a4040 100%)"
         primaryCta={{ label: 'Book a Fleet Assessment', href: '/contact' }}
       >
-        <FleetSavingsEstimator />
+        <FleetSavingsEstimator prices={prices} />
       </SolutionHero>
 
       {/* §2 — Why now (SA) */}
