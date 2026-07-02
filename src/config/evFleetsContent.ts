@@ -107,7 +107,7 @@ export const EV_FLEETS: {
         title: 'FMCG & retail distribution',
         body: 'High-volume, scheduled distribution from distribution centres to stores on fixed routes, with large solar-ready depots — a strong fit for heavier electric trucks on regional loops.',
         bullets: ['Scheduled depot-to-store loops', 'Large, solar-ready distribution centres', 'High daily kilometres'],
-        proof: { client: 'DHL + Unilever', stat: 'Africa’s first electric superlink', detail: 'A fully electric Volvo FMX tractor running live Unilever distribution routes.', image: '/proof/dhl-unilever.jpg', imageAlt: 'DHL and Unilever electric Volvo FMX superlink truck', imagePosition: 'top' },
+        proof: { client: 'DHL + Unilever', stat: 'Africa’s first electric superlink', detail: 'A fully electric Volvo FMX tractor running live Unilever distribution routes.', image: '/proof/dhl-unilever.jpg', imageAlt: 'DHL and Unilever electric Volvo FMX superlink truck', imagePosition: 'bottom' },
       },
       {
         key: 'industry-staff',
