@@ -3,7 +3,7 @@ type DlEvent =
   | { event: 'cta_click';           cta_label: string; cta_location: string }
   | { event: 'drawer_open';         project_slug: string; project_vertical: string }
   | { event: 'valuation_complete';  kw: number; bess_kwh: number; install_year: number }
-  | { event: 'valuation_lead';      estimated_value_band: string }
+  | { event: 'valuation_lead';      kw: number; has_battery: boolean }
   | { event: 'paywall_unlock';      estimated_value_band: string }
   | { event: 'blog_read_complete';  post_slug: string; post_category?: string }
   | { event: 'tab_change';          vertical: string; tab_label: string }

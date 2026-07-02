@@ -48,7 +48,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Validation failed', details: parsed.error.issues }, { status: 422 });
     }
     const d = parsed.data;
-    const indicativeK = Math.round(d.valuation.indicativeValue / 1000);
 
     const html = await render(
       WeBuySolarEmail({
@@ -64,7 +63,7 @@ export async function POST(req: NextRequest) {
       from: FROM,
       to: TO,
       replyTo: d.email,
-      subject: `[WeBuySolar] ${d.valuation.kw}kWp — ${d.firstName} ${d.lastName ?? ''} — est. R${indicativeK}k`,
+      subject: `[WeBuySolar] ${d.valuation.kw}kWp system — ${d.firstName} ${d.lastName ?? ''}`.trim(),
       html,
     });
 

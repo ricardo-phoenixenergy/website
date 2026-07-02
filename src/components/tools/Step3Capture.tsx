@@ -1,7 +1,7 @@
 // src/components/tools/Step3Capture.tsx
 'use client';
 import { useState } from 'react';
-import type { SolarInputs, BessInputs, ConditionInputs, ValuationResult } from '@/lib/valuation/types';
+import type { SolarInputs, BessInputs, ConditionInputs } from '@/lib/valuation/types';
 import { dlPush } from '@/lib/analytics';
 import { IconArrowLeft, IconArrowRight, IconZap, IconCheck } from '@/components/ui/Icons';
 import { PROVINCE_LABELS } from '@/lib/valuation/provinces';
@@ -17,8 +17,6 @@ interface Step3CaptureProps {
   solar: SolarInputs;
   bess: BessInputs;
   cond: ConditionInputs;
-  /** Internal auto-estimate — sent to the WeBuySolar team only, never shown to the user. */
-  result: ValuationResult;
   onBack: () => void;
 }
 
@@ -58,7 +56,7 @@ function WhatHappensNext() {
   );
 }
 
-export function Step3Capture({ solar, bess, cond, result, onBack }: Step3CaptureProps) {
+export function Step3Capture({ solar, bess, cond, onBack }: Step3CaptureProps) {
   const [form, setForm] = useState<LeadForm>({ firstName: '', lastName: '', email: '', phone: '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -105,20 +103,13 @@ export function Step3Capture({ solar, bess, cond, result, onBack }: Step3Capture
             batteryBrand: bess.enabled ? (bess.brand || undefined) : undefined,
             documentation: DOCS_LABEL[cond.docs],
             province: PROVINCE_LABELS[cond.province],
-            indicativeValue: result.total,
-            rangeLow: result.rangeLow,
-            rangeHigh: result.rangeHigh,
-            dcfValue: result.solarDcf,
           },
           recaptchaToken,
         }),
       });
 
       if (!res.ok) throw new Error('Submission failed');
-      const band = result.rangeLow >= 1_000_000
-        ? `R${Math.round(result.rangeLow / 1_000_000)}M–R${Math.round(result.rangeHigh / 1_000_000)}M`
-        : `R${Math.round(result.rangeLow / 1_000)}k–R${Math.round(result.rangeHigh / 1_000)}k`;
-      dlPush({ event: 'valuation_lead', estimated_value_band: band });
+      dlPush({ event: 'valuation_lead', kw: solar.kw, has_battery: bess.enabled });
       setSubmitted(true);
     } catch {
       setError('Something went wrong. Please try again.');

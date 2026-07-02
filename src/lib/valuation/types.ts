@@ -1,14 +1,15 @@
 // src/lib/valuation/types.ts
+// The Solar Asset Valuation tool is a lead-capture form: these describe the
+// system details we collect and email to the WeBuySolar team, who prepare the
+// valuation themselves. There is no on-site valuation calculation.
 
 export interface SolarInputs {
   kw: number;
   installYear: number;
   inverterType: 'string' | 'hybrid';
-  /** Combined inverter rating (kW). Recorded for the team — does not affect the valuation. */
+  /** Combined inverter rating (kW). */
   inverterKw: number;
-  /** Recorded for the WeBuySolar team — does not affect the valuation. */
   panelBrand: string;
-  /** Recorded for the WeBuySolar team — does not affect the valuation. */
   inverterBrand: string;
 }
 
@@ -17,7 +18,6 @@ export interface BessInputs {
   kWh: number;
   chemistry: 'lfp' | 'nmc' | 'lead';
   soh: 'high' | 'mid' | 'low';
-  /** Recorded for the WeBuySolar team — does not affect the valuation. */
   brand: string;
 }
 
@@ -29,19 +29,4 @@ export interface ConditionInputs {
   /** Documentation held: full handover pack (COC + SLDs + docs), COC only, or none. */
   docs: 'full' | 'coc' | 'none';
   province: Province;
-}
-
-export interface ValuationResult {
-  solarDcf: number;
-  solarCostVal: number;
-  solarMktAdj: number;
-  solarFinal: number;
-  bessVal: number;
-  total: number;
-  rangeLow: number;
-  rangeHigh: number;
-  solarReplacement: number;
-  bessReplacement: number;
-  retained: number;
-  yrCashFlows: number[];
 }

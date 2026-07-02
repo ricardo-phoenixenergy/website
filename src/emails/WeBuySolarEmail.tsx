@@ -21,10 +21,6 @@ interface ValuationSummary {
   batteryBrand?: string;
   documentation?: string;
   province: string;
-  indicativeValue: number;
-  rangeLow: number;
-  rangeHigh: number;
-  dcfValue: number;
 }
 
 interface Props {
@@ -35,16 +31,13 @@ interface Props {
   valuation: ValuationSummary;
 }
 
-const fmt = (n: number) => `R${n.toLocaleString('en-ZA')}`;
-
 export function WeBuySolarEmail({ firstName, lastName, email, phone, valuation }: Props) {
   const fullName = [firstName, lastName].filter(Boolean).join(' ');
-  const indicativeK = Math.round(valuation.indicativeValue / 1000);
 
   return (
     <Html lang="en">
       <Head />
-      <Preview>{`WeBuySolar: ${fullName} — ${valuation.kw}kWp system, est. R${indicativeK}k`}</Preview>
+      <Preview>{`WeBuySolar: ${fullName} — ${valuation.kw}kWp system`}</Preview>
       <Body style={body}>
         <Container style={wrapper}>
 
@@ -91,20 +84,6 @@ export function WeBuySolarEmail({ firstName, lastName, email, phone, valuation }
             )}
             <Field label="Documentation" value={valuation.documentation || '—'} />
             <Field label="Province"      value={valuation.province} />
-
-            <Hr style={divider} />
-
-            {/* Valuation block */}
-            <Text style={sectionTitle}>Valuation Summary</Text>
-
-            <Section style={valuationBox}>
-              <Text style={valuationLabel}>Indicative value</Text>
-              <Text style={valuationPrimary}>{fmt(valuation.indicativeValue)}</Text>
-              <Text style={valuationRange}>
-                Range: {fmt(valuation.rangeLow)} – {fmt(valuation.rangeHigh)}
-              </Text>
-              <Text style={valuationDcf}>10-yr DCF: {fmt(valuation.dcfValue)}</Text>
-            </Section>
 
             <Hr style={divider} />
             <Text style={replyNote}>
@@ -252,42 +231,6 @@ const fieldValueLink: React.CSSProperties = {
   color: '#39575C',
   fontSize: 15,
   textDecoration: 'none',
-};
-
-const valuationBox: React.CSSProperties = {
-  backgroundColor: '#F0F4F5',
-  border: '1px solid #C5D5D7',
-  borderRadius: 10,
-  padding: '20px 24px',
-};
-
-const valuationLabel: React.CSSProperties = {
-  color: '#6B7280',
-  fontSize: 11,
-  fontWeight: 700,
-  letterSpacing: '0.08em',
-  textTransform: 'uppercase',
-  margin: '0 0 4px',
-};
-
-const valuationPrimary: React.CSSProperties = {
-  color: '#39575C',
-  fontSize: 28,
-  fontWeight: 700,
-  lineHeight: 1.2,
-  margin: '0 0 6px',
-};
-
-const valuationRange: React.CSSProperties = {
-  color: '#374151',
-  fontSize: 14,
-  margin: '0 0 2px',
-};
-
-const valuationDcf: React.CSSProperties = {
-  color: '#6B7280',
-  fontSize: 13,
-  margin: 0,
 };
 
 const replyNote: React.CSSProperties = {

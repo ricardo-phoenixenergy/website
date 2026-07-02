@@ -28,10 +28,6 @@ export const webBuySolarSchema = z.object({
     batteryBrand: z.string().optional(),
     documentation: z.string().optional(),
     province: z.string(),
-    indicativeValue: z.number(),
-    rangeLow: z.number(),
-    rangeHigh: z.number(),
-    dcfValue: z.number(),
   }),
   recaptchaToken: z.string().optional(),
 });

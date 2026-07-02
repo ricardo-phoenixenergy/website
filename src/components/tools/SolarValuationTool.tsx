@@ -3,7 +3,6 @@
 import { useState, useRef } from 'react';
 import type { SolarInputs, BessInputs, ConditionInputs } from '@/lib/valuation/types';
 import { dlPush } from '@/lib/analytics';
-import { useValuation } from './useValuation';
 import { StepIndicator } from './StepIndicator';
 import { Step1SystemDetails } from './Step1SystemDetails';
 import { Step2Condition } from './Step2Condition';
@@ -39,10 +38,6 @@ export function SolarValuationTool() {
   const [bess, setBess] = useState<BessInputs>(DEFAULT_BESS);
   const [cond, setCond] = useState<ConditionInputs>(DEFAULT_COND);
   const reachedCaptureRef = useRef(false);
-
-  // Internal auto-estimate — emailed to the WeBuySolar team as a reference; the
-  // user never sees a number, the team does its own valuation from the inputs.
-  const result = useValuation(solar, bess, cond);
 
   const goToCapture = () => {
     setStep(3);
@@ -92,7 +87,6 @@ export function SolarValuationTool() {
           solar={solar}
           bess={bess}
           cond={cond}
-          result={result}
           onBack={() => setStep(2)}
         />
       )}

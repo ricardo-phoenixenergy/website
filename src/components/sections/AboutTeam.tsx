@@ -63,7 +63,7 @@ export function AboutTeam({ members }: AboutTeamProps) {
         </div>
 
         {/* Team grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {visible.map((member) => (
             <Card key={member._id} variant="dark" pattern={3}>
               <CardImage
