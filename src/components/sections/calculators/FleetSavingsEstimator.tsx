@@ -20,7 +20,7 @@ const TYPE_LABEL: Record<FleetVehicleType, string> = {
 };
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const STEP_COUNT = 3;
+const STEP_COUNT = 2;
 
 const UNSELECTED_BTN = {
   background: 'rgba(255,255,255,0.06)',
@@ -92,7 +92,7 @@ export function FleetSavingsEstimator({ prices }: { prices: ResolvedEnergyPrices
       {/* Progress */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex gap-1.5" aria-hidden>
-          {[0, 1, 2].map((i) => (
+          {[0, 1].map((i) => (
             <span
               key={i}
               className="h-1.5 rounded-full transition-all duration-300"
@@ -112,7 +112,7 @@ export function FleetSavingsEstimator({ prices }: { prices: ResolvedEnergyPrices
         transition={{ duration: 0.18 }}
         aria-label={`Step ${step + 1} of ${STEP_COUNT}`}
       >
-        {/* Step 0 — Your fleet */}
+        {/* Step 0 — All inputs */}
         {step === 0 && (
           <>
             <div className="flex justify-between mb-2">
@@ -126,7 +126,7 @@ export function FleetSavingsEstimator({ prices }: { prices: ResolvedEnergyPrices
             />
 
             <p className="font-body text-sm text-white/70 mb-2">Vehicle type</p>
-            <div className="grid grid-cols-5 gap-1.5">
+            <div className="grid grid-cols-5 gap-1.5 mb-5">
               {TYPES.map((t) => {
                 const sel = type === t;
                 return (
@@ -141,12 +141,7 @@ export function FleetSavingsEstimator({ prices }: { prices: ResolvedEnergyPrices
                 );
               })}
             </div>
-          </>
-        )}
 
-        {/* Step 1 — Usage & charging */}
-        {step === 1 && (
-          <>
             <p className="font-body text-sm text-white/70 mb-2">Current fuel</p>
             <div className="grid grid-cols-2 gap-2 mb-5">
               {(['diesel', 'petrol'] as FuelType[]).map((f) => {
@@ -194,8 +189,8 @@ export function FleetSavingsEstimator({ prices }: { prices: ResolvedEnergyPrices
           </>
         )}
 
-        {/* Step 2 — Your savings */}
-        {step === 2 && (
+        {/* Step 1 — Your savings */}
+        {step === 1 && (
           <>
             <div className="rounded-xl p-4 text-center mb-3" style={{ background: ACCENT }}>
               <p className="font-body text-xs mb-1" style={{ color: `${ACCENT_TEXT}99` }}>Est. monthly fleet saving</p>
@@ -237,25 +232,26 @@ export function FleetSavingsEstimator({ prices }: { prices: ResolvedEnergyPrices
 
       {/* Navigation */}
       <div className="flex items-center justify-between gap-2 mt-6">
-        {step === 0 && <span />}
-        {step > 0 && (
+        {step === 0 ? (
+          <>
+            <span />
+            <button
+              type="button"
+              onClick={() => setStep(1)}
+              className={NAV_BTN}
+              style={{ background: ACCENT, color: ACCENT_TEXT }}
+            >
+              See savings &rarr;
+            </button>
+          </>
+        ) : (
           <button
             type="button"
             onClick={() => setStep(0)}
             className={NAV_BTN}
             style={UNSELECTED_BTN}
           >
-            {step === 2 ? <>&larr; Edit inputs</> : <>&larr; Back</>}
-          </button>
-        )}
-        {step < 2 && (
-          <button
-            type="button"
-            onClick={() => setStep(step + 1)}
-            className={NAV_BTN}
-            style={{ background: ACCENT, color: ACCENT_TEXT }}
-          >
-            {step === 1 ? <>See savings &rarr;</> : <>Next &rarr;</>}
+            &larr; Edit inputs
           </button>
         )}
       </div>
