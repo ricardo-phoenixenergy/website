@@ -15,6 +15,8 @@ export interface FaqAccordionProps {
   items: FaqItem[];
   accent?: string;
   id?: string;
+  /** When true, sits flush under a same-background section: no top padding. Default: false */
+  flushTop?: boolean;
 }
 
 export function FaqAccordion({
@@ -23,6 +25,7 @@ export function FaqAccordion({
   items,
   accent = '#C97A40',
   id,
+  flushTop = false,
 }: FaqAccordionProps) {
   const [open, setOpen] = useState<number | null>(0);
 
@@ -37,7 +40,7 @@ export function FaqAccordion({
   };
 
   return (
-    <section id={id} className="bg-white py-16 md:py-24">
+    <section id={id} className={`bg-white pb-16 md:pb-24 ${flushTop ? '' : 'pt-16 md:pt-24'}`}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}

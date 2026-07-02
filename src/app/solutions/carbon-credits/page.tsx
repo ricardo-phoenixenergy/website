@@ -83,7 +83,7 @@ export default async function CarbonCreditsPage() {
       />
 
       {/* §5 — From generation to payout (Sanity-driven) */}
-      {howItWorks && <HowItWorks {...howItWorks} accent={meta.accent} accentText={meta.accentText} />}
+      {howItWorks && <HowItWorks {...howItWorks} accent={meta.accent} accentText={meta.accentText} flushTop />}
 
       {/* §7 — FAQ */}
       <FaqAccordion
@@ -95,7 +95,7 @@ export default async function CarbonCreditsPage() {
       />
 
       {/* §8 — Proof + insights */}
-      <FeaturedProjects vertical={vertical} />
+      <FeaturedProjects vertical={vertical} flushTop />
       <RelatedArticles vertical={vertical} />
 
       {/* §9 — Final CTA */}

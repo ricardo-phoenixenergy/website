@@ -109,6 +109,7 @@ export default async function EvFleetsPage() {
         options={EV_FLEETS.financing.options}
         accent={meta.accent}
         accentText={meta.accentText}
+        flushTop
       />
       <div className="bg-[#F5F5F5] pb-12 md:pb-[52px] -mt-2">
         <p className="page-container font-body text-[11px] text-[#6B7280]">{EV_FLEETS.financing.note}</p>
@@ -136,6 +137,7 @@ export default async function EvFleetsPage() {
         heading={EV_FLEETS.faq.heading}
         items={EV_FLEETS.faq.items}
         accent={meta.accent}
+        flushTop
       />
       <RelatedArticles vertical={vertical} />
 

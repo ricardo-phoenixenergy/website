@@ -67,7 +67,7 @@ export default async function CiSolarStoragePage() {
         subtitle="Explore the ways to deploy solar and storage — each matched to a different goal, from pure savings to full energy independence."
       />
       <FinancingBand />
-      {howItWorks && <HowItWorks {...howItWorks} accent={meta.accent} accentText={meta.accentText} />}
+      {howItWorks && <HowItWorks {...howItWorks} accent={meta.accent} accentText={meta.accentText} flushTop />}
       <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
       <PageFooter

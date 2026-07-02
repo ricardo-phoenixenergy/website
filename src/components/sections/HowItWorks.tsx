@@ -23,6 +23,8 @@ interface HowItWorksProps {
   ctaHref?: string;
   accent?: string;       // solution accent — themes the whole step track (default teal/dusty-blue)
   accentText?: string;   // legible text colour on top of the solid accent (default white)
+  /** When true, sits flush under a same-background section: no top padding. Default: false */
+  flushTop?: boolean;
 }
 
 // Perceived luminance of a #rrggbb hex (0 = black … 1 = white).
@@ -45,6 +47,7 @@ export function HowItWorks({
   ctaHref = '/contact',
   accent,
   accentText,
+  flushTop = false,
 }: HowItWorksProps) {
   // Section theme: when an accent is passed, the whole step track adopts it;
   // otherwise the default teal (primary) / dusty-blue (secondary) palette is used.
@@ -101,7 +104,7 @@ export function HowItWorks({
   };
 
   return (
-    <section className="bg-[#F5F5F5] py-16 md:py-24">
+    <section className={`bg-[#F5F5F5] pb-16 md:pb-24 ${flushTop ? '' : 'pt-16 md:pt-24'}`}>
       <div className="page-container">
       {/* Section header */}
       <AnimatedSection className="text-center mb-11">

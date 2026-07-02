@@ -35,6 +35,8 @@ interface FinancingBandProps {
   options?: FinancingOption[];
   accent?: string;
   accentText?: string;
+  /** When true, sits flush under a same-background section: no top padding. Default: false */
+  flushTop?: boolean;
 }
 
 /* Splits a heading on <em>…</em> and renders those parts in the accent colour. */
@@ -53,9 +55,10 @@ export function FinancingBand({
   options = CI_FINANCING,
   accent = CI_META.accent,
   accentText = CI_META.accentText,
+  flushTop = false,
 }: FinancingBandProps = {}) {
   return (
-    <section className="bg-[#F5F5F5] py-16 md:py-24">
+    <section className={`bg-[#F5F5F5] pb-16 md:pb-24 ${flushTop ? '' : 'pt-16 md:pt-24'}`}>
       <div className="page-container">
         <p className="font-body text-xs font-bold uppercase tracking-[0.12em] text-[#6B7280] mb-2">
           {eyebrow}
