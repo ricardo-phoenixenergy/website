@@ -86,7 +86,7 @@ export const EV_FLEETS: {
     tabs: [
       {
         key: 'industry-last-mile',
-        label: 'Last-mile delivery',
+        label: 'Last-Mile Delivery',
         icon: 'Truck',
         title: 'Last-mile & e-commerce delivery',
         body: 'Dense urban routes, constant stop-start running and a nightly return to the depot make last-mile the best-proven fit in South Africa — vehicles charge cheaply overnight from solar and cover high daily kilometres where the fuel saving is largest.',
@@ -95,7 +95,7 @@ export const EV_FLEETS: {
       },
       {
         key: 'industry-cold-chain',
-        label: 'Cold chain',
+        label: 'Cold Chain',
         icon: 'Thermometer',
         title: 'Cold-chain & refrigerated distribution',
         body: 'Local, return-to-base distribution where the refrigeration itself can run off solar and battery — removing a second diesel burn. Predictable, temperature-critical routes reward reliable electric running.',
@@ -104,7 +104,7 @@ export const EV_FLEETS: {
       },
       {
         key: 'industry-fmcg',
-        label: 'FMCG distribution',
+        label: 'FMCG Distribution',
         icon: 'Layers',
         title: 'FMCG & retail distribution',
         body: 'High-volume, scheduled distribution from distribution centres to stores on fixed routes, with large solar-ready depots — a strong fit for heavier electric trucks on regional loops.',
@@ -113,7 +113,7 @@ export const EV_FLEETS: {
       },
       {
         key: 'industry-staff',
-        label: 'Staff & shuttle',
+        label: 'Staff & Shuttle',
         icon: 'Users',
         title: 'Staff & shuttle transport',
         body: 'Fixed, timetabled routes that return to base between shifts are a textbook fit for overnight depot charging — predictable daily distance makes range easy to plan.',
@@ -122,7 +122,7 @@ export const EV_FLEETS: {
       },
       {
         key: 'industry-municipal',
-        label: 'Municipal & public',
+        label: 'Municipal & Public',
         icon: 'Building',
         title: 'Municipal & public transport',
         body: 'Scheduled urban routes, defined daily range and mandatory overnight depot returns make public and municipal fleets a strong fit — already live on South African roads.',
@@ -131,7 +131,7 @@ export const EV_FLEETS: {
       },
       {
         key: 'industry-logistics',
-        label: 'Regional logistics',
+        label: 'Regional Logistics',
         icon: 'TrendingUp',
         title: 'Regional logistics',
         body: 'Depot-to-depot regional lanes with predictable distance and a return to base are viable for electric today — the sweet spot between short urban runs and true long-haul.',
