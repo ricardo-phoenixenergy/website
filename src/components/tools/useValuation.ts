@@ -13,7 +13,7 @@ export function useValuation(
   return useMemo(() => {
     const { dcfTotal, yrCashFlows } = computeDCF(solar, cond);
     const { solarCostVal, solarReplacement } = computeSolarCostVal(solar, cond);
-    const { solarFinal, solarMktAdj } = computeSolarFinal(dcfTotal, solarCostVal, solar.tier);
+    const { solarFinal, solarMktAdj } = computeSolarFinal(dcfTotal, solarCostVal);
     const { bessVal, bessReplacement } = computeBessVal(bess, cond, solar.installYear);
 
     const total = solarFinal + bessVal;

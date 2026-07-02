@@ -15,7 +15,9 @@ interface ValuationSummary {
   kw: number;
   bessKwh: number;
   installYear: number;
-  tier: string;
+  panelBrand?: string;
+  inverterBrand?: string;
+  batteryBrand?: string;
   province: string;
   indicativeValue: number;
   rangeLow: number;
@@ -79,7 +81,11 @@ export function WeBuySolarEmail({ firstName, lastName, email, phone, valuation }
             <Field label="System size"   value={`${valuation.kw} kWp`} />
             <Field label="Install year"  value={String(valuation.installYear)} />
             <Field label="Battery (BESS)" value={valuation.bessKwh > 0 ? `${valuation.bessKwh} kWh` : 'None'} />
-            <Field label="Panel tier"    value={valuation.tier} />
+            <Field label="Panel brand"    value={valuation.panelBrand || '—'} />
+            <Field label="Inverter brand" value={valuation.inverterBrand || '—'} />
+            {valuation.bessKwh > 0 && (
+              <Field label="Battery brand"  value={valuation.batteryBrand || '—'} />
+            )}
             <Field label="Province"      value={valuation.province} />
 
             <Hr style={divider} />

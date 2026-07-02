@@ -30,12 +30,8 @@ export function ResultsGrid({ result, hasBess }: ResultsGridProps) {
       value: fmtRand(result.solarFinal),
     },
     {
-      label: 'BESS value',
+      label: 'Battery value',
       value: hasBess ? fmtRand(result.bessVal) : 'N/A',
-    },
-    {
-      label: '10-yr displaced savings (PV)',
-      value: fmtRand(result.solarDcf),
     },
     {
       label: 'Replacement cost (new)',
@@ -72,7 +68,7 @@ export function ResultsGrid({ result, hasBess }: ResultsGridProps) {
           </p>
           {card.sub && (
             <p
-              className="font-body text-[9px] mt-1 leading-tight"
+              className="font-body text-[10px] mt-1 leading-tight"
               style={{ color: 'rgba(255,255,255,0.50)' }}
             >
               {card.sub}

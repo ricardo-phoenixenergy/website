@@ -9,31 +9,17 @@ const CONDITION_MULT: Record<ConditionInputs['condition'], number> = {
   poor: 0.52,
 };
 
-const WARRANTY_MULT: Record<ConditionInputs['warrantyYears'], number> = {
-  full: 1.05,
-  mid: 1.00,
-  low: 0.93,
-  none: 0.85,
-};
-
-const TIER_MULT: Record<SolarInputs['tier'], number> = {
-  T1: 1.00,
-  T2: 0.88,
-  T3: 0.72,
-};
-
-const DEG_KEY_MAP: Record<SolarInputs['tier'], keyof typeof CONSTANTS.DEGRADATION_RATE> = {
-  T1: 't1',
-  T2: 't2',
-  T3: 't3',
-};
+// Panel brand is captured for the WeBuySolar team but does not drive the
+// indicative valuation. The model assumes a standard tier-1 panel; the ±band
+// on the final range absorbs the variance a specific brand would introduce.
+const ASSUMED_DEG_RATE = CONSTANTS.DEGRADATION_RATE.t1;
 
 export function computeDCF(
   solar: SolarInputs,
   cond: ConditionInputs,
 ): { dcfTotal: number; yrCashFlows: number[] } {
   const yield_ = CONSTANTS.SA_YIELD_KWH_PER_KWP[cond.province];
-  const degRate = CONSTANTS.DEGRADATION_RATE[DEG_KEY_MAP[solar.tier]];
+  const degRate = ASSUMED_DEG_RATE;
   const yrCashFlows: number[] = [];
   let dcfTotal = 0;
 
@@ -63,22 +49,19 @@ export function computeSolarCostVal(
   const ageFactor = Math.max(0, 1 - age / CONSTANTS.PANEL_LIFESPAN_YEARS);
   const condM = CONDITION_MULT[cond.condition];
   const monM = cond.monitoring ? 1.04 : 0.97;
-  const warrM = WARRANTY_MULT[cond.warrantyYears];
   const cocM = cond.hasCoc ? 1.00 : 0.93;
-  const solarCostVal = solarReplacement * ageFactor * condM * monM * warrM * cocM;
+  const solarCostVal = solarReplacement * ageFactor * condM * monM * cocM;
   return { solarCostVal, solarReplacement };
 }
 
 export function computeSolarFinal(
   dcfTotal: number,
   solarCostVal: number,
-  tier: SolarInputs['tier'],
 ): { solarFinal: number; solarMktAdj: number } {
   const solarMktAdj = solarCostVal * CONSTANTS.MKT_COMPS_DISCOUNT;
-  const blended =
+  const solarFinal =
     dcfTotal * CONSTANTS.DCF_WEIGHT +
     solarCostVal * CONSTANTS.COST_WEIGHT +
     solarMktAdj * CONSTANTS.MKT_WEIGHT;
-  const solarFinal = blended * TIER_MULT[tier];
   return { solarFinal, solarMktAdj };
 }

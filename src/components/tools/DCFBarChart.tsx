@@ -63,7 +63,7 @@ export function DCFBarChart({ yrCashFlows }: DCFBarChartProps) {
 
   return (
     <div className="mb-6">
-      <p className="font-display font-bold text-[13px] text-[#1A1A1A] mb-3">
+      <p className="font-display font-bold text-sm text-[#1A1A1A] mb-3">
         10-year projected annual savings
       </p>
       <div style={{ height: 180 }}>

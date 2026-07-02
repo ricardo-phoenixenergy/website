@@ -3,8 +3,11 @@
 export interface SolarInputs {
   kw: number;
   installYear: number;
-  tier: 'T1' | 'T2' | 'T3';
-  inverterType: 'string' | 'hybrid' | 'micro' | 'offgrid';
+  inverterType: 'string' | 'hybrid';
+  /** Recorded for the WeBuySolar team — does not affect the valuation. */
+  panelBrand: string;
+  /** Recorded for the WeBuySolar team — does not affect the valuation. */
+  inverterBrand: string;
 }
 
 export interface BessInputs {
@@ -12,16 +15,15 @@ export interface BessInputs {
   kWh: number;
   chemistry: 'lfp' | 'nmc' | 'lead';
   soh: 'high' | 'mid' | 'low';
-  brand: 'premium' | 'mid' | 'generic';
+  /** Recorded for the WeBuySolar team — does not affect the valuation. */
+  brand: string;
 }
 
 export interface ConditionInputs {
   condition: 'exc' | 'good' | 'fair' | 'poor';
   monitoring: boolean;
-  warrantyYears: 'full' | 'mid' | 'low' | 'none';
   hasCoc: boolean;
   province: 'gp' | 'wc' | 'kzn' | 'other';
-  reason: 'upgrade' | 'relocate' | 'finance' | 'other';
 }
 
 export interface ValuationResult {

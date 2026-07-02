@@ -37,7 +37,7 @@ function WhatHappensNext() {
       className="rounded-xl p-5 mt-6"
       style={{ background: 'rgba(57,87,92,0.06)', border: '1px solid rgba(57,87,92,0.15)' }}
     >
-      <p className="font-display font-bold text-[13px] text-[#39575C] mb-3">
+      <p className="font-display font-bold text-sm text-[#39575C] mb-3">
         What happens next
       </p>
       <div className="flex flex-col gap-3">
@@ -105,7 +105,7 @@ export function Step3Results({
       <button
         type="button"
         onClick={onBack}
-        className="mt-5 font-body text-xs text-[#6B7280] hover:text-[#39575C] transition-colors"
+        className="mt-5 inline-flex items-center gap-1.5 font-body text-xs text-[#6B7280] hover:text-[#39575C] transition-colors"
       >
         <IconArrowLeft size={14} /> Back
       </button>

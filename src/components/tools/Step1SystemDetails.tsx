@@ -3,6 +3,7 @@
 import type { SolarInputs, BessInputs } from '@/lib/valuation/types';
 import { RangeSlider } from './RangeSlider';
 import { SegmentedControl } from './SegmentedControl';
+import { SelectControl } from './SelectControl';
 import { Toggle } from './Toggle';
 import { IconArrowRight } from '@/components/ui/Icons';
 
@@ -14,17 +15,23 @@ interface Step1SystemDetailsProps {
   onNext: () => void;
 }
 
-const TIER_OPTIONS: { value: SolarInputs['tier']; label: string }[] = [
-  { value: 'T1', label: 'Tier 1' },
-  { value: 'T2', label: 'Tier 2' },
-  { value: 'T3', label: 'Tier 3 / unknown' },
-];
+const toOptions = (brands: string[]) => brands.map((b) => ({ value: b, label: b }));
+
+const PANEL_BRANDS = toOptions([
+  'JA Solar', 'Canadian Solar', 'LONGi', 'Trina Solar', 'JinkoSolar', 'Yingli', 'SunPower',
+]);
+
+const INVERTER_BRANDS = toOptions([
+  'Sunsynk', 'Deye', 'Victron', 'Goodwe', 'SolarEdge', 'Fronius', 'Huawei', 'SMA',
+]);
+
+const BATTERY_BRANDS = toOptions([
+  'Pylontech', 'BYD', 'Freedom Won', 'Hubble', 'Dyness', 'Shoto', 'Huawei',
+]);
 
 const INVERTER_OPTIONS: { value: SolarInputs['inverterType']; label: string }[] = [
-  { value: 'string', label: 'String' },
+  { value: 'string', label: 'Grid-Tied / String' },
   { value: 'hybrid', label: 'Hybrid' },
-  { value: 'micro', label: 'Micro' },
-  { value: 'offgrid', label: 'Off-grid' },
 ];
 
 const CHEM_OPTIONS: { value: BessInputs['chemistry']; label: string }[] = [
@@ -39,11 +46,8 @@ const SOH_OPTIONS: { value: BessInputs['soh']; label: string }[] = [
   { value: 'low', label: 'Below 70% (degraded)' },
 ];
 
-const BRAND_OPTIONS: { value: BessInputs['brand']; label: string }[] = [
-  { value: 'premium', label: 'Premium (Pylontech, BYD, CATL)' },
-  { value: 'mid', label: 'Mid-range' },
-  { value: 'generic', label: 'Generic' },
-];
+const NEXT_BTN =
+  'mt-6 w-full inline-flex items-center justify-center gap-2 font-body font-semibold text-sm text-white rounded-xl py-3 transition-opacity hover:opacity-90';
 
 export function Step1SystemDetails({
   solar,
@@ -76,25 +80,35 @@ export function Step1SystemDetails({
         max={2025}
         step={1}
         unit=""
-        hint="Age determines panel degradation rate and remaining warranty value"
+        hint="Age determines panel degradation and remaining useful life"
         onChange={v => onSolarChange({ installYear: v })}
         formatValue={v => String(v)}
       />
 
-      <SegmentedControl
-        label="Panel brand tier"
-        options={TIER_OPTIONS}
-        value={solar.tier}
-        hint="Tier 1: JA Solar, Canadian Solar, LONGi, Trina · Tier 3: unbranded / Chinese no-name"
-        onChange={v => onSolarChange({ tier: v })}
+      <SelectControl
+        label="Panel brand"
+        options={PANEL_BRANDS}
+        value={solar.panelBrand}
+        allowOther
+        otherPlaceholder="Type your panel brand"
+        onChange={v => onSolarChange({ panelBrand: v })}
       />
 
       <SegmentedControl
         label="Inverter type"
         options={INVERTER_OPTIONS}
         value={solar.inverterType}
-        hint="Hybrid inverters command a significant premium as they support BESS"
+        hint="Hybrid inverters command a premium as they support battery storage"
         onChange={v => onSolarChange({ inverterType: v })}
+      />
+
+      <SelectControl
+        label="Inverter brand"
+        options={INVERTER_BRANDS}
+        value={solar.inverterBrand}
+        allowOther
+        otherPlaceholder="Type your inverter brand"
+        onChange={v => onSolarChange({ inverterBrand: v })}
       />
 
       <div
@@ -103,7 +117,7 @@ export function Step1SystemDetails({
       >
         <Toggle
           label="Does your system include battery storage?"
-          subLabel="BESS is valued separately and can significantly increase total buyback value"
+          subLabel="Battery storage is valued separately and can significantly increase total buyback value"
           checked={bess.enabled}
           onChange={v => onBessChange({ enabled: v })}
         />
@@ -121,6 +135,15 @@ export function Step1SystemDetails({
               onChange={v => onBessChange({ kWh: v })}
             />
 
+            <SelectControl
+              label="Battery brand"
+              options={BATTERY_BRANDS}
+              value={bess.brand}
+              allowOther
+              otherPlaceholder="Type your battery brand"
+              onChange={v => onBessChange({ brand: v })}
+            />
+
             <SegmentedControl
               label="Battery chemistry"
               options={CHEM_OPTIONS}
@@ -136,23 +159,11 @@ export function Step1SystemDetails({
               hint="State of Health — most LFP systems remain above 80% SoH for 8–10 years"
               onChange={v => onBessChange({ soh: v })}
             />
-
-            <SegmentedControl
-              label="Battery brand"
-              options={BRAND_OPTIONS}
-              value={bess.brand}
-              onChange={v => onBessChange({ brand: v })}
-            />
           </div>
         )}
       </div>
 
-      <button
-        type="button"
-        onClick={onNext}
-        className="mt-6 w-full font-body font-semibold text-sm text-white rounded-xl py-3 transition-opacity hover:opacity-90"
-        style={{ background: '#39575C' }}
-      >
+      <button type="button" onClick={onNext} className={NEXT_BTN} style={{ background: '#39575C' }}>
         Next: System condition <IconArrowRight size={14} />
       </button>
     </div>

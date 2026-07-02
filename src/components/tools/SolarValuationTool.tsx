@@ -12,8 +12,9 @@ import { Step3Results } from './Step3Results';
 const DEFAULT_SOLAR: SolarInputs = {
   kw: 20,
   installYear: 2021,
-  tier: 'T1',
   inverterType: 'string',
+  panelBrand: 'JA Solar',
+  inverterBrand: 'Sunsynk',
 };
 
 const DEFAULT_BESS: BessInputs = {
@@ -21,16 +22,14 @@ const DEFAULT_BESS: BessInputs = {
   kWh: 20,
   chemistry: 'lfp',
   soh: 'high',
-  brand: 'premium',
+  brand: 'Pylontech',
 };
 
 const DEFAULT_COND: ConditionInputs = {
   condition: 'exc',
   monitoring: true,
-  warrantyYears: 'full',
   hasCoc: true,
   province: 'gp',
-  reason: 'upgrade',
 };
 
 export function SolarValuationTool() {

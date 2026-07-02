@@ -2,12 +2,6 @@
 import { CONSTANTS } from './constants';
 import type { BessInputs, ConditionInputs } from './types';
 
-const BRAND_MULT: Record<BessInputs['brand'], number> = {
-  premium: 1.00,
-  mid: 0.85,
-  generic: 0.65,
-};
-
 const SOH_MULT: Record<BessInputs['soh'], number> = {
   high: 1.00,
   mid: 0.80,
@@ -34,11 +28,12 @@ export function computeBessVal(
     0,
     1 - age / CONSTANTS.BESS_LIFE_YEARS[bess.chemistry],
   );
+  // Battery brand is captured for the WeBuySolar team but does not drive the
+  // indicative valuation — chemistry, state of health, age and condition do.
   const bessVal =
     bessReplacement *
     bessAgeFactor *
     SOH_MULT[bess.soh] *
-    BRAND_MULT[bess.brand] *
     CONDITION_MULT[cond.condition];
 
   return { bessVal, bessReplacement };

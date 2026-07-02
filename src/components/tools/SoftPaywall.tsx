@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import type { SolarInputs, BessInputs, ConditionInputs, ValuationResult } from '@/lib/valuation/types';
 import { dlPush } from '@/lib/analytics';
-import { IconArrowRight } from '@/components/ui/Icons';
+import { IconArrowRight, IconZap } from '@/components/ui/Icons';
 import { RecaptchaNotice } from '@/components/ui/RecaptchaNotice';
 
 interface SoftPaywallProps {
@@ -72,7 +72,9 @@ export function SoftPaywall({ result, solar, bess, cond, onUnlock }: SoftPaywall
             kw: solar.kw,
             bessKwh: bess.enabled ? bess.kWh : 0,
             installYear: solar.installYear,
-            tier: solar.tier,
+            panelBrand: solar.panelBrand || undefined,
+            inverterBrand: solar.inverterBrand || undefined,
+            batteryBrand: bess.enabled ? (bess.brand || undefined) : undefined,
             province: cond.province,
             indicativeValue: result.total,
             rangeLow: result.rangeLow,
@@ -106,17 +108,17 @@ export function SoftPaywall({ result, solar, bess, cond, onUnlock }: SoftPaywall
     >
       {/* Icon */}
       <div
-        className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4"
+        className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-white"
         style={{ background: '#39575C' }}
       >
-        <span className="text-xl" aria-hidden="true">⚡</span>
+        <IconZap size={22} />
       </div>
 
       <h2 className="font-display font-extrabold text-lg text-[#1A1A1A] mb-2">
         Your valuation is ready
       </h2>
       <p className="font-body text-xs text-[#6B7280] leading-[1.7] mb-5 max-w-[320px] mx-auto">
-        Enter your details to unlock your full report — including the year-by-year DCF
+        Enter your details to unlock your full report — including the year-by-year
         breakdown and your personalised WeBuySolar buyback offer.
       </p>
 
@@ -165,7 +167,7 @@ export function SoftPaywall({ result, solar, bess, cond, onUnlock }: SoftPaywall
         <button
           type="submit"
           disabled={!valid || submitting}
-          className="w-full font-body font-semibold text-sm text-white rounded-xl py-3 transition-opacity"
+          className="w-full inline-flex items-center justify-center gap-2 font-body font-semibold text-sm text-white rounded-xl py-3 transition-opacity"
           style={{
             background: '#39575C',
             opacity: valid && !submitting ? 1 : 0.5,

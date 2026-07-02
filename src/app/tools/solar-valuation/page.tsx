@@ -2,12 +2,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SolarValuationTool } from '@/components/tools/SolarValuationTool';
-import { PageFooter } from '@/components/layout/PageFooter';
 
 export const metadata: Metadata = {
   title: 'Solar Asset Valuation Tool — What Is Your System Worth? | Phoenix Energy',
   description:
-    'Get an instant indicative buyback valuation for your solar system and BESS. Based on DCF analysis, SA market rates, and WeBuySolar transaction data.',
+    'Get an instant indicative buyback valuation for your solar system and battery storage in under 2 minutes, informed by current South African market data and comparable solar transactions.',
   openGraph: {
     images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },
@@ -24,17 +23,17 @@ const howToJsonLd = {
     {
       '@type': 'HowToStep',
       name: 'Enter system details',
-      text: 'Input your installed kWp, year, panel tier and inverter type.',
+      text: 'Input your installed kWp, year of installation, brands and inverter type.',
     },
     {
       '@type': 'HowToStep',
       name: 'Describe system condition',
-      text: 'Rate condition, warranty status, monitoring, and COC certificate.',
+      text: 'Rate condition, monitoring, COC certificate and province.',
     },
     {
       '@type': 'HowToStep',
       name: 'Receive your valuation',
-      text: 'Get a DCF-based indicative buyback range from WeBuySolar.',
+      text: 'Get an indicative buyback range from WeBuySolar.',
     },
   ],
 };
@@ -69,8 +68,9 @@ export default function SolarValuationPage() {
               <em style={{ color: '#709DA9', fontStyle: 'normal' }}>worth?</em>
             </h1>
             <p className="font-body text-base text-[#6B7280] leading-[1.75]">
-              Get an indicative buyback valuation in under 2 minutes. Based on real SA market
-              data, DCF analysis, and WeBuySolar transaction comparables.
+              Receive an indicative buyback valuation in under 2 minutes, informed by current
+              South African market data, comparable commercial solar transactions and your
+              system&rsquo;s unique characteristics.
             </p>
           </div>
 
@@ -81,8 +81,6 @@ export default function SolarValuationPage() {
           <SolarValuationTool />
         </div>
       </main>
-
-      <PageFooter ctaVariant="centered" />
     </>
   );
 }
