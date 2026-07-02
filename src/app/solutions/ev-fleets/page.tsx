@@ -2,6 +2,8 @@
 import type { Metadata } from 'next';
 import { SolutionHero } from '@/components/sections/SolutionHero';
 import { ExplainerCards } from '@/components/sections/ExplainerCards';
+import { SolutionTabs, type TabItem } from '@/components/sections/SolutionTabs';
+import { IndustryProofCard } from '@/components/sections/IndustryProofCard';
 import { FinancingBand } from '@/components/sections/FinancingBand';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
@@ -32,6 +34,22 @@ export const revalidate = 3600;
 export default async function EvFleetsPage() {
   const howItWorks = await getHowItWorks(vertical);
   const hero = (await getHeroImages())[vertical];
+
+  const industryTabs: TabItem[] = EV_FLEETS.industries.tabs.map((t) => ({
+    key: t.key,
+    label: t.label,
+    icon: t.icon,
+    iconBg: 'rgba(169,214,203,0.20)',
+    title: t.title,
+    body: t.body,
+    bulletsLabel: 'Best suited for',
+    bullets: t.bullets,
+    imageBg: '',
+    imageEmoji: '',
+    diagram: t.proof
+      ? <IndustryProofCard {...t.proof} accent={meta.accent} accentText={meta.accentText} />
+      : undefined,
+  }));
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -95,32 +113,31 @@ export default async function EvFleetsPage() {
         <p className="page-container font-body text-[11px] text-[#6B7280]">{EV_FLEETS.financing.note}</p>
       </div>
 
-      {/* §5 — Industries + vehicles */}
-      <ExplainerCards
+      {/* §5 — Industries (tabs) + vehicles */}
+      <SolutionTabs
         id="who-its-for"
-        background="white"
+        tabs={industryTabs}
+        accent={meta.accent}
+        vertical="ev-fleets"
         eyebrow={EV_FLEETS.industries.eyebrow}
         heading={EV_FLEETS.industries.heading}
         subtitle={EV_FLEETS.industries.subtitle}
-        accent={meta.accent}
-        columns={3}
-        cards={EV_FLEETS.industries.cards}
-        footer={
-          <div className="mt-10">
-            <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-4">
-              {EV_FLEETS.industries.vehiclesKicker}
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-              {EV_FLEETS.industries.vehicles.map((v) => (
-                <div key={v.label} className="rounded-xl p-4 bg-[#F5F5F5] border border-[#E5E7EB]">
-                  <p className="font-display font-bold text-sm text-[#1A1A1A] mb-1">{v.label}</p>
-                  <p className="font-body text-xs text-[#6B7280] leading-snug">{v.spec}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        }
       />
+      <section className="bg-white pb-16 md:pb-24">
+        <div className="page-container">
+          <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-4">
+            {EV_FLEETS.industries.vehiclesKicker}
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            {EV_FLEETS.industries.vehicles.map((v) => (
+              <div key={v.label} className="rounded-xl p-4 bg-[#F5F5F5] border border-[#E5E7EB]">
+                <p className="font-display font-bold text-sm text-[#1A1A1A] mb-1">{v.label}</p>
+                <p className="font-body text-xs text-[#6B7280] leading-snug">{v.spec}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* §6 — Cost per km */}
       <section className="bg-[#F5F5F5] py-16 md:py-24">

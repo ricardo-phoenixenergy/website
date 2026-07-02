@@ -16,12 +16,14 @@ import {
   IconSun, IconBattery, IconDollarSign, IconLeaf, IconGlobe,
   IconActivity, IconThermometer, IconBuilding, IconMonitor,
   IconZap, IconClipboardCheck, IconSliders,
+  IconTruck, IconLayers, IconUsers, IconTrendingUp,
 } from '@/components/ui/Icons';
 
 export type IconName =
   | 'Sun' | 'Battery' | 'DollarSign' | 'Leaf' | 'Globe'
   | 'Activity' | 'Thermometer' | 'Building' | 'Monitor'
-  | 'Zap' | 'ClipboardCheck' | 'Sliders';
+  | 'Zap' | 'ClipboardCheck' | 'Sliders'
+  | 'Truck' | 'Layers' | 'Users' | 'TrendingUp';
 
 const ICON_MAP: Record<IconName, (size: number) => React.ReactNode> = {
   Sun:           (s) => <IconSun size={s} />,
@@ -36,6 +38,10 @@ const ICON_MAP: Record<IconName, (size: number) => React.ReactNode> = {
   Zap:           (s) => <IconZap size={s} />,
   ClipboardCheck:(s) => <IconClipboardCheck size={s} />,
   Sliders:       (s) => <IconSliders size={s} />,
+  Truck:         (s) => <IconTruck size={s} />,
+  Layers:        (s) => <IconLayers size={s} />,
+  Users:         (s) => <IconUsers size={s} />,
+  TrendingUp:    (s) => <IconTrendingUp size={s} />,
 };
 
 export interface TabItem {

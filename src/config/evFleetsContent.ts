@@ -2,6 +2,17 @@
 import type { ExplainerCardItem } from '@/components/sections/ExplainerCards';
 import type { FaqItem } from '@/components/sections/FaqAccordion';
 import type { FinancingOption } from '@/components/sections/FinancingCards';
+import type { IconName } from '@/components/sections/SolutionTabs';
+
+interface IndustryTab {
+  key: string;
+  label: string;
+  icon: IconName;
+  title: string;
+  body: string;
+  bullets: string[];
+  proof?: { client: string; stat: string; detail: string };
+}
 
 export const EV_FLEETS: {
   hero: { title: string; subtitle: string };
@@ -9,7 +20,7 @@ export const EV_FLEETS: {
   pillars: { eyebrow: string; heading: string; cards: ExplainerCardItem[] };
   financing: { eyebrow: string; heading: string; options: FinancingOption[]; note: string };
   industries: {
-    eyebrow: string; heading: string; subtitle: string; cards: ExplainerCardItem[];
+    eyebrow: string; heading: string; subtitle: string; tabs: IndustryTab[];
     vehiclesKicker: string; vehicles: { label: string; spec: string }[];
   };
   costPerKm: { eyebrow: string; heading: string; statValue: string; statLabel: string; note: string };
@@ -72,13 +83,60 @@ export const EV_FLEETS: {
     heading: 'Electrification pays off first for <em>return-to-depot fleets</em>.',
     subtitle:
       'If your vehicles run predictable routes and come home to a depot each night, they can charge cheaply from solar and deliver the strongest savings.',
-    cards: [
-      { icon: 'Truck', title: 'Last-mile & e-commerce delivery', body: 'Dense urban routes, nightly depot charging, high stop-start running — the best-proven fit in South Africa.' },
-      { icon: 'Thermometer', title: 'Cold-chain & refrigerated', body: 'Solar-powered refrigeration removes a second diesel burn — as Clicks and UPD proved with SA’s first solar-refrigerated EV fleet.' },
-      { icon: 'Layers', title: 'FMCG & retail distribution', body: 'Scheduled depot-to-store loops with large, solar-ready distribution centres.' },
-      { icon: 'Users', title: 'Staff & shuttle transport', body: 'Fixed timetabled routes that return to base between shifts — ideal for overnight charging.' },
-      { icon: 'Building', title: 'Municipal & public transport', body: 'Defined urban routes and depots — already live with Golden Arrow and MyCiTi in Cape Town.' },
-      { icon: 'TrendingUp', title: 'Regional logistics', body: 'Depot-to-depot lanes where predictable distance and return-to-base make electric viable today.' },
+    tabs: [
+      {
+        key: 'industry-last-mile',
+        label: 'Last-mile delivery',
+        icon: 'Truck',
+        title: 'Last-mile & e-commerce delivery',
+        body: 'Dense urban routes, constant stop-start running and a nightly return to the depot make last-mile the best-proven fit in South Africa — vehicles charge cheaply overnight from solar and cover high daily kilometres where the fuel saving is largest.',
+        bullets: ['Fixed urban routes under ~220 km/day', 'Returns to the depot every night', 'Stop-start running where EVs beat diesel'],
+        proof: { client: 'Woolworths + DSV', stat: '41 electric vans', detail: '~400,000 kg of tailpipe CO₂ avoided a year, charged from depot solar.' },
+      },
+      {
+        key: 'industry-cold-chain',
+        label: 'Cold chain',
+        icon: 'Thermometer',
+        title: 'Cold-chain & refrigerated distribution',
+        body: 'Local, return-to-base distribution where the refrigeration itself can run off solar and battery — removing a second diesel burn. Predictable, temperature-critical routes reward reliable electric running.',
+        bullets: ['Local return-to-base distribution', 'Solar-powered refrigeration', 'Predictable, temperature-critical routes'],
+        proof: { client: 'Clicks / UPD', stat: '42 solar-refrigerated vans', detail: 'South Africa’s first solar-powered refrigerated EV fleet — about a tonne of CO₂ saved per van each month.' },
+      },
+      {
+        key: 'industry-fmcg',
+        label: 'FMCG distribution',
+        icon: 'Layers',
+        title: 'FMCG & retail distribution',
+        body: 'High-volume, scheduled distribution from distribution centres to stores on fixed routes, with large solar-ready depots — a strong fit for heavier electric trucks on regional loops.',
+        bullets: ['Scheduled depot-to-store loops', 'Large, solar-ready distribution centres', 'High daily kilometres'],
+        proof: { client: 'DHL + Unilever', stat: 'Africa’s first electric superlink', detail: 'A fully electric Volvo FMX tractor running live Unilever distribution routes.' },
+      },
+      {
+        key: 'industry-staff',
+        label: 'Staff & shuttle',
+        icon: 'Users',
+        title: 'Staff & shuttle transport',
+        body: 'Fixed, timetabled routes that return to base between shifts are a textbook fit for overnight depot charging — predictable daily distance makes range easy to plan.',
+        bullets: ['Fixed timetabled routes', 'Returns to base between shifts', 'Overnight depot charging'],
+      },
+      {
+        key: 'industry-municipal',
+        label: 'Municipal & public',
+        icon: 'Building',
+        title: 'Municipal & public transport',
+        body: 'Scheduled urban routes, defined daily range and mandatory overnight depot returns make public and municipal fleets a strong fit — already live on South African roads.',
+        bullets: ['Defined urban routes and depots', 'Overnight + off-peak charging', 'Strong public ESG mandate'],
+        proof: { client: 'Golden Arrow', stat: '120 electric buses', detail: 'Cape Town’s first electric public bus fleet, charged on solar and off-peak power.' },
+      },
+      {
+        key: 'industry-logistics',
+        label: 'Regional logistics',
+        icon: 'TrendingUp',
+        title: 'Regional logistics',
+        body: 'Depot-to-depot regional lanes with predictable distance and a return to base are viable for electric today — the sweet spot between short urban runs and true long-haul.',
+        bullets: ['Depot-to-depot regional lanes', 'Predictable distance', 'Return-to-base charging'],
+        proof: { client: 'Vector Logistics', stat: 'Electric Volvo FH trucks', detail: 'South Africa’s first bumper-to-bumper net-zero cold-chain trucks.' },
+      },
     ],
     vehiclesKicker: 'Vehicles we supply',
     vehicles: [
