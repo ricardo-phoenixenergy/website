@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { SolarInputs, BessInputs, ConditionInputs, ValuationResult } from '@/lib/valuation/types';
 import { dlPush } from '@/lib/analytics';
 import { IconArrowRight } from '@/components/ui/Icons';
+import { RecaptchaNotice } from '@/components/ui/RecaptchaNotice';
 
 interface SoftPaywallProps {
   result: ValuationResult;
@@ -178,6 +179,7 @@ export function SoftPaywall({ result, solar, bess, cond, onUnlock }: SoftPaywall
         Used only to send your report and for a WeBuySolar specialist to follow up.
         Never shared or sold.
       </p>
+      <RecaptchaNotice className="font-body text-[10px] text-[#9CA3AF] mt-2 leading-[1.6]" />
     </div>
   );
 }

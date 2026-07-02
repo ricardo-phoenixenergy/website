@@ -12,6 +12,7 @@ import {
   IconArrowRight,
   IconArrowLeft,
 } from '@/components/ui/Icons';
+import { RecaptchaNotice } from '@/components/ui/RecaptchaNotice';
 
 type Intent = 'client' | 'partner' | 'investor';
 type Status = 'idle' | 'submitting' | 'success' | 'error';
@@ -395,6 +396,7 @@ export function ContactForm() {
             <a href="/privacy-policy" className="underline hover:text-[#39575C]">Privacy Policy</a>.
             {' '}Your information will only be used to respond to your enquiry.
           </p>
+          <RecaptchaNotice className="font-body text-[11px] text-[#9CA3AF] text-center mt-2 leading-relaxed" />
         </form>
       )}
     </div>
