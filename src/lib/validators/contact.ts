@@ -26,6 +26,7 @@ export const webBuySolarSchema = z.object({
     panelBrand: z.string().optional(),
     inverterBrand: z.string().optional(),
     batteryBrand: z.string().optional(),
+    documentation: z.string().optional(),
     province: z.string(),
     indicativeValue: z.number(),
     rangeLow: z.number(),

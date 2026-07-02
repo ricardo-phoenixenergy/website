@@ -26,7 +26,8 @@ export type Province = 'ec' | 'fs' | 'gp' | 'kzn' | 'lp' | 'mp' | 'nw' | 'nc' | 
 export interface ConditionInputs {
   condition: 'exc' | 'good' | 'fair' | 'poor';
   monitoring: boolean;
-  hasCoc: boolean;
+  /** Documentation held: full handover pack (COC + SLDs + docs), COC only, or none. */
+  docs: 'full' | 'coc' | 'none';
   province: Province;
 }
 

@@ -9,6 +9,14 @@ const CONDITION_MULT: Record<ConditionInputs['condition'], number> = {
   poor: 0.52,
 };
 
+// Documentation completeness — a full handover pack (COC + SLDs + system docs)
+// materially de-risks resale; missing paperwork is discounted.
+const DOCS_MULT: Record<ConditionInputs['docs'], number> = {
+  full: 1.00,
+  coc: 0.96,
+  none: 0.90,
+};
+
 // Panel brand is captured for the WeBuySolar team but does not drive the
 // indicative valuation. The model assumes a standard tier-1 panel; the ±band
 // on the final range absorbs the variance a specific brand would introduce.
@@ -49,8 +57,8 @@ export function computeSolarCostVal(
   const ageFactor = Math.max(0, 1 - age / CONSTANTS.PANEL_LIFESPAN_YEARS);
   const condM = CONDITION_MULT[cond.condition];
   const monM = cond.monitoring ? 1.04 : 0.97;
-  const cocM = cond.hasCoc ? 1.00 : 0.93;
-  const solarCostVal = solarReplacement * ageFactor * condM * monM * cocM;
+  const docsM = DOCS_MULT[cond.docs];
+  const solarCostVal = solarReplacement * ageFactor * condM * monM * docsM;
   return { solarCostVal, solarReplacement };
 }
 

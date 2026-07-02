@@ -29,7 +29,7 @@ const DEFAULT_BESS: BessInputs = {
 const DEFAULT_COND: ConditionInputs = {
   condition: 'exc',
   monitoring: true,
-  hasCoc: true,
+  docs: 'full',
   province: 'gp',
 };
 

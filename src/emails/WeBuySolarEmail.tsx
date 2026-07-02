@@ -19,6 +19,7 @@ interface ValuationSummary {
   panelBrand?: string;
   inverterBrand?: string;
   batteryBrand?: string;
+  documentation?: string;
   province: string;
   indicativeValue: number;
   rangeLow: number;
@@ -88,6 +89,7 @@ export function WeBuySolarEmail({ firstName, lastName, email, phone, valuation }
             {valuation.bessKwh > 0 && (
               <Field label="Battery brand"  value={valuation.batteryBrand || '—'} />
             )}
+            <Field label="Documentation" value={valuation.documentation || '—'} />
             <Field label="Province"      value={valuation.province} />
 
             <Hr style={divider} />

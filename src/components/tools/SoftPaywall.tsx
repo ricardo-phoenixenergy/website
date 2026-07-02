@@ -7,6 +7,12 @@ import { IconArrowRight, IconZap } from '@/components/ui/Icons';
 import { PROVINCE_LABELS } from '@/lib/valuation/provinces';
 import { RecaptchaNotice } from '@/components/ui/RecaptchaNotice';
 
+const DOCS_LABEL: Record<ConditionInputs['docs'], string> = {
+  full: 'Full handover pack (COC, SLDs & docs)',
+  coc: 'COC only',
+  none: 'None / not sure',
+};
+
 interface SoftPaywallProps {
   result: ValuationResult;
   solar: SolarInputs;
@@ -77,6 +83,7 @@ export function SoftPaywall({ result, solar, bess, cond, onUnlock }: SoftPaywall
             panelBrand: solar.panelBrand || undefined,
             inverterBrand: solar.inverterBrand || undefined,
             batteryBrand: bess.enabled ? (bess.brand || undefined) : undefined,
+            documentation: DOCS_LABEL[cond.docs],
             province: PROVINCE_LABELS[cond.province],
             indicativeValue: result.total,
             rangeLow: result.rangeLow,

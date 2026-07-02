@@ -20,6 +20,12 @@ const CONDITION_OPTIONS: { value: ConditionInputs['condition']; label: string }[
   { value: 'poor', label: 'Poor' },
 ];
 
+const DOCS_OPTIONS: { value: ConditionInputs['docs']; label: string }[] = [
+  { value: 'full', label: 'Full pack' },
+  { value: 'coc', label: 'COC only' },
+  { value: 'none', label: 'None / not sure' },
+];
+
 const BACK_BTN =
   'inline-flex items-center justify-center gap-2 font-body font-semibold text-sm text-[#6B7280] rounded-xl py-3 px-6 transition-colors hover:text-[#39575C]';
 const NEXT_BTN =
@@ -47,15 +53,12 @@ export function Step2Condition({ cond, onChange, onBack, onNext }: Step2Conditio
         onChange={v => onChange({ monitoring: v === 'yes' })}
       />
 
-      <SegmentedControl<'yes' | 'no'>
-        label="COC / electrical compliance cert"
-        options={[
-          { value: 'yes', label: 'Yes — in hand' },
-          { value: 'no', label: 'No / not sure' },
-        ]}
-        value={cond.hasCoc ? 'yes' : 'no'}
-        hint="Required for resale — absence discounted from value"
-        onChange={v => onChange({ hasCoc: v === 'yes' })}
+      <SegmentedControl
+        label="Documentation & compliance"
+        options={DOCS_OPTIONS}
+        value={cond.docs}
+        hint="Full pack = Certificate of Compliance (COC), single-line diagrams (SLDs) and the system handover documents. Complete paperwork de-risks resale and improves value."
+        onChange={v => onChange({ docs: v })}
       />
 
       <SelectControl
