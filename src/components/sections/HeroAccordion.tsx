@@ -322,7 +322,7 @@ function MobileAccordion({ heroImages }: { heroImages: HeroImages }) {
               key={panel.vertical}
               className="relative overflow-hidden transition-all duration-[600ms]"
               style={{
-                flex: isActive ? 5 : 1,
+                flex: isActive ? 8 : 1,
                 transitionTimingFunction: 'cubic-bezier(0.4,0,0.2,1)',
                 borderBottom: i < PANELS.length - 1 ? '1px solid rgba(255,255,255,0.06)' : undefined,
                 cursor: isActive ? 'default' : 'pointer',
