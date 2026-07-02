@@ -215,7 +215,7 @@ export function AboutTrust({ partners, showTabs = true, justify = 'start', stats
             <div className="flex flex-col md:flex-row gap-8 md:gap-4">
               {stats.map((stat) => (
                 <div key={stat.label} className="flex-1 flex flex-col items-center text-center">
-                  <span className="font-display font-extrabold text-3xl md:text-4xl text-[#1A1A1A] leading-none">
+                  <span className="font-display font-extrabold text-3xl md:text-4xl text-[#1A1A1A] leading-none whitespace-nowrap">
                     {stat.value}
                   </span>
                   <span className="mt-3 h-[3px] w-6 rounded-full" style={{ background: '#709DA9' }} />
