@@ -29,7 +29,7 @@ const UNSELECTED_BTN = {
   border: '1px solid rgba(255,255,255,0.12)',
 } as const;
 
-const NAV_BTN = 'inline-flex items-center gap-1.5 rounded-lg py-2.5 px-5 font-body text-sm font-semibold transition-colors';
+const NAV_BTN = 'inline-flex items-center gap-1.5 rounded-full py-2.5 px-5 font-body text-sm font-semibold transition-colors';
 
 function formatRand(n: number): string {
   if (n >= 1_000_000) return `R${(n / 1_000_000).toFixed(1)}M`;
@@ -134,7 +134,7 @@ export function FleetSavingsEstimator({ prices }: { prices: ResolvedEnergyPrices
                   <button
                     key={t} type="button"
                     onClick={() => selectType(t)}
-                    className="rounded-lg py-2 font-body text-[11px] font-semibold transition-colors"
+                    className="rounded-full py-2 font-body text-[11px] font-semibold transition-colors"
                     style={sel ? { background: ACCENT, color: ACCENT_TEXT } : UNSELECTED_BTN}
                   >
                     {TYPE_LABEL[t]}
@@ -152,7 +152,7 @@ export function FleetSavingsEstimator({ prices }: { prices: ResolvedEnergyPrices
                   <button
                     key={f} type="button" disabled={disabled}
                     onClick={() => { setFuel(f); touch(); }}
-                    className="rounded-lg py-2.5 font-body text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="rounded-full py-2.5 font-body text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     style={sel ? { background: ACCENT, color: ACCENT_TEXT } : UNSELECTED_BTN}
                   >
                     {f === 'diesel' ? 'Diesel' : 'Petrol 93'}
@@ -179,7 +179,7 @@ export function FleetSavingsEstimator({ prices }: { prices: ResolvedEnergyPrices
                   <button
                     key={c} type="button"
                     onClick={() => { setCharging(c); touch(); }}
-                    className="rounded-lg py-2.5 font-body text-sm font-semibold transition-colors"
+                    className="rounded-full py-2.5 font-body text-sm font-semibold transition-colors"
                     style={sel ? { background: ACCENT, color: ACCENT_TEXT } : UNSELECTED_BTN}
                   >
                     {c === 'grid' ? 'Grid' : 'Solar + battery'}
