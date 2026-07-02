@@ -11,9 +11,9 @@ export const CARBON_CREDITS: {
   cta: { eyebrow: string; heading: string; body: string };
 } = {
   hero: {
-    title: 'Turn your existing solar system into <em>a new revenue stream</em>.',
+    title: 'Maximise the <em>return</em> on your solar investment.',
     subtitle:
-      'Your solar system already avoids carbon emissions every day. Phoenix certifies those reductions, converts them into verified carbon credits, and sells them on your behalf — creating additional revenue on top of the electricity savings you already enjoy.',
+      'Your solar system already saves you money by reducing your electricity bill. It also generates verified carbon reductions with real market value. We manage the certification, trading, and sale of your carbon credits — creating a new revenue stream from the same solar asset.',
   },
 
   becomes: {
