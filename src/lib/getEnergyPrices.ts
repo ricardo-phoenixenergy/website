@@ -1,6 +1,7 @@
 import { ENERGY_PRICES_QUERY } from '@/lib/queries';
 import { DEFAULT_ENERGY_PRICES, type EnergyPrices } from '@/lib/evfleet/estimate';
 import type { EnergyPricesContent } from '@/types/sanity';
+import { sanityServerClient } from '@/lib/sanity.server';
 
 export interface ResolvedEnergyPrices extends EnergyPrices {
   effectiveDate: string | null;
@@ -45,8 +46,6 @@ export function resolveEnergyPrices(raw: EnergyPricesContent | null): ResolvedEn
  */
 export async function getEnergyPrices(): Promise<ResolvedEnergyPrices> {
   try {
-    // Import here to avoid server-only constraint in tests
-    const { sanityServerClient } = await import('@/lib/sanity.server');
     const raw = await sanityServerClient.fetch<EnergyPricesContent | null>(ENERGY_PRICES_QUERY);
     return resolveEnergyPrices(raw);
   } catch {

@@ -1,5 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { resolveEnergyPrices } from './getEnergyPrices';
+
+vi.mock('@/lib/sanity.server', () => ({
+  sanityServerClient: { fetch: async () => null },
+}));
 
 describe('resolveEnergyPrices', () => {
   it('null → all fallbacks, not live', () => {
