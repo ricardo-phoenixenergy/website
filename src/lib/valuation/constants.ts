@@ -3,7 +3,11 @@
 // Sources: EnergyBee, LZY Energy, SA PV Know-How, NERSA, Standard Bank
 
 export const CONSTANTS = {
-  SA_YIELD_KWH_PER_KWP: { gp: 1680, wc: 1900, kzn: 1750, other: 1680 },
+  // Indicative annual specific yield (kWh/kWp/yr) by province.
+  SA_YIELD_KWH_PER_KWP: {
+    ec: 1750, fs: 1850, gp: 1680, kzn: 1750, lp: 1850,
+    mp: 1750, nw: 1800, nc: 2000, wc: 1900,
+  },
   SELF_CONSUMPTION_RATIO: 0.80,
   TARIFF_2025_RAND_PER_KWH: 3.50,
   TARIFF_ESCALATION_ANNUAL: 0.127,

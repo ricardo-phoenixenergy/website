@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { SolarInputs, BessInputs, ConditionInputs, ValuationResult } from '@/lib/valuation/types';
 import { dlPush } from '@/lib/analytics';
 import { IconArrowRight, IconZap } from '@/components/ui/Icons';
+import { PROVINCE_LABELS } from '@/lib/valuation/provinces';
 import { RecaptchaNotice } from '@/components/ui/RecaptchaNotice';
 
 interface SoftPaywallProps {
@@ -75,7 +76,7 @@ export function SoftPaywall({ result, solar, bess, cond, onUnlock }: SoftPaywall
             panelBrand: solar.panelBrand || undefined,
             inverterBrand: solar.inverterBrand || undefined,
             batteryBrand: bess.enabled ? (bess.brand || undefined) : undefined,
-            province: cond.province,
+            province: PROVINCE_LABELS[cond.province],
             indicativeValue: result.total,
             rangeLow: result.rangeLow,
             rangeHigh: result.rangeHigh,

@@ -1,16 +1,10 @@
 'use client';
 import type { SolarInputs, BessInputs, ConditionInputs, ValuationResult } from '@/lib/valuation/types';
+import { PROVINCE_LABELS } from '@/lib/valuation/provinces';
 
 function fmtRand(n: number) {
   return `R ${Math.round(n).toLocaleString('en-ZA')}`;
 }
-
-const PROVINCE_LABEL: Record<ConditionInputs['province'], string> = {
-  gp: 'Gauteng',
-  wc: 'Western Cape',
-  kzn: 'KwaZulu-Natal',
-  other: 'Other',
-};
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
@@ -50,7 +44,7 @@ export function BreakdownRows({ solar, bess, cond, result }: BreakdownRowsProps)
           label="System age"
           value={`${age} year${age !== 1 ? 's' : ''} (installed ${solar.installYear})`}
         />
-        <Row label="Province" value={PROVINCE_LABEL[cond.province]} />
+        <Row label="Province" value={PROVINCE_LABELS[cond.province]} />
         <Row label="Solar array value" value={fmtRand(result.solarFinal)} />
         {bess.enabled && (
           <Row label="Battery value" value={fmtRand(result.bessVal)} />

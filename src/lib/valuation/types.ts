@@ -19,11 +19,13 @@ export interface BessInputs {
   brand: string;
 }
 
+export type Province = 'ec' | 'fs' | 'gp' | 'kzn' | 'lp' | 'mp' | 'nw' | 'nc' | 'wc';
+
 export interface ConditionInputs {
   condition: 'exc' | 'good' | 'fair' | 'poor';
   monitoring: boolean;
   hasCoc: boolean;
-  province: 'gp' | 'wc' | 'kzn' | 'other';
+  province: Province;
 }
 
 export interface ValuationResult {

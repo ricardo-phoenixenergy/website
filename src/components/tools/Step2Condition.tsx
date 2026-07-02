@@ -1,6 +1,7 @@
 'use client';
 
 import type { ConditionInputs } from '@/lib/valuation/types';
+import { PROVINCE_OPTIONS } from '@/lib/valuation/provinces';
 import { SegmentedControl } from './SegmentedControl';
 import { SelectControl } from './SelectControl';
 import { IconArrowLeft, IconArrowRight } from '@/components/ui/Icons';
@@ -17,13 +18,6 @@ const CONDITION_OPTIONS: { value: ConditionInputs['condition']; label: string }[
   { value: 'good', label: 'Good' },
   { value: 'fair', label: 'Fair' },
   { value: 'poor', label: 'Poor' },
-];
-
-const PROVINCE_OPTIONS: { value: ConditionInputs['province']; label: string }[] = [
-  { value: 'gp', label: 'Gauteng' },
-  { value: 'wc', label: 'Western Cape' },
-  { value: 'kzn', label: 'KwaZulu-Natal' },
-  { value: 'other', label: 'Other province' },
 ];
 
 const BACK_BTN =
