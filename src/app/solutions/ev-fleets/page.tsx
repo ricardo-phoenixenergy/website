@@ -123,21 +123,6 @@ export default async function EvFleetsPage() {
         heading={EV_FLEETS.industries.heading}
         subtitle={EV_FLEETS.industries.subtitle}
       />
-      <section className="bg-white pb-16 md:pb-24">
-        <div className="page-container">
-          <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-4">
-            {EV_FLEETS.industries.vehiclesKicker}
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            {EV_FLEETS.industries.vehicles.map((v) => (
-              <div key={v.label} className="rounded-xl p-4 bg-[#F5F5F5] border border-[#E5E7EB]">
-                <p className="font-display font-bold text-sm text-[#1A1A1A] mb-1">{v.label}</p>
-                <p className="font-body text-xs text-[#6B7280] leading-snug">{v.spec}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* §6 — Cost per km */}
       <section className="bg-[#F5F5F5] py-16 md:py-24">

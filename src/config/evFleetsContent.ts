@@ -21,7 +21,6 @@ export const EV_FLEETS: {
   financing: { eyebrow: string; heading: string; options: FinancingOption[]; note: string };
   industries: {
     eyebrow: string; heading: string; subtitle: string; tabs: IndustryTab[];
-    vehiclesKicker: string; vehicles: { label: string; spec: string }[];
   };
   costPerKm: { eyebrow: string; heading: string; statValue: string; statLabel: string; note: string };
   faq: { heading: string; items: FaqItem[] };
@@ -137,14 +136,6 @@ export const EV_FLEETS: {
         bullets: ['Depot-to-depot regional lanes', 'Predictable distance', 'Return-to-base charging'],
         proof: { client: 'Vector Logistics', stat: 'Electric Volvo FH trucks', detail: 'South Africa’s first bumper-to-bumper net-zero cold-chain trucks.' },
       },
-    ],
-    vehiclesKicker: 'Vehicles we supply',
-    vehicles: [
-      { label: 'Electric vans', spec: 'Panel & delivery vans, ~220–300 km range' },
-      { label: 'Electric bakkies', spec: 'Double-cab e-bakkies, up to ~450 km' },
-      { label: 'Urban trucks (~4t)', spec: 'City distribution, ~200 km range' },
-      { label: 'Heavy trucks', spec: 'Regional distribution & superlink' },
-      { label: 'Minibuses & buses', spec: 'Staff, shuttle & public transport' },
     ],
   },
 
