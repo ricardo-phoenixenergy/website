@@ -40,7 +40,7 @@ export const EV_FLEETS: {
     cards: [
       { icon: 'Truck', title: 'Electric vehicles', body: 'We source and supply the right electric vehicles for your duty cycle — vans, bakkies, urban trucks, minibuses and buses available in South Africa.' },
       { icon: 'Zap', title: 'Depot charging', body: 'SANS-certified AC and DC charging, designed around your routes and depots, with smart load management to avoid demand spikes.' },
-      { icon: 'Sun', title: 'Solar + battery storage', body: 'Charge from on-site solar and BESS for the lowest, most stable cost per kilometre — and real emissions cuts the grid alone can\'t deliver.' },
+      { icon: 'Sun', title: 'Solar + battery storage', body: 'Charge from on-site solar and BESS for the lowest, most stable cost per kilometre — and real emissions cuts the grid alone can’t deliver.' },
       { icon: 'DollarSign', title: 'Financing', body: 'We fund the whole transition, so you can go electric without the upfront capital. Subscription or financed-to-own — your choice.' },
     ],
   },
@@ -74,7 +74,7 @@ export const EV_FLEETS: {
       'If your vehicles run predictable routes and come home to a depot each night, they can charge cheaply from solar and deliver the strongest savings.',
     cards: [
       { icon: 'Truck', title: 'Last-mile & e-commerce delivery', body: 'Dense urban routes, nightly depot charging, high stop-start running — the best-proven fit in South Africa.' },
-      { icon: 'Thermometer', title: 'Cold-chain & refrigerated', body: 'Solar-powered refrigeration removes a second diesel burn — as Clicks and UPD proved with SA\'s first solar-refrigerated EV fleet.' },
+      { icon: 'Thermometer', title: 'Cold-chain & refrigerated', body: 'Solar-powered refrigeration removes a second diesel burn — as Clicks and UPD proved with SA’s first solar-refrigerated EV fleet.' },
       { icon: 'Layers', title: 'FMCG & retail distribution', body: 'Scheduled depot-to-store loops with large, solar-ready distribution centres.' },
       { icon: 'Users', title: 'Staff & shuttle transport', body: 'Fixed timetabled routes that return to base between shifts — ideal for overnight charging.' },
       { icon: 'Building', title: 'Municipal & public transport', body: 'Defined urban routes and depots — already live with Golden Arrow and MyCiTi in Cape Town.' },
@@ -95,13 +95,13 @@ export const EV_FLEETS: {
     heading: 'Diesel is the most expensive way to move your fleet.',
     statValue: '23–27%',
     statLabel: 'lower total cost of ownership — measured across 12.5M km of SA electric-fleet operation (Everlectric).',
-    note: 'Energy cost only, for a light delivery van; excludes maintenance (typically ~35% lower for EVs). On South Africa\'s coal-heavy grid the carbon saving is modest — charging from solar is what turns cost savings into deep emissions cuts.',
+    note: 'Energy cost only, for a light delivery van; excludes maintenance (typically ~35% lower for EVs). On South Africa’s coal-heavy grid the carbon saving is modest — charging from solar is what turns cost savings into deep emissions cuts.',
   },
 
   faq: {
     heading: 'Fleet electrification, answered.',
     items: [
-      { question: 'What if my vehicles don\'t return to a depot each night?', answer: 'Depot charging is where electric fleets save the most, because you charge cheaply overnight from solar. If your routes don\'t return to base, we\'ll tell you honestly at the assessment whether electrification stacks up yet.' },
+      { question: 'What if my vehicles don’t return to a depot each night?', answer: 'Depot charging is where electric fleets save the most, because you charge cheaply overnight from solar. If your routes don’t return to base, we’ll tell you honestly at the assessment whether electrification stacks up yet.' },
       { question: 'Is the range enough for our routes?', answer: 'Most last-mile and urban routes run 150–220 km a day, well within the range of the vehicles we supply. We match vehicle range to your actual duty cycles during the assessment.' },
       { question: 'What happens during load-shedding?', answer: 'Charging from on-site solar and battery storage keeps your fleet moving independently of the grid — one of the main reasons we bundle solar and BESS into the package.' },
       { question: 'Do we need capital to start?', answer: 'No. With Fleet-as-a-Service you pay a fixed monthly or per-kilometre fee with zero upfront capital. If you prefer to own the assets, we arrange financing to own them over the term.' },
@@ -113,6 +113,6 @@ export const EV_FLEETS: {
   cta: {
     eyebrow: 'Electrify your fleet',
     heading: 'See what electric could save your fleet',
-    body: 'Book a free fleet assessment — we\'ll analyse your routes and fuel spend and show you the vehicles, charging and financing that make the switch pay.',
+    body: 'Book a free fleet assessment — we’ll analyse your routes and fuel spend and show you the vehicles, charging and financing that make the switch pay.',
   },
 };
