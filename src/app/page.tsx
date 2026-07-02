@@ -84,7 +84,7 @@ export default async function HomePage() {
         <FeaturedProjects />
         {homeHowItWorks && <HowItWorks {...homeHowItWorks} autoAdvanceInterval={2600} />}
         <LatestPosts />
-        <PageFooter stats={companyStats} />
+        <PageFooter ctaVariant="centered" />
       </main>
     </>
   );
