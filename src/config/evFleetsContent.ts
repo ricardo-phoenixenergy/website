@@ -65,7 +65,7 @@ export const EV_FLEETS: {
         tag: 'Subscription',
         subtitle: 'Electrify your fleet with little to no upfront capital.',
         description: 'Transition to electric through a fully managed subscription. We provide the vehicles, charging infrastructure and renewable energy solution as one integrated service, with flexible monthly or per-kilometre pricing that grows with your business.',
-        benefits: ['Little to no upfront capital investment', 'Fixed monthly or per-kilometre pricing', 'Maintenance, insurance and charging included', 'Fully managed and optimised throughout the contract'],
+        benefits: ['Little to no upfront capital investment.', 'Fixed monthly or per-kilometre pricing.', 'Maintenance, insurance and charging included.', 'Fully managed and optimised throughout the contract.'],
       },
       {
         icon: 'purchase',
@@ -73,7 +73,7 @@ export const EV_FLEETS: {
         tag: 'Ownership',
         subtitle: 'Own your fleet. Capture the full lifetime returns.',
         description: 'Purchase your electric vehicles, charging infrastructure and renewable energy system outright—or finance the investment through our lending partners. You own the assets from day one while maximising long-term savings and tax benefits.',
-        benefits: ['Full ownership of all fleet and energy assets', 'Vehicles, charging and renewable energy in one solution', 'Eligible solar assets qualify for the Section 12B first-year tax deduction', 'Maximum lifetime savings and return on investment'],
+        benefits: ['Full ownership of all fleet and energy assets.', 'Vehicles, charging and renewable energy in one solution.', 'Eligible solar assets qualify for the Section 12B first-year tax deduction.', 'Maximum lifetime savings and return on investment.'],
       },
     ],
     note: 'All financing is subject to credit approval. Section 12B and tax treatment should be confirmed with your tax advisor.',
@@ -91,7 +91,7 @@ export const EV_FLEETS: {
         icon: 'Truck',
         title: 'Last-Mile & E-commerce Delivery',
         body: 'Urban delivery fleets are one of the strongest commercial cases for electrification. Predictable daily routes, frequent stop-start driving, and overnight depot parking allow vehicles to recharge during off-hours using dedicated charging infrastructure and renewable energy. Combined with high annual mileage, these operating characteristics maximise fuel savings and deliver a lower cost per kilometre.',
-        bullets: ['Predictable urban routes typically under 200–250 km per day', 'Vehicles that return to a depot or distribution centre each night', 'High stop-start utilisation where regenerative braking improves efficiency', 'High annual mileage where fuel and maintenance savings compound quickly'],
+        bullets: ['Predictable urban routes typically under 200–250 km per day.', 'Vehicles that return to a depot or distribution centre each night.', 'High stop-start utilisation where regenerative braking improves efficiency.', 'High annual mileage where fuel and maintenance savings compound quickly.'],
         proof: { client: 'Woolworths & DSV', stat: '41 Electric Delivery Vans', detail: 'Electric delivery vans operating from solar-powered depots, avoiding approximately 400 tonnes of tailpipe CO₂ emissions each year while demonstrating the commercial viability of fleet electrification in South Africa.', image: '/proof/woolworths-dsv.webp', imageAlt: 'Woolworths and DSV electric delivery vans' },
       },
       {
@@ -100,7 +100,7 @@ export const EV_FLEETS: {
         icon: 'Thermometer',
         title: 'Cold Chain & Refrigerated Distribution',
         body: 'Cold-chain fleets are ideally suited to electrification because both the vehicle and refrigeration system can be powered by electricity rather than diesel. Combined with predictable delivery schedules and return-to-depot charging, businesses can significantly reduce fuel consumption while maintaining strict temperature control.',
-        bullets: ['Predictable local and regional delivery routes', 'Vehicles return to base for overnight charging', 'Electric refrigeration reduces diesel consumption and emissions', 'Reliable temperature control with lower operating costs'],
+        bullets: ['Predictable local and regional delivery routes.', 'Vehicles return to base for overnight charging.', 'Electric refrigeration reduces diesel consumption and emissions.', 'Reliable temperature control with lower operating costs.'],
         proof: { client: 'Clicks & UPD', stat: '42 Refrigerated Electric Vans', detail: 'South Africa’s first solar-supported refrigerated electric fleet, demonstrating that temperature-controlled logistics can reduce emissions and operating costs without compromising cold-chain performance.', image: '/proof/clicks-upd.jpg', imageAlt: 'Clicks & UPD refrigerated electric van' },
       },
       {
@@ -109,7 +109,7 @@ export const EV_FLEETS: {
         icon: 'Layers',
         title: 'FMCG & Retail Distribution',
         body: 'FMCG distribution networks combine high daily vehicle utilisation with predictable depot-to-store routes, making them an excellent fit for fleet electrification. Large distribution centres provide ideal locations for charging infrastructure and renewable energy, helping businesses reduce transport costs while improving supply chain sustainability.',
-        bullets: ['Scheduled depot-to-store distribution routes', 'Vehicles returning to distribution centres between shifts', 'High annual mileage where operating cost savings compound', 'Large depots with space for charging infrastructure and renewable energy'],
+        bullets: ['Scheduled depot-to-store distribution routes.', 'Vehicles returning to distribution centres between shifts.', 'High annual mileage where operating cost savings compound.', 'Large depots with space for charging infrastructure and renewable energy.'],
         proof: { client: 'DHL & Unilever', stat: 'Africa’s First Electric Superlink', detail: 'A fully electric Volvo FMX superlink operating on live Unilever distribution routes, demonstrating the viability of heavy-duty electric transport for commercial FMCG logistics.', image: '/proof/dhl-unilever.jpg', imageAlt: 'DHL & Unilever electric Volvo FMX superlink truck', imagePosition: 'bottom' },
       },
       {
@@ -118,7 +118,7 @@ export const EV_FLEETS: {
         icon: 'Users',
         title: 'Staff & Shuttle Transport',
         body: 'Employee shuttles and staff transport operate on fixed routes and predictable schedules, making them ideally suited to fleet electrification. Vehicles can recharge between shifts or overnight at a central depot, delivering lower operating costs while providing reliable, quiet, and zero-tailpipe-emission transport.',
-        bullets: ['Fixed, scheduled employee and shuttle routes', 'Vehicles returning to a central depot or facility', 'Predictable daily distances within EV range', 'Businesses looking to reduce transport operating costs and emissions'],
+        bullets: ['Fixed, scheduled employee and shuttle routes.', 'Vehicles returning to a central depot or facility.', 'Predictable daily distances within EV range.', 'Businesses looking to reduce transport operating costs and emissions.'],
         proof: { client: 'eKamva', kicker: 'Made in South Africa', stat: 'South Africa’s First Electric Minibus Taxi', detail: 'Developed by a South African consortium led by GoMetro, the 15-seat eKamva electric minibus demonstrates the commercial viability of electric people transport, with operating costs up to 40–70% lower than conventional diesel alternatives.', image: '/proof/ekamva.jpeg', imageAlt: 'eKamva electric minibus taxi' },
       },
       {
@@ -127,7 +127,7 @@ export const EV_FLEETS: {
         icon: 'Building',
         title: 'Municipal & Public Transport',
         body: 'Municipal buses and public transport fleets operate on fixed urban routes with predictable daily distances and centralised depots, making them well suited to electrification. Vehicles can recharge overnight or between service windows, while solar and battery storage help reduce operating costs and improve energy resilience across the fleet.',
-        bullets: ['Fixed urban routes with predictable daily mileage', 'Vehicles returning to a central depot each day', 'Overnight or scheduled charging windows', 'Operators pursuing lower operating costs and emissions'],
+        bullets: ['Fixed urban routes with predictable daily mileage.', 'Vehicles returning to a central depot each day.', 'Overnight or scheduled charging windows.', 'Operators pursuing lower operating costs and emissions.'],
         proof: { client: 'Golden Arrow', stat: '120 Electric Buses', detail: 'Cape Town’s first electric public bus fleet, now in live commercial operation — proof that large-scale public transport electrification can run reliably on scheduled urban routes, using a combination of on-site solar and off-peak charging to reduce operating costs.', image: '/proof/golden-arrow.webp', imageAlt: 'Golden Arrow electric public bus' },
       },
       {
@@ -136,7 +136,7 @@ export const EV_FLEETS: {
         icon: 'TrendingUp',
         title: 'Regional logistics',
         body: 'Depot-to-depot regional lanes with predictable distance and a return to base are viable for electric today — the sweet spot between short urban runs and true long-haul.',
-        bullets: ['Depot-to-depot regional lanes', 'Predictable distance', 'Return-to-base charging'],
+        bullets: ['Depot-to-depot regional lanes.', 'Predictable distance.', 'Return-to-base charging.'],
         proof: { client: 'Vector Logistics', stat: 'Electric Volvo FH trucks', detail: 'South Africa’s first bumper-to-bumper net-zero cold-chain trucks.', image: '/proof/vector-logistics.jpeg', imageAlt: 'Vector Logistics electric Volvo FH cold-chain truck' },
       },
     ],
