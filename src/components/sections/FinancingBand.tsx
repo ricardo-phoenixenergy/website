@@ -37,6 +37,16 @@ interface FinancingBandProps {
   accentText?: string;
 }
 
+/* Splits a heading on <em>…</em> and renders those parts in the accent colour. */
+function renderHeading(raw: string, accent: string) {
+  return raw.split(/(<em>.*?<\/em>)/g).map((part, i) => {
+    const m = part.match(/^<em>(.*)<\/em>$/);
+    return m
+      ? <em key={i} style={{ color: accent, fontStyle: 'normal' }}>{m[1]}</em>
+      : <span key={i}>{part}</span>;
+  });
+}
+
 export function FinancingBand({
   eyebrow = 'How to fund it',
   heading = 'Three ways to fund it — pick what suits your balance sheet',
@@ -51,7 +61,7 @@ export function FinancingBand({
           {eyebrow}
         </p>
         <h2 className="font-display font-extrabold text-2xl md:text-3xl text-[#1A1A1A] mb-6 max-w-xl">
-          {heading}
+          {renderHeading(heading, accent)}
         </h2>
         <FinancingCards options={options} accent={accent} accentText={accentText} />
       </div>
