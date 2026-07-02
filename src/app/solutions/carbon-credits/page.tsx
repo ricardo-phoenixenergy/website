@@ -104,7 +104,7 @@ export default async function CarbonCreditsPage() {
         eyebrow={CARBON_CREDITS.cta.eyebrow}
         heading={CARBON_CREDITS.cta.heading}
         body={CARBON_CREDITS.cta.body}
-        primaryCta={{ label: 'Book a Carbon Assessment', href: '/contact' }}
+        primaryCta={{ label: 'Book an Assessment', href: '/contact' }}
       />
     </>
   );

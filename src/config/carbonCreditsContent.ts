@@ -55,7 +55,7 @@ export const CARBON_CREDITS: {
 
   cta: {
     eyebrow: 'Start earning',
-    heading: 'Turn your solar system into an additional source of revenue',
-    body: 'We’ll assess your existing solar system, estimate how many carbon credits it could generate and confirm whether it qualifies — all at no obligation.',
+    heading: 'Your solar system is already generating carbon reductions. Let’s see what they’re worth.',
+    body: 'We’ll assess your system, estimate your potential revenue, and confirm your eligibility — free and with no obligation.',
   },
 };
