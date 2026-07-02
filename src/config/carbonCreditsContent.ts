@@ -20,11 +20,11 @@ export const CARBON_CREDITS: {
     eyebrow: 'The basics',
     heading: 'How does your solar system generate <em>carbon credits</em>?',
     subtitle:
-      'Every unit of solar electricity your system produces avoids emissions that would otherwise have come from the national grid. Those avoided emissions can be independently verified, certified and sold as carbon credits — creating an entirely new revenue stream from the same solar asset.',
+      'Every unit of clean electricity your solar system produces displaces electricity that would otherwise have been supplied by the national grid, avoiding carbon emissions in the process. Those avoided emissions can be independently measured, certified, and sold as carbon credits — creating an additional revenue stream from the solar system you already own.',
     cards: [
-      { icon: 'Sun', title: 'Your solar already avoids emissions', body: 'Every megawatt-hour your system generates replaces electricity from the grid, preventing carbon emissions that would otherwise have been produced.' },
-      { icon: 'ClipboardCheck', title: 'Those reductions are independently verified', body: 'Your generation data is measured, audited and verified against recognised carbon standards before credits are issued.' },
-      { icon: 'DollarSign', title: 'Verified credits become revenue', body: 'Once issued, the credits are sold to qualified buyers. Phoenix manages the entire process and you receive the proceeds.' },
+      { icon: 'Sun', title: 'Your solar already avoids emissions', body: 'Every megawatt-hour your system generates reduces your reliance on grid electricity, preventing the associated carbon emissions. If your system is producing clean energy, it’s already creating the environmental benefit required to generate carbon credits.' },
+      { icon: 'ClipboardCheck', title: 'Your emissions are independently certified', body: 'We collect and analyse your generation data, quantify the avoided emissions, and coordinate independent third-party verification against recognised carbon standards. Once certified, the corresponding carbon credits are issued to your project.' },
+      { icon: 'DollarSign', title: 'Your carbon credits are sold on your behalf', body: 'We market and sell your certified carbon credits to qualified buyers, manage the transaction from start to finish, and distribute the proceeds — turning your existing solar system into an ongoing source of additional revenue.' },
     ],
   },
 
