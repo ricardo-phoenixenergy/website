@@ -23,8 +23,8 @@ const PANELS: Panel[] = [
     vertical: 'ci-solar-storage',
     number: '01',
     href: '/solutions/ci-solar-storage',
-    title: 'Power your business with solar & storage',
-    description: 'Design, finance, install and operate solar + BESS systems for C&I clients across Southern Africa.',
+    title: 'Reduce your electricity costs with solar & storage',
+    description: 'Design, finance, install and operate commercial solar and battery systems that lower energy costs, improve energy resilience and maximise long-term savings.',
   },
   {
     vertical: 'wheeling',
