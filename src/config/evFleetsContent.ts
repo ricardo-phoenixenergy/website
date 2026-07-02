@@ -11,6 +11,7 @@ interface IndustryTab {
   title: string;
   body: string;
   bullets: string[];
+  bulletsLabel?: string;   // kicker above the bullets; defaults to 'Why it works'
   proof?: { client: string; stat: string; detail: string; image?: string; imageAlt?: string; imagePosition?: string; kicker?: string };
 }
 
@@ -115,10 +116,11 @@ export const EV_FLEETS: {
         key: 'industry-staff',
         label: 'Staff & Shuttle',
         icon: 'Users',
-        title: 'Staff & shuttle transport',
-        body: 'Fixed, timetabled routes that return to base between shifts are a textbook fit for overnight depot charging — predictable daily distance makes range easy to plan.',
-        bullets: ['Fixed timetabled routes', 'Returns to base between shifts', 'Overnight depot charging'],
-        proof: { client: 'eKamva', kicker: 'Made in South Africa', stat: 'SA’s first electric minibus taxi', detail: 'A locally built 15-seater electric minibus taxi with a 200 km range and 40–70% lower running costs — developed by a GoMetro-led South African consortium.', image: '/proof/ekamva.jpeg', imageAlt: 'eKamva electric minibus taxi' },
+        title: 'Staff & Shuttle Transport',
+        body: 'Employee shuttles and staff transport operate on fixed routes and predictable schedules, making them ideally suited to fleet electrification. Vehicles can recharge between shifts or overnight at a central depot, delivering lower operating costs while providing reliable, quiet, and zero-tailpipe-emission transport.',
+        bulletsLabel: 'Best suited for',
+        bullets: ['Fixed, scheduled employee and shuttle routes', 'Vehicles returning to a central depot or facility', 'Predictable daily distances within EV range', 'Businesses looking to reduce transport operating costs and emissions'],
+        proof: { client: 'eKamva', kicker: 'Made in South Africa', stat: 'South Africa’s First Electric Minibus Taxi', detail: 'Developed by a South African consortium led by GoMetro, the 15-seat eKamva electric minibus demonstrates the commercial viability of electric people transport, with operating costs up to 40–70% lower than conventional diesel alternatives.', image: '/proof/ekamva.jpeg', imageAlt: 'eKamva electric minibus taxi' },
       },
       {
         key: 'industry-municipal',
