@@ -44,13 +44,13 @@ export const EV_FLEETS: {
   },
 
   pillars: {
-    eyebrow: 'One managed package',
-    heading: 'Everything your fleet needs to go electric — <em>from one partner</em>.',
+    eyebrow: 'One integrated solution',
+    heading: 'Everything you need to electrify your fleet—<em>from one partner</em>.',
     cards: [
-      { icon: 'Truck', title: 'Electric vehicles', body: 'We source and supply the right electric vehicles for your duty cycle — vans, bakkies, urban trucks, minibuses and buses available in South Africa.' },
-      { icon: 'Zap', title: 'Depot charging', body: 'SANS-certified AC and DC charging, designed around your routes and depots, with smart load management to avoid demand spikes.' },
-      { icon: 'Sun', title: 'Solar + battery storage', body: 'Charge from on-site solar and BESS for the lowest, most stable cost per kilometre — and real emissions cuts the grid alone can’t deliver.' },
-      { icon: 'DollarSign', title: 'Financing', body: 'We fund the whole transition, so you can go electric without the upfront capital. Subscription or financed-to-own — your choice.' },
+      { icon: 'Truck', title: 'Electric Vehicles', body: 'We source and supply the right electric vehicles for your operation—from vans and bakkies to urban trucks, minibuses and buses—matched to your routes, payloads and operational requirements.' },
+      { icon: 'Zap', title: 'Charging Infrastructure', body: 'We design and install AC and DC charging infrastructure strategically across your depots, facilities, and operational routes. Intelligent load management optimises charging schedules, minimises demand peaks, and reduces charging costs.' },
+      { icon: 'Sun', title: 'Renewable Energy', body: 'Power your fleet with renewable electricity from on-site solar, battery storage, off-site wheeling—or the optimal combination of all three. We design the right energy strategy to minimise your cost per kilometre while improving energy security and reducing emissions.' },
+      { icon: 'DollarSign', title: 'Financing', body: 'We finance your entire fleet electrification project—from vehicles and charging infrastructure to renewable energy systems. Choose between flexible subscriptions or financed ownership, with little to no upfront capital.' },
     ],
   },
 
