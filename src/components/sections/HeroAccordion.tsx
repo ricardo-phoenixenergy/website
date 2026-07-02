@@ -311,8 +311,8 @@ function MobileAccordion({ heroImages }: { heroImages: HeroImages }) {
   }, [reduced]);
 
   return (
-    <div ref={containerRef} style={{ height: `${PANELS.length * 100}vh` }}>
-      <div className="sticky top-0 h-screen overflow-hidden flex flex-col">
+    <div ref={containerRef} style={{ height: `${PANELS.length * 100}svh` }}>
+      <div className="sticky top-0 h-[100dvh] overflow-hidden flex flex-col">
         {PANELS.map((panel, i) => {
           const meta = SOLUTION_META[panel.vertical];
           const isActive = i === activeIndex;
