@@ -234,5 +234,5 @@ label[for] {
    hiding it as long as the required attribution is shown near each form — we
    render <RecaptchaNotice /> under the contact and valuation forms instead. */
 .grecaptcha-badge {
-  visibility: hidden;
+  visibility: hidden !important;
 }
