@@ -10,6 +10,7 @@ import {
 } from '@/lib/evfleet/estimate';
 import type { ResolvedEnergyPrices } from '@/lib/getEnergyPrices';
 import { CostPerKmBars } from '@/components/sections/CostPerKmBars';
+import { IconArrowRight, IconArrowLeft } from '@/components/ui/Icons';
 
 const ACCENT = '#A9D6CB';
 const ACCENT_TEXT = '#1a5a48';
@@ -28,7 +29,7 @@ const UNSELECTED_BTN = {
   border: '1px solid rgba(255,255,255,0.12)',
 } as const;
 
-const NAV_BTN = 'rounded-lg py-2.5 px-5 font-body text-sm font-semibold transition-colors';
+const NAV_BTN = 'inline-flex items-center gap-1.5 rounded-lg py-2.5 px-5 font-body text-sm font-semibold transition-colors';
 
 function formatRand(n: number): string {
   if (n >= 1_000_000) return `R${(n / 1_000_000).toFixed(1)}M`;
@@ -241,7 +242,7 @@ export function FleetSavingsEstimator({ prices }: { prices: ResolvedEnergyPrices
               className={NAV_BTN}
               style={{ background: ACCENT, color: ACCENT_TEXT }}
             >
-              See savings &rarr;
+              See savings <IconArrowRight size={15} />
             </button>
           </>
         ) : (
@@ -251,7 +252,7 @@ export function FleetSavingsEstimator({ prices }: { prices: ResolvedEnergyPrices
             className={NAV_BTN}
             style={UNSELECTED_BTN}
           >
-            &larr; Edit inputs
+            <IconArrowLeft size={15} /> Edit inputs
           </button>
         )}
       </div>
