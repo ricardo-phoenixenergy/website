@@ -80,9 +80,9 @@ export const EV_FLEETS: {
 
   industries: {
     eyebrow: 'Built for your operation',
-    heading: 'Electrification pays off first for <em>return-to-depot fleets</em>.',
+    heading: 'The best fleets for electrification already follow <em>predictable schedules</em>.',
     subtitle:
-      'If your vehicles run predictable routes and come home to a depot each night, they can charge cheaply from solar and deliver the strongest savings.',
+      'If your vehicles return to the same depot each day, they can charge from dedicated infrastructure and renewable energy—delivering the lowest cost per kilometre and the fastest return on investment.',
     tabs: [
       {
         key: 'industry-last-mile',
