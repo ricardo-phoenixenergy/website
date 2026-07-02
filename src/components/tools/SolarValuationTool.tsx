@@ -10,7 +10,7 @@ import { Step2Condition } from './Step2Condition';
 import { Step3Results } from './Step3Results';
 
 const DEFAULT_SOLAR: SolarInputs = {
-  kw: 20,
+  kw: 250,
   installYear: 2021,
   inverterType: 'string',
   panelBrand: 'JA Solar',
@@ -19,7 +19,7 @@ const DEFAULT_SOLAR: SolarInputs = {
 
 const DEFAULT_BESS: BessInputs = {
   enabled: false,
-  kWh: 20,
+  kWh: 250,
   chemistry: 'lfp',
   soh: 'high',
   brand: 'Pylontech',

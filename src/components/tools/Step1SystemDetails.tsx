@@ -19,14 +19,17 @@ const toOptions = (brands: string[]) => brands.map((b) => ({ value: b, label: b 
 
 const PANEL_BRANDS = toOptions([
   'JA Solar', 'Canadian Solar', 'LONGi', 'Trina Solar', 'JinkoSolar', 'Yingli', 'SunPower',
+  'Tongwei', 'Chint / Astronergy', 'AIKO Solar', 'Risen Energy', 'GCL System', 'TCL',
 ]);
 
 const INVERTER_BRANDS = toOptions([
-  'Sunsynk', 'Deye', 'Victron', 'Goodwe', 'SolarEdge', 'Fronius', 'Huawei', 'SMA',
+  'Sunsynk', 'Deye', 'Sungrow', 'Solis', 'Goodwe', 'Victron', 'SolarEdge',
+  'Fronius', 'Huawei', 'SMA', 'Sigenergy', 'WEG',
 ]);
 
 const BATTERY_BRANDS = toOptions([
   'Pylontech', 'BYD', 'Freedom Won', 'Hubble', 'Dyness', 'Shoto', 'Huawei',
+  'Sungrow', 'Sigenergy',
 ]);
 
 const INVERTER_OPTIONS: { value: SolarInputs['inverterType']; label: string }[] = [
@@ -45,6 +48,17 @@ const SOH_OPTIONS: { value: BessInputs['soh']; label: string }[] = [
   { value: 'mid', label: '70–90% (good)' },
   { value: 'low', label: 'Below 70% (degraded)' },
 ];
+
+const SOLAR_MAX = 10000; // 10 MW
+const BESS_MAX = 20000; // 20 MWh
+
+// Show kWp/kWh under 1 MW, then switch to MW/MWh; the battery max reads "20 MWh+".
+const fmtSolar = (v: number) =>
+  v >= 1000 ? `${(v / 1000).toLocaleString('en-ZA', { maximumFractionDigits: 2 })} MW` : `${v} kWp`;
+const fmtBattery = (v: number) => {
+  const label = v >= 1000 ? `${(v / 1000).toLocaleString('en-ZA', { maximumFractionDigits: 2 })} MWh` : `${v} kWh`;
+  return v >= BESS_MAX ? `${label}+` : label;
+};
 
 const NEXT_BTN =
   'mt-6 w-full inline-flex items-center justify-center gap-2 font-body font-semibold text-sm text-white rounded-xl py-3 transition-opacity hover:opacity-90';
@@ -65,12 +79,13 @@ export function Step1SystemDetails({
       <RangeSlider
         label="Installed solar capacity"
         value={solar.kw}
-        min={3}
-        max={500}
-        step={1}
+        min={0}
+        max={SOLAR_MAX}
+        step={5}
         unit="kWp"
-        hint="Residential: 5–30 kWp · Small C&I: 30–100 kWp · Large C&I: 100 kWp+"
+        hint="Residential: 5–30 kWp · Small C&I: 30–100 kWp · Large C&I: 100 kWp – 10 MW"
         onChange={v => onSolarChange({ kw: v })}
+        formatValue={fmtSolar}
       />
 
       <RangeSlider
@@ -127,12 +142,13 @@ export function Step1SystemDetails({
             <RangeSlider
               label="Battery capacity"
               value={bess.kWh}
-              min={5}
-              max={500}
+              min={0}
+              max={BESS_MAX}
               step={5}
               unit="kWh"
               hint="Total usable capacity installed"
               onChange={v => onBessChange({ kWh: v })}
+              formatValue={fmtBattery}
             />
 
             <SelectControl
