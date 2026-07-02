@@ -13,7 +13,7 @@ const ACCENT_TEXT = '#1a5a48';
 
 const TYPES: FleetVehicleType[] = ['van', 'car', 'minibus', 'truck'];
 const TYPE_LABEL: Record<FleetVehicleType, string> = {
-  van: 'Van', car: 'Car', minibus: 'Minibus', truck: 'Truck',
+  van: 'Van', car: 'Car', minibus: 'Minibus', truck: 'Truck', heavytruck: 'Heavy',
 };
 
 function formatRand(n: number): string {
@@ -129,7 +129,7 @@ export function FleetSavingsEstimator() {
       <div className="flex items-center justify-between rounded-xl p-3 mb-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
         <span className="font-body text-[11px]" style={{ color: 'rgba(255,255,255,0.55)' }}>Cost per km: diesel vs electric</span>
         <span className="font-display font-bold text-sm text-white">
-          R{est.dieselCostPerKm.toFixed(2)} <span style={{ color: ACCENT }}>&rarr;</span> R{est.evCostPerKm.toFixed(2)}
+          R{est.iceCostPerKm.toFixed(2)} <span style={{ color: ACCENT }}>&rarr;</span> R{est.evCostPerKm.toFixed(2)}
         </span>
       </div>
 
