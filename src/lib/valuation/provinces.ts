@@ -16,4 +16,6 @@ export const PROVINCE_LABELS: Record<Province, string> = {
 
 export const PROVINCE_OPTIONS: { value: Province; label: string }[] = (
   Object.keys(PROVINCE_LABELS) as Province[]
-).map((value) => ({ value, label: PROVINCE_LABELS[value] }));
+)
+  .map((value) => ({ value, label: PROVINCE_LABELS[value] }))
+  .sort((a, b) => a.label.localeCompare(b.label));

@@ -15,7 +15,8 @@ interface Step1SystemDetailsProps {
   onNext: () => void;
 }
 
-const toOptions = (brands: string[]) => brands.map((b) => ({ value: b, label: b }));
+const toOptions = (brands: string[]) =>
+  [...brands].sort((a, b) => a.localeCompare(b)).map((b) => ({ value: b, label: b }));
 
 const PANEL_BRANDS = toOptions([
   'JA Solar', 'Canadian Solar', 'LONGi', 'Trina Solar', 'JinkoSolar', 'Yingli', 'SunPower',
