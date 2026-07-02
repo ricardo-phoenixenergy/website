@@ -58,8 +58,8 @@ const PANELS: Panel[] = [
     vertical: 'carbon-credits',
     number: '06',
     href: '/solutions/carbon-credits',
-    title: 'Turn clean energy into certified revenue',
-    description: 'Register, certify and monetise carbon credits from your renewable assets under the Gold Standard.',
+    title: 'Turn your solar into a new revenue stream',
+    description: 'We register, verify and trade carbon credits on your behalf, creating additional revenue from the clean energy your system already generates.',
   },
 ];
 
