@@ -142,16 +142,16 @@ export function Navbar() {
                   exit={{ opacity: 0, y: -4, transition: { duration: 0.14 } }}
                   className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[500px] rounded-2xl overflow-hidden"
                   style={{
-                    background: '#0d1f22',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    boxShadow: '0 24px 64px rgba(0,0,0,0.45), 0 4px 16px rgba(0,0,0,0.2)',
+                    background: '#ffffff',
+                    border: '1px solid #E5E7EB',
+                    boxShadow: '0 24px 64px rgba(13,31,34,0.18), 0 4px 16px rgba(13,31,34,0.08)',
                   }}
                   onMouseEnter={openDropdown}
                   onMouseLeave={closeDropdown}
                 >
                   {/* Panel header */}
-                  <div className="px-5 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                    <p className="font-body text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                  <div className="px-5 pt-4 pb-3" style={{ borderBottom: '1px solid #E5E7EB' }}>
+                    <p className="font-body text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: '#9CA3AF' }}>
                       Our Solutions
                     </p>
                   </div>
@@ -164,7 +164,7 @@ export function Navbar() {
                         <Link
                           key={item.href}
                           href={item.href}
-                          className="group flex items-start gap-3 px-3 py-3 rounded-xl transition-colors duration-150 hover:bg-white/[0.05]"
+                          className="group flex items-start gap-3 px-3 py-3 rounded-xl transition-colors duration-150 hover:bg-[#F5F5F5]"
                           onClick={() => setDropdownOpen(false)}
                         >
                           {/* Accent dot */}
@@ -173,10 +173,10 @@ export function Navbar() {
                             style={{ background: meta.accent }}
                           />
                           <span className="flex flex-col gap-0.5 min-w-0">
-                            <span className="font-display font-semibold text-sm text-white leading-snug group-hover:text-white transition-colors">
+                            <span className="font-display font-semibold text-sm text-[#1A1A1A] leading-snug transition-colors">
                               {item.name}
                             </span>
-                            <span className="font-body text-xs leading-snug" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                            <span className="font-body text-xs leading-snug" style={{ color: '#6B7280' }}>
                               {item.blurb}
                             </span>
                           </span>
@@ -188,7 +188,7 @@ export function Navbar() {
                   {/* Footer CTA */}
                   <div
                     className="px-5 py-3 flex items-center justify-between"
-                    style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+                    style={{ borderTop: '1px solid #E5E7EB' }}
                   >
                     <Link
                       href="/solutions"
