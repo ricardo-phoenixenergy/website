@@ -135,7 +135,7 @@ export default async function EvFleetsPage() {
           </h2>
           <CostPerKmBars accent={meta.accent} />
           <div className="mt-8 flex items-baseline gap-3">
-            <span className="font-display font-extrabold text-3xl" style={{ color: meta.accentText }}>
+            <span className="font-display font-extrabold text-3xl whitespace-nowrap" style={{ color: meta.accentText }}>
               {EV_FLEETS.costPerKm.statValue}
             </span>
             <span className="font-body text-sm text-[#6B7280] leading-snug">{EV_FLEETS.costPerKm.statLabel}</span>
