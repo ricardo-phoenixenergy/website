@@ -76,6 +76,7 @@ export default async function CarbonCreditsPage() {
         background="gray"
         eyebrow={CARBON_CREDITS.opportunity.eyebrow}
         heading={CARBON_CREDITS.opportunity.heading}
+        subtitle={CARBON_CREDITS.opportunity.subtitle}
         accent={meta.accent}
         columns={3}
         cards={CARBON_CREDITS.opportunity.cards}

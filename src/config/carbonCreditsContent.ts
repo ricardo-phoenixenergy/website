@@ -5,7 +5,7 @@ import type { FaqItem } from '@/components/sections/FaqAccordion';
 export const CARBON_CREDITS: {
   hero: { title: string; subtitle: string };
   becomes: { eyebrow: string; heading: string; subtitle: string; cards: ExplainerCardItem[] };
-  opportunity: { eyebrow: string; heading: string; cards: ExplainerCardItem[] };
+  opportunity: { eyebrow: string; heading: string; subtitle: string; cards: ExplainerCardItem[] };
   whyPhoenix: { eyebrow: string; heading: string; subtitle: string; cards: ExplainerCardItem[] };
   faq: { heading: string; items: FaqItem[] };
   cta: { eyebrow: string; heading: string; body: string };
@@ -30,11 +30,13 @@ export const CARBON_CREDITS: {
 
   opportunity: {
     eyebrow: 'The opportunity',
-    heading: 'Your solar system already saves money. <em>It could also be generating revenue.</em>',
+    heading: 'Most commercial solar systems never realise their <em>full value</em>.',
+    subtitle:
+      'Generating carbon credits isn’t automatic. Most businesses own solar systems that qualify, but never register them, verify the emissions reductions, or access the carbon markets needed to turn those reductions into revenue.',
     cards: [
-      { icon: 'Zap', title: 'You’re already creating the asset', body: 'If your solar system is generating electricity, it’s already producing the emissions reductions required for carbon credits.' },
-      { icon: 'TrendingUp', title: 'Revenue that stacks on your savings', body: 'Carbon credit income is earned in addition to the electricity bill savings your system already delivers.' },
-      { icon: 'Building', title: 'No changes to your system', body: 'No additional equipment, operational changes or disruption to your facility. Phoenix handles registration, verification and trading while your system continues operating as normal.' },
+      { icon: 'Zap', title: 'Your system may already qualify', body: 'If your solar system generates clean electricity, it may already be producing eligible emissions reductions. Most owners simply never take the next step.' },
+      { icon: 'Globe', title: 'Carbon markets are highly specialised', body: 'Generating carbon credits requires project registration, ongoing monitoring, independent verification, and access to recognised carbon registries and buyers.' },
+      { icon: 'UserTie', title: 'That’s where we come in', body: 'We manage the entire process — from eligibility assessment and certification to trading and payouts — so your existing solar system becomes an additional source of revenue.' },
     ],
   },
 
