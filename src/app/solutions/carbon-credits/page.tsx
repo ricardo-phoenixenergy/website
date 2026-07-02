@@ -53,7 +53,7 @@ export default async function CarbonCreditsPage() {
         heroImage={hero?.url}
         heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #0d1f22 0%, #182a1a 50%, #2a4a28 100%)"
-        primaryCta={{ label: 'Book a Carbon Assessment', href: '/contact' }}
+        primaryCta={{ label: 'Register my Carbon Credits', href: '/contact' }}
       >
         <CarbonRevenueEstimator />
       </SolutionHero>
