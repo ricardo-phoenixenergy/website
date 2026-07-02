@@ -197,3 +197,14 @@ export interface HeroImageAsset {
 }
 
 export type HeroImages = Partial<Record<SolutionVertical, HeroImageAsset | null>>;
+
+/* ─── Energy Prices ──────────────────────────────────────────────────────────── */
+
+export interface EnergyPricesContent {
+  dieselPricePerL?: number;
+  petrol93PricePerL?: number;
+  gridPricePerKwh?: number;
+  solarPricePerKwh?: number;
+  effectiveDate?: string;
+  sourceLabel?: string;
+}

@@ -309,3 +309,16 @@ export const HERO_IMAGES_QUERY = `
     "ev-fleets":           evFleets{ "url": asset->url, "lqip": asset->metadata.lqip }
   }
 `;
+
+/* ─── Energy & Fuel Prices ───────────────────────────────────────────────── */
+
+export const ENERGY_PRICES_QUERY = `
+  *[_id == "energyPrices"][0]{
+    dieselPricePerL,
+    petrol93PricePerL,
+    gridPricePerKwh,
+    solarPricePerKwh,
+    effectiveDate,
+    sourceLabel
+  }
+`;
