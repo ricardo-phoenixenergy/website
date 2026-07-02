@@ -151,7 +151,7 @@ export default async function WheelingPage() {
         eyebrow="Start wheeling"
         heading="Access lower-cost renewable electricity through a fully managed wheeling framework."
         body="Connect to off-site renewable generation and reduce your electricity costs through structured wheeling agreements — fully managed from contract to settlement."
-        primaryCta={{ label: 'Request a Proposal', href: '/contact' }}
+        primaryCta={{ label: 'Get a Wheeling Quote', href: '/contact' }}
       />
     </>
   );
