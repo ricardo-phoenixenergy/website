@@ -82,18 +82,6 @@ export default async function CarbonCreditsPage() {
         cards={CARBON_CREDITS.opportunity.cards}
       />
 
-      {/* §4 — Why Phoenix */}
-      <ExplainerCards
-        id="why-phoenix"
-        background="white"
-        eyebrow={CARBON_CREDITS.whyPhoenix.eyebrow}
-        heading={CARBON_CREDITS.whyPhoenix.heading}
-        subtitle={CARBON_CREDITS.whyPhoenix.subtitle}
-        accent={meta.accent}
-        columns={3}
-        cards={CARBON_CREDITS.whyPhoenix.cards}
-      />
-
       {/* §5 — From generation to payout (Sanity-driven) */}
       {howItWorks && <HowItWorks {...howItWorks} accent={meta.accent} accentText={meta.accentText} />}
 

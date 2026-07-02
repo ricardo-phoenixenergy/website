@@ -6,7 +6,6 @@ export const CARBON_CREDITS: {
   hero: { title: string; subtitle: string };
   becomes: { eyebrow: string; heading: string; subtitle: string; cards: ExplainerCardItem[] };
   opportunity: { eyebrow: string; heading: string; subtitle: string; cards: ExplainerCardItem[] };
-  whyPhoenix: { eyebrow: string; heading: string; subtitle: string; cards: ExplainerCardItem[] };
   faq: { heading: string; items: FaqItem[] };
   cta: { eyebrow: string; heading: string; body: string };
 } = {
@@ -37,18 +36,6 @@ export const CARBON_CREDITS: {
       { icon: 'Zap', title: 'Your system may already qualify', body: 'If your solar system generates clean electricity, it may already be producing eligible emissions reductions. Most owners simply never take the next step.' },
       { icon: 'Globe', title: 'Carbon markets are highly specialised', body: 'Generating carbon credits requires project registration, ongoing monitoring, independent verification, and access to recognised carbon registries and buyers.' },
       { icon: 'UserTie', title: 'That’s where we come in', body: 'We manage the entire process — from eligibility assessment and certification to trading and payouts — so your existing solar system becomes an additional source of revenue.' },
-    ],
-  },
-
-  whyPhoenix: {
-    eyebrow: 'Why work with us?',
-    heading: 'We unlock the value. <em>You keep running your business.</em>',
-    subtitle:
-      'Generating carbon credits is far more than simply owning solar. It requires ongoing monitoring, independent verification, registry management and access to carbon markets. Phoenix manages the entire process on your behalf.',
-    cards: [
-      { icon: 'ClipboardCheck', title: 'Registration & Compliance', body: 'Project registration, eligibility assessment and documentation.' },
-      { icon: 'Activity', title: 'Monitoring & Verification', body: 'Continuous monitoring, emissions calculations and third-party verification.' },
-      { icon: 'TrendingUp', title: 'Trading & Payouts', body: 'We market your credits, manage buyer relationships and distribute proceeds with complete transparency.' },
     ],
   },
 
