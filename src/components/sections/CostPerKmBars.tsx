@@ -1,34 +1,30 @@
-// src/components/sections/CostPerKmBars.tsx — CSS cost-per-km comparison (light delivery van)
-import {
-  FLEET_VEHICLES, DIESEL_PRICE_PER_L, GRID_RATE_PER_KWH, SOLAR_RATE_PER_KWH,
-} from '@/lib/evfleet/estimate';
+// src/components/sections/CostPerKmBars.tsx — cost-per-km comparison bars.
+// Presentational + dark-themed (sits inside the EV Fleets hero widget).
+import type { CostPerKm } from '@/lib/evfleet/estimate';
 
 interface CostPerKmBarsProps {
-  accent?: string;
+  fuelLabel: string; // 'Diesel' | 'Petrol 93'
+  costs: CostPerKm;  // { fuel, grid, solar }
+  accent: string;    // grid-bar colour
 }
 
-export function CostPerKmBars({ accent = '#A9D6CB' }: CostPerKmBarsProps) {
-  const v = FLEET_VEHICLES.van;
-  const diesel = (v.dieselLPer100 * DIESEL_PRICE_PER_L) / 100;
-  const grid = (v.evKwhPer100 * GRID_RATE_PER_KWH) / 100;
-  const solar = (v.evKwhPer100 * SOLAR_RATE_PER_KWH) / 100;
-  const max = diesel;
-
+export function CostPerKmBars({ fuelLabel, costs, accent }: CostPerKmBarsProps) {
+  const max = Math.max(costs.fuel, costs.grid, costs.solar);
   const rows: { label: string; value: number; color: string }[] = [
-    { label: 'Diesel', value: diesel, color: '#C2703D' },
-    { label: 'Electric — grid charged', value: grid, color: accent },
-    { label: 'Electric — solar charged', value: solar, color: '#39575C' },
+    { label: fuelLabel, value: costs.fuel, color: '#C2703D' },
+    { label: 'Electric — grid', value: costs.grid, color: accent },
+    { label: 'Electric — solar', value: costs.solar, color: '#39575C' },
   ];
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2.5">
       {rows.map((r) => (
         <div key={r.label}>
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="font-body text-sm font-semibold text-[#1A1A1A]">{r.label}</span>
-            <span className="font-display font-extrabold text-sm text-[#1A1A1A]">R{r.value.toFixed(2)} / km</span>
+          <div className="flex items-center justify-between mb-1">
+            <span className="font-body text-[11px] font-semibold text-white/80">{r.label}</span>
+            <span className="font-display font-extrabold text-[11px] text-white">R{r.value.toFixed(2)} / km</span>
           </div>
-          <div className="h-3 rounded-full overflow-hidden" style={{ background: '#EDEFEF' }}>
+          <div className="h-2.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.10)' }}>
             <div
               className="h-full rounded-full"
               style={{ width: `${Math.max(6, (r.value / max) * 100)}%`, background: r.color }}

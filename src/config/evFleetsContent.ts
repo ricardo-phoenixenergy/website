@@ -22,7 +22,6 @@ export const EV_FLEETS: {
   industries: {
     eyebrow: string; heading: string; subtitle: string; tabs: IndustryTab[];
   };
-  costPerKm: { eyebrow: string; heading: string; statValue: string; statLabel: string; note: string };
   faq: { heading: string; items: FaqItem[] };
   cta: { eyebrow: string; heading: string; body: string };
 } = {
@@ -137,14 +136,6 @@ export const EV_FLEETS: {
         proof: { client: 'Vector Logistics', stat: 'Electric Volvo FH trucks', detail: 'South Africa’s first bumper-to-bumper net-zero cold-chain trucks.', image: '/proof/vector-logistics.jpg', imageAlt: 'Vector Logistics electric Volvo FH cold-chain truck' },
       },
     ],
-  },
-
-  costPerKm: {
-    eyebrow: 'The numbers',
-    heading: 'Diesel is the most expensive way to move your fleet.',
-    statValue: '23–27%',
-    statLabel: 'lower total cost of ownership — measured across 12.5M km of SA electric-fleet operation (Everlectric).',
-    note: 'Energy cost only, for a light delivery van; excludes maintenance (typically ~35% lower for EVs). On South Africa’s coal-heavy grid the carbon saving is modest — charging from solar is what turns cost savings into deep emissions cuts.',
   },
 
   faq: {

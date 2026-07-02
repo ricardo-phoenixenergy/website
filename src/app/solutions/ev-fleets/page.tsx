@@ -11,7 +11,6 @@ import { FaqAccordion } from '@/components/sections/FaqAccordion';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { FleetSavingsEstimator } from '@/components/sections/calculators/FleetSavingsEstimator';
-import { CostPerKmBars } from '@/components/sections/CostPerKmBars';
 import { getHowItWorks } from '@/lib/getHowItWorks';
 import { getHeroImages } from '@/lib/getHeroImages';
 import { VERTICAL_CONFIG } from '@/config/verticals';
@@ -123,26 +122,6 @@ export default async function EvFleetsPage() {
         heading={EV_FLEETS.industries.heading}
         subtitle={EV_FLEETS.industries.subtitle}
       />
-
-      {/* §6 — Cost per km */}
-      <section className="bg-[#F5F5F5] py-16 md:py-24">
-        <div className="page-container max-w-3xl">
-          <p className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-3" style={{ color: meta.accent }}>
-            {EV_FLEETS.costPerKm.eyebrow}
-          </p>
-          <h2 className="font-display font-extrabold text-2xl md:text-3xl text-[#1A1A1A] leading-[1.2] mb-8">
-            {EV_FLEETS.costPerKm.heading}
-          </h2>
-          <CostPerKmBars accent={meta.accent} />
-          <div className="mt-8 flex items-center gap-3">
-            <span className="font-display font-extrabold text-3xl whitespace-nowrap" style={{ color: meta.accentText }}>
-              {EV_FLEETS.costPerKm.statValue}
-            </span>
-            <span className="font-body text-sm text-[#6B7280] leading-snug">{EV_FLEETS.costPerKm.statLabel}</span>
-          </div>
-          <p className="font-body text-[11px] text-[#9CA3AF] mt-5 leading-relaxed">{EV_FLEETS.costPerKm.note}</p>
-        </div>
-      </section>
 
       {/* §7 — How it works (Sanity-driven) */}
       {howItWorks && <HowItWorks {...howItWorks} accent={meta.accent} accentText={meta.accentText} />}
