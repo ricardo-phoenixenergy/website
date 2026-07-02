@@ -4,7 +4,6 @@ import { AboutTrust } from '@/components/sections/AboutTrust';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { LatestPosts } from '@/components/sections/LatestPosts';
-import { StatsStrip } from '@/components/ui/StatsStrip';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { sanityServerClient } from '@/lib/sanity.server';
 import { PARTNERS_QUERY } from '@/lib/queries';
@@ -79,8 +78,7 @@ export default async function HomePage() {
       />
       <main>
         <HeroAccordion heroImages={heroImages} />
-        <AboutTrust partners={partners} showTabs={false} justify="center" />
-        <StatsStrip stats={companyStats} responsive />
+        <AboutTrust partners={partners} showTabs={false} justify="center" stats={companyStats} />
         <FeaturedProjects />
         {homeHowItWorks && <HowItWorks {...homeHowItWorks} autoAdvanceInterval={2600} />}
         <LatestPosts />

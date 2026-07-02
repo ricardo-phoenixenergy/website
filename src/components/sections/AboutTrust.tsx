@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Partner } from '@/types/sanity';
+import type { Partner, CompanyStat } from '@/types/sanity';
+import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 type Tab = 'investors' | 'partners';
@@ -39,9 +40,11 @@ interface Props {
   showTabs?: boolean;
   /** Alignment of the logo card row. Default: 'start' */
   justify?: 'center' | 'start';
+  /** When provided, renders a "By the numbers" stats row beneath the logos. */
+  stats?: CompanyStat[];
 }
 
-export function AboutTrust({ partners, showTabs = true, justify = 'start' }: Props) {
+export function AboutTrust({ partners, showTabs = true, justify = 'start', stats }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('investors');
   const reduced = useReducedMotion();
 
@@ -202,6 +205,28 @@ export function AboutTrust({ partners, showTabs = true, justify = 'start' }: Pro
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* By the numbers — track-record stats, same white section as the logos */}
+        {stats && stats.length > 0 && (
+          <AnimatedSection className="mt-12 md:mt-16 pt-10 md:pt-12 border-t border-[#E5E7EB]">
+            <p className="text-center font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-8 md:mb-10">
+              By the numbers
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-9 gap-x-4">
+              {stats.map((stat) => (
+                <div key={stat.label} className="flex flex-col items-center text-center">
+                  <span className="font-display font-extrabold text-3xl md:text-4xl text-[#1A1A1A] leading-none">
+                    {stat.value}
+                  </span>
+                  <span className="mt-3 h-[3px] w-6 rounded-full" style={{ background: '#709DA9' }} />
+                  <span className="mt-3 font-body text-xs font-semibold uppercase tracking-[0.08em] text-[#6B7280]">
+                    {stat.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </AnimatedSection>
+        )}
 
       </div>
     </section>
