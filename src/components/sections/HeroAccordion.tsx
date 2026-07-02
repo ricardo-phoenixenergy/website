@@ -31,7 +31,7 @@ const PANELS: Panel[] = [
     number: '02',
     href: '/solutions/wheeling',
     title: 'Buy cheaper renewable energy via the grid',
-    description: 'Access clean, cost-effective electricity through our established wheeling network — no equipment required.',
+    description: 'Choose from flexible wheeling solutions that give your business access to lower-cost renewable electricity through the grid.',
   },
   {
     vertical: 'webuysolar',
