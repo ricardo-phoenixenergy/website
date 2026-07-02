@@ -225,7 +225,7 @@ export function FleetSavingsEstimator({ prices }: { prices: ResolvedEnergyPrices
             </div>
 
             <p className="font-body text-[10px] mt-3 leading-relaxed" style={{ color: 'rgba(255,255,255,0.30)' }}>
-              Indicative only. Based on {fuelLabel.toLowerCase()} R{fuelPrice.toFixed(2)}/L, grid R{prices.gridPricePerKwh.toFixed(2)}/kWh and solar R{prices.solarPricePerKwh.toFixed(2)}/kWh. Actual savings depend on your routes, tariffs and duty cycle; CO&#8322; depends on charging from grid vs solar.
+              Indicative only.
             </p>
           </>
         )}
