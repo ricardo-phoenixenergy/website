@@ -80,10 +80,10 @@ export default async function HomePage() {
       <main>
         <HeroAccordion heroImages={heroImages} />
         <CompanyStats stats={companyStats} />
-        <AboutTrust partners={partners} showTabs={false} justify="center" showTopBorder={false} />
-        <FeaturedProjects />
+        <AboutTrust partners={partners} showTabs={false} justify="center" flushTop />
+        <FeaturedProjects flushTop />
         {homeHowItWorks && <HowItWorks {...homeHowItWorks} autoAdvanceInterval={2600} />}
-        <LatestPosts />
+        <LatestPosts flushTop />
         <PageFooter ctaVariant="centered" />
       </main>
     </>

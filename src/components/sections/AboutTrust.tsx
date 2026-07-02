@@ -39,11 +39,11 @@ interface Props {
   showTabs?: boolean;
   /** Alignment of the logo card row. Default: 'start' */
   justify?: 'center' | 'start';
-  /** Draws a hairline border above the section. Default: true */
-  showTopBorder?: boolean;
+  /** When true, sits flush under a same-background section: no top border, no top padding. Default: false */
+  flushTop?: boolean;
 }
 
-export function AboutTrust({ partners, showTabs = true, justify = 'start', showTopBorder = true }: Props) {
+export function AboutTrust({ partners, showTabs = true, justify = 'start', flushTop = false }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('investors');
   const reduced = useReducedMotion();
 
@@ -123,8 +123,8 @@ export function AboutTrust({ partners, showTabs = true, justify = 'start', showT
 
   return (
     <section
-      className="bg-white py-16 md:py-24"
-      style={showTopBorder ? { borderTop: '1px solid #E5E7EB' } : undefined}
+      className={`bg-white pb-16 md:pb-24 ${flushTop ? '' : 'pt-16 md:pt-24'}`}
+      style={flushTop ? undefined : { borderTop: '1px solid #E5E7EB' }}
     >
       <div className="page-container">
 

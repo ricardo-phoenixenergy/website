@@ -8,6 +8,8 @@ interface SectionCarouselProps {
   viewAllHref: string;
   viewAllLabel: string;
   bg?: 'white' | 'gray';
+  /** When true, sits flush under a same-background section: no top padding. Default: false */
+  flushTop?: boolean;
   children: React.ReactNode;
 }
 
@@ -17,10 +19,13 @@ export function SectionCarousel({
   viewAllHref,
   viewAllLabel,
   bg = 'white',
+  flushTop = false,
   children,
 }: SectionCarouselProps) {
   return (
-    <section className={`${bg === 'gray' ? 'bg-[#F5F5F5]' : 'bg-white'} py-16 md:py-24`}>
+    <section
+      className={`${bg === 'gray' ? 'bg-[#F5F5F5]' : 'bg-white'} pb-16 md:pb-24 ${flushTop ? '' : 'pt-16 md:pt-24'}`}
+    >
       <AnimatedSection>
         <div className="page-container flex items-end justify-between mb-6">
           <div>

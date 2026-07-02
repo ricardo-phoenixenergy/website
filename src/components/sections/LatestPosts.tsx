@@ -12,7 +12,12 @@ async function getLatestPosts(): Promise<BlogPostCard[]> {
   }
 }
 
-export async function LatestPosts() {
+interface LatestPostsProps {
+  /** Collapse top padding when stacked under a same-background section. */
+  flushTop?: boolean;
+}
+
+export async function LatestPosts({ flushTop = false }: LatestPostsProps = {}) {
   const posts = await getLatestPosts();
   if (posts.length === 0) return null;
 
@@ -23,6 +28,7 @@ export async function LatestPosts() {
       viewAllHref="/blog"
       viewAllLabel="View all articles"
       bg="gray"
+      flushTop={flushTop}
     >
       {posts.map((post, i) => (
         <ArticleCard

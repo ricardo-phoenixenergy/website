@@ -8,6 +8,8 @@ import type { SolutionVertical } from '@/types/solutions';
 
 interface FeaturedProjectsProps {
   vertical?: SolutionVertical;
+  /** Collapse top padding when stacked under a same-background section. */
+  flushTop?: boolean;
 }
 
 async function getProjects(vertical?: SolutionVertical): Promise<ProjectCardType[]> {
@@ -21,7 +23,7 @@ async function getProjects(vertical?: SolutionVertical): Promise<ProjectCardType
   }
 }
 
-export async function FeaturedProjects({ vertical }: FeaturedProjectsProps = {}) {
+export async function FeaturedProjects({ vertical, flushTop = false }: FeaturedProjectsProps = {}) {
   const projects = await getProjects(vertical);
   if (projects.length === 0) return null;
 
@@ -41,6 +43,7 @@ export async function FeaturedProjects({ vertical }: FeaturedProjectsProps = {})
       viewAllHref="/projects"
       viewAllLabel="View all projects"
       bg="white"
+      flushTop={flushTop}
     >
       {projects.map((project, i) => (
         <AnimatedSection key={project._id} delay={i * 0.05} as="div" className={cardClass}>
