@@ -89,7 +89,6 @@ export function SolutionTabs({
   const [isMobile, setIsMobile] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [openIndex, setOpenIndex] = useState(0);
-  const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
   const sectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -273,16 +272,15 @@ export function SolutionTabs({
                     </span>
                   </button>
                   <div
-                    ref={(el: HTMLDivElement | null) => { contentRefs.current[i] = el; }}
                     style={{
-                      maxHeight: isOpen
-                        ? (contentRefs.current[i]?.scrollHeight ?? 1000) + 'px'
-                        : '0px',
-                      overflow: 'hidden',
-                      transition: 'max-height 350ms ease-in-out',
+                      display: 'grid',
+                      gridTemplateRows: isOpen ? '1fr' : '0fr',
+                      transition: 'grid-template-rows 350ms ease-in-out',
                     }}
                   >
-                    <div className="px-4 pb-5">{renderPanelBody(tab)}</div>
+                    <div style={{ overflow: 'hidden', minHeight: 0 }}>
+                      <div className="px-4 pb-5">{renderPanelBody(tab)}</div>
+                    </div>
                   </div>
                 </div>
               );
