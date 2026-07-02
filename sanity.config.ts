@@ -61,6 +61,11 @@ export default defineConfig({
               .title('Hero Images')
               .id('heroImages')
               .child(S.document().schemaType('heroImages').documentId('heroImages')),
+            S.divider(),
+            S.listItem()
+              .title('Energy & Fuel Prices')
+              .id('energyPrices')
+              .child(S.document().schemaType('energyPrices').documentId('energyPrices')),
           ]),
     }),
     visionTool(),

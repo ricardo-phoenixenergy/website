@@ -7,5 +7,6 @@ import { partner } from './partner';
 import { companyStats } from './companyStats';
 import { howItWorks } from './howItWorks';
 import { heroImages } from './heroImages';
+import { energyPrices } from './energyPrices';
 
-export const schemaTypes = [project, blogPost, author, teamMember, milestoneTimeline, partner, companyStats, howItWorks, heroImages];
+export const schemaTypes = [project, blogPost, author, teamMember, milestoneTimeline, partner, companyStats, howItWorks, heroImages, energyPrices];
