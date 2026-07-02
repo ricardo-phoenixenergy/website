@@ -4,6 +4,8 @@ export interface SolarInputs {
   kw: number;
   installYear: number;
   inverterType: 'string' | 'hybrid';
+  /** Combined inverter rating (kW). Recorded for the team — does not affect the valuation. */
+  inverterKw: number;
   /** Recorded for the WeBuySolar team — does not affect the valuation. */
   panelBrand: string;
   /** Recorded for the WeBuySolar team — does not affect the valuation. */

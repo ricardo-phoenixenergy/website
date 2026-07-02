@@ -22,6 +22,7 @@ export const webBuySolarSchema = z.object({
     kw: z.number(),
     bessKwh: z.number(),
     installYear: z.number(),
+    inverterKw: z.number().optional(),
     panelBrand: z.string().optional(),
     inverterBrand: z.string().optional(),
     batteryBrand: z.string().optional(),

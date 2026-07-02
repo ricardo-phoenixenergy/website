@@ -2,6 +2,7 @@
 
 import type { SolarInputs, BessInputs } from '@/lib/valuation/types';
 import { RangeSlider } from './RangeSlider';
+import { NumberField } from './NumberField';
 import { SegmentedControl } from './SegmentedControl';
 import { SelectControl } from './SelectControl';
 import { Toggle } from './Toggle';
@@ -23,14 +24,13 @@ const PANEL_BRANDS = toOptions([
   'Tongwei', 'Chint / Astronergy', 'AIKO Solar', 'Risen Energy', 'GCL System', 'TCL',
 ]);
 
-const INVERTER_BRANDS = toOptions([
+// Shared across the inverter and battery brand dropdowns — many manufacturers
+// (Sungrow, Sigenergy, Huawei, WEG, BYD …) make both, so we list them together.
+const INVERTER_BATTERY_BRANDS = toOptions([
   'Sunsynk', 'Deye', 'Sungrow', 'Solis', 'Goodwe', 'Victron', 'SolarEdge',
   'Fronius', 'Huawei', 'SMA', 'Sigenergy', 'WEG',
-]);
-
-const BATTERY_BRANDS = toOptions([
-  'Pylontech', 'BYD', 'Freedom Won', 'Hubble', 'Dyness', 'Shoto', 'Huawei',
-  'Sungrow', 'Sigenergy', 'WEG', 'CATL', 'EVE Energy', 'ATESS',
+  'Pylontech', 'BYD', 'Freedom Won', 'Hubble', 'Dyness', 'Shoto',
+  'CATL', 'EVE Energy', 'ATESS',
 ]);
 
 const INVERTER_OPTIONS: { value: SolarInputs['inverterType']; label: string }[] = [
@@ -51,15 +51,8 @@ const SOH_OPTIONS: { value: BessInputs['soh']; label: string }[] = [
 ];
 
 const SOLAR_MAX = 10000; // 10 MW
+const INVERTER_MAX = 10000; // 10 MW
 const BESS_MAX = 20000; // 20 MWh
-
-// Show kWp/kWh under 1 MW, then switch to MW/MWh; the battery max reads "20 MWh+".
-const fmtSolar = (v: number) =>
-  v >= 1000 ? `${(v / 1000).toLocaleString('en-ZA', { maximumFractionDigits: 2 })} MW` : `${v} kWp`;
-const fmtBattery = (v: number) => {
-  const label = v >= 1000 ? `${(v / 1000).toLocaleString('en-ZA', { maximumFractionDigits: 2 })} MWh` : `${v} kWh`;
-  return v >= BESS_MAX ? `${label}+` : label;
-};
 
 const NEXT_BTN =
   'mt-6 w-full inline-flex items-center justify-center gap-2 font-body font-semibold text-sm text-white rounded-xl py-3 transition-opacity hover:opacity-90';
@@ -77,16 +70,14 @@ export function Step1SystemDetails({
         Solar array
       </p>
 
-      <RangeSlider
+      <NumberField
         label="Installed solar capacity"
         value={solar.kw}
         min={0}
         max={SOLAR_MAX}
-        step={5}
         unit="kWp"
-        hint="Residential: 5–30 kWp · Small C&I: 30–100 kWp · Large C&I: 100 kWp – 10 MW"
+        hint="Total installed panel capacity — up to 10,000 kWp (10 MW)"
         onChange={v => onSolarChange({ kw: v })}
-        formatValue={fmtSolar}
       />
 
       <RangeSlider
@@ -118,9 +109,19 @@ export function Step1SystemDetails({
         onChange={v => onSolarChange({ inverterType: v })}
       />
 
+      <NumberField
+        label="Inverter capacity"
+        value={solar.inverterKw}
+        min={0}
+        max={INVERTER_MAX}
+        unit="kW"
+        hint="Combined rating of your inverter(s)"
+        onChange={v => onSolarChange({ inverterKw: v })}
+      />
+
       <SelectControl
         label="Inverter brand"
-        options={INVERTER_BRANDS}
+        options={INVERTER_BATTERY_BRANDS}
         value={solar.inverterBrand}
         allowOther
         otherPlaceholder="Type your inverter brand"
@@ -140,21 +141,19 @@ export function Step1SystemDetails({
 
         {bess.enabled && (
           <div className="mt-2">
-            <RangeSlider
+            <NumberField
               label="Battery capacity"
               value={bess.kWh}
               min={0}
               max={BESS_MAX}
-              step={5}
               unit="kWh"
-              hint="Total usable capacity installed"
+              hint="Total usable capacity — up to 20,000 kWh (20 MWh)"
               onChange={v => onBessChange({ kWh: v })}
-              formatValue={fmtBattery}
             />
 
             <SelectControl
               label="Battery brand"
-              options={BATTERY_BRANDS}
+              options={INVERTER_BATTERY_BRANDS}
               value={bess.brand}
               allowOther
               otherPlaceholder="Type your battery brand"

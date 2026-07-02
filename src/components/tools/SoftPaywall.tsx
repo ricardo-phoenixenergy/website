@@ -73,6 +73,7 @@ export function SoftPaywall({ result, solar, bess, cond, onUnlock }: SoftPaywall
             kw: solar.kw,
             bessKwh: bess.enabled ? bess.kWh : 0,
             installYear: solar.installYear,
+            inverterKw: solar.inverterKw,
             panelBrand: solar.panelBrand || undefined,
             inverterBrand: solar.inverterBrand || undefined,
             batteryBrand: bess.enabled ? (bess.brand || undefined) : undefined,

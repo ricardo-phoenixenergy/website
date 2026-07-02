@@ -13,6 +13,7 @@ const DEFAULT_SOLAR: SolarInputs = {
   kw: 250,
   installYear: 2021,
   inverterType: 'string',
+  inverterKw: 250,
   panelBrand: 'JA Solar',
   inverterBrand: 'Sunsynk',
 };
