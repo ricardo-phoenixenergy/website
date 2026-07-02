@@ -1,11 +1,9 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
-import type { Partner, CompanyStat } from '@/types/sanity';
-import { AnimatedSection } from '@/components/ui/AnimatedSection';
-import { AnimatedStatValue } from '@/components/ui/AnimatedStatValue';
+import { motion, AnimatePresence } from 'framer-motion';
+import type { Partner } from '@/types/sanity';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 type Tab = 'investors' | 'partners';
@@ -41,15 +39,13 @@ interface Props {
   showTabs?: boolean;
   /** Alignment of the logo card row. Default: 'start' */
   justify?: 'center' | 'start';
-  /** When provided, renders a "By the numbers" stats row beneath the logos. */
-  stats?: CompanyStat[];
+  /** Draws a hairline border above the section. Default: true */
+  showTopBorder?: boolean;
 }
 
-export function AboutTrust({ partners, showTabs = true, justify = 'start', stats }: Props) {
+export function AboutTrust({ partners, showTabs = true, justify = 'start', showTopBorder = true }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('investors');
   const reduced = useReducedMotion();
-  const statsRef = useRef<HTMLDivElement>(null);
-  const statsInView = useInView(statsRef, { once: true, margin: '-80px' });
 
   const items = showTabs ? partners.filter((p) => p.category === activeTab) : partners;
 
@@ -126,30 +122,11 @@ export function AboutTrust({ partners, showTabs = true, justify = 'start', stats
   };
 
   return (
-    <section className="bg-white py-16 md:py-24" style={{ borderTop: '1px solid #E5E7EB' }}>
+    <section
+      className="bg-white py-16 md:py-24"
+      style={showTopBorder ? { borderTop: '1px solid #E5E7EB' } : undefined}
+    >
       <div className="page-container">
-
-        {/* By the numbers — track-record stats, above the partner logos */}
-        {stats && stats.length > 0 && (
-          <AnimatedSection className="mb-12 md:mb-16">
-            <p className="text-center font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-8 md:mb-10">
-              By the numbers
-            </p>
-            <div ref={statsRef} className="flex flex-col md:flex-row gap-8 md:gap-4">
-              {stats.map((stat, i) => (
-                <div key={stat.label} className="flex-1 flex flex-col items-center text-center">
-                  <span className="font-display font-extrabold text-3xl md:text-4xl text-[#1A1A1A] leading-none whitespace-nowrap">
-                    <AnimatedStatValue value={stat.value} inView={statsInView} delay={i * 0.12} />
-                  </span>
-                  <span className="mt-3 h-[3px] w-6 rounded-full" style={{ background: '#709DA9' }} />
-                  <span className="mt-3 font-body text-xs font-semibold uppercase tracking-[0.08em] text-[#6B7280]">
-                    {stat.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </AnimatedSection>
-        )}
 
         {/* Heading */}
         <div className={showTabs ? '' : 'text-center mb-10 md:mb-12'}>

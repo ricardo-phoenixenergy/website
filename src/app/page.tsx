@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { HeroAccordion } from '@/components/sections/HeroAccordion';
 import { AboutTrust } from '@/components/sections/AboutTrust';
+import { CompanyStats } from '@/components/sections/CompanyStats';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { LatestPosts } from '@/components/sections/LatestPosts';
@@ -78,7 +79,8 @@ export default async function HomePage() {
       />
       <main>
         <HeroAccordion heroImages={heroImages} />
-        <AboutTrust partners={partners} showTabs={false} justify="center" stats={companyStats} />
+        <CompanyStats stats={companyStats} />
+        <AboutTrust partners={partners} showTabs={false} justify="center" showTopBorder={false} />
         <FeaturedProjects />
         {homeHowItWorks && <HowItWorks {...homeHowItWorks} autoAdvanceInterval={2600} />}
         <LatestPosts />

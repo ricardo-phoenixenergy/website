@@ -1,0 +1,8 @@
+feat(home): split "By the numbers" into its own section
+
+Extract the track-record stats out of AboutTrust into a standalone
+CompanyStats section with symmetric top/bottom padding. Add a
+showTopBorder prop to AboutTrust so the two adjacent white sections
+read as one flow with no dividing line between them.
+
+Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
