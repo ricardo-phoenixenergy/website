@@ -1,17 +1,20 @@
 // src/app/solutions/ev-fleets/page.tsx
 import type { Metadata } from 'next';
 import { SolutionHero } from '@/components/sections/SolutionHero';
-import { SolutionTabs } from '@/components/sections/SolutionTabs';
+import { ExplainerCards } from '@/components/sections/ExplainerCards';
+import { FinancingBand } from '@/components/sections/FinancingBand';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
+import { FaqAccordion } from '@/components/sections/FaqAccordion';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
 import { PageFooter } from '@/components/layout/PageFooter';
-import { EvFleetsCalculator } from '@/components/sections/calculators/EvFleetsCalculator';
+import { FleetSavingsEstimator } from '@/components/sections/calculators/FleetSavingsEstimator';
+import { CostPerKmBars } from '@/components/sections/CostPerKmBars';
 import { getHowItWorks } from '@/lib/getHowItWorks';
 import { getHeroImages } from '@/lib/getHeroImages';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
-import type { TabItem } from '@/components/sections/SolutionTabs';
+import { EV_FLEETS } from '@/config/evFleetsContent';
 
 const vertical = 'ev-fleets' as const;
 const cfg = VERTICAL_CONFIG[vertical];
@@ -25,40 +28,6 @@ export const metadata: Metadata = {
 };
 
 export const revalidate = 3600;
-
-const tabs: TabItem[] = [
-  {
-    label: 'Charging Infrastructure',
-    icon: 'Zap',
-    iconBg: 'rgba(169,214,203,0.20)',
-    title: 'SANS-Certified EV Chargers',
-    body: 'Phoenix supplies and installs AC and DC fast chargers compliant with SANS 1017 and SANS 60309. We design depot layouts that maximise vehicle throughput and minimise grid connection costs.',
-    bullets: ['AC Level 2 (22 kW) and DC fast (150 kW+).', 'SANS 1017 & SANS 60309 certified.', 'Load management to avoid demand spikes.', 'Solar integration — charge from your own generation.'],
-    imageBg: 'linear-gradient(135deg, rgba(169,214,203,0.18) 0%, rgba(57,87,92,0.20) 100%)',
-    imageEmoji: '⚡',
-  },
-  {
-    label: 'Fleet Dashboard',
-    icon: 'Monitor',
-    iconBg: 'rgba(169,214,203,0.20)',
-    title: 'Real-Time Fleet Management',
-    body: 'Our fleet dashboard gives operations managers live visibility into vehicle state-of-charge, charging status, range, and energy cost per kilometre — all in one place.',
-    bullets: ['Live state-of-charge per vehicle.', 'Route planning with charge stops.', 'Energy cost per km vs diesel baseline.', 'Driver behaviour scoring.'],
-    imageBg: 'linear-gradient(135deg, rgba(57,87,92,0.20) 0%, rgba(169,214,203,0.18) 100%)',
-    imageEmoji: '📱',
-  },
-  {
-    label: 'Financing',
-    icon: 'DollarSign',
-    iconBg: 'rgba(169,214,203,0.20)',
-    title: 'Financing Options',
-    body: '',
-    bullets: [],
-    imageBg: '',
-    imageEmoji: '',
-    type: 'financing',
-  },
-];
 
 export default async function EvFleetsPage() {
   const howItWorks = await getHowItWorks(vertical);
@@ -76,35 +45,124 @@ export default async function EvFleetsPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
+      {/* §1 — Hero + fleet savings estimator */}
       <SolutionHero
-        title="Electrify your fleet and cut fuel costs <em>by 60%</em>"
-        subtitle="SANS-certified EV charging infrastructure, fleet management dashboard, and full depot design — built for South African conditions."
+        title={EV_FLEETS.hero.title}
+        subtitle={EV_FLEETS.hero.subtitle}
         accent={meta.accent}
         badge={meta.label}
         heroImage={hero?.url}
         heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #0d1f22 0%, #0f2a28 50%, #1a4040 100%)"
-        primaryCta={{ label: 'Get a Fleet Assessment', href: '/contact' }}
+        primaryCta={{ label: 'Book a Fleet Assessment', href: '/contact' }}
       >
-        <EvFleetsCalculator />
+        <FleetSavingsEstimator />
       </SolutionHero>
-      <SolutionTabs
-        tabs={tabs}
+
+      {/* §2 — Why now (SA) */}
+      <ExplainerCards
+        id="why-now"
+        background="white"
+        eyebrow={EV_FLEETS.whyNow.eyebrow}
+        heading={EV_FLEETS.whyNow.heading}
+        subtitle={EV_FLEETS.whyNow.subtitle}
         accent={meta.accent}
-        vertical="ev-fleets"
-        eyebrow="What's included"
-        heading="Everything your <em>fleet needs to electrify</em>"
-        subtitle="From charging hardware to live fleet visibility and the financing that makes the switch affordable."
+        columns={3}
+        cards={EV_FLEETS.whyNow.cards}
       />
+
+      {/* §3 — Four pillars */}
+      <ExplainerCards
+        id="the-package"
+        background="gray"
+        eyebrow={EV_FLEETS.pillars.eyebrow}
+        heading={EV_FLEETS.pillars.heading}
+        accent={meta.accent}
+        columns={4}
+        cards={EV_FLEETS.pillars.cards}
+      />
+
+      {/* §4 — Financing (centrepiece) */}
+      <FinancingBand
+        eyebrow={EV_FLEETS.financing.eyebrow}
+        heading={EV_FLEETS.financing.heading}
+        options={EV_FLEETS.financing.options}
+        accent={meta.accent}
+        accentText={meta.accentText}
+      />
+      <div className="bg-[#F5F5F5] pb-12 md:pb-[52px] -mt-2">
+        <p className="page-container font-body text-[11px] text-[#6B7280]">{EV_FLEETS.financing.note}</p>
+      </div>
+
+      {/* §5 — Industries + vehicles */}
+      <ExplainerCards
+        id="who-its-for"
+        background="white"
+        eyebrow={EV_FLEETS.industries.eyebrow}
+        heading={EV_FLEETS.industries.heading}
+        subtitle={EV_FLEETS.industries.subtitle}
+        accent={meta.accent}
+        columns={3}
+        cards={EV_FLEETS.industries.cards}
+        footer={
+          <div className="mt-10">
+            <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-4">
+              {EV_FLEETS.industries.vehiclesKicker}
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              {EV_FLEETS.industries.vehicles.map((v) => (
+                <div key={v.label} className="rounded-xl p-4 bg-[#F5F5F5] border border-[#E5E7EB]">
+                  <p className="font-display font-bold text-sm text-[#1A1A1A] mb-1">{v.label}</p>
+                  <p className="font-body text-xs text-[#6B7280] leading-snug">{v.spec}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        }
+      />
+
+      {/* §6 — Cost per km */}
+      <section className="bg-[#F5F5F5] py-16 md:py-24">
+        <div className="page-container max-w-3xl">
+          <p className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-3" style={{ color: meta.accent }}>
+            {EV_FLEETS.costPerKm.eyebrow}
+          </p>
+          <h2 className="font-display font-extrabold text-2xl md:text-3xl text-[#1A1A1A] leading-[1.2] mb-8">
+            {EV_FLEETS.costPerKm.heading}
+          </h2>
+          <CostPerKmBars accent={meta.accent} />
+          <div className="mt-8 flex items-baseline gap-3">
+            <span className="font-display font-extrabold text-3xl" style={{ color: meta.accentText }}>
+              {EV_FLEETS.costPerKm.statValue}
+            </span>
+            <span className="font-body text-sm text-[#6B7280] leading-snug">{EV_FLEETS.costPerKm.statLabel}</span>
+          </div>
+          <p className="font-body text-[11px] text-[#9CA3AF] mt-5 leading-relaxed">{EV_FLEETS.costPerKm.note}</p>
+        </div>
+      </section>
+
+      {/* §7 — How it works (Sanity-driven) */}
       {howItWorks && <HowItWorks {...howItWorks} accent={meta.accent} accentText={meta.accentText} />}
+
+      {/* §8 — Proof + FAQ */}
       <FeaturedProjects vertical={vertical} />
+      <FaqAccordion
+        id="faq"
+        eyebrow="FAQ"
+        heading={EV_FLEETS.faq.heading}
+        items={EV_FLEETS.faq.items}
+        accent={meta.accent}
+      />
       <RelatedArticles vertical={vertical} />
+
+      {/* §9 — Final CTA */}
       <PageFooter
         ctaVariant="centered"
-        eyebrow="Electrify your fleet"
-        heading="Future-proof your operations with clean charging infrastructure"
-        body="From feasibility study to full commissioning — we design, fund, and operate EV charging networks for commercial and industrial fleets across Southern Africa."
-        primaryCta={{ label: 'Get a Fleet Assessment', href: '/contact' }}
+        eyebrow={EV_FLEETS.cta.eyebrow}
+        heading={EV_FLEETS.cta.heading}
+        body={EV_FLEETS.cta.body}
+        primaryCta={{ label: 'Book a Fleet Assessment', href: '/contact' }}
       />
     </>
   );
