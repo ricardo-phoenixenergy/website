@@ -11,12 +11,13 @@ interface IndustryProofCardProps {
   detail: string;
   accent: string;
   accentText: string;
-  image?: string;      // path under /public, e.g. '/proof/woolworths-ev.jpg'
-  imageAlt?: string;   // falls back to the client name
+  image?: string;          // path under /public, e.g. '/proof/woolworths-ev.jpg'
+  imageAlt?: string;       // falls back to the client name
+  imagePosition?: string;  // object-position for the crop; defaults to 'center'
 }
 
 export function IndustryProofCard({
-  client, stat, detail, accent, accentText, image, imageAlt,
+  client, stat, detail, accent, accentText, image, imageAlt, imagePosition,
 }: IndustryProofCardProps) {
   return (
     <div className="rounded-2xl overflow-hidden bg-[#F5F5F5] border border-[#E5E7EB]">
@@ -38,6 +39,7 @@ export function IndustryProofCard({
               alt={imageAlt ?? client}
               fill
               className="object-cover"
+              style={{ objectPosition: imagePosition ?? 'center' }}
               sizes="(max-width: 1024px) 100vw, 33vw"
               placeholder="blur"
               blurDataURL={DEFAULT_LQIP}
