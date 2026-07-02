@@ -44,7 +44,7 @@ export const energyPrices = defineType({
       name: 'sourceLabel',
       title: 'Source label',
       type: 'string',
-      description: 'Attribution shown under the widget, e.g. "Official DMRE price, inland (50 ppm)".',
+      description: 'Attribution shown under the widget, e.g. “Official DMRE price, inland (50 ppm)”.',
     }),
   ],
   preview: {
