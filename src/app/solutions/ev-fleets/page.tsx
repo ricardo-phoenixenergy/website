@@ -137,7 +137,6 @@ export default async function EvFleetsPage() {
         heading={EV_FLEETS.faq.heading}
         items={EV_FLEETS.faq.items}
         accent={meta.accent}
-        flushTop
       />
       <RelatedArticles vertical={vertical} />
 
