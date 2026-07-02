@@ -29,7 +29,7 @@ const INVERTER_BRANDS = toOptions([
 
 const BATTERY_BRANDS = toOptions([
   'Pylontech', 'BYD', 'Freedom Won', 'Hubble', 'Dyness', 'Shoto', 'Huawei',
-  'Sungrow', 'Sigenergy', 'WEG',
+  'Sungrow', 'Sigenergy', 'WEG', 'CATL', 'EVE Energy', 'ATESS',
 ]);
 
 const INVERTER_OPTIONS: { value: SolarInputs['inverterType']; label: string }[] = [
