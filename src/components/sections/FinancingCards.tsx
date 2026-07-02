@@ -13,6 +13,8 @@ const FINANCING_ICONS: Record<FinancingIconName, (size: number) => React.ReactNo
 export interface FinancingOption {
   icon: FinancingIconName;
   title: string;
+  /** Optional punchy one-liner shown between the title and description. */
+  subtitle?: string;
   description: string;
   benefits: string[];
   tag?: string; // optional accent pill, e.g. a contract term like '10–20 year term'
@@ -64,6 +66,11 @@ export function FinancingCards({
               <h3 className="font-display font-extrabold text-xl text-[#1A1A1A] mb-2 leading-tight">
                 {opt.title}
               </h3>
+              {opt.subtitle && (
+                <p className="font-body text-sm font-semibold text-[#1A1A1A] leading-[1.5] mb-2.5">
+                  {opt.subtitle}
+                </p>
+              )}
               <p className="font-body text-sm text-[#374151] leading-[1.7] mb-5">
                 {opt.description}
               </p>
