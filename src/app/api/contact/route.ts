@@ -49,28 +49,35 @@ export async function POST(req: NextRequest) {
     }
     const d = parsed.data;
 
-    const html = await render(
-      WeBuySolarEmail({
-        firstName: d.firstName,
-        lastName: d.lastName,
-        email: d.email,
-        phone: d.phone,
-        valuation: d.valuation,
-      }),
-    );
+    try {
+      const html = await render(
+        WeBuySolarEmail({
+          firstName: d.firstName,
+          lastName: d.lastName,
+          email: d.email,
+          phone: d.phone,
+          valuation: d.valuation,
+        }),
+      );
 
-    const { error } = await getResend().emails.send({
-      from: FROM,
-      to: TO,
-      replyTo: d.email,
-      subject: `[WeBuySolar] ${d.valuation.kw}kWp system — ${d.firstName} ${d.lastName ?? ''}`.trim(),
-      html,
-    });
+      const { data, error } = await getResend().emails.send({
+        from: FROM,
+        to: TO,
+        replyTo: d.email,
+        subject: `[WeBuySolar] ${d.valuation.kw}kWp system — ${d.firstName} ${d.lastName ?? ''}`.trim(),
+        html,
+      });
 
-    if (error) {
+      if (error) {
+        console.error('[contact] WeBuySolar Resend error:', error);
+        return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
+      }
+      console.log('[contact] WeBuySolar email queued:', data?.id);
+      return NextResponse.json({ success: true });
+    } catch (err) {
+      console.error('[contact] WeBuySolar send threw:', err);
       return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
     }
-    return NextResponse.json({ success: true });
   }
 
   // ─── Client / Partner / Investor ───────────────────────────────────────────
@@ -81,29 +88,36 @@ export async function POST(req: NextRequest) {
   const d = parsed.data;
   const intentLabel = d.intent.charAt(0).toUpperCase() + d.intent.slice(1);
 
-  const html = await render(
-    ContactEmail({
-      intent: d.intent,
-      firstName: d.firstName,
-      lastName: d.lastName,
-      email: d.email,
-      phone: d.phone,
-      company: d.company,
-      location: d.location,
-      message: d.message,
-    }),
-  );
+  try {
+    const html = await render(
+      ContactEmail({
+        intent: d.intent,
+        firstName: d.firstName,
+        lastName: d.lastName,
+        email: d.email,
+        phone: d.phone,
+        company: d.company,
+        location: d.location,
+        message: d.message,
+      }),
+    );
 
-  const { error } = await getResend().emails.send({
-    from: FROM,
-    to: TO,
-    replyTo: d.email,
-    subject: `[${intentLabel}] ${d.firstName} ${d.lastName} — ${d.company} — ${d.location}`,
-    html,
-  });
+    const { data, error } = await getResend().emails.send({
+      from: FROM,
+      to: TO,
+      replyTo: d.email,
+      subject: `[${intentLabel}] ${d.firstName} ${d.lastName} — ${d.company} — ${d.location}`,
+      html,
+    });
 
-  if (error) {
+    if (error) {
+      console.error('[contact] Contact Resend error:', error);
+      return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
+    }
+    console.log('[contact] Contact email queued:', data?.id);
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('[contact] Contact send threw:', err);
     return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
   }
-  return NextResponse.json({ success: true });
 }
