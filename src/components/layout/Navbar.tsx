@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SOLUTION_META, SOLUTION_VERTICALS } from '@/types/solutions';
 import { IconArrowRight } from '../ui/Icons';
-import { Power, Zap, ZapIcon, ZapOff } from 'lucide-react';
+import { Zap, ZapIcon } from 'lucide-react';
 
 const NAV_LINKS = [
   { label: 'Projects', href: '/projects' },
@@ -61,12 +61,6 @@ export function Navbar() {
   const pathname = usePathname();
   const dropdownTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Close mobile nav on route change
-  useEffect(() => {
-    setMobileNavOpen(false);
-    setMobileSolutionsOpen(false);
-  }, [pathname]);
-
   // Lock body scroll when mobile nav open
   useEffect(() => {
     document.body.style.overflow = mobileNavOpen ? 'hidden' : '';
@@ -90,6 +84,13 @@ export function Navbar() {
 
   const closeDropdown = useCallback(() => {
     dropdownTimer.current = setTimeout(() => setDropdownOpen(false), 100);
+  }, []);
+
+  // Close the mobile nav (and collapse the Solutions accordion). Called from
+  // every dismissal point so navigation closes the menu without a route effect.
+  const closeMobileNav = useCallback(() => {
+    setMobileNavOpen(false);
+    setMobileSolutionsOpen(false);
   }, []);
 
   const isActive = (href: string) => pathname === href;
@@ -306,7 +307,7 @@ export function Navbar() {
               animate={{ opacity: 1, transition: { duration: 0.3 } }}
               exit={{ opacity: 0, transition: { duration: 0.25 } }}
               className="fixed inset-0 bg-black/40 z-[60]"
-              onClick={() => setMobileNavOpen(false)}
+              onClick={closeMobileNav}
             />
             <motion.div
               initial={{ y: '-100%' }}
@@ -319,6 +320,7 @@ export function Navbar() {
                 <Link
                   href="/"
                   className="font-display font-[800] text-xl flex-shrink-0 flex items-center gap-1.5"
+                  onClick={closeMobileNav}
                 >
                   <img src="/inverted-logo.svg" alt="Phoenix Energy" className="flex-shrink-0 size-7" />
                   <span style={{ color: '#F5F5F5', transition: 'color 500ms' }}>Phoenix</span>
@@ -326,7 +328,7 @@ export function Navbar() {
                 </Link>
                 <button
                   className="w-8 h-8 flex items-center justify-center text-white/60 hover:text-white text-xl"
-                  onClick={() => setMobileNavOpen(false)}
+                  onClick={closeMobileNav}
                   aria-label="Close menu"
                 >
                   ✕
@@ -367,7 +369,7 @@ export function Navbar() {
                               key={item.href}
                               href={item.href}
                               className="flex items-center gap-3 py-2.5 text-white/70 hover:text-white transition-colors"
-                              onClick={() => setMobileNavOpen(false)}
+                              onClick={closeMobileNav}
                             >
                               <span
                                 className="w-2 h-2 rounded-full flex-shrink-0"
@@ -387,7 +389,7 @@ export function Navbar() {
                     key={link.href}
                     href={link.href}
                     className="py-3 font-display font-bold text-2xl text-white hover:text-white/70 transition-colors"
-                    onClick={() => setMobileNavOpen(false)}
+                    onClick={closeMobileNav}
                   >
                     {link.label}
                   </Link>
@@ -398,7 +400,7 @@ export function Navbar() {
               <Link
                 href="/contact"
                 className="mt-8 w-full flex items-center justify-center gap-2 bg-[#F5F5F5] text-[#0d1f22] rounded-full py-3.5 font-body font-semibold text-base"
-                onClick={() => setMobileNavOpen(false)}
+                onClick={closeMobileNav}
               >
                 Get in touch
                 <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs bg-[#0d1f22] text-white">
