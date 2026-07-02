@@ -12,6 +12,7 @@ type DlEvent =
   | { event: 'wheeling_eligibility_start';    vertical: string }
   | { event: 'wheeling_eligibility_complete'; vertical: string; tou: string; supply_point: string; status: string }
   | { event: 'carbon_estimate_used';          vertical: string; size_kwp: number }
+  | { event: 'fleet_estimate_used';           vertical: string; vehicles: number; charging: string }
   | { event: 'filter_change';       filter_value: string }
   | { event: 'scroll_depth';        depth_percentage: 25 | 50 | 75 | 90; page_path: string }
   | { event: 'web_vitals';          metric_name: string; metric_value: number; metric_rating: string };
