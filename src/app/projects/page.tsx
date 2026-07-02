@@ -28,7 +28,13 @@ export default async function ProjectsPage() {
   return (
     <>
       <ProjectsGrid projects={projects} />
-      <PageFooter showCta={false} />
+      <PageFooter
+        ctaVariant="centered"
+        eyebrow="Start your energy transition"
+        heading="Find the right energy strategy for your business."
+        body="Meet with our engineers to identify the solutions that will reduce costs, generate new revenue and strengthen your energy resilience—at no cost or obligation."
+        primaryCta={{ label: 'Book a Discovery Meeting', href: '/contact' }}
+      />
     </>
   );
 }
