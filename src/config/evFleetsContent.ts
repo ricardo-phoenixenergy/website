@@ -156,7 +156,7 @@ export const EV_FLEETS: {
 
   cta: {
     eyebrow: 'Electrify your fleet',
-    heading: 'See what electric could save your fleet',
-    body: 'Book a free fleet assessment — we’ll analyse your routes and fuel spend and show you the vehicles, charging and financing that make the switch pay.',
+    heading: 'Discover the most cost-effective path to fleet electrification.',
+    body: 'We’ll assess your fleet, model the potential savings, and recommend the right vehicles, charging infrastructure, renewable energy strategy, and commercial model for your business.',
   },
 };
