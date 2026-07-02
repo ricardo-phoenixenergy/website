@@ -1,54 +1,11 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
-import { animate, motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { DEFAULT_COMPANY_STATS } from '@/lib/companyStats';
 import type { CompanyStat } from '@/types/sanity';
-
-/* Counts a single integer from 0 → value once it scrolls into view. */
-function CountUpNumber({
-  value, inView, delay = 0, duration = 1.2,
-}: { value: number; inView: boolean; delay?: number; duration?: number }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const reduced = useReducedMotion();
-
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-    if (reduced) { node.textContent = String(value); return; }
-    if (!inView) { node.textContent = '0'; return; }
-    const controls = animate(0, value, {
-      duration,
-      delay,
-      ease: [0.22, 1, 0.36, 1],
-      onUpdate: (latest) => { node.textContent = String(Math.round(latest)); },
-    });
-    return () => controls.stop();
-  }, [inView, reduced, value, delay, duration]);
-
-  return <span ref={ref}>0</span>;
-}
-
-/* Splits a stat string into text + numeric tokens and animates each number. */
-function AnimatedValue({
-  value, inView, delay,
-}: { value: string; inView: boolean; delay: number }) {
-  const parts = useMemo(() => value.split(/(\d+)/).filter((p) => p !== ''), [value]);
-  let numIndex = 0;
-  return (
-    <>
-      {parts.map((part, i) => {
-        if (/^\d+$/.test(part)) {
-          const d = delay + numIndex * 0.18;
-          numIndex += 1;
-          return <CountUpNumber key={i} value={parseInt(part, 10)} inView={inView} delay={d} />;
-        }
-        return <span key={i} style={{ color: '#709DA9' }}>{part}</span>;
-      })}
-    </>
-  );
-}
+import { AnimatedStatValue } from '@/components/ui/AnimatedStatValue';
 
 /* Location blobs — one per solution accent colour. Positions are % of the
    square map container; tuned to SA geography. */
@@ -121,7 +78,7 @@ export function AboutStory({ stats = DEFAULT_COMPANY_STATS }: { stats?: CompanyS
                 style={{ borderColor: 'rgba(57,87,92,0.18)' }}
               >
                 <div className="font-display font-extrabold leading-none text-[#39575C] text-3xl md:text-[2.4rem]">
-                  <AnimatedValue value={stat.value} inView={inView} delay={0.2 + i * 0.12} />
+                  <AnimatedStatValue value={stat.value} inView={inView} delay={0.2 + i * 0.12} />
                 </div>
                 <div className="font-body uppercase tracking-[0.1em] text-[#6B7280] mt-2 text-[0.72rem]">
                   {stat.label}
