@@ -19,37 +19,37 @@ const DROPDOWN_ITEMS = [
   {
     vertical: SOLUTION_VERTICALS[0],
     name: 'C&I Solar & Storage',
-    blurb: 'Commercial solar + battery systems',
+    blurb: 'Generate cheaper, cleaner electricity.',
     href: '/solutions/ci-solar-storage',
   },
   {
     vertical: SOLUTION_VERTICALS[1],
     name: 'Wheeling',
-    blurb: 'Buy cheaper renewable energy via the grid',
+    blurb: 'Buy renewable energy through the grid.',
     href: '/solutions/wheeling',
   },
   {
     vertical: SOLUTION_VERTICALS[4],
     name: 'WeBuySolar',
-    blurb: 'Sell your solar system fast and fair',
+    blurb: 'Cash in your solar investment.',
     href: '/solutions/webuysolar',
   },
   {
     vertical: SOLUTION_VERTICALS[2],
     name: 'Energy Optimisation',
-    blurb: 'Maximise every kilowatt intelligently',
+    blurb: 'Reduce energy use before generation.',
     href: '/solutions/energy-optimisation',
   },
   {
     vertical: SOLUTION_VERTICALS[5],
     name: 'EV Fleets & Infrastructure',
-    blurb: 'End-to-end fleet electrification',
+    blurb: 'Electrify and optimise your fleet.',
     href: '/solutions/ev-fleets',
   },
   {
     vertical: SOLUTION_VERTICALS[3],
     name: 'Carbon Credits',
-    blurb: 'Monetise your clean energy projects',
+    blurb: 'Earn revenue from your solar system.',
     href: '/solutions/carbon-credits',
   },
 ] as const;
