@@ -43,7 +43,7 @@ export default async function EvFleetsPage() {
     iconBg: 'rgba(169,214,203,0.20)',
     title: t.title,
     body: t.body,
-    bulletsLabel: 'Best suited for',
+    bulletsLabel: 'Why it works',
     bullets: t.bullets,
     imageBg: '',
     imageEmoji: '',
