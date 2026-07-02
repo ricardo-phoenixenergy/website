@@ -145,7 +145,7 @@ export const EV_FLEETS: {
   faq: {
     heading: 'Fleet electrification, answered.',
     items: [
-      { question: 'What if my vehicles don’t return to a depot each night?', answer: 'Depot charging is where electric fleets save the most, because you charge cheaply overnight from solar. If your routes don’t return to base, we’ll tell you honestly at the assessment whether electrification stacks up yet.' },
+      { question: 'What if my vehicles don’t return to a depot each night?', answer: 'Return-to-depot fleets typically deliver the strongest business case because charging can be planned around your operations and supported by the lowest-cost energy available—from on-site solar, battery storage, off-peak grid electricity or wheeled renewable energy. If your vehicles operate differently, we’ll assess your routes, charging opportunities and operating profile to determine whether electrification is commercially viable.' },
       { question: 'Is the range enough for our routes?', answer: 'Most last-mile and urban routes run 150–220 km a day, well within the range of the vehicles we supply. We match vehicle range to your actual duty cycles during the assessment.' },
       { question: 'What happens during load-shedding?', answer: 'Charging from on-site solar and battery storage keeps your fleet moving independently of the grid — one of the main reasons we bundle solar and BESS into the package.' },
       { question: 'Do we need capital to start?', answer: 'No. With Fleet-as-a-Service you pay a fixed monthly or per-kilometre fee with zero upfront capital. If you prefer to own the assets, we arrange financing to own them over the term.' },
