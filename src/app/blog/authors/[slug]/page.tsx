@@ -35,7 +35,7 @@ export async function generateMetadata({
   const author = await getAuthor(slug);
   if (!author) return {};
   return {
-    title: `${author.name} | Phoenix Energy Blog`,
+    title: `${author.name} | Phoenix Energy News & Insights`,
     description: author.bio ?? `Articles by ${author.name}, ${author.role}`,
     alternates: { canonical: `${SITE}/blog/authors/${slug}` },
   };
@@ -115,7 +115,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
         <nav aria-label="Breadcrumb" className="font-body text-[10px] text-[#6B7280] flex items-center gap-1">
           <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
           <span>/</span>
-          <Link href="/blog" className="hover:text-[#39575C] transition-colors">Blog</Link>
+          <Link href="/blog" className="hover:text-[#39575C] transition-colors">News &amp; Insights</Link>
           <span>/</span>
           <span className="text-[#1A1A1A]">{author.name}</span>
         </nav>

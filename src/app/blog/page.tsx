@@ -48,7 +48,7 @@ export async function generateMetadata({
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return {
-    title: 'Blog & Insights | Phoenix Energy',
+    title: 'News & Insights | Phoenix Energy',
     description:
       'Expert perspectives on clean energy, SA market trends, project spotlights and company news.',
     alternates: {
@@ -61,7 +61,7 @@ export async function generateMetadata({
       }),
     },
     openGraph: {
-      title: 'Blog & Insights | Phoenix Energy',
+      title: 'News & Insights | Phoenix Energy',
       description: 'Expert perspectives on clean energy, SA market trends, project spotlights and company news.',
       url: canonical,
       images: [{ url: 'https://phoenixenergy.solutions/og-default.png', width: 1200, height: 630 }],
@@ -98,7 +98,7 @@ export default async function BlogPage({
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: SITE },
-      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE}/blog` },
+      { '@type': 'ListItem', position: 2, name: 'News & Insights', item: `${SITE}/blog` },
     ],
   };
 
@@ -119,13 +119,13 @@ export default async function BlogPage({
               <nav className="flex items-center gap-1.5 font-body text-sm text-[#6B7280] mb-6">
                 <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
                 <span>/</span>
-                <span className="font-semibold text-[#39575C]">Blog</span>
+                <span className="font-semibold text-[#39575C]">News &amp; Insights</span>
               </nav>
 
               {/* Title block */}
               <div className="mb-6">
                 <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-2">
-                  Insights &amp; News
+                  News &amp; Insights
                 </p>
                 <h1 className="font-display font-extrabold text-4xl text-[#1A1A1A] leading-[1.2] mb-3">
                   Energy intelligence,{' '}

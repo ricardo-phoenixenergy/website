@@ -151,7 +151,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: SITE },
-      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE}/blog` },
+      { '@type': 'ListItem', position: 2, name: 'News & Insights', item: `${SITE}/blog` },
       { '@type': 'ListItem', position: 3, name: post.title, item: canonicalUrl },
     ],
   };
@@ -249,7 +249,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         <nav aria-label="Breadcrumb" className="font-body text-xs text-[#6B7280] flex items-center gap-1.5 min-w-0">
           <Link href="/" className="hover:text-[#39575C] transition-colors shrink-0">Home</Link>
           <span className="shrink-0">/</span>
-          <Link href="/blog" className="hover:text-[#39575C] transition-colors shrink-0">Blog</Link>
+          <Link href="/blog" className="hover:text-[#39575C] transition-colors shrink-0">News &amp; Insights</Link>
           <span className="shrink-0">/</span>
           <span className="text-[#1A1A1A] truncate">
             {post.title}
