@@ -118,7 +118,6 @@ export const EV_FLEETS: {
         icon: 'Users',
         title: 'Staff & Shuttle Transport',
         body: 'Employee shuttles and staff transport operate on fixed routes and predictable schedules, making them ideally suited to fleet electrification. Vehicles can recharge between shifts or overnight at a central depot, delivering lower operating costs while providing reliable, quiet, and zero-tailpipe-emission transport.',
-        bulletsLabel: 'Best suited for',
         bullets: ['Fixed, scheduled employee and shuttle routes', 'Vehicles returning to a central depot or facility', 'Predictable daily distances within EV range', 'Businesses looking to reduce transport operating costs and emissions'],
         proof: { client: 'eKamva', kicker: 'Made in South Africa', stat: 'South Africa’s First Electric Minibus Taxi', detail: 'Developed by a South African consortium led by GoMetro, the 15-seat eKamva electric minibus demonstrates the commercial viability of electric people transport, with operating costs up to 40–70% lower than conventional diesel alternatives.', image: '/proof/ekamva.jpeg', imageAlt: 'eKamva electric minibus taxi' },
       },
