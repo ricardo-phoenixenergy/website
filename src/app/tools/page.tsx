@@ -25,9 +25,9 @@ const TOOLS = [
     accent: '#C97A40',
     label: 'Solar Asset Valuation',
     description:
-      'Find out what your existing solar PV system — with or without battery storage — is worth on the open market. Our three-method model (DCF, depreciated cost, market comps) gives you a credible indicative value in under two minutes.',
+      'Find out what your existing solar PV system — with or without battery storage — is worth on the open market. Share a few details about your system and our WeBuySolar team prepares your indicative buyback valuation.',
     badge: 'WeBuySolar',
-    features: ['DCF + cost + market comps', 'BESS support', 'Instant estimate'],
+    features: ['Solar & battery', 'Team-reviewed', 'No obligation'],
     cta: 'Try it',
   },
 ] as const;

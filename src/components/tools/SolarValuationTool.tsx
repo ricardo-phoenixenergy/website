@@ -7,7 +7,7 @@ import { useValuation } from './useValuation';
 import { StepIndicator } from './StepIndicator';
 import { Step1SystemDetails } from './Step1SystemDetails';
 import { Step2Condition } from './Step2Condition';
-import { Step3Results } from './Step3Results';
+import { Step3Capture } from './Step3Capture';
 
 const DEFAULT_SOLAR: SolarInputs = {
   kw: 250,
@@ -38,15 +38,16 @@ export function SolarValuationTool() {
   const [solar, setSolar] = useState<SolarInputs>(DEFAULT_SOLAR);
   const [bess, setBess] = useState<BessInputs>(DEFAULT_BESS);
   const [cond, setCond] = useState<ConditionInputs>(DEFAULT_COND);
-  const [unlocked, setUnlocked] = useState(false);
-  const valuationFiredRef = useRef(false);
+  const reachedCaptureRef = useRef(false);
 
+  // Internal auto-estimate — emailed to the WeBuySolar team as a reference; the
+  // user never sees a number, the team does its own valuation from the inputs.
   const result = useValuation(solar, bess, cond);
 
-  const handleValuationComplete = () => {
+  const goToCapture = () => {
     setStep(3);
-    if (!valuationFiredRef.current) {
-      valuationFiredRef.current = true;
+    if (!reachedCaptureRef.current) {
+      reachedCaptureRef.current = true;
       dlPush({
         event: 'valuation_complete',
         kw: solar.kw,
@@ -82,18 +83,16 @@ export function SolarValuationTool() {
           cond={cond}
           onChange={patch => setCond(prev => ({ ...prev, ...patch }))}
           onBack={() => setStep(1)}
-          onNext={handleValuationComplete}
+          onNext={goToCapture}
         />
       )}
 
       {step === 3 && (
-        <Step3Results
+        <Step3Capture
           solar={solar}
           bess={bess}
           cond={cond}
           result={result}
-          unlocked={unlocked}
-          onUnlock={() => setUnlocked(true)}
           onBack={() => setStep(2)}
         />
       )}

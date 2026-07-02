@@ -7,7 +7,7 @@ interface StepIndicatorProps {
 const STEPS: { n: 1 | 2 | 3; label: string }[] = [
   { n: 1, label: 'System details' },
   { n: 2, label: 'Condition' },
-  { n: 3, label: 'Your valuation' },
+  { n: 3, label: 'Your details' },
 ];
 
 export function StepIndicator({ current }: StepIndicatorProps) {
