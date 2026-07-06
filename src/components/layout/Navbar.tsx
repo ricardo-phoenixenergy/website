@@ -107,7 +107,7 @@ export function Navbar() {
           href="/"
           className="font-display font-[800] text-xl flex-shrink-0 flex items-center gap-1.5"
         >
-          <img src="/logo.svg" alt="Phoenix Energy" className="flex-shrink-0 size-7" />
+          <img src="/logo.png" alt="Phoenix Energy" className="flex-shrink-0 size-7" />
           <span style={{ color: logoWordColor, transition: 'color 500ms' }}>Phoenix</span>
           <span style={{ color: logoAccentColor, transition: 'color 500ms'}}>Energy</span>
         </Link>
@@ -322,7 +322,7 @@ export function Navbar() {
                   className="font-display font-[800] text-xl flex-shrink-0 flex items-center gap-1.5"
                   onClick={closeMobileNav}
                 >
-                  <img src="/inverted-logo.svg" alt="Phoenix Energy" className="flex-shrink-0 size-7" />
+                  <img src="/inverted-logo.png" alt="Phoenix Energy" className="flex-shrink-0 size-7" />
                   <span style={{ color: '#F5F5F5', transition: 'color 500ms' }}>Phoenix</span>
                   <span style={{ color: '#F5F5F5', transition: 'color 500ms'}}>Energy</span>
                 </Link>

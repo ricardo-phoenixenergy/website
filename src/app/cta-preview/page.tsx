@@ -156,7 +156,7 @@ export default function CTAPreviewPage() {
       >
         {/* Logo watermark */}
         <img
-          src="/inverted-logo.svg"
+          src="/inverted-logo.png"
           alt=""
           aria-hidden
           className="absolute pointer-events-none select-none"
@@ -230,7 +230,7 @@ export default function CTAPreviewPage() {
       >
         {/* Logo watermark */}
         <img
-          src="/inverted-logo.svg"
+          src="/inverted-logo.png"
           alt=""
           aria-hidden
           className="absolute pointer-events-none select-none"

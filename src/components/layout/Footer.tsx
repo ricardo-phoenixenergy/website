@@ -14,7 +14,7 @@ export function Footer() {
           href="/"
           className="font-display font-[800] text-xl flex-shrink-0 flex items-center gap-1.5"
         >
-          <img src="/inverted-logo.svg" alt="Phoenix Energy" className="flex-shrink-0 size-7" />
+          <img src="/inverted-logo.png" alt="Phoenix Energy" className="flex-shrink-0 size-7" />
           <span style={{ color: '#F5F5F5'}}>Phoenix</span>
           <span style={{ color: '#F5F5F5'}}>Energy</span>
         </Link>
