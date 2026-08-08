@@ -62,7 +62,7 @@ export default async function WeBuySolarPage() {
       '@type': 'Organization',
       name: 'Phoenix Energy',
       url: 'https://phoenixenergy.solutions',
-      logo: 'https://phoenixenergy.solutions/inverted-logo.svg',
+      logo: 'https://phoenixenergy.solutions/logo.png',
       contactPoint: { '@type': 'ContactPoint', contactType: 'sales', email: 'info@phoenixenergy.solutions' },
     },
   ];
