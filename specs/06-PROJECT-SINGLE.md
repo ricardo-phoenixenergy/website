@@ -240,8 +240,8 @@ A `section` labelled by its heading (`aria-labelledby="similar-projects"`), whit
 - Headline: the `h2` *"Ready for a similar project?"*, Plus Jakarta Sans 800, 20px on phones and 24px from md, white, `line-height: 1.2`.
 - Subtext: Inter 400, 14px, `on-dark-subtle`: *"Tell us about your site. We reply within 1 business day."* (updated September 2026: the old "in under 48 hours" contradicted the site's one response time, `REPLY_PROMISE` in `src/config/contact.ts`, whose no-break spaces keep "1 business day" on one line)
 - Buttons, `gap: 12px`: stacked on phones and at md (768 to 1023px), side by side at sm (640 to 767px) and from lg (1024px).
-  - The project's service CTA, `projectCta(vertical, title)` from `src/config/ctas.ts` (was `Get a Quote`): the service's label, for C&I "Book a discovery meeting", linking to the contact form with the service and the project named in the message. `Button`, light, default size: a 48px pill, `#F5F5F5` fill, Night Teal text, white on hover.
-  - `View published projects` (`PROJECTS_CTA`): links to `/projects`. `Button`, ghost, default size: the same 48px box, white at 8% with a white 20% edge, white text.
+  - The project's service CTA, `projectCta(vertical, title)` from `src/config/ctas.ts` (was `Get a Quote`): the service's label, for C&I "Book a discovery meeting", linking to the contact form with the service and the project named in the message. `Button`, light, default size: a 48px pill, `#F5F5F5` fill, Night Teal text, white on hover, ending with an arrow.
+  - `View published projects` (`PROJECTS_CTA`): links to `/projects`. `Button`, ghost, default size: the same 48px box, white at 8% with a white 20% edge, white text, ending with an arrow.
   - Stacked, the buttons share one width (the full card width on phones). Side by side, each takes its text width.
 
 ---

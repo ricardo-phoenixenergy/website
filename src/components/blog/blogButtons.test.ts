@@ -50,12 +50,12 @@ describe('ShareButtons', () => {
 });
 
 describe('InlineCta', () => {
-  it('draws the light compact button on a dark block that turns the focus ring white', () => {
+  it('draws the light compact button, ending with an arrow, on a dark block that turns the focus ring white', () => {
     const markup = html(createElement(InlineCta, { title: 'Talk to us', btnText: 'Book a call', btnHref: '/contact' }));
     expect(markup).toMatch(/^<div class="focus-on-dark /);
     const [[, tag, attrs, inner]] = controls(markup);
     expect(tag).toBe('a');
-    expect(inner).toBe('Book a call');
+    expect(inner).toMatch(/^Book a call <svg\b[\s\S]*<\/svg>$/);
     expect(attr(attrs, 'href')).toBe('/contact');
     expect(attr(attrs, 'target')).toBeUndefined();
     expect(attr(attrs, 'class')?.split(' ')).toEqual(

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Button } from '@/components/ui/Button';
+import { IconArrowLeft, IconArrowRight } from '@/components/ui/Icons';
 
 export const metadata: Metadata = {
   title: 'Page not found',
@@ -32,10 +33,10 @@ export default function NotFound() {
       </p>
       <div className="flex gap-3 flex-wrap justify-center">
         <Button variant="light" href="/">
-          Back to home
+          <IconArrowLeft /> Back to home
         </Button>
         <Button variant="ghost" href="/solutions">
-          Explore solutions
+          Explore solutions <IconArrowRight />
         </Button>
       </div>
     </div>

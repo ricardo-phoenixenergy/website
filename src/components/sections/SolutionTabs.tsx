@@ -187,7 +187,7 @@ export function SolutionTabs({
         )}
         {tab.cta && (
           <Button variant="primary" href={tab.cta.href} className="mt-6">
-            {tab.cta.label}
+            {tab.cta.label} <IconArrowRight />
           </Button>
         )}
       </div>

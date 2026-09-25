@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
+import { IconArrowRight, IconRefresh } from '@/components/ui/Icons';
 
 export default function Error({
   error,
@@ -39,9 +40,11 @@ export default function Error({
       </p>
       {/* A light page, so the second action is the outline button, not ghost. */}
       <div className="flex gap-3 flex-wrap justify-center">
-        <Button onClick={reset}>Try again</Button>
+        <Button onClick={reset}>
+          <IconRefresh /> Try again
+        </Button>
         <Button variant="outline" href="/">
-          Go to home
+          Go to home <IconArrowRight />
         </Button>
       </div>
     </div>

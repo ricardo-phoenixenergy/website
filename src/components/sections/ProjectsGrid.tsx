@@ -10,7 +10,7 @@ import { ProjectCard } from './ProjectCard';
 import { FilterPills } from '@/components/ui/FilterPills';
 import { Button } from '@/components/ui/Button';
 import { Chip } from '@/components/ui/Chip';
-import { IconArrowRight } from '../ui/Icons';
+import { IconArrowDown, IconArrowRight } from '../ui/Icons';
 import { dlPush } from '@/lib/analytics';
 import { DISCOVERY_CTA } from '@/config/ctas';
 
@@ -198,7 +198,7 @@ export function ProjectsGrid({ projects, header }: ProjectsGridProps) {
         {visibleCount < gridProjects.length && (
           <div className="flex justify-center mt-2">
             <Button variant="outline" onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}>
-              Load more projects
+              Load more projects <IconArrowDown />
             </Button>
           </div>
         )}

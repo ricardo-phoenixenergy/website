@@ -154,7 +154,7 @@ export function PageFooter({
                 {body}
               </p>
               <Button variant="light" href={primaryCta.href}>
-                {primaryCta.label}
+                {primaryCta.label} <IconArrowRight />
               </Button>
             </AnimatedSection>
 

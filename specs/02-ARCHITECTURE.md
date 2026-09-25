@@ -201,10 +201,10 @@ export default nextConfig;
 Removed in September 2026. There are no route `loading.tsx` files and no skeleton screens, and nothing replaced them. The `.shimmer` keyframes and class are still in `src/app/globals.css` but no component uses them.
 
 ### `src/app/not-found.tsx`
-Full-screen Night Teal (`#0d1f22`) page: eyebrow "404", H1 "Page not found", one line of body copy, then "Back to home" (`Button` light) and "Explore solutions" (`/solutions`, `Button` ghost), both at the default 48px size. Its metadata sets `noindex`.
+Full-screen Night Teal (`#0d1f22`) page: eyebrow "404", H1 "Page not found", one line of body copy, then "Back to home" (`Button` light, starting with a left arrow) and "Explore solutions" (`/solutions`, `Button` ghost, ending with an arrow), both at the default 48px size. Its metadata sets `noindex`.
 
 ### `src/app/error.tsx`
-A light `#F5F5F5` page, not the 404 pattern: eyebrow "Something went wrong", H1 "An error occurred", then a "Try again" button (`Button` primary, calls `reset()`) and a "Go to home" link (`Button` outline: on a light page the second button is outline, never ghost), both at the default 48px size. It logs the error to the console.
+A light `#F5F5F5` page, not the 404 pattern: eyebrow "Something went wrong", H1 "An error occurred", then a "Try again" button (`Button` primary, calls `reset()`, starting with `IconRefresh`) and a "Go to home" link (`Button` outline, ending with an arrow: on a light page the second button is outline, never ghost), both at the default 48px size. It logs the error to the console.
 
 ### `src/hooks/useReducedMotion.ts`
 See `01-BRAND.md` animation section.

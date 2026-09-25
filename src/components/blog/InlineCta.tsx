@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/Button';
+import { IconArrowRight } from '@/components/ui/Icons';
 
 interface InlineCtaProps {
   title: string;
@@ -29,7 +30,7 @@ export function InlineCta({ title, subtitle, btnText, btnHref }: InlineCtaProps)
         href={btnHref}
         {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
       >
-        {btnText}
+        {btnText} <IconArrowRight />
       </Button>
     </div>
   );

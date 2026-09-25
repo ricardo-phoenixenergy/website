@@ -178,7 +178,7 @@ Both layouts render on the server and CSS shows one (`hidden xl:block` for the t
 
 **Tab content panel** (no border and no photo):
 - The text block: H3 (Plus Jakarta Sans 800, 20px), body (16px), an optional kicker above the bullets (for example "Suited for"), bullets with accent check icons, an optional second group (for example "Benefits") and an optional button.
-- Buttons: C&I strategy tabs show "Book a discovery meeting", linking to `/contact?intent=client&strategy={strategy}` (for example `strategy=demand-shaving`). Energy Optimisation lever tabs show "Book a free energy audit". Wheeling and EV Fleets tabs have none.
+- Buttons: C&I strategy tabs show "Book a discovery meeting", linking to `/contact?intent=client&strategy={strategy}` (for example `strategy=demand-shaving`). Energy Optimisation lever tabs show "Book a free energy audit". Both end with an arrow, like every CTA on the site. Wheeling and EV Fleets tabs have none.
 - With a chart (C&I, `StrategyProfileChart`, loaded on the client only when a tab needs it) or a diagram (Wheeling `WheelingFlowDiagram`, EV Fleets `IndustryProofCard`), the text sits left and the visual right from 1024px.
 - Otherwise the text block stands alone, `max-width: 640px`. A tab's `imageBg` and `imageEmoji` fields are no longer drawn.
 
