@@ -1,7 +1,9 @@
 // src/components/sections/calculators/FleetSavingsEstimator.tsx
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
+import Link from 'next/link';
+import { contactHref } from '@/lib/contactLink';
 import { motion } from 'framer-motion';
 import { dlPush } from '@/lib/analytics';
 import {
@@ -11,17 +13,37 @@ import {
 import type { ResolvedEnergyPrices } from '@/lib/getEnergyPrices';
 import { CostPerKmBars } from '@/components/sections/CostPerKmBars';
 import { IconArrowRight, IconArrowLeft } from '@/components/ui/Icons';
+import { SOLUTION_META } from '@/types/solutions';
 
-const ACCENT = '#A9D6CB';
-const ACCENT_TEXT = '#1a5a48';
+const ACCENT = SOLUTION_META['ev-fleets'].accent;
+const ACCENT_TEXT = SOLUTION_META['ev-fleets'].accentText;
 
 const TYPES: FleetVehicleType[] = ['car', 'van', 'minibus', 'truck', 'heavytruck'];
 const TYPE_LABEL: Record<FleetVehicleType, string> = {
   car: 'Car', van: 'Van', minibus: 'Minibus', truck: 'Truck', heavytruck: 'Heavy',
 };
+/** The vehicle in a sentence: the assumptions line and the enquiry message. */
+const VEHICLE_NOUN: Record<FleetVehicleType, { one: string; many: string }> = {
+  car: { one: 'car', many: 'cars' },
+  van: { one: 'van', many: 'vans' },
+  minibus: { one: 'minibus', many: 'minibuses' },
+  truck: { one: 'medium truck', many: 'medium trucks' },
+  heavytruck: { one: 'heavy truck', many: 'heavy trucks' },
+};
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const STEP_COUNT = 2;
+const STEP_TITLES = ['Your fleet', 'Your estimated energy cost savings'] as const;
+
+// What the model leaves out: it compares fuel with electricity per km, holds
+// today's prices for five years (five years = one year × 5), and nothing else.
+const EXCLUSIONS =
+  'Indicative energy costs only: fuel against electricity, with prices held flat for five years. Excludes the vehicle price premium, chargers and installation, extra demand charges, finance and maintenance.';
+
+// getEnergyPrices() falls back to this label when the Sanity document has none.
+const NO_SOURCE_LABEL = 'Estimated';
+
+const TILE = { background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)' } as const;
 
 const UNSELECTED_BTN = {
   background: 'rgba(255,255,255,0.06)',
@@ -29,12 +51,20 @@ const UNSELECTED_BTN = {
   border: '1px solid rgba(255,255,255,0.12)',
 } as const;
 
-const NAV_BTN = 'inline-flex items-center gap-1.5 rounded-full py-2.5 px-5 font-body text-sm font-semibold transition-colors';
+const NAV_BTN = 'inline-flex items-center justify-center gap-1.5 rounded-full py-2.5 px-5 font-body text-sm font-semibold transition-colors';
 
 function formatRand(n: number): string {
   if (n >= 1_000_000) return `R${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `R${Math.round(n / 1_000)}k`;
   return `R${Math.round(n)}`;
+}
+
+// Tonnes with a decimal point (like the rand figures beside them), one decimal
+// under 10 t; deterministic, so server and browser agree.
+function formatTonnes(t: number): string {
+  const abs = Math.abs(t);
+  if (abs < 10) return abs.toFixed(1);
+  return Math.round(abs).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 // Deterministic 'Jul 2026' from an ISO date (avoids locale-dependent hydration mismatch).
@@ -47,6 +77,56 @@ function formatMonthYear(iso: string | null): string | null {
   return `${MONTHS[monthIdx]} ${m[1]}`;
 }
 
+interface PillOption<T extends string> {
+  value: T;
+  label: string;
+  disabled?: boolean;
+}
+
+/** A single-choice group of pills: native radios, so arrow keys and screen readers work. */
+function PillGroup<T extends string>({
+  legend, name, options, value, onChange, columns, pillClass,
+}: {
+  legend: string;
+  name: string;
+  options: PillOption<T>[];
+  value: T;
+  onChange: (v: T) => void;
+  columns: string;
+  pillClass: string;
+}) {
+  return (
+    <fieldset className="mb-5">
+      <legend className="font-body text-sm text-white/70 mb-2">{legend}</legend>
+      <div className={`grid ${columns}`}>
+        {options.map((opt) => {
+          const sel = value === opt.value;
+          return (
+            <label
+              key={opt.value}
+              className={`choice-card ${pillClass} rounded-full text-center font-body font-semibold transition-colors ${
+                opt.disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
+              }`}
+              style={sel ? { background: ACCENT, color: ACCENT_TEXT } : UNSELECTED_BTN}
+            >
+              <input
+                type="radio"
+                name={name}
+                value={opt.value}
+                checked={sel}
+                disabled={opt.disabled}
+                onChange={() => onChange(opt.value)}
+                className="sr-only"
+              />
+              {opt.label}
+            </label>
+          );
+        })}
+      </div>
+    </fieldset>
+  );
+}
+
 export function FleetSavingsEstimator({ prices }: { prices: ResolvedEnergyPrices }) {
   const [step, setStep] = useState(0);
   const [vehicles, setVehicles] = useState(10);
@@ -55,23 +135,70 @@ export function FleetSavingsEstimator({ prices }: { prices: ResolvedEnergyPrices
   const [kmPerMonth, setKmPerMonth] = useState(2500);
   const [charging, setCharging] = useState<ChargingSource>('grid');
   const [used, setUsed] = useState(false);
+  // The first step renders visible on the server; only later step changes animate in.
+  const [stepChanged, setStepChanged] = useState(false);
+  const uid = useId();
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  // Only a step change the visitor makes moves focus; the first render doesn't.
+  const moveFocusRef = useRef(false);
+
+  useEffect(() => {
+    if (!moveFocusRef.current) return;
+    moveFocusRef.current = false;
+    headingRef.current?.focus();
+  }, [step]);
+
+  const goTo = (next: number) => {
+    moveFocusRef.current = true;
+    setStepChanged(true);
+    setStep(next);
+  };
 
   const petrolOk = FLEET_VEHICLES[type].petrolLPer100 !== undefined;
   const effectiveFuel: FuelType = petrolOk ? fuel : 'diesel';
 
-  const est = estimateFleet({ vehicles, type, kmPerMonth, charging, fuel: effectiveFuel }, prices);
+  const input = { vehicles, type, kmPerMonth, charging, fuel: effectiveFuel };
+  const est = estimateFleet(input, prices);
   const costs = vehicleCostPerKm(type, prices, effectiveFuel);
-  const co2 = Math.max(0, est.co2AvoidedTonnesYear);
 
   const fuelLabel = effectiveFuel === 'petrol' ? 'Petrol 93' : 'Diesel';
   const fuelPrice = effectiveFuel === 'petrol' ? prices.petrol93PricePerL : prices.dieselPricePerL;
   const monthYear = formatMonthYear(prices.effectiveDate);
-  const priceCaption = `${fuelLabel} R${fuelPrice.toFixed(2)}/L · ${prices.isLive && monthYear ? monthYear : 'estimated'}`;
 
-  function touch() {
+  // The rates the estimate uses, with the source and date when Sanity has them.
+  const vehicle = FLEET_VEHICLES[type];
+  const litresPer100 = (effectiveFuel === 'petrol' ? vehicle.petrolLPer100 : undefined) ?? vehicle.dieselLPer100;
+  const fuelRate = `${fuelLabel} R${fuelPrice.toFixed(2)}/L`;
+  const powerRates = `grid R${prices.gridPricePerKwh.toFixed(2)}/kWh and solar R${prices.solarPricePerKwh.toFixed(2)}/kWh`;
+  const source = prices.sourceLabel !== NO_SOURCE_LABEL ? `source: ${prices.sourceLabel}` : null;
+  const dated = [source, monthYear && `effective ${monthYear}`].filter(Boolean).join(', ');
+  const ratesLine = prices.isLive
+    ? `${fuelRate}${dated ? ` (${dated})` : ''}. Electricity: ${powerRates}, average rates.`
+    : `${fuelRate}, ${powerRates} are estimates, not live prices.`;
+  const usageLine = `Assumes a ${effectiveFuel} ${VEHICLE_NOUN[type].one} uses ${litresPer100} L per 100 km and an electric one ${vehicle.evKwhPer100} kWh.`;
+
+  // CO2 as the model gives it, including an increase (grid-charged trucks), never clamped to zero.
+  const co2 = est.co2AvoidedTonnesYear;
+  const solarCo2 = estimateFleet({ ...input, charging: 'solar' }, prices).co2AvoidedTonnesYear;
+  const co2Rises = co2 < 0;
+  const co2Label = co2Rises ? 'Extra CO₂ a year from grid charging' : 'CO₂ avoided a year';
+  const co2Value = co2Rises ? `+${formatTonnes(co2)} t` : `~${formatTonnes(co2)} t`;
+  const co2Hint =
+    charging === 'grid' && solarCo2 > Math.max(co2, 0)
+      ? co2Rises ? 'Charging from solar avoids CO₂ instead.' : 'Charging from solar avoids more.'
+      : null;
+
+  // Fires once, on the visitor's first change. The handler passes the value it
+  // has just set, because state read here still holds the value before the change.
+  function touch(changed: { vehicles?: number; charging?: ChargingSource } = {}) {
     if (used) return;
     setUsed(true);
-    dlPush({ event: 'fleet_estimate_used', vertical: 'ev-fleets', vehicles, charging });
+    dlPush({
+      event: 'fleet_estimate_used',
+      vertical: 'ev-fleets',
+      vehicles: changed.vehicles ?? vehicles,
+      charging: changed.charging ?? charging,
+    });
   }
 
   // Reset fuel here (event handler, never during render) when moving to a diesel-only vehicle.
@@ -81,13 +208,19 @@ export function FleetSavingsEstimator({ prices }: { prices: ResolvedEnergyPrices
     touch();
   }
 
+  const vehiclesId = `${uid}-vehicles`;
+  const distanceId = `${uid}-distance`;
+  const distanceText = `${kmPerMonth.toLocaleString('en-ZA')} km/mo`;
+
   return (
+    // A 55% Night Teal card, like the other hero tools: over the brightest part of
+    // the hero photo, a 6% white card left its labels at 2.4 to 3.8:1.
     <div
-      className="rounded-2xl p-6"
-      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)' }}
+      className="rounded-2xl p-6 bg-pe-nav-dark/55"
+      style={{ border: '1px solid rgba(255,255,255,0.10)' }}
     >
-      <p className="font-body text-xs font-bold uppercase tracking-[0.12em] mb-3" style={{ color: 'rgba(255,255,255,0.50)' }}>
-        Estimate your fleet savings
+      <p className="font-body text-xs font-bold uppercase tracking-[0.12em] mb-3" style={{ color: 'var(--color-on-dark-muted)' }}>
+        Estimate your fleet&rsquo;s energy cost savings
       </p>
 
       {/* Progress */}
@@ -101,159 +234,164 @@ export function FleetSavingsEstimator({ prices }: { prices: ResolvedEnergyPrices
             />
           ))}
         </div>
-        <span className="font-body text-[10px]" style={{ color: 'rgba(255,255,255,0.40)' }}>
+        <span aria-hidden="true" className="font-body text-xs" style={{ color: 'var(--color-on-dark-subtle)' }}>
           Step {step + 1} of {STEP_COUNT}
         </span>
       </div>
 
+      <h2 ref={headingRef} tabIndex={-1} className="sr-only">
+        Step {step + 1} of {STEP_COUNT}: {STEP_TITLES[step]}
+      </h2>
+
       <motion.div
         key={step}
-        initial={{ opacity: 0, y: 6 }}
+        initial={stepChanged ? { opacity: 0, y: 6 } : false}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.18 }}
-        aria-label={`Step ${step + 1} of ${STEP_COUNT}`}
       >
         {/* Step 0 — All inputs */}
         {step === 0 && (
           <>
             <div className="flex justify-between mb-2">
-              <span className="font-body text-sm text-white/70">Number of vehicles</span>
-              <span className="font-display font-extrabold text-sm text-white">{vehicles}</span>
+              <label htmlFor={vehiclesId} className="font-body text-sm text-white/70">Number of vehicles</label>
+              <span aria-hidden="true" className="font-display font-extrabold text-sm text-white">{vehicles}</span>
             </div>
             <input
+              id={vehiclesId}
               type="range" min={1} max={100} step={1} value={vehicles}
-              onChange={(e) => { setVehicles(Number(e.target.value)); touch(); }}
-              className="w-full mb-5" style={{ accentColor: ACCENT }} aria-label="Number of vehicles"
+              onChange={(e) => { const n = Number(e.target.value); setVehicles(n); touch({ vehicles: n }); }}
+              className="w-full mb-5" style={{ accentColor: ACCENT }}
             />
 
-            <p className="font-body text-sm text-white/70 mb-2">Vehicle type</p>
-            <div className="grid grid-cols-5 gap-1.5 mb-5">
-              {TYPES.map((t) => {
-                const sel = type === t;
-                return (
-                  <button
-                    key={t} type="button"
-                    onClick={() => selectType(t)}
-                    className="rounded-full py-2 font-body text-[11px] font-semibold transition-colors"
-                    style={sel ? { background: ACCENT, color: ACCENT_TEXT } : UNSELECTED_BTN}
-                  >
-                    {TYPE_LABEL[t]}
-                  </button>
-                );
-              })}
-            </div>
+            <PillGroup
+              legend="Vehicle type"
+              name={`${uid}-type`}
+              options={TYPES.map((t) => ({ value: t, label: TYPE_LABEL[t] }))}
+              value={type}
+              onChange={selectType}
+              columns="grid-cols-5 gap-1.5"
+              pillClass="py-2 text-xs"
+            />
 
-            <p className="font-body text-sm text-white/70 mb-2">Current fuel</p>
-            <div className="grid grid-cols-2 gap-2 mb-5">
-              {(['diesel', 'petrol'] as FuelType[]).map((f) => {
-                const sel = effectiveFuel === f;
-                const disabled = f === 'petrol' && !petrolOk;
-                return (
-                  <button
-                    key={f} type="button" disabled={disabled}
-                    onClick={() => { setFuel(f); touch(); }}
-                    className="rounded-full py-2.5 font-body text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                    style={sel ? { background: ACCENT, color: ACCENT_TEXT } : UNSELECTED_BTN}
-                  >
-                    {f === 'diesel' ? 'Diesel' : 'Petrol 93'}
-                  </button>
-                );
-              })}
-            </div>
+            <PillGroup<FuelType>
+              legend="Current fuel"
+              name={`${uid}-fuel`}
+              options={[
+                { value: 'diesel', label: 'Diesel' },
+                { value: 'petrol', label: 'Petrol 93', disabled: !petrolOk },
+              ]}
+              value={effectiveFuel}
+              onChange={(f) => { setFuel(f); touch(); }}
+              columns="grid-cols-2 gap-2"
+              pillClass="py-2.5 text-sm"
+            />
 
             <div className="flex justify-between mb-2">
-              <span className="font-body text-sm text-white/70">Distance per vehicle</span>
-              <span className="font-display font-extrabold text-sm text-white">{kmPerMonth.toLocaleString('en-ZA')} km/mo</span>
+              <label htmlFor={distanceId} className="font-body text-sm text-white/70">Distance per vehicle</label>
+              <span aria-hidden="true" className="font-display font-extrabold text-sm text-white">{distanceText}</span>
             </div>
             <input
+              id={distanceId}
               type="range" min={500} max={8000} step={500} value={kmPerMonth}
+              aria-valuetext={`${distanceText.replace('km/mo', 'km a month')}`}
               onChange={(e) => { setKmPerMonth(Number(e.target.value)); touch(); }}
-              className="w-full mb-5" style={{ accentColor: ACCENT }} aria-label="Distance per vehicle per month"
+              className="w-full mb-5" style={{ accentColor: ACCENT }}
             />
 
-            <p className="font-body text-sm text-white/70 mb-2">Charging source</p>
-            <div className="grid grid-cols-2 gap-2">
-              {(['grid', 'solar'] as ChargingSource[]).map((c) => {
-                const sel = charging === c;
-                return (
-                  <button
-                    key={c} type="button"
-                    onClick={() => { setCharging(c); touch(); }}
-                    className="rounded-full py-2.5 font-body text-sm font-semibold transition-colors"
-                    style={sel ? { background: ACCENT, color: ACCENT_TEXT } : UNSELECTED_BTN}
-                  >
-                    {c === 'grid' ? 'Grid' : 'Solar + battery'}
-                  </button>
-                );
-              })}
-            </div>
+            <PillGroup<ChargingSource>
+              legend="Charging source"
+              name={`${uid}-charging`}
+              options={[
+                { value: 'grid', label: 'Grid' },
+                { value: 'solar', label: 'Solar + battery' },
+              ]}
+              value={charging}
+              onChange={(c) => { setCharging(c); touch({ charging: c }); }}
+              columns="grid-cols-2 gap-2"
+              pillClass="py-2.5 text-sm"
+            />
           </>
         )}
 
-        {/* Step 1 — Your savings */}
+        {/* Step 1: your energy cost savings */}
         {step === 1 && (
           <>
             <div className="rounded-xl p-4 text-center mb-3" style={{ background: ACCENT }}>
-              <p className="font-body text-xs mb-1" style={{ color: `${ACCENT_TEXT}99` }}>Est. monthly fleet saving</p>
+              <p className="font-body text-xs mb-1" style={{ color: ACCENT_TEXT }}>Estimated energy cost saving a month</p>
               <p className="font-display font-extrabold text-2xl" style={{ color: ACCENT_TEXT }}>{formatRand(est.monthlySaving)}</p>
             </div>
 
+            {/* Values sit on one baseline even when a label wraps. */}
             <div className="grid grid-cols-2 gap-3 mb-3">
-              <div className="rounded-xl p-3 text-center" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <p className="font-body text-[11px] mb-1" style={{ color: 'rgba(255,255,255,0.55)' }}>Annual saving</p>
+              {/* on-dark-muted: the tiles' lighter fill left on-dark-subtle at 4.0:1 */}
+              <div className="rounded-xl p-3 text-center flex flex-col justify-between gap-1" style={TILE}>
+                <p className="font-body text-xs text-balance" style={{ color: 'var(--color-on-dark-muted)' }}>Energy cost saving a year</p>
                 <p className="font-display font-extrabold text-base text-white">{formatRand(est.annualSaving)}</p>
               </div>
-              <div className="rounded-xl p-3 text-center" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <p className="font-body text-[11px] mb-1" style={{ color: 'rgba(255,255,255,0.55)' }}>5-year saving</p>
+              <div className="rounded-xl p-3 text-center flex flex-col justify-between gap-1" style={TILE}>
+                <p className="font-body text-xs text-balance" style={{ color: 'var(--color-on-dark-muted)' }}>Energy cost saving over 5 years</p>
                 <p className="font-display font-extrabold text-base text-white">{formatRand(est.fiveYearSaving)}</p>
               </div>
             </div>
 
-            <div className="rounded-xl p-4 mb-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <div className="flex items-center justify-between mb-3">
-                <span className="font-body text-[11px]" style={{ color: 'rgba(255,255,255,0.55)' }}>Cost per km</span>
-                <span className="font-body text-[11px]" style={{ color: 'rgba(255,255,255,0.40)' }}>{priceCaption}</span>
-              </div>
-              <CostPerKmBars fuelLabel={fuelLabel} costs={costs} accent={ACCENT} />
-            </div>
-
-            <div className="flex items-center justify-between rounded-xl p-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <span className="font-body text-[11px]" style={{ color: 'rgba(255,255,255,0.55)' }}>
-                CO&#8322; avoided / year{charging === 'grid' ? ' — charge from solar for more' : ''}
-              </span>
-              <span className="font-display font-bold text-sm text-white">~{co2.toLocaleString('en-ZA')} t</span>
-            </div>
-
-            <p className="font-body text-[10px] mt-3 leading-relaxed" style={{ color: 'rgba(255,255,255,0.30)' }}>
-              Indicative only.
+            <p className="font-body text-xs leading-relaxed mb-3" style={{ color: 'var(--color-on-dark-muted)' }}>
+              {EXCLUSIONS}
             </p>
+
+            <div className="rounded-xl p-4 mb-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <p className="font-body text-xs mb-3" style={{ color: 'var(--color-on-dark-subtle)' }}>Cost per km</p>
+              <CostPerKmBars fuelLabel={fuelLabel} costs={costs} accent={ACCENT} />
+              <p className="font-body text-xs leading-relaxed mt-3" style={{ color: 'var(--color-on-dark-muted)' }}>
+                {ratesLine} {usageLine}
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between gap-3 rounded-xl p-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div>
+                <p className="font-body text-xs" style={{ color: 'var(--color-on-dark-subtle)' }}>{co2Label}</p>
+                {co2Hint && (
+                  <p className="font-body text-xs mt-0.5" style={{ color: 'var(--color-on-dark-subtle)' }}>{co2Hint}</p>
+                )}
+              </div>
+              <span className="font-display font-bold text-sm text-white whitespace-nowrap">{co2Value}</span>
+            </div>
           </>
         )}
       </motion.div>
 
-      {/* Navigation */}
-      <div className="flex items-center justify-between gap-2 mt-6">
+      {/* Navigation. On the result step the two buttons stack full width below
+          640px, where their labels would otherwise wrap onto two lines each. */}
+      <div className={`mt-6 flex gap-2 ${step === 0 ? 'justify-end' : 'flex-col sm:flex-row sm:items-center sm:justify-between'}`}>
         {step === 0 ? (
+          <button
+            type="button"
+            onClick={() => goTo(1)}
+            className={NAV_BTN}
+            style={{ background: ACCENT, color: ACCENT_TEXT }}
+          >
+            See savings <IconArrowRight size={15} />
+          </button>
+        ) : (
           <>
-            <span />
             <button
               type="button"
-              onClick={() => setStep(1)}
+              onClick={() => goTo(0)}
+              className={NAV_BTN}
+              style={UNSELECTED_BTN}
+            >
+              <IconArrowLeft size={15} /> Edit inputs
+            </button>
+            <Link
+              href={contactHref(
+                `Our fleet: ${vehicles} ${vehicles === 1 ? VEHICLE_NOUN[type].one : VEHICLE_NOUN[type].many} on ${fuelLabel.toLowerCase()}, about ${kmPerMonth.toLocaleString('en-ZA')} km a month each, charging from ${charging === 'grid' ? 'the grid' : 'solar and battery'}. Your estimator showed an energy cost saving of about ${formatRand(est.monthlySaving)} a month (fuel against electricity only). I'd like a fleet assessment.`,
+              )}
+              onClick={() => dlPush({ event: 'cta_click', cta_label: 'Get a fleet assessment', cta_location: 'fleet_estimator_result' })}
               className={NAV_BTN}
               style={{ background: ACCENT, color: ACCENT_TEXT }}
             >
-              See savings <IconArrowRight size={15} />
-            </button>
+              Get a fleet assessment <IconArrowRight size={15} />
+            </Link>
           </>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setStep(0)}
-            className={NAV_BTN}
-            style={UNSELECTED_BTN}
-          >
-            <IconArrowLeft size={15} /> Edit inputs
-          </button>
         )}
       </div>
     </div>

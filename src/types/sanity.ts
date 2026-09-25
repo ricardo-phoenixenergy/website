@@ -31,6 +31,9 @@ export type PortableTextBlock = {
 
 /* ─── Project ────────────────────────────────────────────────────────────────── */
 
+/** What a project's results rest on. Unset is treated as projected. */
+export type ResultsBasis = 'projected' | 'measured';
+
 export interface ProjectCard {
   _id: string;
   title: string;
@@ -40,6 +43,16 @@ export interface ProjectCard {
   systemSize?: string;
   heroImage?: SanityImage;
   featured?: boolean;
+  clientName?: string;
+  status?: 'completed' | 'in-progress' | 'planned';
+  /** System facts (kWp, kWh, inverter, deal structure). */
+  metrics?: ProjectMetric[];
+  /** Outcomes (payback, bill reduction); the first two lead the card. */
+  results?: ProjectMetric[];
+  /** Projected (financial model) unless an editor marks the results measured. */
+  resultsBasis?: ResultsBasis;
+  /** True only when challenge, solution and outcome all have content. */
+  caseStudyReady?: boolean;
 }
 
 export interface ProjectMetric {
@@ -71,7 +84,14 @@ export interface Project extends ProjectCard {
   outcome: PortableTextBlock[];
   metrics: ProjectMetric[];   // 4 items — stats strip
   results: ProjectMetric[];   // 4 items — results strip
+  /** ISO date (YYYY-MM-DD) of the model or the end of the measured period. */
+  resultsAsOf?: string;
+  /** Replaces the default note under the results strip. */
+  resultsAssumptions?: string;
+  /** Other projects in the same service, case studies first. */
   related: ProjectCard[];
+  /** Up to two from other services, shown only when `related` is empty. */
+  otherProjects?: ProjectCard[];
 }
 
 /* ─── Blog ───────────────────────────────────────────────────────────────────── */
@@ -152,8 +172,13 @@ export interface MilestoneTimeline {
 /* ─── Company Stats ──────────────────────────────────────────────────────────── */
 
 export interface CompanyStat {
-  value: string;   // headline figure — "40", "10 MWp + 8 MWh", "R380M"
+  value: string;   // headline figure, e.g. "40+" or "10 MWp"
   label: string;   // short description beneath the value
+  // Claims register fields, all optional. Only asOf renders ("As at …").
+  definition?: string | null;  // what it counts and its scope
+  basis?: string | null;       // how it was worked out
+  source?: string | null;      // where the evidence is
+  asOf?: string | null;        // YYYY-MM-DD, the date the figure was true
 }
 
 /* ─── Partner / Investor ─────────────────────────────────────────────────────── */
@@ -185,8 +210,7 @@ export interface HowItWorksContent {
   subtitle?: string;
   steps: HowItWorksStep[];
   showCTA?: boolean;
-  ctaLabel?: string;
-  ctaHref?: string;
+  // The CTA's label and link come from src/config/ctas.ts, not Sanity.
 }
 
 /* ─── Hero Images ───────────────────────────────────────────────────────────── */

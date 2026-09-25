@@ -18,7 +18,7 @@ export function RelatedPosts({ posts }: RelatedPostsProps) {
 
   return (
     <div className="bg-white rounded-[14px] p-[18px]" style={{ border: '1px solid #E5E7EB' }}>
-      <p className="font-display font-bold text-[13px] text-[#1A1A1A] mb-3">Related articles</p>
+      <p className="font-display font-bold text-sm text-pe-text mb-3">Related articles</p>
       <div className="flex flex-col">
         {posts.map((post, i) => {
           const thumbSrc = post.heroImage?.asset
@@ -42,13 +42,13 @@ export function RelatedPosts({ posts }: RelatedPostsProps) {
                   {...(lqip ? { placeholder: 'blur' as const, blurDataURL: lqip } : {})}
                 />
               ) : (
-                <div className="w-[52px] h-11 rounded-lg bg-[#E5E7EB] flex-shrink-0" />
+                <div className="w-[52px] h-11 rounded-lg bg-pe-border flex-shrink-0" />
               )}
               <div>
-                <p className="font-display font-bold text-[11px] text-[#1A1A1A] leading-[1.35] mb-1 group-hover:text-[#39575C] transition-colors line-clamp-2">
+                <p className="font-display font-bold text-xs text-pe-text leading-[1.35] mb-1 group-hover:text-pe-primary transition-colors line-clamp-2">
                   {post.title}
                 </p>
-                <p className="font-body text-[9px] text-[#9CA3AF]">
+                <p className="font-body text-xs text-pe-muted">
                   {formatDate(post.publishedAt)}
                   <span className="mx-1" aria-hidden="true">·</span>
                   {post.readTime} min

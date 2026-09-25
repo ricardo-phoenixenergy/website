@@ -46,7 +46,8 @@ export async function generateMetadata({
       : undefined;
 
   return {
-    title: post.seoTitle ?? `${post.title} | Phoenix Energy`,
+    // An editor's seoTitle is used verbatim; otherwise the template adds the brand.
+    title: post.seoTitle ? { absolute: post.seoTitle } : post.title,
     description: post.seoDescription ?? post.excerpt,
     alternates: { canonical },
     openGraph: {
@@ -191,7 +192,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           {/* Tags */}
           <div className="flex flex-wrap gap-2 mb-3">
             <span
-              className="font-body font-bold text-[10px] uppercase tracking-[0.08em] text-white rounded-full px-2.5 py-1"
+              className="font-body font-bold text-xs uppercase tracking-[0.08em] text-white rounded-full px-2.5 py-1"
               style={{ background: 'rgba(255,255,255,0.25)' }}
             >
               {post.category}
@@ -199,7 +200,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             {post.tags?.slice(0, 2).map(tag => (
               <span
                 key={tag}
-                className="font-body font-semibold text-[10px] text-white rounded-full px-2.5 py-1"
+                className="font-body font-semibold text-xs text-white rounded-full px-2.5 py-1"
                 style={{ background: 'rgba(255,255,255,0.15)' }}
               >
                 {tag}
@@ -225,7 +226,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{ background: '#39575C', border: '2px solid rgba(255,255,255,0.30)' }}
               >
-                <span className="font-display font-bold text-[10px] text-white">
+                <span className="font-display font-bold text-xs text-white">
                   {initials(post.author.name)}
                 </span>
               </div>
@@ -246,12 +247,12 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         className="max-w-5xl mx-auto flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between py-3 px-6"
         style={{ borderBottom: '1px solid #E5E7EB' }}
       >
-        <nav aria-label="Breadcrumb" className="font-body text-xs text-[#6B7280] flex items-center gap-1.5 min-w-0">
-          <Link href="/" className="hover:text-[#39575C] transition-colors shrink-0">Home</Link>
+        <nav aria-label="Breadcrumb" className="font-body text-xs text-pe-muted flex items-center gap-1.5 min-w-0">
+          <Link href="/" className="hover:text-pe-primary transition-colors shrink-0">Home</Link>
           <span className="shrink-0">/</span>
-          <Link href="/blog" className="hover:text-[#39575C] transition-colors shrink-0">News &amp; Insights</Link>
+          <Link href="/blog" className="hover:text-pe-primary transition-colors shrink-0">News &amp; Insights</Link>
           <span className="shrink-0">/</span>
-          <span className="text-[#1A1A1A] truncate">
+          <span className="text-pe-text truncate">
             {post.title}
           </span>
         </nav>
@@ -262,7 +263,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <div className="max-w-5xl mx-auto pt-8 pb-12 px-6 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
 
         {/* Article body */}
-        <article className="min-w-0">
+        <article className="min-w-0 max-w-[42rem]">
           <PortableText
             value={post.body}
             components={{
@@ -276,7 +277,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                   return (
                     <h2
                       id={id}
-                      className="font-display font-extrabold text-lg text-[#1A1A1A] leading-tight mt-7 mb-3 scroll-mt-24"
+                      className="font-display font-extrabold text-2xl text-pe-text leading-[1.25] mt-12 mb-4 scroll-mt-24 text-balance"
                     >
                       {children}
                     </h2>
@@ -289,7 +290,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                   return (
                     <h3
                       id={id}
-                      className="font-display font-bold text-base text-[#1A1A1A] leading-tight mt-5 mb-2 scroll-mt-24"
+                      className="font-display font-bold text-xl text-pe-text leading-[1.3] mt-9 mb-3 scroll-mt-24"
                     >
                       {children}
                     </h3>
@@ -305,7 +306,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               className="flex flex-wrap gap-1.5 pt-5 mt-7"
               style={{ borderTop: '1px solid #E5E7EB' }}
             >
-              <span className="font-body font-semibold text-xs text-[#1A1A1A]">Tags:</span>
+              <span className="font-body font-semibold text-xs text-pe-text">Tags:</span>
               {post.tags.map(tag => (
                 <Link
                   key={tag}

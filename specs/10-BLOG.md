@@ -2,30 +2,34 @@
 > Spoke | Hub: [`/CLAUDE.md`](/CLAUDE.md) | Version 3.1
 > Routes: `/blog` (index) · `/blog/[slug]` (single post) · `/blog/authors/[slug]` (author profile)
 > **Approved April 2026**
+> **Updated 2026-09-24:** corrected to match the build. Type sizes follow the scale in `specs/01-BRAND.md`: nothing renders below 12px, so where a line below gives 9 to 11px, the build uses 12px or more.
 
 ---
 
 ## Section Order — Blog Index (`/blog`)
 
 ```
-1. Navbar            — light glass pill, "Blog" active
-2. Breadcrumb        — Home / Blog & Insights
-3. Page header       — eyebrow + H1 + subtitle + search bar
-4. Filter pills      — category + vertical tag pills
-5. Featured article  — 2-col card, first pinned post
-6. Article grid      — 3-col, 6 cards default
-7. Load more         — +6 per click, Sanity pagination
-8. Footer
+1. Navbar: solid white pill; "News & Insights" highlighted once the link shows (3 or more posts)
+2. Breadcrumb: Home / News & Insights
+3. Page header: eyebrow + H1 + subtitle, one column
+4. Search bar: above the pills; ?q= filters on the server
+5. Filter pills: one scrolling row, one active pill at a time
+6. Featured article: 2-col card, the most recent pinned post (or the latest post)
+7. Article grid: 1, 2 or 3 columns, 6 cards a page
+8. Pagination: Prev, page numbers, Next (no Load more)
+9. CTA band: PageFooter with ctaVariant="centered"
+10. Footer
 ```
 
 ## Section Order — Single Post (`/blog/[slug]`)
 
 ```
-1. Navbar            — light glass pill, "Blog" active
-2. Post hero         — full-bleed photo + gradient + tags + title + meta
+1. Navbar: solid white pill; "News & Insights" highlighted once the link shows
+2. Post hero: 360px full-bleed photo + gradient + tags + title + meta
 3. Breadcrumb + share bar
-4. Two-column layout — Article body (left) + Sidebar (right)
-5. Footer
+4. Two-column layout: article body (left) + sidebar (right), from 1024px
+5. CTA band: PageFooter with ctaVariant="centered"
+6. Footer
 ```
 
 ---
@@ -33,76 +37,76 @@
 ## Blog Index
 
 ### Navbar & Breadcrumb
-- Active link: "Blog"
-- Breadcrumb: `Home / Blog & Insights`
+- The section is named "News & Insights" everywhere: the navbar link, the breadcrumbs, the eyebrow, the page title and the BreadcrumbList JSON-LD.
+- Active link: "News & Insights". The root layout adds it to the navbar only once 3 or more posts with a slug exist (`BLOG_NAV_MIN_POSTS` in `src/app/layout.tsx`; see `specs/03-NAVIGATION.md`).
+- Breadcrumb: `Home / News & Insights`.
 
 ---
 
 ### Page Header
 
-- `padding: 36px 24px 0`, `max-width: 960px`, `margin: 0 auto`
+- Inside `page-container` (up to 1280px wide), with `padding-top: 96px`.
+- One column at every width: breadcrumb, then the title block (`margin-bottom: 24px`), then the search bar, then the filter pills. There is no two-column header.
 
-```css
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 32px;
-align-items: end;
-margin-bottom: 28px;
-```
+**Title block:**
+- Eyebrow: `NEWS & INSIGHTS`
+- H1: `Energy intelligence, delivered`, 36px, with "delivered" in Dusty Blue ink `#45727E` (`text-pe-secondary-ink`).
+- Subtitle: Inter 400, 16px, muted, `max-width: 512px`: *"Expert perspectives on clean energy, SA market trends, project spotlights and company news."*
 
-**Left:**
-- Eyebrow: `INSIGHTS & NEWS`
-- H1: `Energy intelligence, delivered` — "delivered" in Dusty Blue `#709DA9`
-- Subtitle: Inter 400, 13px, muted — *"Expert perspectives on clean energy, SA market trends, project spotlights and company news."*
-
-**Right — search bar:**
+**Search bar** (`BlogSearchInput`, below the title block and above the pills):
 - `border-radius: 9999px`, `border: 1px solid #E5E7EB`, `background: #fff`
-- `padding: 10px 16px 10px 38px` (space for 🔍 icon left)
-- `placeholder: "Search articles..."`
-- On input: filter article grid client-side by title + excerpt match
-- Inter 400, 12px
-
-**Mobile:** search bar stacks below heading, full-width
+- `padding: 10px 16px 10px 38px` (space for a 14px SVG search icon on the left).
+- `placeholder: "Search articles..."`, with a visually hidden label "Search articles" and `role="search"`.
+- Typing sets `?q=` after a 400ms pause (`router.replace`, so a pause doesn't add a history entry). It keeps any category or tag and drops `page`, so results start at page 1.
+- A new `?q=` in the URL (Back, a filter or a link) replaces the text, except while the field has focus: a navigation for an earlier pause that lands late never overwrites what the visitor has typed since (audit BLG-10). The text follows the URL during render, not in an effect. A search still waiting when the visitor leaves the page is dropped.
+- The server does the filtering: `title match $q || excerpt match $q`, where `$q` is the trimmed text plus `*` (a GROQ prefix match). The post count and the page numbers use the same filter.
+- Inter 400, 14px.
+- Full width, and one third of the row from 1024px.
 
 ---
 
 ### Filter Pills
 
-- `display: flex`, `gap: 8px`, `flex-wrap: wrap`
-- `padding: 0 24px 20px`, `max-width: 960px`, `margin: 0 auto`
+`BlogFilterPills` (`src/components/blog/BlogFilterPills.tsx`) wraps the shared `FilterPills` (`src/components/ui/FilterPills.tsx`).
 
-**Default state:** white bg, `border: 1px solid #E5E7EB`, muted text, Inter 500, 11px, pill shape
-**Active state:** Deep Teal bg + border, white text, `font-weight: 600`
-**Hover:** `border-color: #aaa`, text → `#1A1A1A`
+- One row that scrolls sideways with a hidden scrollbar, at every width: `display: flex`, `gap: 8px`, `overflow-x: auto`, no wrapping.
+- In the same `page-container` as the search bar, with `padding-bottom: 24px` under the pair.
 
-**Pills (two tiers):**
+**Default state:** white bg, `border: 1px solid #E5E7EB`, muted text, Inter 500, 14px, `padding: 7px 16px`, pill shape
+**Active state:** Deep Teal bg, no border, white text, `box-shadow: 0 2px 8px rgba(0,0,0,0.12)`, `aria-pressed="true"`
+**Hover:** no hover style
 
-Category pills:
+**Pills (one row):**
+
+Category pills, with the singular names stored in Sanity:
 ```
-All articles  |  Industry Insights  |  Project Spotlights  |  Company News  |  Press Releases
+All articles  |  Industry Insights  |  Project Spotlight  |  Company News  |  Press Release
 ```
 
-Vertical tag pills (pulled dynamically from Sanity `tags[]`):
+Then one pill per tag used on a published post (`ALL_BLOG_TAGS_QUERY`). The Studio offers these tags:
 ```
 Solar & Storage  |  Wheeling  |  Carbon Credits  |  Energy Optimisation  |  EV Fleets  |  WeBuySolar
 ```
 
 **Filter logic:**
-- `All articles` → show all posts
-- Category pill → filter by `category` field
-- Vertical tag pill → filter by `tags[]` array contains
-- Both can be active simultaneously (AND logic)
-- URL updates: `/blog?category=insights&tag=wheeling` — shareable + crawlable by Google
+- `All articles` → show all posts (clears the category and tag, keeps the search).
+- Category pill → filter by `category` field.
+- Vertical tag pill → filter by `$tag in tags`.
+- One pill is active at a time: choosing a pill clears the other filter and resets to page 1. The search term stays. The query still applies both if a hand-typed URL has a category and a tag.
+- URL: `/blog?category=Industry+Insights` or `/blog?tag=Wheeling`, with the full name (`router.push`). The URL can be shared. The pills are buttons, not links, so crawlers reach tag pages only through the tag links on posts.
 
 ---
 
 ### Featured Article Card
 
-- `margin: 0 24px 20px`, `max-width: 960px`, `margin-left: auto`, `margin-right: auto`
+- In the `page-container`, with `padding-bottom: 20px` below it.
+- Shown on every page of the index, whatever the filter or search: `FEATURED_POST_QUERY` takes no parameters.
 
 ```css
 display: grid;
-grid-template-columns: 1fr 1fr;
+grid-template-columns: 1fr;        /* phones: photo on top */
+grid-template-columns: 1fr 1fr;    /* from 640px (sm) */
+min-height: 240px;
 border-radius: 16px;
 overflow: hidden;
 background: #fff;
@@ -110,21 +114,21 @@ border: 1px solid #E5E7EB;
 cursor: pointer;
 ```
 
-Hover: `translateY(-3px)`, `box-shadow: 0 12px 32px rgba(57,87,92,0.1)`
+Hover (the shared `Card`, pattern 1): `translateY(-4px)`, `box-shadow: 0 12px 32px rgba(57,87,92,0.1)`, `border-color: #cccccc`; the photo zooms to 105%.
 
 **Left — photo:**
-- `next/image` fill, `object-fit: cover`, `min-height: 220px`
-- `FEATURED` badge: absolute top-left, Deep Teal fill, white text, Inter 700, 9px, pill
+- `next/image` fill, `object-fit: cover`, `min-height: 240px`, `priority`, blur placeholder.
+- `FEATURED` badge: absolute top-left (12px in), Deep Teal fill, white text, Inter 700, 12px, uppercase, pill.
 
 **Right — body** (`padding: 24px`):
-- Tag row: category pill + vertical tag pill
-- Title: Plus Jakarta Sans 800, 18px, `line-height: 1.3`
-- Excerpt: Inter 400, 12px, muted, `line-height: 1.75`, `-webkit-line-clamp: 3`
-- Meta row: author avatar (24px circle, initials) + author name + `·` + date + `·` + read time
+- Tag row: category pill (solid fill, see Tag pill anatomy) + up to two tag pills (`rgba(112,157,169,0.10)` with Deep Teal text).
+- Title: Plus Jakarta Sans 800, 20px, `line-height: 1.3`, `-webkit-line-clamp: 3`.
+- Excerpt: Inter 400, 14px, muted, `line-height: 1.7`, `-webkit-line-clamp: 3`.
+- Meta row: author photo, or initials on Deep Teal (26px circle) + author name + `·` + date + `·` + read time, in 12px muted text.
 
-**Sanity source:** post with `featured: true` field, or most recent post as fallback
+**Sanity source:** the most recent post with `featured: true`, or the most recent post when none is pinned (`order(featured desc, publishedAt desc) [0]`).
 
-**Mobile:** stacks to photo top, body below
+**Mobile:** below 640px the photo stacks above the body (`grid-cols-1 sm:grid-cols-2` in `FeaturedArticleCard.tsx`, updated September 2026; it used to hold a fixed `1fr 1fr` at every width).
 
 ---
 
@@ -132,57 +136,56 @@ Hover: `translateY(-3px)`, `box-shadow: 0 12px 32px rgba(57,87,92,0.1)`
 
 ```css
 display: grid;
-grid-template-columns: repeat(3, 1fr);
-gap: 14px;
-padding: 0 24px;
-max-width: 960px;
-margin: 0 auto;
+grid-template-columns: repeat(3, 1fr); /* from 768px; 2 columns from 640px, 1 below */
+gap: 16px;
+/* inside page-container */
 ```
 
-**Each card:**
-- `background: #fff`, `border-radius: 14px`, `overflow: hidden`, `border: 1px solid #E5E7EB`
-- Hover: `translateY(-3px)`, `border-color: #cccccc`
+**Each card** (`ArticleCard`, on the shared `Card`):
+- `background: #fff`, `border-radius: 16px`, `overflow: hidden`, `border: 1px solid #E5E7EB`.
+- Hover: `translateY(-4px)`, `box-shadow: 0 12px 32px rgba(57,87,92,0.1)`, `border-color: #cccccc`.
 
 **Card anatomy:**
-- Photo: `height: 130px`, `next/image` fill, `object-fit: cover`
-- Body: `padding: 14px`
-- Tags row: category + vertical tags, `gap: 5px`, `margin-bottom: 8px`
-- Title: Plus Jakarta Sans 700, 13px, `line-height: 1.4`
-- Excerpt: Inter 400, 11px, muted, `line-height: 1.65`, `-webkit-line-clamp: 2`
-- Footer: date (left) + read time in Dusty Blue (right), `border-top: 1px solid #E5E7EB`, `padding-top: 10px`
+- Photo: `height: 160px`, `next/image` fill, `object-fit: cover`, with a dark gradient scrim from the bottom.
+- On the photo: the category badge top right, and the first tag bottom left when that tag names a vertical.
+- Body: `padding: 16px`, with no tags row.
+- Title: Plus Jakarta Sans 700, 14px, `line-height: 1.4`, `-webkit-line-clamp: 2`.
+- Excerpt: Inter 400, 12px, muted, `line-height: 1.65`, `-webkit-line-clamp: 2`.
+- Footer: date (left) + read time in Dusty Blue ink `#45727E` (right), `border-top: 1px solid #E5E7EB`, `padding: 12px 16px`.
 
 **Tag pill anatomy:**
 ```css
-font-size: 9px;
-font-weight: 600;
-padding: 2px 8px;
+font-size: 12px;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: 0.08em;
+padding: 4px 10px;
 border-radius: 9999px;
 ```
-Each category has its own accent colour bg (10% opacity) + text:
+Each category has a solid fill with text that passes 4.5:1 on it (`CATEGORY_STYLES` in `src/lib/blogUtils.ts`; an unknown category falls back to Deep Teal). Project Spotlight takes a dark "on" colour, like the accent badges, because white on its gold measured 2.9:1:
 | Category | Bg | Text |
 |---|---|---|
-| Industry Insights | `rgba(57,87,92,0.1)` | `#39575C` |
-| Project Spotlight | `rgba(227,197,141,0.1)` | `#6b4e10` |
-| Company News | `rgba(169,214,203,0.1)` | `#1a5a48` |
-| Press Release | `rgba(217,124,118,0.1)` | `#7a2a20` |
+| Industry Insights | `#39575C` | `#FFFFFF` |
+| Project Spotlight | `#B8923A` | `#3A2806` (4.9:1) |
+| Company News | `#2E7D6B` | `#FFFFFF` |
+| Press Release | `#B85450` | `#FFFFFF` |
 
-Vertical tags use matching vertical accent at 10% opacity.
+On article cards the vertical tag uses its vertical's solid accent with the accent's "on" text colour (`SOLUTION_META[vertical].accent` and `.accentText`, found with `tagMeta()`), with `letter-spacing: 0.1em`. On the featured card, tags use a 10% Dusty Blue tint with Deep Teal text.
 
-**Default load:** 6 cards (excluding featured). +6 per "Load more" click.
+**Default load:** 6 cards a page (`PAGE_SIZE`), featured post included. `BLOG_INDEX_QUERY` doesn't exclude the featured post and also sorts pinned posts first, so on page 1 the featured post appears again as the first card whenever it matches the current filter and search (always, with none set). Numbered pagination replaces "Load more" (see below).
 
-**Mobile:** 1-column stack
+**Mobile:** 1-column stack below 640px, 2 columns from 640px.
+
+**Empty:** *"No articles found."* when nothing matches.
 
 ---
 
-### Load More
+### Pagination
 
-```css
-display: flex;
-justify-content: center;
-padding: 24px 0 40px;
-```
-Button: Inter 500, 13px, muted, white bg, `border: 1px solid #E5E7EB`, pill, `padding: 10px 28px`
-On click: fetch next 6 posts from Sanity, append to grid (no full page reload)
+Load more is not built. As approved in the Engineering Review Fixes below, the index uses numbered pagination at every width, phones included:
+- It shows when there is more than one page: Prev (from page 2), one pill per page, then Next (before the last page), centred, `padding: 40px 0`.
+- Each is a link to `/blog?page=N` that keeps the category and tag but drops the search term (`buildBlogHref` in `src/app/blog/page.tsx`).
+- Inter 12px pills: the current page in Deep Teal with white text, the others white with a `#E5E7EB` border and muted text.
 
 ---
 
@@ -190,42 +193,42 @@ On click: fetch next 6 posts from Sanity, append to grid (no full page reload)
 
 ### Post Hero
 
-- `position: relative`, `height: 280px`, `overflow: hidden`
-- `next/image` fill, `object-fit: cover`, `placeholder="blur"`
-- Overlay: `linear-gradient(180deg, rgba(13,31,34,0.2) 0%, rgba(13,31,34,0.85) 100%)`
+- `position: relative`, `height: 360px` at every width, `overflow: hidden`, with Night Teal behind the photo.
+- `next/image` fill, `object-fit: cover`, `priority`, and `placeholder="blur"` when the image has an LQIP.
+- Overlay: `linear-gradient(180deg, rgba(13,31,34,0.15) 0%, rgba(13,31,34,0.88) 100%)`.
 
-**Bottom-anchored content** (`padding: 24px`, `max-width: 760px`, `margin: 0 auto`):
-- Tag row: category + vertical tags (white bg at 35–40% opacity, white text)
-- Title: Plus Jakarta Sans 800, 22px, white, `line-height: 1.25`, `margin-bottom: 12px`
-- Meta row: author avatar (26px, `border: 2px solid rgba(255,255,255,0.3)`) + name + `·` + date + `·` + read time
-  - All: Inter 400, 10px, `rgba(255,255,255,0.55)`
+**Bottom-anchored content** (`padding: 0 24px 28px`, `max-width: 1024px`, `margin: 0 auto`):
+- Tag row: the category (white text on white at 25%, bold, uppercase) + up to two tags (white text on white at 15%).
+- Title: Plus Jakarta Sans 800, 24px (30px from 768px), white, `line-height: 1.2`, `margin-bottom: 12px`.
+- Meta row: author photo, or initials on Deep Teal (28px, `border: 2px solid rgba(255,255,255,0.3)`) + name + `·` + date + `·` + read time.
+  - All: Inter 400, 12px, `rgba(255,255,255,0.6)`.
 
 ---
 
 ### Breadcrumb + Share Bar
 
 ```css
-display: flex;
+display: flex; /* a column with an 8px gap below 640px */
 align-items: center;
 justify-content: space-between;
 padding: 12px 24px;
-max-width: 960px;
+max-width: 1024px;
 margin: 0 auto;
 border-bottom: 1px solid #E5E7EB;
 ```
 
-**Left:** `Home / Blog / [post title truncated ~35 chars]` — standard breadcrumb style
+**Left:** `Home / News & Insights / {post title}`, 12px, muted. The title is cut with an ellipsis to fit the line (CSS `truncate`), not at a set length.
 
 **Right — share buttons:**
-- Label: `Share:` — Inter 400, 10px, muted
-- Three icon circles: LinkedIn (`in`), X (`𝕏`), Copy link (`🔗`)
-- Each: 28px circle, `border: 1px solid #E5E7EB`, `background: #fff`
-- Hover: Deep Teal bg + white icon
+- Label: `Share:` in Inter 400, 12px, muted.
+- Three circles: LinkedIn (the text `in`), X (the letter `X`, which replaced the `𝕏` glyph in September 2026), Copy link (`🔗`, until the planned copy-link button replaces it)
+- Each: 32px circle, `border: 1px solid #E5E7EB`, `background: #fff`.
+- Hover: Deep Teal bg + white icon on LinkedIn and X. The copy button has no hover; after a copy it shows ✓ on Deep Teal for 2 seconds.
 
 **Share behaviour:**
 - LinkedIn: `https://www.linkedin.com/sharing/share-offsite/?url={canonicalUrl}`
 - X: `https://x.com/intent/tweet?url={canonicalUrl}&text={seoTitle}`
-- Copy link: `navigator.clipboard.writeText(canonicalUrl)` + tooltip "Copied!"
+- Copy link: `navigator.clipboard.writeText(canonicalUrl)`; the button's `title` reads "Copied!" for 2 seconds.
 
 ---
 
@@ -233,29 +236,33 @@ border-bottom: 1px solid #E5E7EB;
 
 ```css
 display: grid;
-grid-template-columns: 1fr 280px;
+grid-template-columns: 1fr 280px; /* from 1024px; 1fr below */
 gap: 32px;
-max-width: 960px;
+max-width: 1024px;
 margin: 0 auto;
 padding: 32px 24px 48px;
 ```
 
-**Mobile:** single column — sidebar sections reorder to: ToC → Article body → Author → Related
+**Mobile (below 1024px):** a single column in source order: article body, then ToC, author card and related posts. The sidebar is sticky only from 1024px.
 
 ---
 
 ## Article Body (left column)
 
-`max-width: 680px` — constrains prose width for readability
+`max-width: 42rem` (672px), about 70 characters a line at the 18px body size. Reading copy never drops below 18px here; the smallest text anywhere is 12px (see `specs/01-BRAND.md`).
 
 ### Intro paragraph
-- Inter 500, 14px, `#1A1A1A`, `line-height: 1.8`
-- `margin-bottom: 20px`, `padding-bottom: 20px`, `border-bottom: 1px solid #E5E7EB`
+No separate intro style. The first paragraph renders like every other body paragraph (Inter 400, 18px, `text-pe-text-soft`; see Standard prose), with no rule under it.
 
 ### Standard prose
-- H2: Plus Jakarta Sans 800, 17px, `#1A1A1A`, `margin: 24px 0 10px`
-- H3: Plus Jakarta Sans 700, 14px, `#1A1A1A`, `margin: 18px 0 8px`
-- Body paragraph: Inter 400, 12px, `#6B7280`, `line-height: 1.85`, `margin-bottom: 14px`
+- H2: Plus Jakarta Sans 800, 24px, `#1A1A1A`, `line-height: 1.25`, `margin: 48px 0 16px`
+- H3: Plus Jakarta Sans 700, 20px, `#1A1A1A`, `line-height: 1.3`, `margin: 36px 0 12px`
+- Body paragraph: Inter 400, 18px, `#374151` (`text-pe-text-soft`), `line-height: 1.75`, `margin-bottom: 24px`
+- Lists: same size and colour as body, markers outside the text (`list-outside`, 24px indent), 8px between items
+- Blockquote text: Plus Jakarta Sans 700 italic, 20px, `line-height: 1.45`
+- Image caption: Inter 400, 14px, muted, centred, not italic
+
+The previous values (12px `#6B7280` body, 17px H2) set about 117 characters a line in grey at a size below any reading floor; they were replaced in the September 2026 UX audit fixes.
 
 ---
 
@@ -273,8 +280,8 @@ type: 'stat'    → Dark (#0d1f22) bg
 
 Layout: `display: flex`, `gap: 12px`, `padding: 16px 18px`, `border-radius: 12px`, `margin: 20px 0`
 - Icon: 18px emoji, `flex-shrink: 0`
-- Title: Plus Jakarta Sans 700, 12px — dark for light variants, white for stat variant
-- Text: Inter 400, 11px, `line-height: 1.7` — muted for light, `rgba(255,255,255,0.6)` for stat
+- Title: Plus Jakarta Sans 700, 12px, dark on the light variants and white on the stat variant
+- Text: Inter 400, 12px minimum, `line-height: 1.7`, muted on the light variants and `var(--color-on-dark-subtle)` or lighter on the stat variant
 
 **Sanity fields:** `type` (enum), `icon` (string, optional), `title` (string), `text` (text)
 
@@ -291,14 +298,14 @@ margin: 20px 0;
 
 Each stat: `padding: 14px`, `text-align: center`, `border-right: 1px solid rgba(255,255,255,0.1)`
 - Value: Plus Jakarta Sans 800, 18px, white
-- Label: Inter 400, 9px, `rgba(255,255,255,0.5)`, uppercase
+- Label: Inter 400, 12px, `var(--color-on-dark-subtle)`, uppercase
 
 **Sanity fields:** `stats[]` — array of `{ value: string, label: string }` (max 4)
 
 #### 3. Inline image with caption
 
 - `next/image`, `border-radius: 12px`, `width: 100%`, `margin: 20px 0`
-- Caption: Inter 400, 10px, muted, `text-align: center`, italic, `margin-top: -12px`
+- Caption: Inter 400, 14px, muted, `text-align: center`
 
 **Sanity fields:** `image` (Sanity image asset), `alt` (string, required), `caption` (string, optional)
 
@@ -306,15 +313,15 @@ Each stat: `padding: 14px`, `text-align: center`, `border-right: 1px solid rgba(
 
 ```css
 border-left: 3px solid #709DA9;
-padding: 12px 16px;
+padding: 16px 16px 16px 20px;
 background: rgba(112,157,169,0.06);
 border-radius: 0 8px 8px 0;
-margin: 20px 0;
+margin: 32px 0;
 ```
-- Quote text: Plus Jakarta Sans 700, 13px, `#1A1A1A`, italic, `line-height: 1.5`
-- Source: Inter 400, 10px, muted, `margin-top: 6px`
+- Quote text: Plus Jakarta Sans 700, 20px, `#1A1A1A`, italic, `line-height: 1.45`
+- There is no source line.
 
-**Sanity fields:** `quote` (text), `source` (string, optional)
+**Sanity fields:** none of its own. A blockquote is the editor's standard Portable Text "Quote" style on a text block, rendered by `block.blockquote` in `src/lib/portableTextComponents.tsx`. There is no quote object and no source field.
 
 #### 5. Inline CTA banner
 
@@ -325,8 +332,8 @@ padding: 20px;
 text-align: center;
 margin: 24px 0;
 ```
-- Title: Plus Jakarta Sans 800, 15px, white
-- Subtitle: Inter 400, 11px, `rgba(255,255,255,0.65)`
+- Title: Plus Jakarta Sans 800, 16px (`text-base`), white
+- Subtitle: Inter 400, 12px, `rgba(255,255,255,0.65)`
 - Button: white bg, Deep Teal text, pill, `border: none`, `padding: 9px 20px`
 
 **Sanity fields:** `title`, `subtitle`, `btnText`, `btnHref` (internal route or external URL)
@@ -364,9 +371,9 @@ All sidebar cards:
 
 ### 1. Table of Contents
 
-- Title: `In this article` — Plus Jakarta Sans 700, 13px
+- Title: `In this article`, Plus Jakarta Sans 700, 14px (`text-sm`)
 - Auto-generated from H2 and H3 headings in article body
-- Each item: number (Inter 700, 10px, Dusty Blue) + heading text (Inter 400, 11px)
+- Each item: number (Inter 700, 12px, `pe-secondary-ink`) + heading text (Inter 12px; 500 for H2, 400 for H3)
 - `border-bottom: 1px solid #E5E7EB` between items
 - Click → smooth scroll to heading anchor
 - Active heading: text → Deep Teal (tracked via IntersectionObserver)
@@ -374,19 +381,21 @@ All sidebar cards:
 ### 2. Author Card
 
 - Author avatar: 44px circle, Deep Teal bg, white initials
-- Name: Plus Jakarta Sans 700, 13px
-- Role: Inter 500, 10px, Dusty Blue (e.g. *"The Strategist · Co-Founder"*)
-- Bio: Inter 400, 11px, muted, `line-height: 1.65` (from Sanity `author.bio`)
+- Name: Plus Jakarta Sans 700, 14px (`text-sm`)
+- Role: Inter 500, 12px, `pe-secondary-ink` (e.g. *"The Strategist · Co-Founder"*)
+- Bio: Inter 400, 12px, muted, `line-height: 1.65` (from Sanity `author.bio`)
 - Links to `/blog/authors/[slug]`
 
 ### 3. Related Posts (3 articles)
 
 Pulled via GROQ: posts sharing at least one tag OR same category, ordered by `publishedAt desc`, excluding current post.
 
+- Card title: `Related articles`, Plus Jakarta Sans 700, 14px (`text-sm`)
+
 Each item:
 - Thumbnail: `52×44px`, `border-radius: 8px`, `next/image`
-- Title: Plus Jakarta Sans 700, 11px, `line-height: 1.35`
-- Meta: Inter 400, 9px, muted — date + read time
+- Title: Plus Jakarta Sans 700, 12px, `line-height: 1.35`, clamped to two lines
+- Meta: Inter 400, 12px, muted: date + read time
 - `border-bottom: 1px solid #E5E7EB`. Last: none
 - Full card links to `/blog/[slug]`
 
@@ -481,7 +490,7 @@ const jsonLd = {
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://phoenixenergy.solutions' },
-    { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://phoenixenergy.solutions/blog' },
+    { '@type': 'ListItem', position: 2, name: 'News & Insights', item: 'https://phoenixenergy.solutions/blog' },
     // Single post only:
     { '@type': 'ListItem', position: 3, name: post.title, item: `https://phoenixenergy.solutions/blog/${post.slug}` },
   ]
@@ -491,20 +500,16 @@ const jsonLd = {
 ### ISR + Sanity webhook
 
 ```typescript
-// Rebuild strategy
+// Rebuild strategy (/blog and /blog/[slug])
 export const revalidate = 3600; // Background ISR every hour
 
-// On-demand revalidation via Sanity webhook
+// On-demand revalidation via the Sanity webhook: src/app/api/revalidate/route.ts
 // Webhook URL: https://phoenixenergy.solutions/api/revalidate
-// Trigger: on publish/update of blogPost document
-// src/app/api/revalidate/route.ts
-import { revalidatePath } from 'next/cache';
-export async function POST(req: Request) {
-  const { slug } = await req.json();
-  revalidatePath(`/blog/${slug}`);
-  revalidatePath('/blog');
-  return Response.json({ revalidated: true });
-}
+// Needs the header `Authorization: Bearer ${REVALIDATE_SECRET}` (401 without it).
+// Handles nine document types. For the blog:
+//   blogPost → /blog/[slug], /blog and / (the home page lists the latest posts)
+//   author   → /blog/authors/[slug]
+// Full list: specs/02-ARCHITECTURE.md, "Revalidation webhook".
 ```
 
 ### generateStaticParams (pre-render all posts at build time)
@@ -612,16 +617,22 @@ export async function generateStaticParams() {
 ## GROQ Queries
 
 ```groq
-// Blog index — paginated, filterable
+// Blog index, paginated and filterable (BLOG_INDEX_QUERY in src/lib/queries.ts)
 *[_type == "blogPost"
   && ($category == "" || category == $category)
   && ($tag == "" || $tag in tags)
+  && ($q == "" || title match $q || excerpt match $q)
 ] | order(featured desc, publishedAt desc) [$offset...$offset+6] {
   title, slug, category, tags, excerpt, readTime, publishedAt,
   heroImage { asset->, alt },
   featured,
   "author": author->{ name, slug, photo { asset-> } }
 }
+// BLOG_COUNT_QUERY wraps the same filter in count(...) for the page numbers
+// PUBLISHED_POSTS_COUNT_QUERY counts every post, unfiltered: 0 keeps /blog noindex and out of the sitemap
+
+// Featured card (FEATURED_POST_QUERY): no filters, so it is the same on every page
+*[_type == "blogPost"] | order(featured desc, publishedAt desc) [0] { ... }
 
 // Single post — full content
 *[_type == "blogPost" && slug.current == $slug][0] {
@@ -666,9 +677,9 @@ array::unique(*[_type == "blogPost"].tags[])
 | Carbon | carbon credits South Africa business, Gold Standard carbon offset SA, carbon tax offset |
 
 ### E-E-A-T signals built into template
-- Named authors with photos, roles, and LinkedIn links on every post
+- Named authors on every post: the author card shows the photo (or initials), role and bio, and links to the author's profile, which carries the LinkedIn link when one is set.
 - Author profile pages at `/blog/authors/[slug]` with post archive
-- `datePublished` and `dateModified` visible on page and in JSON-LD
+- The published date shows on the page. `datePublished` and `dateModified` (which falls back to the published date) are in the JSON-LD.
 - JSON-LD `Article` schema with `publisher` organisation markup
 - Internal links from every post to relevant solution pages
 
@@ -682,15 +693,15 @@ array::unique(*[_type == "blogPost"].tags[])
 
 ## Responsive Breakpoints Summary
 
-| Element | Desktop (≥ 768px) | Mobile (< 768px) |
+| Element | Desktop | Mobile |
 |---|---|---|
-| Page header | 2-col (heading + search) | Stacked |
-| Filter pills | Horizontal wrap | Horizontal scroll |
-| Featured card | 2-col (photo + body) | Stacked |
-| Article grid | 3 columns | 1 column |
-| Post hero | 280px, bottom-anchored | 220px |
-| Post layout | 2-col (body + sidebar) | 1-col, sidebar reordered |
-| Share bar | Inline right of breadcrumb | Below breadcrumb |
+| Page header | One column; search bar one third wide from 1024px | One column; search bar full width |
+| Filter pills | One row that scrolls sideways | Same |
+| Featured card | 2-col (photo + body) | 2-col as well; stacking is not built |
+| Article grid | 3 columns from 768px | 2 columns from 640px, 1 below |
+| Post hero | 360px, bottom-anchored | 360px |
+| Post layout | 2-col (body + 280px sidebar) from 1024px | 1-col below 1024px: body, ToC, author, related |
+| Share bar | Right of the breadcrumb from 640px | Below the breadcrumb under 640px |
 
 ---
 
@@ -703,7 +714,12 @@ array::unique(*[_type == "blogPost"].tags[])
 | Author profile page | `src/app/blog/authors/[slug]/page.tsx` |
 | Article card | `src/components/ui/ArticleCard.tsx` |
 | Featured article card | `src/components/ui/FeaturedArticleCard.tsx` |
-| Filter pills | `src/components/ui/FilterPills.tsx` |
+| Blog filter pills | `src/components/blog/BlogFilterPills.tsx` (wraps the shared `src/components/ui/FilterPills.tsx`) |
+| Blog search input | `src/components/blog/BlogSearchInput.tsx` |
+| Read-depth analytics (`blog_read_complete`) | `src/components/analytics/BlogReadDepth.tsx` |
+| CTA band before the footer | `src/components/layout/PageFooter.tsx` |
+| Category colours, tag to vertical, dates | `src/lib/blogUtils.ts` |
+| GROQ queries | `src/lib/queries.ts` |
 | Portable Text renderer | `src/lib/portableTextComponents.tsx` |
 | Callout block | `src/components/blog/Callout.tsx` |
 | Stat strip block | `src/components/blog/StatStrip.tsx` |
@@ -724,12 +740,12 @@ array::unique(*[_type == "blogPost"].tags[])
 
 ### Animations
 Apply `AnimatedSection` wrapper (see `01-BRAND.md`) to:
-- Page header (eyebrow + H1 + subtitle + search bar) — `delay: 0`
-- Filter pills row — `delay: 0.05`
-- Featured article card — `delay: 0.1`
-- Article grid — staggered, `0.04s` per card via Framer Motion `staggerChildren`
+- Page header (breadcrumb + eyebrow + H1 + subtitle): `delay: 0`.
+- Search bar and filter pills: `delay: 0.05`.
+- Featured article card: `delay: 0.1`.
+- Article grid: staggered by `0.04s` per card, with each card in its own `AnimatedSection` at `delay: i * 0.04` (not `staggerChildren`).
 
-Blog article card hover: `translateY(-3px)` + `border-color: #cccccc` over `0.2s ease`.
+Blog article card hover: `translateY(-4px)`, `box-shadow: 0 12px 32px rgba(57,87,92,0.1)` and `border-color: #cccccc` over `0.2s` (the shared `Card`, pattern 1).
 
 ### Blog ToC — active state
 Tracked via `IntersectionObserver` with `rootMargin: '-80px 0px -70% 0px'` (accounts for fixed nav).
@@ -741,29 +757,37 @@ border-left: 3px solid #39575C;
 padding-left: 10px;   /* shift to accommodate the border */
 transition: color 0.2s ease, border-color 0.2s ease;
 ```
-Inactive items: no left border, `color: var(--txt)`.
+Inactive items: a transparent 3px left border, so the text doesn't shift, and `color: var(--color-pe-muted)`.
 
 ### Blog pagination — SSR paginated (approved fix for 5.6)
 Route strategy: `/blog?page=2` via Next.js `searchParams`.
 
 ```typescript
-// src/app/blog/page.tsx
-export default async function BlogPage({ searchParams }: { searchParams: { page?: string; category?: string; tag?: string } }) {
-  const page = Number(searchParams.page) || 1;
-  const offset = (page - 1) * 6;
-  // Fetch posts with offset
+// src/app/blog/page.tsx: it awaits searchParams, so it renders per request
+type BlogSearchParams = Promise<{ page?: string; category?: string; tag?: string; q?: string }>;
+
+export default async function BlogPage({ searchParams }: { searchParams: BlogSearchParams }) {
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam) || 1);
+  const offset = (page - 1) * PAGE_SIZE; // PAGE_SIZE = 6
+  // Fetch posts, count, featured post and tags in parallel
 }
 
-// Metadata for paginated pages:
-export async function generateMetadata({ searchParams }) {
-  const page = Number(searchParams.page) || 1;
+// Metadata for paginated pages: prev and next only where that page exists,
+// keeping category and tag (buildBlogHref)
+export async function generateMetadata({ searchParams }: { searchParams: BlogSearchParams }) {
+  // canonical is /blog, or /blog?page=N from page 2; totalPages comes from BLOG_COUNT_QUERY
   return {
+    // While no post is published (PUBLISHED_POSTS_COUNT_QUERY is 0) the index is noindex
+    ...(published === 0 && { robots: { index: false, follow: true } }),
     alternates: {
-      ...(page > 1 && { prev: `https://phoenixenergy.solutions/blog${page > 2 ? `?page=${page-1}` : ''}` }),
-      next: `https://phoenixenergy.solutions/blog?page=${page+1}`,
+      canonical,
+      ...(page > 1 && { prev: `${SITE}${buildBlogHref(page - 1, category, tag)}` }),
+      ...(page < totalPages && { next: `${SITE}${buildBlogHref(page + 1, category, tag)}` }),
     },
   };
 }
 ```
-UI: replace "Load more" button with page number pills at bottom of grid. Keep "Load more" pattern on mobile only (simpler UX on touch).
+**With no posts** (updated September 2026, audit BLG-01 and BLG-05): `/blog` is `noindex, follow`, the sitemap leaves out `/blog` until the first post exists (`src/app/sitemap.ts`), and the home page's `WebSite` JSON-LD carries its `SearchAction` (which targets `/blog?q=`) only when a post exists. The revalidation webhook refreshes `/` and `/blog` when a post is published; the sitemap refreshes within the hour.
+UI as built: page number pills with Prev and Next at the bottom of the grid, at every width. There is no Load more, on mobile or anywhere else.
 

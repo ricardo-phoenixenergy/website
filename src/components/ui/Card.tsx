@@ -24,7 +24,7 @@ export function Card({ variant = 'light', pattern = 1, overlay = true, className
   const base = 'relative flex flex-col overflow-hidden rounded-2xl transition-all duration-200';
 
   const variantClass =
-    variant === 'light' ? 'bg-white border border-[#E5E7EB]' : 'bg-[#0d1f22]';
+    variant === 'light' ? 'bg-white border border-pe-border' : 'bg-pe-nav-dark';
 
   const patternClass =
     pattern === 1
@@ -162,7 +162,7 @@ export function CardFooter({ variant = 'light', className = '', children }: Card
     <div
       className={`px-4 py-3 flex items-center justify-between ${
         variant === 'light'
-          ? 'border-t border-[#E5E7EB]'
+          ? 'border-t border-pe-border'
           : 'border-t border-[rgba(255,255,255,0.08)]'
       } ${className}`}
     >
@@ -179,13 +179,13 @@ export interface CardArrowProps {
 export function CardArrow({ variant = 'light' }: CardArrowProps) {
   if (variant === 'dark') {
     return (
-      <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-200 border border-[rgba(255,255,255,0.12)] text-[rgba(255,255,255,0.4)] group-hover:bg-[#709DA9] group-hover:border-[#709DA9] group-hover:text-white">
+      <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-200 border border-[rgba(255,255,255,0.12)] text-[rgba(255,255,255,0.4)] group-hover:bg-pe-secondary group-hover:border-pe-secondary group-hover:text-white">
         <IconArrowRight size={12} />
       </div>
     );
   }
   return (
-    <div className="w-6 h-6 rounded-full border border-[#E5E7EB] flex items-center justify-center flex-shrink-0 transition-all duration-200 group-hover:bg-[#39575C] group-hover:border-[#39575C] group-hover:text-white">
+    <div className="w-6 h-6 rounded-full border border-pe-border flex items-center justify-center flex-shrink-0 transition-all duration-200 group-hover:bg-pe-primary group-hover:border-pe-primary group-hover:text-white">
       <IconArrowRight size={12} />
     </div>
   );

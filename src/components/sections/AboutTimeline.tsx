@@ -1,9 +1,10 @@
 'use client';
 
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect, useCallback, useId } from 'react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import type { MilestoneTimeline } from '@/types/sanity';
 import { IconArrowLeft, IconArrowRight } from '../ui/Icons';
+import { ProgressDots } from '@/components/ui/ProgressDots';
 
 interface Props {
   milestones: MilestoneTimeline[];
@@ -16,6 +17,7 @@ export function AboutTimeline({ milestones }: Props) {
   const isProgrammaticScroll = useRef(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reduced = useReducedMotion();
+  const headingId = useId();
 
   // Derived — not separate state
   const canGoPrev = activeIndex > 0;
@@ -88,12 +90,12 @@ export function AboutTimeline({ milestones }: Props) {
         {/* Heading row — prev/next buttons visible on md+ only */}
         <div className="flex items-end justify-between mb-8">
           <div>
-            <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-3">
+            <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-pe-muted mb-3">
               Roadmap
             </p>
-            <h2 className="font-display font-extrabold text-3xl text-[#1A1A1A] leading-[1.2]">
+            <h2 id={headingId} className="font-display font-extrabold text-3xl text-pe-text leading-[1.2]">
               Our story{' '}
-              <em style={{ color: '#709DA9', fontStyle: 'normal' }}>so far</em>
+              <em className="not-italic text-pe-secondary-ink">so far</em>
             </h2>
           </div>
 
@@ -102,7 +104,7 @@ export function AboutTimeline({ milestones }: Props) {
               onClick={() => goTo(activeIndex - 1)}
               disabled={!canGoPrev}
               aria-label="Previous milestone"
-              className="cursor-pointer w-9 h-9 rounded-full border border-[#E5E7EB] bg-white flex items-center justify-center text-[#39575C] transition-all duration-200 hover:border-[#39575C] hover:bg-[#F5F5F5] disabled:opacity-30 disabled:cursor-not-allowed"
+              className="cursor-pointer w-9 h-9 rounded-full border border-pe-border bg-white flex items-center justify-center text-pe-primary transition-all duration-200 hover:border-pe-primary hover:bg-pe-bg disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <IconArrowLeft />
             </button>
@@ -110,7 +112,7 @@ export function AboutTimeline({ milestones }: Props) {
               onClick={() => goTo(activeIndex + 1)}
               disabled={!canGoNext}
               aria-label="Next milestone"
-              className="cursor-pointer w-9 h-9 rounded-full border bg-[#39575C] border-[#39575C] flex items-center justify-center text-white transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+              className="cursor-pointer w-9 h-9 rounded-full border bg-pe-primary border-pe-primary flex items-center justify-center text-white transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <IconArrowRight />
             </button>
@@ -119,9 +121,13 @@ export function AboutTimeline({ milestones }: Props) {
 
         {/* Scroll track
             Mobile: scroll-snap, 80vw cards, swipe-driven
-            Desktop: overflow scroll, 200px cards, button/click-driven */}
+            Desktop: overflow scroll, 200px cards, button/click-driven
+            A named, focusable region, so keyboard users can scroll it with the arrow keys too. */}
         <div
           ref={scrollRef}
+          role="region"
+          aria-labelledby={headingId}
+          tabIndex={0}
           className="flex overflow-x-auto scrollbar-none [scroll-snap-type:x_mandatory] md:[scroll-snap-type:none] [-webkit-overflow-scrolling:touch]"
           style={{ borderTop: '2px solid #E5E7EB' }}
         >
@@ -197,9 +203,9 @@ export function AboutTimeline({ milestones }: Props) {
                 {/* Vision badge — future milestones only */}
                 {m.isFuture && (
                   <p
-                    className="font-body text-[8px] font-bold uppercase tracking-[0.1em] mb-1 inline-flex items-center gap-1 rounded-full px-[7px] py-[2px]"
+                    className="font-body text-xs font-bold uppercase tracking-[0.1em] mb-1 inline-flex items-center gap-1 rounded-full px-[7px] py-[2px]"
                     style={{
-                      color: '#709DA9',
+                      color: 'var(--color-pe-secondary-ink)',
                       background: 'rgba(112,157,169,0.1)',
                       border: '1px solid rgba(112,157,169,0.25)',
                     }}
@@ -212,7 +218,7 @@ export function AboutTimeline({ milestones }: Props) {
                 <p
                   className="font-body font-bold text-xs mb-1.5 transition-colors duration-300"
                   style={{
-                    color: isActive && !m.isFuture ? '#39575C' : '#709DA9',
+                    color: isActive && !m.isFuture ? 'var(--color-pe-primary)' : 'var(--color-pe-secondary-ink)',
                     fontStyle: m.isFuture ? 'italic' : 'normal',
                   }}
                 >
@@ -223,8 +229,7 @@ export function AboutTimeline({ milestones }: Props) {
                 <p
                   className="font-display font-bold text-sm leading-[1.4] transition-all duration-300"
                   style={{
-                    color: '#1A1A1A',
-                    opacity: isActive ? 1 : m.isFuture ? 0.45 : 0.55,
+                    color: isActive ? 'var(--color-pe-text)' : 'var(--color-pe-muted)',
                     transform: isActive ? 'translateY(0)' : 'translateY(4px)',
                     fontStyle: m.isFuture ? 'italic' : 'normal',
                   }}
@@ -237,27 +242,17 @@ export function AboutTimeline({ milestones }: Props) {
         </div>
 
         {/* Progress dots — clickable on both desktop and mobile */}
-        <div className="flex items-center gap-2 mt-6">
-          {milestones.map((m, i) => (
-            <button
-              key={m._id}
-              onClick={() => goTo(i)}
-              aria-label={`Go to milestone ${i + 1}`}
-              className="rounded-full transition-all duration-300"
-              style={{
-                width: i === activeIndex ? 20 : 6,
-                height: 6,
-                background:
-                  i === activeIndex
-                    ? '#39575C'
-                    : i < activeIndex
-                    ? '#C5D5D7'
-                    : '#E5E7EB',
-                borderRadius: i === activeIndex ? 3 : 9999,
-              }}
-            />
-          ))}
-        </div>
+        <ProgressDots
+          count={milestones.length}
+          active={activeIndex}
+          onSelect={goTo}
+          labelFor={(i) => `Go to milestone ${i + 1}`}
+          activeColor="#39575C"
+          doneColor="#C5D5D7"
+          dotSize={6}
+          activeWidth={20}
+          className="mt-6 -ml-1"
+        />
 
       </div>
     </section>

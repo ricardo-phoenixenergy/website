@@ -26,7 +26,8 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
   return (
     <Link href={`/blog/${post.slug.current}`} className="block">
       <Card variant="light" pattern={1}>
-        <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', minHeight: 240 }}>
+        {/* Photo and text side by side from 640px; on phones the photo sits on top */}
+        <div className="grid grid-cols-1 sm:grid-cols-2" style={{ minHeight: 240 }}>
           {/* Left: Photo */}
           <div className="relative overflow-hidden z-10" style={{ minHeight: 240 }}>
             {imgSrc ? (
@@ -36,15 +37,15 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
                 fill
                 priority
                 className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
-                sizes="(max-width: 768px) 100vw, 480px"
+                sizes="(max-width: 640px) 100vw, 50vw"
                 placeholder="blur"
                 blurDataURL={blurSrc ?? DEFAULT_LQIP}
               />
             ) : (
-              <div className="w-full h-full bg-[#E5E7EB]" />
+              <div className="w-full h-full bg-pe-border" />
             )}
             <span
-              className="absolute top-3 left-3 z-10 font-body font-bold text-[10px] uppercase tracking-[0.08em] text-white rounded-full px-2.5 py-1"
+              className="absolute top-3 left-3 z-10 font-body font-bold text-xs uppercase tracking-[0.08em] text-white rounded-full px-2.5 py-1"
               style={{ background: '#39575C' }}
             >
               Featured
@@ -56,7 +57,7 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
             {/* Tags */}
             <div className="flex flex-wrap gap-1.5 mb-3">
               <span
-                className="font-body font-bold text-[10px] uppercase tracking-[0.08em] rounded-full px-2.5 py-1"
+                className="font-body font-bold text-xs uppercase tracking-[0.08em] rounded-full px-2.5 py-1"
                 style={{ background: cs.bg, color: cs.color }}
               >
                 {post.category}
@@ -64,7 +65,7 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
               {post.tags?.slice(0, 2).map((tag) => (
                 <span
                   key={tag}
-                  className="font-body font-bold text-[10px] uppercase tracking-[0.08em] rounded-full px-2.5 py-1"
+                  className="font-body font-bold text-xs uppercase tracking-[0.08em] rounded-full px-2.5 py-1"
                   style={{ background: 'rgba(112,157,169,0.10)', color: '#39575C' }}
                 >
                   {tag}
@@ -72,11 +73,11 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
               ))}
             </div>
 
-            <h2 className="font-display font-extrabold text-xl text-[#1A1A1A] leading-[1.3] mb-2 flex-1 line-clamp-3">
+            <h2 className="font-display font-extrabold text-xl text-pe-text leading-[1.3] mb-2 flex-1 line-clamp-3">
               {post.title}
             </h2>
 
-            <p className="font-body text-sm text-[#6B7280] leading-[1.7] mb-4 line-clamp-3">
+            <p className="font-body text-sm text-pe-muted leading-[1.7] mb-4 line-clamp-3">
               {post.excerpt}
             </p>
 
@@ -95,12 +96,12 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
                   className="w-[26px] h-[26px] rounded-full flex items-center justify-center flex-shrink-0"
                   style={{ background: '#39575C' }}
                 >
-                  <span className="font-display font-bold text-[10px] text-white">
+                  <span className="font-display font-bold text-xs text-white">
                     {initials(post.author.name)}
                   </span>
                 </div>
               )}
-              <span className="font-body text-xs text-[#6B7280]">
+              <span className="font-body text-xs text-pe-muted">
                 {post.author.name}
                 <span className="mx-1">·</span>
                 {formatDate(post.publishedAt)}

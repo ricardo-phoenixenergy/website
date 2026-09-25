@@ -1,20 +1,21 @@
 # 07 — Solution Pages
 > Spoke | Hub: [`/CLAUDE.md`](/CLAUDE.md) | Version 3.1
-> Routes: `/solutions/[vertical]`
+> Routes: `/solutions/{vertical}`, six static routes with one page folder each (there is no `[vertical]` dynamic segment)
 > **Approved April 2026**
+> **Updated 2026-09-24:** corrected to match the build.
 
 ---
 
 ## Overview
 
-Six solution pages, one shared template component. Every section is data-driven from a per-vertical config object — the template renders identically across all 6 verticals, with content, accent colour, and tab configuration injected at the page level.
+Six page files, one per vertical (`src/app/solutions/{vertical}/page.tsx`). There is no shared template: each page composes shared section components in its own order (see Page Structure). The copy lives in the page file or in a content file under `src/config/` (`strategies.ts`, `carbonCreditsContent.ts`, `evFleetsContent.ts`, `webuysolarContent.ts`). `VERTICAL_CONFIG` holds only the SEO title, description and stats; `SOLUTION_META` (`src/types/solutions.ts`) holds the label and accent colours; How It Works steps come from Sanity. Type sizes and colours follow `specs/01-BRAND.md` (12px minimum; muted text is `#646B78`).
 
 **Verticals and routes:**
 | Vertical | Route | Accent |
 |---|---|---|
-| C&I Solar & Storage | `/solutions/solar` | `#E3C58D` |
+| C&I Solar & Storage | `/solutions/ci-solar-storage` | `#E3C58D` |
 | Wheeling | `/solutions/wheeling` | `#D97C76` |
-| Energy Optimisation | `/solutions/optimisation` | `#709DA9` |
+| Energy Optimisation | `/solutions/energy-optimisation` | `#709DA9` |
 | Carbon Credits | `/solutions/carbon-credits` | `#9CAF88` |
 | WeBuySolar | `/solutions/webuysolar` | `#C97A40` |
 | EV Fleets & Infrastructure | `/solutions/ev-fleets` | `#A9D6CB` |
@@ -23,28 +24,24 @@ Six solution pages, one shared template component. Every section is data-driven 
 
 ## Page Structure
 
-```
-1.  Navbar              — light glass pill, "Solutions" active + vertical highlighted
-2.  Breadcrumb          — Home / Solutions / [Vertical name]
-3.  Solution sub-nav    — sticky anchor links: Overview · The problem · Our solution · How it works · Case studies · Get a quote
-4.  Hero                — full-bleed photo + gradient + badge + headline + CTA buttons
-5.  Stats strip         — Deep Teal flush, 4 key numbers
-6.  Pain section        — dark bg, interactive cost calculator
-7.  Solution section    — white bg, tabbed offering (desktop) / accordion (mobile)
-8.  How It Works        — reusable animated component (shared with homepage)
-9.  Testimonials        — 3-column quote cards
-10. Projects carousel   — horizontal scroll, filtered to this vertical
-11. CTA banner          — Deep Teal centred
-12. Footer
-```
+Every page sits inside the site layout (`SiteShell`: the navbar above, `SiteFooter` below). Between them, each page renders its own sections in this order:
+
+- **C&I Solar & Storage:** hero with the Strategy Finder, strategy tabs, financing band, How It Works, projects, related articles, CTA band.
+- **Wheeling:** hero with the eligibility check, model tabs, How It Works, projects, related articles, CTA band.
+- **Energy Optimisation:** hero (copy only, no tool), lever tabs, financing band, How It Works, projects, related articles, CTA band.
+- **Carbon Credits:** hero with the revenue estimator, two explainer card sections (`#how-it-earns`, `#opportunity`), How It Works, FAQ (`#faq`), projects, related articles, CTA band.
+- **EV Fleets:** hero with the fleet savings estimator, two explainer card sections (`#why-now`, `#the-package`), financing band and its note, industry tabs (`#who-its-for`), How It Works, projects, FAQ (`#faq`), related articles, CTA band.
+- **WeBuySolar:** see "WeBuySolar Page as Built" below.
+
+How It Works is hidden when its Sanity document has no title or no steps. Projects and related articles are hidden when nothing is published for the vertical. The breadcrumb sits inside the hero. There is no sub-nav, stats strip, pain section or testimonials section (see §3, §5, §6 and §9).
 
 ---
 
 ## 1. Navbar
 
-- Light glass pill: `background: rgba(255,255,255,0.92)`, `backdrop-filter: blur(12px)`
-- "Solutions" nav link: Deep Teal, `font-weight: 600`
-- Mega-menu (see `specs/03-NAVIGATION.md`): active vertical highlighted with accent dot
+- The shared navbar: see `specs/03-NAVIGATION.md`. It is a solid white pill, not a glass one.
+- On every solution page the Solutions item shows as active (Deep Teal, `font-weight: 600`, on a light Deep Teal tint).
+- In the mega-menu every vertical carries its accent dot. The current page gets `aria-current="page"` and no extra visual highlight.
 
 ---
 
@@ -53,63 +50,57 @@ Six solution pages, one shared template component. Every section is data-driven 
 ```
 Home / Solutions / [Vertical name]
 ```
-- Inter 400, 9px, `#6B7280`. Current: Deep Teal, `font-weight: 600`
+- Inside the hero, above the H1, not a separate strip (`SolutionHero`, `aria-label="Breadcrumb"`).
+- Inter 14px in `--color-on-dark-subtle` (`#9BA7A9`). Home and Solutions are links that turn white on hover.
+- The current item is white, `font-weight: 600`, and shows the page's `SOLUTION_META` label.
 
 ---
 
 ## 3. Solution Sub-Nav
 
-Sticky at top on scroll (below main nav):
-- `background: #ffffff`, `border-bottom: 1px solid #E5E7EB`
-- `padding: 0 24px`, `max-width: 960px`, `margin: 0 auto`
-- Items: Inter 500, 11px, muted. Active: Deep Teal, `border-bottom: 2px solid #39575C`
-- Horizontal scroll on mobile (`overflow-x: auto`, `scrollbar-width: none`)
-- Clicking an item smooth-scrolls to that section anchor
-
-```
-Overview · The problem · Our solution · How it works · Case studies · Get a quote
-```
+Removed from the solution pages in May 2026; the `SolutionSubNav` component was deleted in June 2026. There is no sub-nav. Sections carry ids instead (for example `#how-it-earns`, `#opportunity` and `#faq` on Carbon Credits; `#why-now`, `#the-package`, `#who-its-for` and `#faq` on EV Fleets), and a tab opens from its key in the URL hash, for example `#strategy-demand-shaving` (see §7).
 
 ---
 
 ## 4. Hero
 
-- `position: relative`, `min-height: 300px`, `display: flex`, `flex-direction: column`, `justify-content: flex-end`
+`SolutionHero` (`src/components/sections/SolutionHero.tsx`):
+
+- `<section>` with `position: relative` and `min-height: clamp(580px, 75vw, 760px)`. The content is centred vertically in the page container, with `padding-top: 96px` and `padding-bottom: 72px`.
 
 **Photo layer:**
-- `next/image` fill, `object-fit: cover`, `object-position: center`
-- Hover: `scale(1.03)` over `8s` (subtle Ken Burns)
-- `placeholder="blur"`
+- The page's photo from the Sanity Hero Images document (`getHeroImages()`), as `next/image` with `fill`, `priority` and `object-fit: cover`. `object-position` is centre unless the page sets `imagePosition` to top or bottom.
+- `placeholder="blur"` with the Sanity LQIP when the image has one.
+- With no photo, the page's `heroBg` gradient fills the hero. There is no hover zoom.
 
-**Overlay:**
+**Overlay** (darker behind the copy on the left):
 ```css
-background: linear-gradient(180deg, rgba(13,31,34,0.15) 0%, rgba(13,31,34,0.92) 100%);
+background: linear-gradient(105deg, rgba(13,31,34,0.92) 0%, rgba(13,31,34,0.84) 45%, rgba(13,31,34,0.64) 100%);
 ```
 
-**Bottom-anchored content** (`padding: 28px 24px`, `max-width: 960px`, `margin: 0 auto`):
+**Layout:** one column below 1024px, with the tool under the copy. From 1024px the copy sits left and the tool right, in a 440px column; C&I uses a 40/60 split (`wideRight`). Energy Optimisation has no tool (`copyOnly`), so its copy spans about two thirds of the container.
 
-- **Vertical badge:** `display: inline-flex`, `gap: 6px`, accent bg at 20% opacity, accent text, 6px accent dot
-  - Font: Inter 700, 9px, uppercase, `letter-spacing: 0.12em`
-- **Headline:** Plus Jakarta Sans 800, 26px, white, `line-height: 1.2`, `max-width: 580px`
-  - `<em>` tags render at `opacity: 0.45` (de-emphasised contrast phrase)
-- **Subtitle:** Inter 400, 12px, `rgba(255,255,255,0.6)`, `line-height: 1.75`, `max-width: 500px`, `margin-bottom: 18px`
-- **Two buttons:**
-  - Primary: `#F5F5F5` bg, `#0d1f22` text, pill — *"Get a free assessment"*
-  - Ghost: `rgba(255,255,255,0.1)` bg, `border: 1px solid rgba(255,255,255,0.2)`, white text — *"See case studies ↓"*
+**Copy column:**
+- **Breadcrumb:** see §2. There is no vertical badge: the `badge` prop is the breadcrumb's last item and the photo's alt text.
+- **Headline (H1):** Plus Jakarta Sans 800, 30px (42px from 768px), white, `line-height: 1.18`, `max-width: 560px`. `<em>` renders in the vertical accent, upright, not italic.
+- **Subtitle:** Inter, 14px (16px from 768px), `rgba(255,255,255,0.70)`, `line-height: 1.75`, `max-width: 460px` (640px on the copy-only hero). Line breaks in the string show from 1024px.
+- **One button:** `Button variant="light"` (`#F5F5F5` fill, `#0d1f22` text, pill) with a right arrow. It is the page CTA, `SERVICE_CTA[vertical]` (`src/config/ctas.ts`), which opens the contact form at step 2 as a client with the service already written in the message. The component also takes an optional ghost button and a note under the buttons; only WeBuySolar uses them.
 
-**Mobile:** `min-height: 260px`. Headline: 22px. Subtitle hidden on smallest screens (<380px).
+| Page | H1 (accent words in italics) | Right column | Button |
+|---|---|---|---|
+| C&I Solar & Storage | Go solar with *zero upfront cost* | `StrategyFinder` | Book a discovery meeting |
+| Wheeling | Access lower-cost *renewable electricity* through the grid. | `WheelingEligibility` | Book a free wheeling assessment |
+| Energy Optimisation | Reduce energy. *Increase performance.* | None (copy only) | Book a free energy audit |
+| Carbon Credits | Maximise the *return* on your solar investment. | `CarbonRevenueEstimator` | Check my eligibility |
+| EV Fleets | The complete *fleet electrification* solution. | `FleetSavingsEstimator` | Book a free fleet assessment |
+
+**Mobile:** the same `min-height` clamp (580px at phone widths). The H1 is 30px, the subtitle always shows and the tool stacks under the copy.
 
 ---
 
 ## 5. Stats Strip
 
-Sits flush below hero. No overlap.
-- `background: #39575C`, `padding: 14px 24px`
-- `display: grid`, `grid-template-columns: repeat(4, 1fr)`, `max-width: 960px`, `margin: 0 auto`
-- Dividers: `::after` right-edge, `rgba(255,255,255,0.15)`
-- Value: Plus Jakarta Sans 800, 18px, white
-- Label: Inter 400, 8px, `rgba(255,255,255,0.45)`, uppercase, `letter-spacing: 0.07em`
-- Mobile: 2×2 grid
+Removed from the solution pages in May 2026; the unused `StatsStrip` component was deleted in September 2026. Each vertical's four stats are `VERTICAL_CONFIG[vertical].stats` (`src/config/verticals.ts`), read from the claims register (`src/config/claims.ts`). Only the first two show, on the vertical's card on `/solutions`; the solution pages show none.
 
 ### Stats per vertical
 | Vertical | Stat 1 | Stat 2 | Stat 3 | Stat 4 |
@@ -118,83 +109,34 @@ Sits flush below hero. No overlap.
 | Wheeling | 32% / Typical tariff saving | 5 MW / Min viable offtake | 90 days / Licensing timeline | R28M / Largest PPA signed |
 | Optimisation | 28% / Avg C&I energy waste | R0 / Cost of an audit | 3 mo / Typical payback | R12M / Savings to date |
 | Carbon | R8M / Avg revenue per MW/yr | Gold / Standard certified | R0 / Enrolment cost | 100% / Phoenix manages all |
-| WeBuySolar | 2 min / Online valuation | 5 days / Formal offer | 42 / Systems acquired | R0 / Cost to get valued |
+| WeBuySolar | Free / Expert audit | PPA / Lease / After the sale | Operated / We run & optimise | Tier 1 / BloombergNEF equipment |
 | EV Fleets | 87% / Diesel increase since 2019 | 60% / Fleet cost reduction | R0 / CapEx under OpEx model | 40+ / Trucks commissioned |
+
+> The rows other than WeBuySolar are placeholders from the April 2026 mockup, not confirmed and not on the site. Don't publish them without evidence (see `docs/content/claims-register.md`).
+
+> **WeBuySolar (updated 2026-09-24):** the row above is the site's current set, `VERTICAL_CONFIG.webuysolar.stats` in `src/config/verticals.ts`, read from the claims register (`src/config/claims.ts`). The April figures "2 min / Online valuation", "5 days / Formal offer", "42 / Systems acquired" and "R0 / Cost to get valued" are retired. "42 systems acquired" is an unconfirmed claim: it must not return to the site without evidence.
 
 ---
 
 ## 6. Pain Section — Interactive Cost Calculator
 
-- `background: #0d1f22`, `padding: 52px 24px`
+Removed from the solution pages in May 2026; the unused `SolutionPain` component was deleted in September 2026. No page has a pain section or a bill slider. The interactive tools sit in the hero's right column instead (see §4):
 
-### Desktop — 2-column grid
-```css
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 40px;
-align-items: center;
-max-width: 960px;
-margin: 0 auto;
-```
+- **C&I Solar & Storage:** `StrategyFinder`, a few questions with no bill needed, which point the visitor to the strategy that suits them best.
+- **Wheeling:** `WheelingEligibility`, which asks who supplies the site (Eskom direct, a metro, or "My supplier isn’t listed, or I’m not sure") and, for Eskom and metro supplies, about the Time-of-Use tariff, then gives an outcome (`src/lib/wheeling/eligibility.ts`). "Yes" is eligible and "No" is "Let’s get you wheel-ready". "I’m not sure" and an unlisted supplier are not a no: they get "We can tell from one electricity bill", with "Book a free wheeling assessment" and a message that asks for the check (updated September 2026, SOL-11). "Not available in your area yet" is kept for suppliers the business confirms can’t wheel; none is listed. The prefilled messages are built in `src/lib/wheeling/enquiry.ts`.
+- **Carbon Credits:** `CarbonRevenueEstimator` (`src/lib/carbon/estimate.ts`), which turns system size in kWp into annual credits and a revenue range at 1,600 kWh per kWp a year, 0.95 tCO2 per MWh and R50 to R150 per credit.
+- **EV Fleets:** `FleetSavingsEstimator` (`src/lib/evfleet/estimate.ts`), which takes the number of vehicles, vehicle type, fuel, distance and charging source, with fuel and electricity prices from the Sanity energy prices document (`getEnergyPrices()`). On the result step, "Edit inputs" and "Get a fleet assessment" sit side by side from 640px and stack full width below it, where each label used to wrap onto two lines.
+- **Energy Optimisation:** no tool; the hero is copy only.
 
-**Left — editorial copy:**
-- Eyebrow: Inter 700, 9px, `rgba(255,255,255,0.35)`, uppercase
-- Headline: Plus Jakarta Sans 800, 24px, white, `line-height: 1.2`
-  - Key phrase wrapped in `<em>` with `color: var(--accent)` (vertical accent colour)
-- Body: Inter 400, 12px, `rgba(255,255,255,0.5)`, `line-height: 1.8`, `margin-bottom: 20px`
-- Fact pills: `display: flex`, `flex-wrap: wrap`, `gap: 7px`
-  - Each: Inter 500, 10px, `padding: 5px 12px`, `border-radius: 9999px`
-  - `border: 1px solid rgba(255,255,255,0.1)`, `color: rgba(255,255,255,0.55)`
-
-**Right — calculator card:**
-```css
-background: rgba(255,255,255,0.05);
-border-radius: 16px;
-border: 1px solid rgba(255,255,255,0.08);
-padding: 24px;
-```
-- Title: Inter 600, 13px, white, `margin-bottom: 14px`
-- Slider label: Inter 400, 11px, `rgba(255,255,255,0.45)`, `margin-bottom: 6px`
-- Range slider: `accent-color: var(--accent)`, full width
-- Live value readout: Plus Jakarta Sans 700, 14px, white, right-aligned
-- Three result cards in `grid-template-columns: 1fr 1fr 1fr`, `gap: 8px`:
-  - Standard: `background: rgba(255,255,255,0.04)`, `border: 1px solid rgba(255,255,255,0.06)`, `border-radius: 10px`, `padding: 12px`, `text-align: center`
-  - Highlight (middle): `background: rgba(var(--accent-rgb), 0.12)`, `border-color: rgba(var(--accent-rgb), 0.25)`
-  - Value: Plus Jakarta Sans 800, 17px, white (`color: var(--accent)` on highlight)
-  - Label: Inter 400, 9px, `rgba(255,255,255,0.35)`, uppercase
-- Note: Inter 400, 10px, `rgba(255,255,255,0.25)`, `margin-top: 10px`, `line-height: 1.6`
-
-### Calculator logic per vertical
+**The tool cards** (updated September 2026). All four cards sit on a 55% Night Teal fill (`bg-pe-nav-dark/55`, with a `rgba(255,255,255,0.10)` border). They used to be 6% white veils, so their text depended on the hero photo behind them and fell to 2.3:1 where a photo was bright (measured pixel by pixel at 1440 and 390px, in every state of each tool). On the fill, the small labels and hints that still measured low use `on-dark-muted`: the Strategy Finder's intro and option hints, the Wheeling check's "Check eligibility" eyebrow (the coral accent measured 3.1:1), its intro and its secondary result links (coral outline, `on-dark-muted` text), the Carbon estimator's credit labels, and the fleet estimator's title and its result tiles' labels. Every text run on the cards now measures 4.5:1 or more.
 
 ```typescript
-// Solar / Optimisation / EV
-// Input: monthly bill (R)
-// 5-yr Eskom cost: sum of monthly × 12 × (1.127^i) for i=0..4
-// 10-yr Eskom cost: same for i=0..9
-// Potential 5-yr saving: 5-yr cost × 0.48 (conservative 48% saving after solar/opex amortised)
-
-// Wheeling
-// Input: monthly bill (R)
-// Saving: bill × 12 × 0.32 (32% tariff reduction)
-// Highlight card: annual saving
-
-// Carbon Credits
-// Input: monthly bill (R) — used as proxy for system size
-// Revenue: (bill / 3500) × 1680 × 0.5 × 90 / 1000 × 8 (approx kW → tonnes → R)
-// Highlight card: estimated annual credit revenue
-
-// WeBuySolar
-// Input: approximate monthly bill before solar (R) — proxy for system size
-// Indicative buyback: (bill / 3500) × 1680 × 20000 × 0.4 / 12 (rough system value estimate)
-// Highlight card: indicative buyback range
+// WeBuySolar (updated 2026-09-24)
+// No calculator. The WeBuySolar team values a system after the free on-site
+// audit; the page links to the valuation request (specs/11-TOOLS.md).
 ```
 
-### Mobile — stacked
-- Copy section full-width above calculator card
-- Fact pills hidden on mobile to reduce clutter
-- Calculator card full-width below
-
-### Per-vertical copy
+### April 2026 per-vertical copy (not on the site)
 
 | Vertical | Eyebrow | Headline | Body | Fact pills | Highlight label |
 |---|---|---|---|---|---|
@@ -202,125 +144,105 @@ padding: 24px;
 | Wheeling | Calculate your wheeling opportunity | What is a 32% tariff saving worth to *your business?* | Drag to your monthly spend and see the annual saving a wheeling PPA can deliver — starting within 90 days of agreement. | 32% average reduction · 90-day licensing · NERSA 2025 framework · Min 5 MW | Annual wheeling saving |
 | Optimisation | Identify your savings potential | How much is energy waste *costing your business?* | 28% of energy in commercial facilities is wasted with no impact on productivity. Drag to see your monthly waste. | 28% avg waste · R0 audit cost · 3-month payback · Carbon Trust benchmark | Est. monthly energy waste |
 | Carbon | Calculate your carbon revenue | How much is your solar system *leaving on the table?* | Most SA businesses with solar assets are missing an entirely untapped revenue stream. Drag to see your estimate. | R6–10M per MW/yr · Gold Standard · R0 enrolment · 100% managed | Est. annual credit revenue |
-| WeBuySolar | What is your system worth? | Get an instant indicative *buyback estimate.* | Drag to your approximate bill before solar was installed. We use this to estimate your system size and indicative value. | 5-day turnaround · 42 systems acquired · DCF-based model · R0 to value | Indicative buyback value |
+| WeBuySolar | None (updated 2026-09-24) | No calculator and no on-screen estimate: see "WeBuySolar page as built" below | | | |
 | EV Fleets | Calculate your fleet savings | What is diesel dependency *costing your fleet?* | SA diesel has increased 87% since 2019. Drag to your monthly fuel spend to see the savings from electrification. | 87% diesel increase · 50% avg saving · R0 OpEx model · 40+ trucks live | Est. 5-yr fuel saving |
+
+> The rows other than WeBuySolar are placeholders from the April 2026 mockup, not confirmed and not on the site. Don't publish them without evidence (see `docs/content/claims-register.md`).
 
 ---
 
 ## 7. Solution Tabs / Accordion
 
-- `background: #ffffff`, `padding: 52px 24px`
+`SolutionTabs` (`src/components/sections/SolutionTabs.tsx`), a client component. C&I Solar & Storage, Wheeling, Energy Optimisation and EV Fleets use it; Carbon Credits and WeBuySolar have no tabs.
+
+- `background: #ffffff`, padding 64px top and bottom (96px from 768px).
 
 ### Section header (above tabs)
-```css
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 32px;
-align-items: end;
-margin-bottom: 28px;
-max-width: 960px;
-margin-left: auto;
-margin-right: auto;
-```
-- H2: left column
-- Intro paragraph: right column — Inter 400, 12px, muted
+- One stacked, left-aligned block, `max-width: 42rem`: the eyebrow (12px, uppercase, muted), the H2 (Plus Jakarta Sans 800, 24px, 30px from 768px, `<em>` in the accent's text-safe ink) and an optional subtitle (Inter, 14px, 16px from 768px, muted, `max-width: 60ch`).
 
-### Desktop — Tabs (`>= 768px`)
+### Desktop: tabs (from 1280px)
 
-```css
-display: flex;
-border-bottom: 1px solid #E5E7EB;
-overflow-x: auto;
-scrollbar-width: none;
-```
-- Each tab: Inter 500, 12px, muted, `padding: 11px 18px`, `border-bottom: 2px solid transparent`
-- Active: Deep Teal text, `border-bottom-color: #39575C`, `font-weight: 600`
+Both layouts render on the server and CSS shows one (`hidden xl:block` for the tabs, `xl:hidden` for the accordion), so nothing waits on a JavaScript width check. The switch sits at 1280px because at 1024px the C&I, Energy Optimisation and EV Fleets strips need 993 to 1,085px in a 960px row, which cut their last tab.
 
-**Tab content panel:**
-```css
-display: grid;
-grid-template-columns: 1fr 1fr;   /* text left, image right */
-border: 1px solid #E5E7EB;
-border-top: none;
-border-radius: 0 0 14px 14px;
-```
-- Left (`padding: 28px`): title + body + bullet list
-- Right: photo, `object-fit: cover`, `border-radius: 0 0 12px 0`, `min-height: 200px`
+- Tab strip: `role="tablist"`, a 1px inset bottom rule in `#E5E7EB`, and horizontal scroll with a thin scrollbar when the labels don't fit.
+- Each tab: Inter 500, 14px, `padding: 12px 16px`, with a 28px icon chip before the label (the page's icon background, the icon in the accent).
+- Inactive tabs use muted text. The active tab uses the body text colour and a 2px bottom border in the vertical accent.
+- Arrow keys move and select; Home and End jump to the first and last tab. A selected tab scrolls into view if the strip ever overflows (a larger default text size, for example).
+- Each tab change pushes `tab_change` (with `vertical` and `tab_label`) to the data layer.
 
-**Financing tab** — special layout, full-width inside panel:
-- Two cards side by side: CapEx (light bg) + OpEx (dark bg)
-- See Financing section spec below
+**Tab content panel** (no border and no photo):
+- The text block: H3 (Plus Jakarta Sans 800, 20px), body (16px), an optional kicker above the bullets (for example "Suited for"), bullets with accent check icons, an optional second group (for example "Benefits") and an optional button.
+- Buttons: C&I strategy tabs show "Book a discovery meeting", linking to `/contact?intent=client&strategy={strategy}` (for example `strategy=demand-shaving`). Energy Optimisation lever tabs show "Book a free energy audit". Wheeling and EV Fleets tabs have none.
+- With a chart (C&I, `StrategyProfileChart`, loaded on the client only when a tab needs it) or a diagram (Wheeling `WheelingFlowDiagram`, EV Fleets `IndustryProofCard`), the text sits left and the visual right from 1024px.
+- Otherwise the text block stands alone, `max-width: 640px`. A tab's `imageBg` and `imageEmoji` fields are no longer drawn.
 
-### Mobile — Accordion (`< 768px`)
+### Below 1280px: accordion
 
-**Component:** `<SolutionTabs>` uses `useMediaQuery('(max-width: 768px)')` to switch between tab and accordion renderers. Same data, same content array.
+The same tabs, drawn as bordered, rounded cards:
 
-```typescript
-// Accordion behaviour:
-// - One item open at a time
-// - Tapping open item: closes it
-// - Tapping closed item: opens it, closes previously open item
-// - First item open by default
-// - Smooth height animation: max-height 0 → auto via CSS transition
-```
+- One item is open at a time, the first by default. Tapping the open item closes it; tapping another opens it and closes the last.
+- Header: a 32px icon chip, the label (Inter 600, 14px) and an arrow that rotates 90° when the item is open.
+- The panel opens with a `grid-template-rows` transition from `0fr` to `1fr` over 350ms. Closed panels are `inert`, and a chart loads only when its panel opens.
+- Body: `padding: 0 16px 20px`, with the same content as the tab panel.
+- Opening an item pushes `tab_change`.
 
-**Each accordion item:**
-```
-[Icon 32px] [Label Plus Jakarta Sans 700 13px] [Chevron ▼ rotates 180° when open]
-```
-- Header hover: `background: rgba(57,87,92,0.04)`
-- Header active: `color: #39575C`, icon bg → Deep Teal, chevron → Deep Teal
-- Body: `padding: 0 16px 16px` — image (full-width, 120px, rounded), title, description, bullets
-- Financing item body: CapEx card + OpEx card stacked vertically, no side-by-side
+**Deep links:** when the URL hash matches a tab's `key`, that tab and its accordion item open and the section scrolls into view (instantly under reduced motion). The keys are `strategy-{self-consumption | battery-arbitrage | demand-shaving | backup-resilience | off-grid}` (C&I), `model-direct`, `model-virtual` and `model-micro` (Wheeling), `lever-tariff` (Energy Optimisation, the only lever with a key) and `industry-{last-mile | cold-chain | fmcg | staff | municipal | logistics}` (EV Fleets).
 
-**Icon backgrounds per tab:**
-| Tab | Icon bg |
+**Icon backgrounds:** one per page, used on every tab:
+| Page | Icon bg |
 |---|---|
-| Solar array | `rgba(227,197,141,0.15)` |
-| Battery storage | `rgba(112,157,169,0.12)` |
-| Monitoring & O&M | `rgba(57,87,92,0.08)` |
-| Tax benefits | `rgba(156,175,136,0.12)` |
-| Financing | `rgba(57,87,92,0.08)` |
+| C&I Solar & Storage | `rgba(227,197,141,0.18)` |
+| Wheeling | `rgba(217,124,118,0.18)` |
+| Energy Optimisation | `rgba(112,157,169,0.18)` |
+| EV Fleets | `rgba(169,214,203,0.20)` |
 
-### Financing tab — CapEx vs OpEx
+### Financing (a band, not a tab)
 
-Two cards: `grid-template-columns: 1fr 1fr` (desktop), stacked (mobile)
+No page has a Financing tab. Financing is its own section, `FinancingBand` (`src/components/sections/FinancingBand.tsx`), on `#F5F5F5`: an eyebrow, an H2, then `FinancingCards` option cards, two or three across from 768px and stacked below. Each card has a 3px accent bar, an icon chip, an optional tag pill, the title, an optional subtitle, the description and a "Benefits" list.
 
-**CapEx card** (`background: #F5F5F5`, `border: 1px solid #E5E7EB`):
-- Tag: `CapEx — Own it` · Deep Teal bg at 10% + Deep Teal text
-- Title: `Purchase outright` — Plus Jakarta Sans 800, 16px
+| Page | Placed | Eyebrow | H2 | Cards |
+|---|---|---|---|---|
+| C&I Solar & Storage | After the strategy tabs | How to fund it | Three ways to fund it to suit your balance sheet | Outright Purchase; Power Lease Agreement (PLA), tag "5 to 10 years"; Power Purchase Agreement (PPA), tag "10 to 20 years" |
+| Energy Optimisation | After the lever tabs | How to fund it | Buy it outright or start with zero capex | Outright Purchase; Energy Efficiency Asset Lease, tag "Zero capex" |
+| EV Fleets | After the two explainer sections, before the industry tabs | Fleet-as-a-Service | Go electric with *zero upfront capital*. | Fleet-as-a-Service, tag "Subscription"; Outright Purchase, tag "Ownership" |
+
+The C&I cards are the band's defaults. Energy Optimisation passes its own from the page file. EV Fleets reads `EV_FLEETS.financing` (`src/config/evFleetsContent.ts`) and shows its note under the band: "All financing is subject to credit approval. Section 12B and tax treatment should be confirmed with your tax advisor." Wheeling and Carbon Credits have no financing band.
+
+`FinancingCards` still contains a CapEx and OpEx fallback, drawn for a tab of `type: 'financing'`, but no page uses it.
+
+**April 2026 Financing tab (not built).** The April design put two cards inside a Financing tab.
+
+**CapEx card:**
 - Subtitle: highest long-term ROI, Section 12B accelerates payback
 - Bullets: 125% Section 12B year one · 4–7yr payback on 25-yr asset · Standard Bank prime-linked finance · Full asset ownership increases property value
 - Best for: businesses wanting maximum long-term returns
 
-**OpEx card** (`background: #0d1f22`):
-- Tag: `OpEx — Zero upfront` · white-tint bg + white-70 text
-- Title: `PPA or lease` — Plus Jakarta Sans 800, 16px, white
+**OpEx card:**
 - Subtitle: R0 capital, savings from month one
 - Bullets (accent dots): R0 capital required · Fixed rate locked 10–15 years · Full O&M, monitoring and insurance included · Option to purchase at end of term at residual value
 - Best for: zero capex, immediate savings, no balance sheet impact
 
-**Footer note:** Inter 400, 11px, muted, centred — *"All financing subject to credit approval. Phoenix Energy works with Standard Bank. Section 12B should be confirmed with your tax advisor."*
+**Footer note:** *"All financing subject to credit approval. Phoenix Energy works with Standard Bank. Section 12B should be confirmed with your tax advisor."*
+
+> Placeholder from the April 2026 mockup, not confirmed and not on the site. Don't publish it without evidence (see `docs/content/claims-register.md`).
 
 ### Tab configuration per vertical
 
-**C&I Solar & Storage** (5 content tabs + Financing):
-`Solar array` · `Battery storage` · `Monitoring & O&M` · `Tax benefits` · `Financing`
+**C&I Solar & Storage** (five strategy tabs from `strategyTabs()` in `src/config/strategies.ts`, each with a daily-profile chart and a button):
+`Solar Self-Consumption` · `Time-of-Use Optimisation` · `Demand Shaving` · `Backup & Resilience` · `Off-Grid`
 
-**Wheeling** (3 content tabs + Financing):
-`PPA structuring` · `Grid connection` · `Ongoing management` · `Financing`
+**Wheeling** (three model tabs in the page file, each with a flow diagram):
+`Direct Wheeling` · `Virtual Wheeling` · `Micro-wheeling`
 
-**Energy Optimisation** (3 content tabs + Financing):
-`Energy audit` · `Tariff restructuring` · `Demand management` · `Financing`
+**Energy Optimisation** (four lever tabs in the page file, each with the audit button):
+`Energy Efficiency & Process Optimisation` · `Demand Side Management` · `Tariff Optimisation` · `Real-Time Monitoring`
 
-**Carbon Credits** (3 content tabs + Financing):
-`Registration` · `Monitoring & MRV` · `Credit trading` · `Financing`
+**Carbon Credits** (no tabs): two explainer card sections take their place.
 
-**WeBuySolar** (4 process tabs, no Financing tab — WeBuySolar is a buyback service):
-`Online valuation` · `Site verification` · `Formal offer` · `Payment & transfer`
+**WeBuySolar** (no tabs, updated 2026-09-24): explainer cards, a comparison table and a six-step How It Works take the place of tabs. See "WeBuySolar page as built" below.
 
-**EV Fleets** (3 content tabs + Financing):
-`Charging infrastructure` · `Vehicle procurement` · `Fleet management` · `Financing`
+**EV Fleets** (six industry tabs from `EV_FLEETS.industries` in `src/config/evFleetsContent.ts`, each with an industry example card, `IndustryProofCard`: the heading "Industry example: {stat}", the operator in body text, a grey border and no accent bar, so none reads as a Phoenix project. A source line shows once the business records one; sources and photo rights are open decision D15):
+`Last-Mile Delivery` · `Cold Chain` · `FMCG Distribution` · `Staff & Shuttle` · `Municipal & Public` · `Regional Logistics`
 
 ---
 
@@ -328,34 +250,44 @@ Two cards: `grid-template-columns: 1fr 1fr` (desktop), stacked (mobile)
 
 **Component:** `src/components/sections/HowItWorks.tsx`
 
-This is the same animated component used on the homepage. It is fully reusable — steps, title, and subtitle are props.
+This is the same animated component the homepage uses. Steps, title and subtitle are props. Solution pages spread in the page's Sanity document and add the page's `cta`, `accent` and `accentText`.
 
 ```typescript
 interface HowItWorksProps {
-  eyebrow?: string;           // Default: "How it works"
-  title: string;              // Supports <em> for accent colour
+  eyebrow?: string;              // Default: "How it works"
+  title: string;                 // Supports <em>, drawn in the accent's text-safe ink
+  subtitle?: string;
   steps: {
-    label: string;            // Short title
-    description: string;      // One to two sentences
-    tag?: string;             // Optional pill tag (e.g. "No cost · No obligation")
+    label: string;               // Short title
+    description: string;         // One to two sentences
+    tag?: string;                // Optional pill tag (e.g. "No cost · No obligation")
   }[];
+  autoAdvanceInterval?: number;  // ms per step while playing. Default: 2600
+  showCTA?: boolean;             // Default: true. Solution pages take it from Sanity
+  cta?: Cta;                     // Default: DISCOVERY_CTA ("Book a discovery meeting")
+  accent?: string;               // Themes the circles, track and spark
+  accentText?: string;           // Number colour on filled circles. Default: white
+  flushTop?: boolean;            // No top padding under a same-background section
 }
 ```
 
 ### Animation spec (see `specs/04-HOME.md` for full detail)
 
 - Number circles: 56px, `border-radius: 50%`
-- States: default (white bg, grey border), active (Deep Teal fill, `scale(1.08)`), done (Dusty Blue fill)
-- Pulse ring: `::before` pseudo, `animation: pulseRing 1.8s ease-out infinite` on active
-- Connector: `height: 2px`, full span, `background: #E5E7EB`, overflow hidden
-- Connector fill: `linear-gradient(90deg, #39575C, #709DA9)`, `width` animates via JS
-- Travelling spark: 8px white circle, `box-shadow: 0 0 0 3px #709DA9, 0 0 10px 3px rgba(112,157,169,0.5)`, travels left on connector
-- Auto-advance: every **2600ms**
-- Progress dots: `display: flex`, `gap: 8px`, centred below. Active: `width: 24px`, `border-radius: 4px`, Deep Teal
-- Step count: driven by `--step-count` CSS variable → connector positioning auto-adjusts
-- Mobile: spine layout (see `specs/04-HOME.md` mobile section)
+- States: default (white fill, `#E5E7EB` border, muted number), active (`scale(1.08)`) and done. With an `accent` (every solution page), active and done circles fill with the accent and their numbers take `accentText`. Without one (the homepage), active is Deep Teal `#39575C` and done is `#45727E`.
+- Pulse ring: a ring element around the active circle, `animation: pulseRing 1.8s ease-out infinite`, shown only while the sequence plays.
+- Connector: `height: 2px`, `background: #E5E7EB`, overflow hidden, running between the first and last circle centres.
+- Connector fill: the accent on solution pages (`linear-gradient(90deg, #39575C, #45727E)` without one). Its `width` follows the active step with a 0.7s transition.
+- Travelling spark: 8px white circle with a glow in the accent (`#45727E` without one), shown for 800ms each time the sequence moves on a step.
+- Playback: the server render shows the finished state, with every step done. A section that starts below the fold resets to step 1 as it nears the viewport and plays once when 35% of it is in view, one step every **2600ms** (`autoAdvanceInterval`), then stops on the last step. A section already in view or scrolled past at load, and any section under reduced motion, stays finished.
+- Progress dots (`ProgressDots`): 8px dots centred below; the active one is 24px wide in the accent's text-safe ink. Each dot jumps to its step and stops the playback.
+- Step count: one grid column per step, with the row capped at 220px per step; the connector's ends follow `steps.length`.
+- Button: when `showCTA` is true, the `cta` button (`Button variant="primary"`, a Deep Teal pill with an arrow) sits under the dots.
+- Mobile (below 768px): spine layout with 44px circles (see `specs/04-HOME.md` mobile section).
 
 ### Steps per vertical
+
+Steps and tags are edited in Sanity per page, along with the eyebrow, title, subtitle and `showCTA`: one `howItWorks` singleton for each page (`howItWorks.{vertical}`, read by `getHowItWorks()` in `src/lib/getHowItWorks.ts`), not code. When the document has no title or no steps, the page hides the section. The lists below, except WeBuySolar, are the April 2026 drafts; the live wording is whatever Studio holds.
 
 **C&I Solar:** Free assessment · Custom proposal · Installation · Live & monitored
 Tags: No cost · No obligation | Delivered in 5 days | 8–12 week commissioning | 25-yr warranty
@@ -369,88 +301,97 @@ Tags: Free audit | Delivered in 3 days | Zero disruption | Proven & reported
 **Carbon Credits:** Eligibility check · Gold Standard registration · Monitoring & MRV · Credit issuance
 Tags: Free check | 6–8 week process | Continuous | Quarterly payments
 
-**WeBuySolar:** Online valuation · Site verification · Formal offer · Payment
-Tags: 2 minutes | Free · no obligation | 5 business days | Same week
+**WeBuySolar** (updated 2026-09-24; from `WEBUYSOLAR_OFFER.steps` in `src/config/webuysolarOffer.ts`, not Sanity): Free expert audit · Preliminary offer & valuation · Due diligence · Final offer & contracting · Acquisition & handover · Ongoing optimisation
+Tags: Free · no obligation | Indicative | At our cost | No obligation | Settlement on agreed date | ROI-justified
 
 **EV Fleets:** Depot assessment · Infrastructure design · Installation · Fleet live
 Tags: Free assessment | 5 business days | 6–10 weeks | Savings from day one
+
+> The lists other than WeBuySolar are placeholders from the April 2026 mockup, not confirmed. The live steps come from Sanity, which this spec doesn't track. Don't publish these timings or claims without evidence (see `docs/content/claims-register.md`).
 
 ---
 
 ## 9. Testimonials
 
-- `background: #ffffff`, `padding: 52px 24px`
-- Section header: centred eyebrow + H2
+Removed from the solution pages in May 2026; the unused `Testimonials` component was deleted in September 2026. No solution page has testimonials.
 
-### 3-column card grid
-```css
-display: grid;
-grid-template-columns: repeat(3, 1fr);
-gap: 14px;
-margin-top: 28px;
-```
-
-**Each card:**
-- `background: #F5F5F5`, `border-radius: 14px`, `padding: 20px`, `border: 1px solid #E5E7EB`
-- Large opening quote mark: Plus Jakarta Sans 800, 44px, `color: var(--accent)`, absolute top-left
-- Quote text: Inter 400, 12px, `#1A1A1A`, italic, `line-height: 1.8`, `padding-top: 18px`
-- Author row: avatar circle (34px, Deep Teal bg, white initials) + name + role
-
-**Mobile:** 1-column stack
-
-> ⚠️ **Testimonial copy is placeholder** — replace with real client quotes before build.
+- **FAQ:** Carbon Credits and EV Fleets (and WeBuySolar) have an FAQ accordion instead: `FaqAccordion` at `#faq`, which also emits FAQPage JSON-LD.
+- **Related articles:** every page has `RelatedArticles` (`src/components/sections/RelatedArticles.tsx`) on `#F5F5F5`, with the eyebrow "Industry insights", the H2 "Further reading on {label}" and a "View all articles" link to `/blog`. It shows up to three posts tagged for the vertical, newest first (`POSTS_BY_VERTICAL_QUERY`), and is hidden when there are none.
 
 ---
 
 ## 10. Projects Carousel
 
-- `background: #F5F5F5`, `padding: 52px 24px`
-- Section header row: eyebrow (vertical-specific e.g. `SOLAR & STORAGE PROJECTS`) + H2 `Proof in every project` + `View all →` right
+`FeaturedProjects` (`src/components/sections/FeaturedProjects.tsx`) with the page's `vertical`, inside `SectionCarousel`:
 
-**Carousel:**
-```css
-display: flex;
-gap: 14px;
-overflow-x: auto;
-scrollbar-width: none;
-margin: 0 -24px;
-padding: 0 24px 8px;
-```
-
-**Project cards:** 260px width. Same `ProjectCard` component as homepage and projects page.
-- Cards filtered by `vertical === currentVertical` from Sanity
-- GROQ: `*[_type == "project" && vertical == $vertical] | order(publishedAt desc) [0..5]`
-- Accent bar, badge colour, badge text all driven by vertical
-
-**Mobile:** Same horizontal scroll, card width 200px.
+- `background: #ffffff`, padding 64px (96px from 768px). On Carbon Credits it sits flush under the FAQ (`flushTop`).
+- Header row, the same on every page and on the homepage: the eyebrow "Our work", the H2 "Projects" and a "View published projects" link to `/projects` (`PROJECTS_CTA`).
+- GROQ (`PROJECTS_BY_VERTICAL_QUERY`): `*[_type == "project" && vertical == $vertical] | order(completionDate desc) [0..5]`. Complete case studies (`caseStudyReady`) then move to the front, so an unwritten one never takes the first slot.
+- No projects: the section is hidden.
+- Three or fewer: a static grid, one column on phones. From 768px, three projects sit in three columns and one or two in two columns, with large cards when there are fewer than three.
+- Four to six: a horizontal carousel. Cards are 82vw on phones and a third of the container from 768px, so three show and the rest scroll.
+- Cards: the same `ProjectCard` as the homepage.
 
 ---
 
 ## 11. CTA Banner
 
-- `background: #39575C`, `padding: 52px 24px`, `text-align: center`
+`PageFooter` (`src/components/layout/PageFooter.tsx`) with `ctaVariant="centered"`. It replaced `CTABanner` on the solution pages in May 2026, and `CTABanner` was deleted in September 2026.
+
+- Night Teal background (`--color-pe-nav-dark`, `#0d1f22`), a 3px Dusty Blue (`#709DA9`) top border and a faint logo watermark; padding 64px (96px from 768px).
 
 ```
-[max-width: 520px, margin: 0 auto]
-Headline: vertical-specific (see table below)
-Sub: vertical-specific
-[Primary button]   [Explore other solutions]
+[centred, max-width: 42rem]
+Eyebrow: page-specific, Dusty Blue
+Headline: page-specific (see table below)
+Body: page-specific
+[Page CTA button]
 ```
 
-- Primary btn: `#fff` bg, Deep Teal text
-- Ghost btn: `rgba(255,255,255,0.1)` bg, `border: 1px solid rgba(255,255,255,0.2)`, white text
-- "Explore other solutions" → `/solutions`
+- The button is a white pill with Night Teal text and an arrow. It is the page's `SERVICE_CTA[vertical]`, the same label as the hero button (see §4).
+- There is no "Explore other solutions" button. The site footer (`SiteFooter`, from the layout) follows the band.
 
 ### CTA copy per vertical
 
+Eyebrows: Start today (Solar), Start wheeling (Wheeling), Get started (Optimisation), Start earning (Carbon Credits), Electrify your fleet (EV Fleets). Carbon Credits and EV Fleets read their copy from `CARBON_CREDITS.cta` and `EV_FLEETS.cta`; the other pages set it in the page file. The Sub column is the band's body text.
+
 | Vertical | Headline | Sub |
 |---|---|---|
-| Solar | Ready to eliminate your Eskom dependency? | Get a free solar feasibility assessment — delivered in 48 hours, no commitment required. |
-| Wheeling | Find out if wheeling works for your business | Free feasibility assessment — we'll confirm viability and indicative savings within 5 days. |
-| Optimisation | Find out where your business is losing money on energy | Book a free energy audit — we identify the savings, you keep them. |
-| Carbon Credits | Start earning from your clean energy assets | Find out how much your existing or planned solar system generates in annual carbon credit revenue. |
-| WeBuySolar | Get your solar system valuation now | Use our free tool for an instant indicative buyback range — no site visit needed to start. |
-| EV Fleets | Ready to electrify your fleet? | Free fleet electrification feasibility study — ROI model, infrastructure design, and financing options in 5 days. |
+| Solar | Find your optimal energy strategy | Work with our engineers to identify the best energy strategy for your business. You'll receive a clear, data-driven roadmap to reduce costs and improve energy performance. |
+| Wheeling | Access lower-cost renewable electricity through a fully managed wheeling framework. | Connect to off-site renewable generation and reduce your electricity costs through structured wheeling agreements, fully managed from contract to settlement. |
+| Optimisation | Stop overpaying for energy. | We analyse your energy use, identify inefficiencies, and deliver a prioritised energy efficiency roadmap so you know exactly where to reduce costs. Free. No obligation. |
+| Carbon Credits | Your solar system is already generating carbon reductions. Let’s see what they’re worth. | We’ll assess your system, estimate your potential revenue, and confirm your eligibility, free and with no obligation. |
+| WeBuySolar | Start with the audit. Decide everything else later. | A free, independent, operator-grade audit of your existing system. No cost. No commitment. (Updated 2026-09-24: the band lists the seven audit deliverables beside the "Book a free WeBuySolar audit" button.) |
+| EV Fleets | Discover the most cost-effective path to fleet electrification. | We’ll assess your fleet, model the potential savings, and recommend the right vehicles, charging infrastructure, renewable energy strategy, and commercial model for your business. |
+
+April 2026 subs that the build replaced, kept because they promise timings. The Solar one also conflicts with the site's one reply promise, "within 1 business day" (`REPLY_PROMISE`, `src/config/contact.ts`).
+- Solar: "Get a free solar feasibility assessment. Delivered in 48 hours, no commitment required."
+- Wheeling: "Free feasibility assessment. We'll confirm viability and indicative savings within 5 days."
+- EV Fleets: "Free fleet electrification feasibility study. ROI model, infrastructure design, and financing options in 5 days."
+
+> Placeholder from the April 2026 mockup, not confirmed and not on the site. Don't publish it without evidence (see `docs/content/claims-register.md`).
+
+---
+
+## WeBuySolar Page as Built (updated 2026-09-24)
+
+The WeBuySolar page (`src/app/solutions/webuysolar/page.tsx`) doesn't use the tab and calculator template above. Its copy lives in `src/config/webuysolarContent.ts`; the eligibility rule, the first contact and the process steps live in `src/config/webuysolarOffer.ts`, which the valuation request (`specs/11-TOOLS.md`) also reads.
+
+**Sections, in order:**
+1. **Hero:** "You own the solar asset. *But you're missing the upside.*" Primary button "Book a free WeBuySolar audit" (the contact form at step 2, with the message written); secondary button "Request a valuation" (`/tools/solar-valuation`); under them, the eligibility line "We acquire systems built on BloombergNEF Tier 1 equipment, with or without battery storage."
+2. **Why now:** three explainer cards (Battery economics flipped, The market liberalised, Operations became the differentiator).
+3. **Old against new:** a five-row comparison table ("Your solar asset hasn't changed. *Everything around it has.*"). The table is at least 680px wide and scrolls sideways on phones, so its box is a focusable region named by the section heading (`role="region"`, `tabIndex={0}`, `aria-labelledby`), which keyboard users can scroll with the arrow keys.
+4. **Where value is lost:** three explainer cards and a pull quote.
+5. **How it works:** "The path from *owned to operated*", the six steps of `WEBUYSOLAR_OFFER.steps`, with no button.
+6. **Projects** and **Related articles**, each hidden while nothing is published for WeBuySolar.
+7. **FAQ:** six questions, with FAQPage JSON-LD.
+8. **Final band:** the `deliverables` variant of `PageFooter`: "Start with the audit. Decide everything else later.", the seven audit deliverables under "What you receive", and "Book a free WeBuySolar audit".
+
+**Wording rules:**
+- The deal is an acquisition. Don't call it a "buyback".
+- No on-screen or "instant" valuation, no "2 min online valuation" and no "formal offer within 5 business days". The valuation comes with the preliminary offer, after the free on-site audit.
+- The first contact uses the site-wide reply promise, "within 1 business day" (`REPLY_PROMISE`, `src/config/contact.ts`).
+- "42 systems acquired" appeared in the April spec. It is unconfirmed and must not return to the site without evidence (claims register, `docs/content/claims-register.md`).
 
 ---
 
@@ -458,94 +399,96 @@ Sub: vertical-specific
 
 ```typescript
 // src/config/verticals.ts
+// SEO copy and headline stats per vertical. Every figure comes from the claims
+// register (src/config/claims.ts) through claimStat() and claimValue().
+
+export interface VerticalStat {
+  value: string;
+  label: string;
+}
 
 export interface VerticalConfig {
-  slug: string;
-  label: string;
-  accent: string;              // Hex — used for badge, dots, calculator highlight
-  accentText: string;          // Dark shade for text on light accent bg
-  heroBg: string;              // CSS gradient for hero photo placeholder
-  heroEmoji: string;           // Replaced by real next/image in production
-  heroTitle: string;           // HTML string — <em> for de-emphasised phrase
-  heroSub: string;
-  stats: { value: string; label: string }[];  // 4 items
-  pain: {
-    eyebrow: string;
-    headline: string;          // HTML — <em> for accent colour
-    body: string;
-    pills: string[];
-    calcTitle: string;
-    calcLabel: string;
-    calcHighlightLabel: string;
-    calcNote: string;
-    calcFn: (monthlyBill: number) => { left: number; highlight: number; right: number };
-  };
-  solution: {
-    h2: string;                // HTML — <em>
-    intro: string;
-    tabs: {
-      label: string;
-      icon: string;
-      iconBg: string;
-      title: string;
-      body: string;
-      bullets: string[];
-      imageBg: string;
-      imageEmoji: string;
-    }[];
-    showFinancingTab: boolean;
-  };
-  howItWorks: {
-    title: string;             // HTML — <em>
-    steps: { label: string; description: string; tag?: string }[];
-  };
-  projectsEyebrow: string;
-  cta: { title: string; sub: string };
-  seo: { title: string; description: string };
+  seoTitle: string;
+  seoDescription: string;
+  stats: VerticalStat[];       // 4 per vertical; the /solutions card shows the first two
 }
+
+export const VERTICAL_CONFIG: Record<SolutionVertical, VerticalConfig> = { /* one entry per vertical */ };
 ```
+
+The rest of what the April interface held lives elsewhere now:
+- Label, accent colours and route: `SOLUTION_META` in `src/types/solutions.ts`.
+- Hero, tab, financing and CTA copy: each page file, `src/config/strategies.ts`, `carbonCreditsContent.ts`, `evFleetsContent.ts` and `webuysolarContent.ts`.
+- How It Works: Sanity (§8).
+- CTA labels and links: `SERVICE_CTA` in `src/config/ctas.ts`.
+- Pain calculator and its copy: removed (§6).
 
 ---
 
 ## SEO & Metadata per vertical
 
+Each page exports a static `metadata` object; there is no `generateMetadata`. The shape is the same on all six pages:
+
 ```typescript
-// src/app/solutions/[vertical]/page.tsx
-export async function generateMetadata({ params }) {
-  const config = verticalConfigs[params.vertical];
-  return {
-    title: config.seo.title,
-    description: config.seo.description,
-    openGraph: {
-      images: [{ url: `/og-solutions-${params.vertical}.jpg` }],
-    },
-  };
-}
+// src/app/solutions/ci-solar-storage/page.tsx
+const vertical = 'ci-solar-storage' as const;
+const cfg = VERTICAL_CONFIG[vertical];
+
+export const metadata: Metadata = {
+  title: { absolute: cfg.seoTitle },
+  description: cfg.seoDescription,
+  alternates: { canonical: `https://phoenixenergy.solutions/solutions/${vertical}` },
+  openGraph: {
+    title: cfg.seoTitle,
+    description: cfg.seoDescription,
+    url: `https://phoenixenergy.solutions/solutions/${vertical}`,
+    images: [{ url: 'https://phoenixenergy.solutions/og-solutions-ci-solar.png', width: 1200, height: 630 }],
+  },
+};
+
+export const revalidate = 3600;
 ```
 
-**JSON-LD Service schema per vertical:**
+OG images: `public/og-solutions-{ci-solar | wheeling | energy-optimisation | carbon-credits | webuysolar | ev-fleets}.png`, 1200×630.
+
+**JSON-LD Service schema** (C&I Solar & Storage, Wheeling, Energy Optimisation, Carbon Credits and EV Fleets):
 ```typescript
 {
   '@context': 'https://schema.org',
   '@type': 'Service',
-  name: config.label,
-  provider: { '@type': 'Organization', name: 'Phoenix Energy', url: 'https://phoenixenergy.solutions' },
-  description: config.seo.description,
-  areaServed: { '@type': 'Place', name: 'Southern Africa' },
-  url: `https://phoenixenergy.solutions/solutions/${config.slug}`,
+  name: meta.label,            // SOLUTION_META[vertical].label
+  provider: { '@type': 'Organization', name: 'Phoenix Energy' },
+  description: cfg.seoDescription,
+  url: `https://phoenixenergy.solutions/solutions/${vertical}`,
 }
 ```
+
+There is no `areaServed` and the provider has no `url`. Carbon Credits and EV Fleets also get FAQPage JSON-LD from `FaqAccordion`. WeBuySolar's JSON-LD differs: a BreadcrumbList, a Service named "Solar Asset Acquisition & Energy-as-a-Service" with `areaServed: 'ZA'`, and an Organization.
 
 ### SEO titles and descriptions per vertical
 
 | Vertical | Title | Description |
 |---|---|---|
-| Solar | Commercial Solar Panels & Battery Storage South Africa \| Phoenix Energy | Bespoke C&I solar and BESS systems for South African businesses. Free assessment, 25-yr warranty, CapEx or PPA financing. |
-| Wheeling | Energy Wheeling & PPA South Africa \| Phoenix Energy | Purchase clean energy via the national grid at 20–40% below Eskom TOU tariffs. NERSA 2025 compliant wheeling agreements. |
-| Optimisation | Energy Optimisation & Audit South Africa \| Phoenix Energy | Free commercial energy audit. Identify and eliminate the 28% average energy waste in your facility — typical payback under 3 months. |
-| Carbon Credits | Solar Carbon Credits South Africa — Gold Standard \| Phoenix Energy | Earn R6–10M per MW per year from verified carbon credits on your renewable energy assets. Zero upfront cost, fully managed. |
-| WeBuySolar | Sell Your Solar System — WeBuySolar \| Phoenix Energy | Get an instant indicative buyback valuation and formal offer within 5 business days. South Africa's fastest solar asset buyback service. |
-| EV Fleets | EV Fleet Electrification South Africa \| Phoenix Energy | Reduce fleet running costs by 40–60%. End-to-end EV charging infrastructure, vehicle procurement, and R0 OpEx model. |
+| Solar | C&I Solar & Storage Solutions \| Phoenix Energy | Commercial and industrial solar and battery storage systems. Zero upfront with our PPA model. Cut your electricity bill by up to 60%. |
+| Wheeling | Electricity Wheeling Solutions \| Phoenix Energy | Buy renewable energy directly from generators via the Eskom grid. Save up to 32% on electricity costs with Phoenix Energy wheeling agreements. |
+| Optimisation | Energy Optimisation Services \| Phoenix Energy | Cut energy costs with high-efficiency WEG motors, VSDs, smart controls and demand management, bought outright or on a zero-capex efficiency lease. Book a free energy audit. |
+| Carbon Credits | Carbon Credit Solutions \| Phoenix Energy | Monetise your solar generation through Verra-certified carbon credits. Quarterly payouts, no admin burden, fully managed by Phoenix Energy. |
+| WeBuySolar | WeBuySolar: We Acquire & Operate Your Solar \| Phoenix Energy | We acquire and operate existing C&I solar and battery systems: fair-market valuation, flexible PPA or lease, and active optimisation. Free expert audit. (Updated 2026-09-24, from `VERTICAL_CONFIG.webuysolar`.) |
+| EV Fleets | EV Fleet & Infrastructure Solutions \| Phoenix Energy | Electrify your commercial fleet with SANS-certified chargers, a fleet management dashboard, and up to 60% savings on fuel costs. |
+
+Titles and descriptions are `VERTICAL_CONFIG[vertical].seoTitle` and `.seoDescription` (`src/config/verticals.ts`). The figures and names in the descriptions (60%, 32%, Verra, Quarterly, SANS) come from the claims register (`src/config/claims.ts`), which marks them unconfirmed.
+
+April 2026 descriptions that the build replaced, kept because they carry claims. The April Carbon Credits title also ended in "Gold Standard \| Phoenix Energy".
+
+| Vertical | April description |
+|---|---|
+| Solar | Bespoke C&I solar and BESS systems for South African businesses. Free assessment, 25-yr warranty, CapEx or PPA financing. |
+| Wheeling | Purchase clean energy via the national grid at 20 to 40% below Eskom TOU tariffs. NERSA 2025 compliant wheeling agreements. |
+| Optimisation | Free commercial energy audit. Identify and eliminate the 28% average energy waste in your facility. Typical payback under 3 months. |
+| Carbon Credits | Earn R6 to 10M per MW per year from verified carbon credits on your renewable energy assets. Zero upfront cost, fully managed. |
+| EV Fleets | Reduce fleet running costs by 40 to 60%. End-to-end EV charging infrastructure, vehicle procurement, and R0 OpEx model. |
+
+> Placeholder from the April 2026 mockup, not confirmed and not on the site. Don't publish it without evidence (see `docs/content/claims-register.md`).
 
 ---
 
@@ -553,34 +496,40 @@ export async function generateMetadata({ params }) {
 
 | Component | Path |
 |---|---|
-| Solutions page shell | `src/app/solutions/[vertical]/page.tsx` |
-| Page template | `src/components/templates/SolutionPage.tsx` |
+| Solution pages | `src/app/solutions/{vertical}/page.tsx`, one file per vertical |
+| Page template | None: each page composes the sections below |
 | Hero section | `src/components/sections/SolutionHero.tsx` |
-| Stats strip | `src/components/ui/StatsStrip.tsx` (shared — also used on project page, about page) |
-| Pain + calculator | `src/components/sections/SolutionPain.tsx` |
-| Tabs / accordion | `src/components/sections/SolutionTabs.tsx` |
-| Financing cards | `src/components/sections/FinancingCards.tsx` |
-| How It Works | `src/components/sections/HowItWorks.tsx` (shared — also used on homepage) |
-| Testimonials | `src/components/sections/Testimonials.tsx` |
-| Projects carousel | `src/components/sections/FeaturedProjects.tsx` (shared — filtered by vertical prop) |
-| CTA banner | `src/components/sections/CTABanner.tsx` (shared) |
-| Vertical config | `src/config/verticals.ts` |
+| Stats strip | None (removed, see §5) |
+| Hero tools | `src/components/sections/StrategyFinder.tsx` (C&I), `WheelingEligibility.tsx` (Wheeling), `calculators/CarbonRevenueEstimator.tsx`, `calculators/FleetSavingsEstimator.tsx` |
+| Tabs / accordion | `src/components/sections/SolutionTabs.tsx`, with `StrategyProfileChart.tsx`, `WheelingFlowDiagram.tsx` and `IndustryProofCard.tsx` as panel visuals |
+| Financing band and cards | `src/components/sections/FinancingBand.tsx`, `FinancingCards.tsx` |
+| Explainer cards | `src/components/sections/ExplainerCards.tsx` (Carbon Credits, EV Fleets, WeBuySolar) |
+| FAQ accordion | `src/components/sections/FaqAccordion.tsx` (Carbon Credits, EV Fleets, WeBuySolar) |
+| How It Works | `src/components/sections/HowItWorks.tsx` (shared, also used on the homepage); content from Sanity through `src/lib/getHowItWorks.ts` |
+| Testimonials | None (removed, see §9) |
+| Projects carousel | `src/components/sections/FeaturedProjects.tsx` (shared, filtered by the `vertical` prop), in `src/components/ui/SectionCarousel.tsx` |
+| Related articles | `src/components/sections/RelatedArticles.tsx` |
+| CTA banner | `src/components/layout/PageFooter.tsx` (shared, `ctaVariant="centered"`) |
+| WeBuySolar only | `src/components/sections/ComparisonTable.tsx`, `PullQuote.tsx` |
+| Vertical config | `src/config/verticals.ts` (SEO and stats), `src/types/solutions.ts` (`SOLUTION_META`), `src/config/ctas.ts` (`SERVICE_CTA`) |
 
 ---
 
 ## Responsive Breakpoints Summary
 
-| Section | Desktop (≥ 768px) | Mobile (< 768px) |
+Breakpoints differ by section, so each cell names its own.
+
+| Section | Wider screens | Narrower screens |
 |---|---|---|
-| Hero | min-height 300px, 26px headline | min-height 260px, 22px headline |
-| Stats strip | 4-column horizontal | 2×2 grid |
-| Pain section | 2-col (copy left, calculator right) | Stacked, pills hidden |
-| Solution offering | Horizontal tabs | Vertical accordion, one open at a time |
-| Financing | 2-col cards side by side | Stacked vertically |
-| How It Works | Horizontal circles with connector | Vertical spine (see `04-HOME.md`) |
-| Testimonials | 3-column grid | 1-column stack |
-| Projects | Horizontal scroll, 260px cards | Horizontal scroll, 200px cards |
-| Sub-nav | Full labels, no scroll | Horizontal scroll, labels truncated |
+| Hero | From 1024px: copy left, tool right (440px, or 60% on C&I). H1 42px from 768px | Below 1024px: one column, tool under the copy. H1 30px below 768px. `min-height: clamp(580px, 75vw, 760px)` at every width |
+| Stats strip | Removed (§5) | Removed |
+| Pain section | Removed (§6) | Removed |
+| Solution offering | From 1280px: horizontal tabs | Below 1280px: accordion, one open at a time |
+| Financing | From 768px: two or three cards side by side | Below 768px: stacked |
+| How It Works | From 768px: horizontal circles with connector | Below 768px: vertical spine (see `04-HOME.md`) |
+| Testimonials | Removed (§9) | Removed |
+| Projects | From 768px: three cards in view, the rest scroll; a static grid when there are three or fewer | Below 768px: horizontal scroll with 82vw cards; one column when there are three or fewer |
+| Sub-nav | Removed (§3) | Removed |
 
 ---
 
@@ -588,11 +537,11 @@ export async function generateMetadata({ params }) {
 
 | # | Item | Owner |
 |---|---|---|
-| 1 | Real hero photography per vertical (replace emoji placeholders) | Client |
-| 2 | Real client testimonials per vertical (3 per page minimum) | Client |
+| 1 | Resolved in the build: no emoji placeholders remain. Since June 2026 each hero shows the photo set in the Sanity Hero Images document, and the page gradient when none is set. Uploading a photo per vertical is a Studio task. | Client |
+| 2 | Not needed: the solution pages have no testimonials section (removed in May 2026, see §9). | Client |
 | 3 | Real project data in Sanity — tagged by vertical | Dev |
-| 4 | Confirm WeBuySolar page excludes Financing tab (buyback service, not install) | Client |
-| 5 | OG images per vertical (1200×630) for social sharing | Dev |
+| 4 | Done (September 2026): the WeBuySolar page has no Financing tab, and no tabs at all. The deal is an acquisition, not an installation. | Client |
+| 5 | Done: `public/og-solutions-{short name}.png` for all six verticals, 1200×630, set in each page's metadata. | Dev |
 
 ---
 
@@ -603,22 +552,19 @@ export async function generateMetadata({ params }) {
 ## Engineering Review Fixes (April 2026)
 
 ### Solution sub-nav — appearance animation
-Appears when user scrolls past hero bottom edge:
-`opacity: 0 → 1` + `translateY(-100% → 0)` over `250ms ease-out`
-Disappears when scrolled back above hero: reverse.
+Not on the site: the sub-nav was removed in May 2026 (see §3).
 
 ### Solution sub-nav — mobile scroll behaviour
-`overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch`
-Labels use `white-space: nowrap` — they scroll horizontally, they do NOT truncate.
+Not on the site: there is no sub-nav (see §3).
 
 ### Canonical URL — all solution pages
 ```typescript
-// In generateMetadata for each vertical:
+// In each page's static metadata; `vertical` is the page's own constant:
 alternates: {
-  canonical: `https://phoenixenergy.solutions/solutions/${params.vertical}`
+  canonical: `https://phoenixenergy.solutions/solutions/${vertical}`
 }
 ```
 
 ### HowItWorks — showCTA prop
-Solution pages use `showCTA={true}` with `ctaLabel="Get a free assessment"` and `ctaHref="/contact?service={vertical}"`. This renders the Deep Teal pill button below the progress dots.
+Solution pages pass `cta={SERVICE_CTA[vertical]}` (`src/config/ctas.ts`): the page's button label, with a `/contact?intent=client&message=...` link that writes the service into the form. `showCTA` comes from the Sanity document's `showCta` field (default true). There are no `ctaLabel` or `ctaHref` props; the Sanity fields of those names are deprecated and unused. The button is the Deep Teal pill below the progress dots.
 

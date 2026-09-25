@@ -14,12 +14,12 @@ export function buildRationale(answers: StrategyAnswers, result: StrategyResult)
     case 'demand-shaving':
       return result.secondary.includes('battery-arbitrage')
         ? `You're on Time-of-Use and pay demand charges, running ${usage}. Solar covers your daytime load; a battery flattens the demand spikes driving your kVA charge and shifts energy into the expensive peak hours.`
-        : `You pay demand charges, running ${usage}. Solar covers your daytime load while a battery flattens the demand spikes that drive your kVA charge — often the biggest line on the bill.`;
+        : `You pay demand charges, running ${usage}. Solar covers your daytime load while a battery flattens the demand spikes that drive your kVA charge, which is often the biggest line on the bill.`;
     case 'battery-arbitrage':
       return `Your Time-of-Use tariff makes power expensive at peak. Store cheap solar by day and use it when the rates bite, running ${usage}.`;
     case 'self-consumption': {
       if (result.caveated) {
-        return `Based on what you've told us, a solar self-consumption system is the flexible starting point — a free assessment will confirm whether you need storage.`;
+        return `Based on what you've told us, a solar self-consumption system is the flexible starting point. A free assessment will confirm whether you need storage.`;
       }
       const base =
         answers.energyRate === 'block'
@@ -30,7 +30,7 @@ export function buildRationale(answers: StrategyAnswers, result: StrategyResult)
         : `${base}, with the grid staying as your simple backup.`;
     }
     case 'backup-resilience':
-      return `Uptime is your priority. A grid-tied hybrid keeps you running through loadshedding and outages — and trims your bill from solar self-consumption as a bonus.`;
+      return `Uptime is your priority. A grid-tied hybrid keeps you running through load-shedding and outages, and solar self-consumption trims your bill as a bonus.`;
     case 'off-grid':
       return `You want full energy independence. Solar plus a large battery (and an optional generator) can take you off the grid for good.`;
     default:

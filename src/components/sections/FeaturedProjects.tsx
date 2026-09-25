@@ -5,6 +5,7 @@ import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { SectionCarousel } from '@/components/ui/SectionCarousel';
 import type { ProjectCard as ProjectCardType } from '@/types/sanity';
 import type { SolutionVertical } from '@/types/solutions';
+import { PROJECTS_CTA } from '@/config/ctas';
 
 interface FeaturedProjectsProps {
   vertical?: SolutionVertical;
@@ -24,8 +25,13 @@ async function getProjects(vertical?: SolutionVertical): Promise<ProjectCardType
 }
 
 export async function FeaturedProjects({ vertical, flushTop = false }: FeaturedProjectsProps = {}) {
-  const projects = await getProjects(vertical);
+  // Complete case studies lead; an unwritten one never takes the first slot.
+  const projects = (await getProjects(vertical)).sort(
+    (a, b) => Number(b.caseStudyReady ?? false) - Number(a.caseStudyReady ?? false),
+  );
   if (projects.length === 0) return null;
+  // Three or fewer: a static grid, so no empty column or hidden card behind a swipe.
+  const few = projects.length <= 3;
 
   // Cards fill exactly 1/3 of the container on md+ so 3 are visible and the rest
   // overflow into the horizontal scroll. On mobile each card is 82vw (one card
@@ -38,16 +44,18 @@ export async function FeaturedProjects({ vertical, flushTop = false }: FeaturedP
 
   return (
     <SectionCarousel
-      label="Featured projects"
-      title="Work that speaks for itself"
-      viewAllHref="/projects"
-      viewAllLabel="View all projects"
+      label="Our work"
+      title="Projects"
+      // /projects holds the published projects, not the whole track record the stats count.
+      viewAllHref={PROJECTS_CTA.href}
+      viewAllLabel={PROJECTS_CTA.label}
       bg="white"
       flushTop={flushTop}
+      gridColumns={few ? (projects.length === 3 ? 3 : 2) : undefined}
     >
       {projects.map((project, i) => (
-        <AnimatedSection key={project._id} delay={i * 0.05} as="div" className={cardClass}>
-          <ProjectCard project={project} fluid className="w-full" />
+        <AnimatedSection key={project._id} delay={i * 0.05} as="div" className={few ? undefined : cardClass}>
+          <ProjectCard project={project} fluid className="w-full" size={few && projects.length < 3 ? 'large' : 'default'} />
         </AnimatedSection>
       ))}
     </SectionCarousel>

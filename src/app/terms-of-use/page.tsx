@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { PageFooter } from '@/components/layout/PageFooter';
 
 export const metadata: Metadata = {
-  title: 'Terms of Use | Phoenix Energy',
+  title: 'Terms of Use',
   description: 'Terms and conditions governing your use of the Phoenix Energy website.',
   alternates: { canonical: 'https://phoenixenergy.solutions/terms-of-use' },
 };
@@ -12,14 +11,12 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <div className="mt-8 first:mt-0">
       <h2
-        className="font-display font-bold mb-3"
-        style={{ fontSize: '15px', color: '#1A1A1A' }}
+        className="font-display font-bold text-xl text-pe-text mb-3"
       >
         {title}
       </h2>
       <div
-        className="font-body space-y-3"
-        style={{ fontSize: '14px', color: '#6B7280', lineHeight: '1.8' }}
+        className="font-body text-base leading-[1.75] text-pe-text-soft space-y-3 max-w-[60ch]"
       >
         {children}
       </div>
@@ -30,25 +27,25 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function TermsOfUsePage() {
   return (
     <>
-    <main className="bg-[#F5F5F5] min-h-screen">
+    <div className="bg-pe-bg min-h-screen">
       <div className="page-container pt-24 pb-16">
 
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-1.5 font-body text-sm text-[#6B7280] mb-6">
-          <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-body text-sm text-pe-muted mb-6">
+          <Link href="/" className="hover:text-pe-primary transition-colors">Home</Link>
           <span>/</span>
-          <span className="font-semibold text-[#39575C]">Terms of Use</span>
+          <span className="font-semibold text-pe-primary">Terms of Use</span>
         </nav>
 
         {/* Page header */}
         <div className="max-w-[760px] mx-auto mb-8">
-          <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-2">
+          <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-pe-muted mb-2">
             Legal
           </p>
-          <h1 className="font-display font-extrabold text-4xl text-[#1A1A1A] leading-[1.2] mb-3">
+          <h1 className="font-display font-extrabold text-4xl text-pe-text leading-[1.2] mb-3">
             Terms of Use
           </h1>
-          <p className="font-body text-base text-[#6B7280] leading-[1.75]">
+          <p className="font-body text-base text-pe-muted leading-[1.75]">
             Please read these terms carefully before using our website.
           </p>
         </div>
@@ -62,7 +59,7 @@ export default function TermsOfUsePage() {
             <p>
               By accessing or using this website, you agree to be bound by these Terms of Use
               and our{' '}
-              <Link href="/privacy-policy" className="text-[#39575C] hover:underline">
+              <Link href="/privacy-policy" className="text-pe-primary underline underline-offset-2 hover:text-pe-primary-hover">
                 Privacy Policy
               </Link>
               . If you do not agree with any part of these terms, please discontinue use of
@@ -150,7 +147,7 @@ export default function TermsOfUsePage() {
             </p>
             <p>
               Please also review our{' '}
-              <Link href="/disclaimer" className="text-[#39575C] hover:underline">
+              <Link href="/disclaimer" className="text-pe-primary underline underline-offset-2 hover:text-pe-primary-hover">
                 Disclaimer
               </Link>{' '}
               regarding the accuracy of calculators and financial estimates.
@@ -186,7 +183,7 @@ export default function TermsOfUsePage() {
               For any queries regarding these terms, contact us at{' '}
               <a
                 href="mailto:info@phoenixenergy.solutions"
-                className="text-[#39575C] hover:underline"
+                className="text-pe-primary underline underline-offset-2 hover:text-pe-primary-hover"
               >
                 info@phoenixenergy.solutions
               </a>
@@ -198,7 +195,7 @@ export default function TermsOfUsePage() {
             className="font-body mt-10 pt-6"
             style={{
               fontSize: '12px',
-              color: '#9ca3af',
+              color: 'var(--color-pe-muted)',
               borderTop: '1px solid #E5E7EB',
             }}
           >
@@ -206,8 +203,7 @@ export default function TermsOfUsePage() {
           </p>
         </div>
       </div>
-    </main>
-    <PageFooter showCta={false} />
+    </div>
     </>
   );
 }

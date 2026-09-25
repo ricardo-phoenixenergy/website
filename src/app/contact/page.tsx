@@ -1,17 +1,18 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ContactForm } from '@/components/sections/ContactForm';
-import { PageFooter } from '@/components/layout/PageFooter';
-import { SOLUTION_META, SOLUTION_VERTICALS } from '@/types/solutions';
-import { IconMail, IconPhone, IconMapPin, IconClipboardCheck, IconLinkedIn } from '@/components/ui/Icons';
+import { NextSteps } from '@/components/ui/NextSteps';
+import { IconMail, IconPhone, IconMapPin, IconLinkedIn } from '@/components/ui/Icons';
+import { CONTACT, CONTACT_NEXT_STEPS, REPLY_PROMISE } from '@/config/contact';
 
 export const metadata: Metadata = {
-  title: 'Contact Phoenix Energy — Get a Free Energy Assessment',
+  // The root template adds "| Phoenix Energy", so the brand appears once.
+  title: 'Contact Us',
   description:
     'Reach out to Phoenix Energy to discuss C&I solar, wheeling, carbon credits, EV fleets and more. Free energy assessments for Southern African businesses.',
   alternates: { canonical: 'https://phoenixenergy.solutions/contact' },
   openGraph: {
-    title: 'Contact Phoenix Energy — Get a Free Energy Assessment',
+    title: 'Contact Phoenix Energy',
     description: 'Reach out to Phoenix Energy to discuss C&I solar, wheeling, carbon credits, EV fleets and more.',
     url: 'https://phoenixenergy.solutions/contact',
     images: [{ url: 'https://phoenixenergy.solutions/og-default.png', width: 1200, height: 630 }],
@@ -21,25 +22,25 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <>
-    <main className="bg-[#F5F5F5] min-h-screen">
+    <div className="bg-pe-bg min-h-screen">
       <div className="page-container pt-24 pb-16">
 
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-1.5 font-body text-sm text-[#6B7280] mb-6">
-          <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-body text-sm text-pe-muted mb-6">
+          <Link href="/" className="hover:text-pe-primary transition-colors">Home</Link>
           <span>/</span>
-          <span className="font-semibold text-[#39575C]">Contact</span>
+          <span className="font-semibold text-pe-primary">Contact</span>
         </nav>
 
         {/* Page header */}
-        <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-2">
+        <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-pe-muted mb-2">
           Get in touch
         </p>
-        <h1 className="font-display font-extrabold text-4xl text-[#1A1A1A] leading-[1.2] mb-3">
+        <h1 className="font-display font-extrabold text-4xl text-pe-text leading-[1.2] mb-3">
           Let&apos;s build something{' '}
-          <em style={{ color: '#709DA9', fontStyle: 'normal' }}>together</em>
+          <em className="not-italic text-pe-secondary-ink">together</em>
         </h1>
-        <p className="font-body text-base text-[#6B7280] leading-[1.7] mb-10 max-w-lg">
+        <p className="font-body text-base text-pe-muted leading-[1.7] mb-10 max-w-lg">
           Tell us how you&apos;d like to work with Phoenix Energy and we&apos;ll connect you with the right person.
         </p>
 
@@ -53,10 +54,10 @@ export default function ContactPage() {
           <div className="flex flex-col gap-4">
 
             {/* Contact info card */}
-            <div className="rounded-2xl p-6" style={{ background: '#0d1f22' }}>
+            <div className="focus-on-dark rounded-2xl p-6" style={{ background: '#0d1f22' }}>
               <p
                 className="font-body text-lg font-bold uppercase tracking-[0.14em] mb-4"
-                style={{ color: 'rgba(255,255,255,0.35)' }}
+                style={{ color: 'var(--color-on-dark-subtle)' }}
                 
               >
                 Contact details
@@ -66,14 +67,16 @@ export default function ContactPage() {
                   {
                     icon: <IconMail size={17} />,
                     label: 'Email',
-                    value: 'info@phoenixenergy.solutions',
-                    sub: 'We respond within 1 business day',
+                    value: CONTACT.email,
+                    href: `mailto:${CONTACT.email}`,
+                    sub: REPLY_PROMISE.sentence,
                   },
                   {
                     icon: <IconPhone size={17} />,
                     label: 'Phone',
-                    value: '+27 79 892 8197',
-                    sub: 'Mon–Fri, 08:00–17:00 SAST',
+                    value: CONTACT.phone,
+                    href: CONTACT.phoneHref,
+                    sub: CONTACT.phoneHours,
                   },
                   {
                     icon: <IconMapPin size={17} />,
@@ -89,17 +92,29 @@ export default function ContactPage() {
                     >
                       {row.icon}
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p
                         className="font-body text-xs uppercase tracking-[0.07em] mb-0.5"
-                        style={{ color: 'rgba(255,255,255,0.35)' }}
+                        style={{ color: 'var(--color-on-dark-subtle)' }}
                       >
                         {row.label}
                       </p>
-                      <p className="font-display font-semibold text-base text-white">{row.value}</p>
+                      <p className="font-display font-semibold text-base text-white [overflow-wrap:anywhere]">
+                        {/* Email and phone open the mail app or the dialler with one tap. */}
+                        {row.href ? (
+                          <a
+                            href={row.href}
+                            className="underline decoration-white/40 underline-offset-4 transition-colors hover:decoration-white"
+                          >
+                            {row.value}
+                          </a>
+                        ) : (
+                          row.value
+                        )}
+                      </p>
                       <p
                         className="font-body text-xs mt-0.5"
-                        style={{ color: 'rgba(255,255,255,0.45)' }}
+                        style={{ color: 'var(--color-on-dark-subtle)' }}
                       >
                         {row.sub}
                       </p>
@@ -109,10 +124,13 @@ export default function ContactPage() {
               </div>
             </div>
 
+            {/* What happens next: the reply promise and the steps after sending */}
+            <NextSteps steps={CONTACT_NEXT_STEPS} headingAs="h2" variant="card" />
+
             {/* Connect With Us card */}
             <div className="rounded-2xl p-6 bg-white" style={{ border: '1px solid #E5E7EB' }}>
               <p
-                className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-4"
+                className="font-body text-xs font-bold uppercase tracking-[0.14em] text-pe-muted mb-4"
               >
                 Connect with us
               </p>
@@ -129,10 +147,10 @@ export default function ContactPage() {
                   <IconLinkedIn size={18} />
                 </div>
                 <div>
-                  <p className="font-display font-semibold text-sm text-[#1A1A1A] group-hover:text-[#39575C] transition-colors duration-200">
+                  <p className="font-display font-semibold text-sm text-pe-text group-hover:text-pe-primary transition-colors duration-200">
                     Phoenix Energy Solutions
                   </p>
-                  <p className="font-body text-xs text-[#6B7280]">Follow us on LinkedIn</p>
+                  <p className="font-body text-xs text-pe-muted">Follow us on LinkedIn</p>
                 </div>
               </Link>
             </div>
@@ -140,8 +158,7 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
-    </main>
-    <PageFooter showCta={false} />
+    </div>
     </>
   );
 }

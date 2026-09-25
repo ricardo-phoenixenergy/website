@@ -1,20 +1,16 @@
 import type { ExplainerCardItem } from '@/components/sections/ExplainerCards';
 import type { ComparisonRow } from '@/components/sections/ComparisonTable';
 import type { FaqItem } from '@/components/sections/FaqAccordion';
+import { WEBUYSOLAR_OFFER, type WebuysolarStep } from '@/config/webuysolarOffer';
+import { claimValue, UNDERPERFORMANCE_EXAMPLE } from '@/config/claims';
 
-interface ProcessStep {
-  label: string;
-  description: string;
-  tag?: string;
-}
-
+// The audit CTA and its prefilled message live in src/config/ctas.ts (SERVICE_CTA.webuysolar).
 interface WebuysolarContent {
   hero: { title: string; subtitle: string };
-  auditPrefill: string;
   whyNow: { eyebrow: string; heading: string; intro: string; cards: ExplainerCardItem[] };
   valueLost: { heading: string; intro: string; cards: ExplainerCardItem[]; pullQuote: string };
   comparison: { heading: string; columns: [string, string, string]; rows: ComparisonRow[] };
-  howItWorks: { eyebrow: string; title: string; steps: ProcessStep[] };
+  howItWorks: { eyebrow: string; title: string; steps: WebuysolarStep[] };
   audit: { heading: string; subtitle: string; deliverables: string[] };
   faq: { heading: string; items: FaqItem[] };
 }
@@ -23,22 +19,19 @@ export const WEBUYSOLAR: WebuysolarContent = {
   hero: {
     title: "You own the solar asset.<br /><em>But you're missing the upside.</em>",
     subtitle:
-      "Most commercial solar was designed before batteries, wheeling and energy trading were viable — so it captures only a fraction of what's now possible. We will acquire your system at fair market value. It stays exactly where it is, you keep buying its power for well below your utility tariff, and we take over running, optimising and evolving it to unlock the value it was never initially designed to.",
+      "Most commercial solar was designed before batteries, wheeling and energy trading were viable, so it captures only a fraction of what's now possible. We will acquire your system at fair market value. It stays exactly where it is, you keep buying its power for well below your utility tariff, and we take over running, optimising and evolving it to capture the value it was never initially designed for.",
   },
-
-  auditPrefill:
-    "I'd like to book a free WeBuySolar audit of my existing solar / battery system.",
 
   whyNow: {
     eyebrow: 'Why now',
     heading: 'The economics of C&I solar have changed.',
     intro:
-      "Commercial solar has been a sound investment for a decade. But three structural shifts have changed what your asset is worth — and who's positioned to capture that value.",
+      "Commercial solar has been a sound investment for a decade. But three structural shifts have changed both what your asset is worth and who's positioned to capture that value.",
     cards: [
       {
         icon: 'Battery',
         title: 'Battery economics flipped.',
-        body: 'C&I battery prices are down ~40% in two years, and the same hardware bought for backup now earns daily through time-of-use arbitrage, peak shaving and solar-consumption optimisation. Systems without batteries leave value on the table; systems using batteries only for backup leave even more.',
+        body: `C&I battery prices are down ${claimValue('webuysolar-battery-price-drop')} in two years, and the same hardware bought for backup now earns daily through time-of-use arbitrage, peak shaving and solar-consumption optimisation. Systems without batteries leave value on the table; systems using batteries only for backup leave even more.`,
       },
       {
         icon: 'Globe',
@@ -48,7 +41,7 @@ export const WEBUYSOLAR: WebuysolarContent = {
       {
         icon: 'Sliders',
         title: 'Operations became the differentiator.',
-        body: "Active battery dispatch, performance benchmarking, energy trading and tariff optimisation are how value is captured now — and they need dedicated expertise that didn't exist in deployable form when most systems were installed.",
+        body: "Active battery dispatch, performance benchmarking, energy trading and tariff optimisation are how value is captured now. They need dedicated expertise that didn't exist in deployable form when most systems were installed.",
       },
     ],
   },
@@ -56,17 +49,17 @@ export const WEBUYSOLAR: WebuysolarContent = {
   valueLost: {
     heading: "The cost of running yesterday's system in today's market.",
     intro:
-      "Across the C&I solar owners we work with, three patterns recur. None are technology failures — they're failures of operational context.",
+      "Across the C&I solar owners we work with, three patterns recur. None are technology failures. They're failures of operational context.",
     cards: [
       {
         icon: 'TrendingDown',
         title: 'Silent underperformance.',
-        body: 'Systems can underperform without obvious symptoms. Inverter clipping, soiling losses and poor inverter configuration compound quietly. Without specialist monitoring and benchmarking, a system producing 78% of its potential looks identical to one producing 92%.',
+        body: `Systems can underperform without obvious symptoms. Inverter clipping, soiling losses and poor inverter configuration compound quietly. Without specialist monitoring and benchmarking, a system producing ${UNDERPERFORMANCE_EXAMPLE.actual}% of its potential looks identical to one producing ${UNDERPERFORMANCE_EXAMPLE.potential}%.`,
       },
       {
         icon: 'Award',
         title: 'No one owns the energy strategy.',
-        body: 'O&M contracts cover uptime and basic maintenance, and a site manager keeps the lights on — but neither owns the financial performance or the energy strategy, and neither is an energy specialist. Energy this valuable needs to be managed by energy experts.',
+        body: 'O&M contracts cover uptime and basic maintenance, and a site manager keeps the lights on. But neither owns the financial performance or the energy strategy, and neither is an energy specialist. Energy this valuable needs to be managed by energy experts.',
       },
       {
         icon: 'Hourglass',
@@ -113,38 +106,8 @@ export const WEBUYSOLAR: WebuysolarContent = {
   howItWorks: {
     eyebrow: 'How it works',
     title: 'The path from <em>owned to operated</em>',
-    steps: [
-      {
-        label: 'Free expert audit',
-        description: 'On-site inspection: drone scan, string-level review, inverter config audit, opportunity mapping. Written report within 10 business days.',
-        tag: 'Free · no obligation',
-      },
-      {
-        label: 'Preliminary offer & valuation',
-        description: 'Fair market valuation, indicative PPA or lease, and a forecasted savings model with an optimisation roadmap.',
-        tag: 'Indicative',
-      },
-      {
-        label: 'Due diligence',
-        description: 'At our cost: financials, asset docs, contracts, operational data.',
-        tag: 'At our cost',
-      },
-      {
-        label: 'Final offer & contracting',
-        description: 'Binding term sheet, PPA/lease and sale agreement. Either side can step back here, no obligation.',
-        tag: 'No obligation',
-      },
-      {
-        label: 'Acquisition & handover',
-        description: 'Ownership transfers, the acquisition value is paid out, and we take operational responsibility from day one with monthly reporting. Settlement on the agreed date in the sale agreement.',
-        tag: 'Settlement on agreed date',
-      },
-      {
-        label: 'Ongoing optimisation',
-        description: 'We operate and upgrade as economics evolve. Each upgrade is justified by its own ROI; none committed upfront.',
-        tag: 'ROI-justified',
-      },
-    ],
+    // Shared with the valuation request tool, so both describe the same process.
+    steps: WEBUYSOLAR_OFFER.steps,
   },
 
   audit: {
@@ -166,15 +129,15 @@ export const WEBUYSOLAR: WebuysolarContent = {
     items: [
       {
         question: 'Do you remove the system, or does it stay where it is?',
-        answer: "It stays at your site — we're acquiring a working asset, not removing it. As we operate and optimise it we may upgrade or replace parts of the system over time, but it keeps powering your operations throughout. If you're relocating or closing the site and genuinely need it removed, we'll discuss a removal or buyout separately.",
+        answer: "It stays at your site. We're acquiring a working asset, not removing it. As we operate and optimise it we may upgrade or replace parts of the system over time, but it keeps powering your operations throughout. If you're relocating or closing the site and genuinely need it removed, we'll discuss a removal or buyout separately.",
       },
       {
         question: 'What brands and sizes do you accept?',
-        answer: 'We acquire systems built on BloombergNEF Tier 1 equipment — from small commercial arrays up to multi-megawatt systems, with or without battery storage. Condition and configuration are confirmed in the audit.',
+        answer: `${WEBUYSOLAR_OFFER.eligibility} Sizes run from small commercial arrays up to multi-megawatt systems. Condition and configuration are confirmed in the audit.`,
       },
       {
         question: 'How do you calculate the valuation?',
-        answer: "Fair market value based on the system's condition, production and the savings it can generate under active operation — not an inflated headline buyback funded by a high PPA tariff.",
+        answer: "Fair market value based on the system's condition, production and the savings it can generate under active operation, not an inflated headline buyback funded by a high PPA tariff.",
       },
       {
         question: 'What does it cost me?',

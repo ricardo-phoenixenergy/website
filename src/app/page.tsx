@@ -7,7 +7,7 @@ import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { LatestPosts } from '@/components/sections/LatestPosts';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { sanityServerClient } from '@/lib/sanity.server';
-import { PARTNERS_QUERY } from '@/lib/queries';
+import { PARTNERS_QUERY, PUBLISHED_POSTS_COUNT_QUERY } from '@/lib/queries';
 import { getCompanyStats } from '@/lib/getCompanyStats';
 import { getHowItWorks } from '@/lib/getHowItWorks';
 import { getHeroImages } from '@/lib/getHeroImages';
@@ -18,12 +18,12 @@ import type { Partner } from '@/types/sanity';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Phoenix Energy — Integrated Clean Energy Solutions for SA Businesses',
+  title: { absolute: 'Phoenix Energy: Integrated Clean Energy Solutions for SA Businesses' },
   description:
     'C&I solar, wheeling, carbon credits, EV fleets and more. Get a free energy assessment from Phoenix Energy today.',
   alternates: { canonical: 'https://phoenixenergy.solutions' },
   openGraph: {
-    title: 'Phoenix Energy — Save, Earn & Grow with Renewable Energy',
+    title: 'Phoenix Energy: Save, Earn & Grow with Renewable Energy',
     description:
       'Six clean energy verticals. One partner. End-to-end solutions for Southern African businesses.',
     url: 'https://phoenixenergy.solutions',
@@ -33,31 +33,36 @@ export const metadata: Metadata = {
         url: 'https://phoenixenergy.solutions/og-default.png',
         width: 1200,
         height: 630,
-        alt: 'Phoenix Energy — Clean Energy Solutions for Southern Africa',
+        alt: 'Phoenix Energy: Clean Energy Solutions for Southern Africa',
       },
     ],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Phoenix Energy — Save, Earn & Grow with Renewable Energy',
+    title: 'Phoenix Energy: Save, Earn & Grow with Renewable Energy',
     description:
       'Six clean energy verticals. One partner. End-to-end solutions for Southern African businesses.',
     images: ['https://phoenixenergy.solutions/og-default.png'],
   },
 };
 
-const websiteJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: 'Phoenix Energy',
-  url: 'https://phoenixenergy.solutions',
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: 'https://phoenixenergy.solutions/blog?q={search_term_string}',
-    'query-input': 'required name=search_term_string',
-  },
-};
+/** The site search is the blog search, so it is advertised only once there is a post to find. */
+function websiteJsonLd(hasPosts: boolean) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Phoenix Energy',
+    url: 'https://phoenixenergy.solutions',
+    ...(hasPosts && {
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: 'https://phoenixenergy.solutions/blog?q={search_term_string}',
+        'query-input': 'required name=search_term_string',
+      },
+    }),
+  };
+}
 
 export default async function HomePage() {
   let partners: Partner[] = [];
@@ -65,6 +70,13 @@ export default async function HomePage() {
     partners = await sanityServerClient.fetch<Partner[]>(PARTNERS_QUERY);
   } catch {
     // Graceful fallback — renders empty
+  }
+
+  let hasPosts = false;
+  try {
+    hasPosts = (await sanityServerClient.fetch<number>(PUBLISHED_POSTS_COUNT_QUERY)) > 0;
+  } catch {
+    // Unknown: leave the search out rather than advertise an empty one
   }
 
   const companyStats = await getCompanyStats();
@@ -75,23 +87,18 @@ export default async function HomePage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd(hasPosts)) }}
       />
-      <main>
+      <div>
         <HeroAccordion heroImages={heroImages} />
         <CompanyStats stats={companyStats} />
         <AboutTrust partners={partners} showTabs={false} justify="center" flushTop />
         <FeaturedProjects flushTop />
+        {/* How It Works and the footer both use the company-level CTA (src/config/ctas.ts) */}
         {homeHowItWorks && <HowItWorks {...homeHowItWorks} autoAdvanceInterval={2600} />}
         <LatestPosts flushTop />
-        <PageFooter
-          ctaVariant="centered"
-          eyebrow="Start your energy transition"
-          heading="Find the right energy strategy for your business."
-          body="Meet with our engineers to identify the solutions that will reduce costs, generate new revenue and strengthen your energy resilience—at no cost or obligation."
-          primaryCta={{ label: 'Book a Discovery Meeting', href: '/contact' }}
-        />
-      </main>
+        <PageFooter ctaVariant="centered" />
+      </div>
     </>
   );
 }

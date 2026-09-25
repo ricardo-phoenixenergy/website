@@ -4,16 +4,19 @@ import Link from 'next/link';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { IconArrowRight } from '@/components/ui/Icons';
+import { SOLUTION_META } from '@/types/solutions';
+import { VALUATION_CTA } from '@/config/ctas';
+
+const DESCRIPTION =
+  'Free resources for smarter energy decisions, including a valuation request for existing solar systems, prepared by our WeBuySolar team.';
 
 export const metadata: Metadata = {
-  title: 'Tools & Resources | Phoenix Energy',
-  description:
-    'Free tools to help you make smarter energy decisions. Calculate the value of your solar system, model energy savings, and more.',
+  title: 'Tools & Resources',
+  description: DESCRIPTION,
   alternates: { canonical: 'https://phoenixenergy.solutions/tools' },
   openGraph: {
     title: 'Tools & Resources | Phoenix Energy',
-    description:
-      'Free tools to help you make smarter energy decisions. Calculate the value of your solar system, model energy savings, and more.',
+    description: DESCRIPTION,
     url: 'https://phoenixenergy.solutions/tools',
     images: [{ url: 'https://phoenixenergy.solutions/og-default.png', width: 1200, height: 630 }],
   },
@@ -21,14 +24,14 @@ export const metadata: Metadata = {
 
 const TOOLS = [
   {
-    href: '/tools/solar-valuation',
-    accent: '#C97A40',
-    label: 'Solar Asset Valuation',
+    href: VALUATION_CTA.href,
+    meta: SOLUTION_META.webuysolar,
+    label: 'Solar Valuation Request',
     description:
-      'Find out what your existing solar PV system — with or without battery storage — is worth on the open market. Share a few details about your system and our WeBuySolar team prepares your indicative buyback valuation.',
+      'Request a valuation of your existing solar system, with or without battery storage. Share a few details and our WeBuySolar team prepares your valuation after a free on-site audit.',
     badge: 'WeBuySolar',
     features: ['Solar & battery', 'Team-reviewed', 'No obligation'],
-    cta: 'Try it',
+    cta: VALUATION_CTA.label,
   },
 ] as const;
 
@@ -51,26 +54,26 @@ export default function ToolsPage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <main className="bg-[#F5F5F5] min-h-screen">
+      <div className="bg-pe-bg min-h-screen">
         <div className="page-container pt-24 pb-16">
 
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-1.5 font-body text-sm text-[#6B7280] mb-6">
-            <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-body text-sm text-pe-muted mb-6">
+            <Link href="/" className="hover:text-pe-primary transition-colors">Home</Link>
             <span>/</span>
-            <span className="font-semibold text-[#39575C]">Tools</span>
+            <span className="font-semibold text-pe-primary">Tools</span>
           </nav>
 
           {/* Page header */}
-          <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-2">
+          <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-pe-muted mb-2">
             Tools &amp; Resources
           </p>
-          <h1 className="font-display font-extrabold text-4xl text-[#1A1A1A] leading-[1.2] mb-3">
+          <h1 className="font-display font-extrabold text-4xl text-pe-text leading-[1.2] mb-3">
             Make smarter{' '}
-            <em style={{ color: '#709DA9', fontStyle: 'normal' }}>energy decisions</em>
+            <em className="not-italic text-pe-secondary-ink">energy decisions</em>
           </h1>
-          <p className="font-body text-base text-[#6B7280] leading-[1.7] mb-10 max-w-lg">
-            Free tools built on real market data — so you know exactly where you stand before making any energy commitment.
+          <p className="font-body text-base text-pe-muted leading-[1.7] mb-10 max-w-lg">
+            Free resources to help you plan your next energy decision, with no obligation.
           </p>
 
           {/* Tool cards */}
@@ -87,13 +90,11 @@ export default function ToolsPage() {
                       className="px-6 pt-5 pb-7"
                       style={{ background: 'linear-gradient(135deg, #1a3a3e 0%, #0d1f22 100%)' }}
                     >
+                      {/* A solid badge, as on the project cards: the light-surface ink
+                          fails on this dark header (1.8:1), the "on" ink passes on the fill (4.7:1). */}
                       <span
-                        className="inline-flex items-center font-body font-bold text-[10px] uppercase tracking-[0.1em] rounded-full px-2.5 py-1 mb-3"
-                        style={{
-                          background: `${tool.accent}25`,
-                          color: tool.accent,
-                          border: `1px solid ${tool.accent}50`,
-                        }}
+                        className="inline-flex items-center font-body font-bold text-xs uppercase tracking-[0.1em] rounded-full px-2.5 py-1 mb-3"
+                        style={{ background: tool.meta.accent, color: tool.meta.accentText }}
                       >
                         {tool.badge}
                       </span>
@@ -104,7 +105,7 @@ export default function ToolsPage() {
 
                     {/* White body */}
                     <div className="bg-white px-6 pt-5 pb-6 flex flex-col flex-1">
-                      <p className="font-body text-sm text-[#6B7280] leading-[1.75] flex-1 mb-5">
+                      <p className="font-body text-sm text-pe-muted leading-[1.75] flex-1 mb-5">
                         {tool.description}
                       </p>
 
@@ -115,9 +116,9 @@ export default function ToolsPage() {
                             key={feat}
                             className="font-body text-xs px-2.5 py-1 rounded-full"
                             style={{
-                              color: tool.accent,
-                              border: `1px solid ${tool.accent}40`,
-                              background: `${tool.accent}0D`,
+                              color: tool.meta.accentInk,
+                              border: `1px solid ${tool.meta.accent}40`,
+                              background: `${tool.meta.accent}0D`,
                             }}
                           >
                             {feat}
@@ -125,7 +126,7 @@ export default function ToolsPage() {
                         ))}
                       </div>
 
-                      <p className="flex items-center gap-2 justify-end font-body text-sm font-semibold text-[#39575C] transition-colors group-hover:text-[#2a4045]">
+                      <p className="flex items-center gap-2 justify-end font-body text-sm font-semibold text-pe-primary transition-colors group-hover:text-pe-primary-hover">
                         {tool.cta} <IconArrowRight />
                       </p>
                     </div>
@@ -136,7 +137,7 @@ export default function ToolsPage() {
           </div>
 
         </div>
-      </main>
+      </div>
 
       <PageFooter ctaVariant="centered" />
     </>

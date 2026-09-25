@@ -32,7 +32,7 @@ export function StatStrip({ stats }: StatStripProps) {
           </p>
           <p
             className="font-body uppercase tracking-[0.08em]"
-            style={{ fontSize: 9, color: 'rgba(255,255,255,0.50)' }}
+            style={{ fontSize: 12, color: 'var(--color-on-dark-subtle)' }}
           >
             {stat.label}
           </p>

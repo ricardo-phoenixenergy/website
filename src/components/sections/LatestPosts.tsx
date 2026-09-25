@@ -24,7 +24,7 @@ export async function LatestPosts({ flushTop = false }: LatestPostsProps = {}) {
   return (
     <SectionCarousel
       label="Latest insights"
-      title={<>News, views & <em style={{ color: '#709DA9', fontStyle: 'normal' }}>analysis</em></>}
+      title={<>News, views & <em className="not-italic text-pe-secondary-ink">analysis</em></>}
       viewAllHref="/blog"
       viewAllLabel="View all articles"
       bg="gray"

@@ -17,7 +17,7 @@ export interface FinancingOption {
   subtitle?: string;
   description: string;
   benefits: string[];
-  tag?: string; // optional accent pill, e.g. a contract term like '10–20 year term'
+  tag?: string; // optional accent pill, e.g. a contract term like '10 to 20 years'
 }
 
 interface FinancingCardsProps {
@@ -56,32 +56,32 @@ export function FinancingCards({
                 </div>
                 {opt.tag && (
                   <span
-                    className="font-body text-[0.7rem] font-bold uppercase tracking-[0.1em] px-2.5 py-1 rounded-full"
+                    className="font-body text-xs font-bold uppercase tracking-[0.1em] px-2.5 py-1 rounded-full"
                     style={{ background: `${accent}1F`, color: accentText }}
                   >
                     {opt.tag}
                   </span>
                 )}
               </div>
-              <h3 className="font-display font-extrabold text-xl text-[#1A1A1A] mb-2 leading-tight">
+              <h3 className="font-display font-extrabold text-xl text-pe-text mb-2 leading-tight">
                 {opt.title}
               </h3>
               {opt.subtitle && (
-                <p className="font-body text-sm font-semibold text-[#1A1A1A] leading-[1.5] mb-2.5">
+                <p className="font-body text-sm font-semibold text-pe-text leading-[1.5] mb-2.5">
                   {opt.subtitle}
                 </p>
               )}
-              <p className="font-body text-sm text-[#374151] leading-[1.7] mb-5">
+              <p className="font-body text-sm text-pe-text-soft leading-[1.7] mb-5">
                 {opt.description}
               </p>
-              <p className="font-body text-xs font-bold uppercase tracking-[0.1em] text-[#6B7280] mb-2.5">
+              <p className="font-body text-xs font-bold uppercase tracking-[0.1em] text-pe-muted mb-2.5">
                 Benefits
               </p>
               <ul className="space-y-2.5">
                 {opt.benefits.map((b) => (
                   <li
                     key={b}
-                    className="flex items-start gap-2.5 font-body text-sm font-semibold text-[#1A1A1A]"
+                    className="flex items-start gap-2.5 font-body text-sm font-semibold text-pe-text"
                   >
                     <span className="mt-0.5 flex-shrink-0" style={{ color: accentText }}>
                       <IconCheck size={16} />
@@ -105,10 +105,10 @@ export function FinancingCards({
         {/* 3px dusty-blue accent bar */}
         <div className="h-[3px]" style={{ background: '#709DA9' }} />
         <CardBody padding="lg">
-          <p className="font-body text-xs font-bold uppercase tracking-[0.12em] text-[#6B7280] mb-1">
+          <p className="font-body text-xs font-bold uppercase tracking-[0.12em] text-pe-muted mb-1">
             CapEx
           </p>
-          <h3 className="font-display font-extrabold text-xl text-[#1A1A1A] mb-3">
+          <h3 className="font-display font-extrabold text-xl text-pe-text mb-3">
             Purchase outright
           </h3>
           <ul className="space-y-2">
@@ -119,8 +119,8 @@ export function FinancingCards({
               'No monthly payment obligations.',
               'Balance-sheet asset.',
             ].map((item) => (
-              <li key={item} className="flex items-start gap-2 font-body text-sm text-[#374151]">
-                <span className="mt-0.5 text-[#39575C] flex-shrink-0">✓</span>
+              <li key={item} className="flex items-start gap-2 font-body text-sm text-pe-text-soft">
+                <span className="mt-0.5 text-pe-primary flex-shrink-0">✓</span>
                 {item}
               </li>
             ))}
@@ -135,25 +135,25 @@ export function FinancingCards({
         <CardBody padding="lg">
           <p
             className="font-body text-xs font-bold uppercase tracking-[0.12em] mb-1"
-            style={{ color: 'rgba(255,255,255,0.45)' }}
+            style={{ color: 'var(--color-on-dark-subtle)' }}
           >
             OpEx
           </p>
           <h3 className="font-display font-extrabold text-xl text-white mb-3">PPA or lease</h3>
           <ul className="space-y-2">
             {[
-              'R0 capital — no upfront cost.',
+              'R0 capital and no upfront cost.',
               'Fixed tariff below grid rate.',
               'Operations & maintenance included.',
               'Off-balance-sheet financing.',
-              '10–25 year agreement, purchase option.',
+              '10 to 25 year agreement, with a purchase option.',
             ].map((item) => (
               <li
                 key={item}
                 className="flex items-start gap-2 font-body text-sm"
                 style={{ color: 'rgba(255,255,255,0.75)' }}
               >
-                <span className="mt-0.5 text-[#709DA9] flex-shrink-0">✓</span>
+                <span className="mt-0.5 text-pe-secondary-ink flex-shrink-0">✓</span>
                 {item}
               </li>
             ))}

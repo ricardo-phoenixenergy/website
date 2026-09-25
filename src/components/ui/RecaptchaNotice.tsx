@@ -16,7 +16,7 @@ export function RecaptchaNotice({ className = '' }: RecaptchaNoticeProps) {
         href="https://policies.google.com/privacy"
         target="_blank"
         rel="noopener noreferrer"
-        className="underline hover:text-[#39575C]"
+        className="underline hover:text-pe-primary"
       >
         Privacy Policy
       </a>{' '}
@@ -25,7 +25,7 @@ export function RecaptchaNotice({ className = '' }: RecaptchaNoticeProps) {
         href="https://policies.google.com/terms"
         target="_blank"
         rel="noopener noreferrer"
-        className="underline hover:text-[#39575C]"
+        className="underline hover:text-pe-primary"
       >
         Terms of Service
       </a>{' '}

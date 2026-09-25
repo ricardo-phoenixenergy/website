@@ -11,6 +11,18 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      // The Chepstow Properties warehouse case study was renamed to its street
+      // address (31 Sacks Circle, confirmed by the business on 25 September
+      // 2026); keep the old address (linked and indexed) working.
+      {
+        source: '/projects/logistics-warehouse-chepstow-properties',
+        destination: '/projects/31-sacks-circle',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

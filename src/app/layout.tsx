@@ -4,6 +4,7 @@ import Script from 'next/script';
 import { SiteShell } from '@/components/layout/SiteShell';
 import { ScrollDepth } from '@/components/analytics/ScrollDepth';
 import { WebVitals } from './_components/WebVitals';
+import { sanityServerClient } from '@/lib/sanity.server';
 import './globals.css';
 
 const jakarta = Plus_Jakarta_Sans({
@@ -22,13 +23,12 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Phoenix Energy — Integrated Clean Energy Solutions for SA Businesses',
+    default: 'Phoenix Energy: Integrated Clean Energy Solutions for SA Businesses',
     template: '%s | Phoenix Energy',
   },
   description:
     'C&I solar, wheeling, carbon credits, EV fleets and more. Get a free energy assessment from Phoenix Energy today.',
   metadataBase: new URL('https://phoenixenergy.solutions'),
-  alternates: { canonical: 'https://phoenixenergy.solutions' },
   openGraph: {
     siteName: 'Phoenix Energy',
     locale: 'en_ZA',
@@ -36,6 +36,24 @@ export const metadata: Metadata = {
   },
   robots: { index: true, follow: true },
 };
+
+// Hourly by default, so the navbar's blog link (below) appears on every page
+// within an hour of the third post being published.
+export const revalidate = 3600;
+
+/** News & Insights joins the navbar only once there is something to read. */
+const BLOG_NAV_MIN_POSTS = 3;
+
+async function hasEnoughPosts(): Promise<boolean> {
+  try {
+    const count = await sanityServerClient.fetch<number>(
+      'count(*[_type == "blogPost" && defined(slug.current)])',
+    );
+    return count >= BLOG_NAV_MIN_POSTS;
+  } catch {
+    return false;
+  }
+}
 
 const orgJsonLd = {
   '@context': 'https://schema.org',
@@ -53,14 +71,16 @@ const orgJsonLd = {
   sameAs: ['https://www.linkedin.com/company/105465145'],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const showBlog = await hasEnoughPosts();
+
   return (
     <html
-      lang="en"
+      lang="en-ZA"
       className={`${jakarta.variable} ${inter.variable}`}
     >
       <head>
@@ -85,7 +105,7 @@ export default function RootLayout({
           </noscript>
         )}
 
-        <SiteShell>{children}</SiteShell>
+        <SiteShell showBlog={showBlog}>{children}</SiteShell>
 
         {/* GTM script */}
         {process.env.NEXT_PUBLIC_GTM_ID && (
@@ -94,13 +114,6 @@ export default function RootLayout({
           </Script>
         )}
 
-        {/* reCAPTCHA v3 */}
-        {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
-          <Script
-            src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
-            strategy="afterInteractive"
-          />
-        )}
       </body>
     </html>
   );

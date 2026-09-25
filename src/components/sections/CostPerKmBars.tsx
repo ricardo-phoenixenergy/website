@@ -12,8 +12,8 @@ export function CostPerKmBars({ fuelLabel, costs, accent }: CostPerKmBarsProps) 
   const max = Math.max(costs.fuel, costs.grid, costs.solar);
   const rows: { label: string; value: number; color: string }[] = [
     { label: fuelLabel, value: costs.fuel, color: '#C2703D' },
-    { label: 'Electric — grid', value: costs.grid, color: accent },
-    { label: 'Electric — solar', value: costs.solar, color: '#39575C' },
+    { label: 'Electric (grid)', value: costs.grid, color: accent },
+    { label: 'Electric (solar)', value: costs.solar, color: '#39575C' },
   ];
 
   return (
@@ -21,8 +21,8 @@ export function CostPerKmBars({ fuelLabel, costs, accent }: CostPerKmBarsProps) 
       {rows.map((r) => (
         <div key={r.label}>
           <div className="flex items-center justify-between mb-1">
-            <span className="font-body text-[11px] font-semibold text-white/80">{r.label}</span>
-            <span className="font-display font-extrabold text-[11px] text-white">R{r.value.toFixed(2)} / km</span>
+            <span className="font-body text-xs font-semibold text-white/80">{r.label}</span>
+            <span className="font-display font-extrabold text-xs text-white">R{r.value.toFixed(2)} / km</span>
           </div>
           <div className="h-2.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.10)' }}>
             <div

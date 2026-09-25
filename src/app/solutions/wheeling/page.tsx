@@ -13,14 +13,16 @@ import { getHowItWorks } from '@/lib/getHowItWorks';
 import { getHeroImages } from '@/lib/getHeroImages';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
+import { SERVICE_CTA } from '@/config/ctas';
 import type { TabItem } from '@/components/sections/SolutionTabs';
 
 const vertical = 'wheeling' as const;
 const cfg = VERTICAL_CONFIG[vertical];
 const meta = SOLUTION_META[vertical];
+const cta = SERVICE_CTA[vertical];
 
 export const metadata: Metadata = {
-  title: cfg.seoTitle,
+  title: { absolute: cfg.seoTitle },
   description: cfg.seoDescription,
   alternates: { canonical: `https://phoenixenergy.solutions/solutions/${vertical}` },
   openGraph: { title: cfg.seoTitle, description: cfg.seoDescription, url: `https://phoenixenergy.solutions/solutions/${vertical}`, images: [{ url: 'https://phoenixenergy.solutions/og-solutions-wheeling.png', width: 1200, height: 630 }] },
@@ -35,7 +37,7 @@ const tabs: TabItem[] = [
     icon: 'Zap',
     iconBg: 'rgba(217,124,118,0.18)',
     title: 'Secure lower-cost renewable electricity.',
-    body: "Direct Wheeling gives your business access to renewable electricity generated off-site and delivered through Eskom's transmission network. Electricity is supplied under a bilateral Power Purchase Agreement (PPA) between your business and an independent power producer (IPP), while we manage the trading, settlement and compliance — helping you reduce electricity costs without investing in on-site generation.",
+    body: "Direct Wheeling gives your business access to renewable electricity generated off-site and delivered through Eskom's transmission network. Electricity is supplied under a bilateral Power Purchase Agreement (PPA) between your business and an independent power producer (IPP), while we manage the trading, settlement and compliance, so you can reduce electricity costs without investing in on-site generation.",
     bulletsLabel: 'Suited for',
     bullets: [
       'Businesses billed directly by Eskom.',
@@ -47,7 +49,7 @@ const tabs: TabItem[] = [
     benefits: [
       'No on-site infrastructure or upfront capital investment.',
       'Complements on-site battery arbitrage by supplying lower-cost energy for battery charging.',
-      'Flexible contract terms — from annual subscriptions to 25+ year PPAs.',
+      'Flexible contract terms that range from annual subscriptions to 25+ year PPAs.',
     ],
     imageBg: 'linear-gradient(135deg, rgba(217,124,118,0.15) 0%, rgba(57,87,92,0.20) 100%)',
     imageEmoji: '🔌',
@@ -59,7 +61,7 @@ const tabs: TabItem[] = [
     icon: 'Globe',
     iconBg: 'rgba(217,124,118,0.18)',
     title: 'Access renewable electricity through your municipal supply.',
-    body: 'Virtual Wheeling enables businesses supplied by participating municipalities to purchase renewable electricity generated off-site without installing solar on their premises. We manage the energy trading, agreements, and settlement while renewable generation is virtually allocated against your electricity consumption — reducing energy costs while increasing your renewable energy usage without changing your existing supply connection.',
+    body: 'Virtual Wheeling enables businesses supplied by participating municipalities to purchase renewable electricity generated off-site without installing solar on their premises. We manage the energy trading, agreements, and settlement while renewable generation is virtually allocated against your electricity consumption. This reduces your energy costs and increases your renewable energy usage without changing your existing supply connection.',
     bulletsLabel: 'Suited for',
     bullets: [
       'Businesses supplied by participating municipalities with approved virtual wheeling programmes.',
@@ -72,7 +74,7 @@ const tabs: TabItem[] = [
       'No on-site infrastructure or upfront capital investment.',
       'Continue purchasing electricity through your existing municipal connection.',
       'Complements on-site battery storage by reducing battery charging costs.',
-      'Flexible contract terms — from annual subscriptions to 25+ year PPAs.',
+      'Flexible contract terms that range from annual subscriptions to 25+ year PPAs.',
     ],
     imageBg: 'linear-gradient(135deg, rgba(57,87,92,0.20) 0%, rgba(217,124,118,0.15) 100%)',
     imageEmoji: '🌐',
@@ -131,7 +133,7 @@ export default async function WheelingPage() {
         heroImage={hero?.url}
         heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #1a0f0f 0%, #3a1a18 50%, #5a2a28 100%)"
-        primaryCta={{ label: 'Get a Wheeling Quote', href: '/contact' }}
+        primaryCta={cta}
       >
         <WheelingEligibility />
       </SolutionHero>
@@ -141,17 +143,17 @@ export default async function WheelingPage() {
         vertical="wheeling"
         eyebrow="The models"
         heading="Three ways to <em>wheel clean power</em>"
-        subtitle="Direct, virtual or owned — the right structure depends on who supplies your business and how you want to participate."
+        subtitle="Whether direct, virtual or owned, the right structure depends on who supplies your business and how you want to participate."
       />
-      {howItWorks && <HowItWorks {...howItWorks} accent={meta.accent} accentText={meta.accentText} />}
+      {howItWorks && <HowItWorks {...howItWorks} cta={cta} accent={meta.accent} accentText={meta.accentText} />}
       <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
       <PageFooter
         ctaVariant="centered"
         eyebrow="Start wheeling"
         heading="Access lower-cost renewable electricity through a fully managed wheeling framework."
-        body="Connect to off-site renewable generation and reduce your electricity costs through structured wheeling agreements — fully managed from contract to settlement."
-        primaryCta={{ label: 'Get a Wheeling Quote', href: '/contact' }}
+        body="Connect to off-site renewable generation and reduce your electricity costs through structured wheeling agreements, fully managed from contract to settlement."
+        primaryCta={cta}
       />
     </>
   );

@@ -40,7 +40,7 @@ export function TableOfContents({ items }: TableOfContentsProps) {
 
   return (
     <div className="bg-white rounded-[14px] p-[18px]" style={{ border: '1px solid #E5E7EB' }}>
-      <p className="font-display font-bold text-[13px] text-[#1A1A1A] mb-3">In this article</p>
+      <p className="font-display font-bold text-sm text-pe-text mb-3">In this article</p>
       <div className="flex flex-col">
         {items.map((item, i) => {
           const isActive = activeId === item.id;
@@ -57,19 +57,19 @@ export function TableOfContents({ items }: TableOfContentsProps) {
                 borderBottom: i < items.length - 1 ? '1px solid #E5E7EB' : 'none',
                 borderLeft: isActive ? '3px solid #39575C' : '3px solid transparent',
                 paddingLeft: 10,
-                color: isActive ? '#39575C' : '#6B7280',
+                color: isActive ? 'var(--color-pe-primary)' : 'var(--color-pe-muted)',
               }}
             >
               <span
-                className="font-body font-bold flex-shrink-0"
-                style={{ fontSize: 10, color: '#709DA9' }}
+                className="font-body font-bold flex-shrink-0 text-pe-secondary-ink"
+                style={{ fontSize: 12 }}
               >
                 {String(i + 1).padStart(2, '0')}
               </span>
               <span
                 className="font-body leading-tight"
                 style={{
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: item.level === 'h2' ? 500 : 400,
                   paddingLeft: item.level === 'h3' ? 8 : 0,
                 }}

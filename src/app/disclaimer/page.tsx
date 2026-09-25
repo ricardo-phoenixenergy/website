@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { PageFooter } from '@/components/layout/PageFooter';
 
 export const metadata: Metadata = {
-  title: 'Disclaimer | Phoenix Energy',
+  title: 'Disclaimer',
   description:
     'Important disclaimers regarding the accuracy of calculators, financial estimates, and information published on the Phoenix Energy website.',
   alternates: { canonical: 'https://phoenixenergy.solutions/disclaimer' },
@@ -13,14 +12,12 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <div className="mt-8 first:mt-0">
       <h2
-        className="font-display font-bold mb-3"
-        style={{ fontSize: '15px', color: '#1A1A1A' }}
+        className="font-display font-bold text-xl text-pe-text mb-3"
       >
         {title}
       </h2>
       <div
-        className="font-body space-y-3"
-        style={{ fontSize: '14px', color: '#6B7280', lineHeight: '1.8' }}
+        className="font-body text-base leading-[1.75] text-pe-text-soft space-y-3 max-w-[60ch]"
       >
         {children}
       </div>
@@ -31,25 +28,25 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function DisclaimerPage() {
   return (
     <>
-    <main className="bg-[#F5F5F5] min-h-screen">
+    <div className="bg-pe-bg min-h-screen">
       <div className="page-container pt-24 pb-16">
 
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-1.5 font-body text-sm text-[#6B7280] mb-6">
-          <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-body text-sm text-pe-muted mb-6">
+          <Link href="/" className="hover:text-pe-primary transition-colors">Home</Link>
           <span>/</span>
-          <span className="font-semibold text-[#39575C]">Disclaimer</span>
+          <span className="font-semibold text-pe-primary">Disclaimer</span>
         </nav>
 
         {/* Page header */}
         <div className="max-w-[760px] mx-auto mb-8">
-          <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-2">
+          <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-pe-muted mb-2">
             Legal
           </p>
-          <h1 className="font-display font-extrabold text-4xl text-[#1A1A1A] leading-[1.2] mb-3">
+          <h1 className="font-display font-extrabold text-4xl text-pe-text leading-[1.2] mb-3">
             Disclaimer
           </h1>
-          <p className="font-body text-base text-[#6B7280] leading-[1.75]">
+          <p className="font-body text-base text-pe-muted leading-[1.75]">
             Important information about the accuracy of content, calculators, and estimates
             on this website.
           </p>
@@ -65,8 +62,8 @@ export default function DisclaimerPage() {
         >
           <span style={{ fontSize: '18px', flexShrink: 0 }}>⚠️</span>
           <p
-            className="font-body"
-            style={{ fontSize: '13px', color: '#6b4e10', lineHeight: '1.7' }}
+            className="font-body text-sm leading-[1.7]"
+            style={{ color: '#6b4e10' }}
           >
             All calculators, financial estimates, and projections on this website are
             indicative only. They do not constitute professional financial or engineering
@@ -95,9 +92,8 @@ export default function DisclaimerPage() {
           <Section title="2. Calculator &amp; Tool Accuracy">
             <p>
               <strong>
-                The Solar Asset Valuation Tool and all other calculators, savings estimates,
-                financial projections, yield models, and metrics presented on this website are
-                indicative only.
+                All calculators, savings estimates, financial projections, yield models, and
+                metrics presented on this website are indicative only.
               </strong>
             </p>
             <p>
@@ -136,12 +132,14 @@ export default function DisclaimerPage() {
 
           <div style={{ borderTop: '1px solid #E5E7EB', marginTop: '32px' }} />
 
-          <Section title="4. Project Results &amp; Case Studies">
+          <Section title="4. Case Studies &amp; Project Figures">
             <p>
-              Portfolio projects, case studies, and statistics published on this website reflect
-              actual past outcomes for specific projects under specific conditions. They are
-              presented for illustrative purposes only and do not guarantee similar results for
-              future projects or clients. Past performance is not indicative of future outcomes.
+              Portfolio projects, case studies, and statistics published on this website relate
+              to specific projects under specific conditions. Where a case study shows projected
+              results, those figures come from a financial model for that site and are not
+              measured outcomes. They are presented for illustrative purposes only and do not
+              guarantee similar results for future projects or clients. Past performance is not
+              indicative of future outcomes.
             </p>
           </Section>
 
@@ -149,11 +147,11 @@ export default function DisclaimerPage() {
 
           <Section title="5. No Professional Relationship">
             <p>
-              Use of this website — including submission of the contact form or completion of
-              the Solar Asset Valuation Tool — does not establish a professional advisory,
-              contractual, or fiduciary relationship between you and Phoenix Energy Solutions
-              (Pty) Ltd. Any formal engagement is subject to a separate written agreement
-              signed by both parties.
+              Use of this website, including submission of the contact form or a solar
+              valuation request, does not establish a professional advisory, contractual, or
+              fiduciary relationship between you and Phoenix Energy Solutions (Pty) Ltd. Any
+              formal engagement is subject to a separate written agreement signed by both
+              parties.
             </p>
           </Section>
 
@@ -175,7 +173,7 @@ export default function DisclaimerPage() {
               For any queries regarding this disclaimer, contact us at{' '}
               <a
                 href="mailto:info@phoenixenergy.solutions"
-                className="text-[#39575C] hover:underline"
+                className="text-pe-primary underline underline-offset-2 hover:text-pe-primary-hover"
               >
                 info@phoenixenergy.solutions
               </a>
@@ -187,7 +185,7 @@ export default function DisclaimerPage() {
             className="font-body mt-10 pt-6"
             style={{
               fontSize: '12px',
-              color: '#9ca3af',
+              color: 'var(--color-pe-muted)',
               borderTop: '1px solid #E5E7EB',
             }}
           >
@@ -195,8 +193,7 @@ export default function DisclaimerPage() {
           </p>
         </div>
       </div>
-    </main>
-    <PageFooter showCta={false} />
+    </div>
     </>
   );
 }

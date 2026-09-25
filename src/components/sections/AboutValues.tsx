@@ -26,24 +26,24 @@ const VALUES = [
   {
     num: '05',
     title: 'Inspiration',
-    text: 'We inspire businesses by creating new opportunities to deliver efficient, sustainable services — empowering them to inspire their own customers.',
+    text: 'We inspire businesses by creating new opportunities to deliver efficient, sustainable services that help them inspire their own customers.',
   },
   {
     num: '06',
     title: 'Ubuntu',
-    text: 'We are rooted in the African belief that we grow stronger together — alongside our clients, our communities, and our continent.',
+    text: 'We are rooted in the African belief that we grow stronger together with our clients, our communities and our continent.',
   },
 ];
 
 export function AboutValues() {
   return (
-    <section className="bg-[#F5F5F5] py-16 md:py-24">
+    <section className="bg-pe-bg py-16 md:py-24">
       <AnimatedSection className="page-container text-center mb-10 md:mb-12">
-        <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-3">
+        <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-pe-muted mb-3">
           What we stand for
         </p>
-        <h2 className="font-display font-extrabold text-3xl text-[#1A1A1A] leading-[1.2]">
-          Our <em style={{ color: '#709DA9', fontStyle: 'normal' }}>values</em>
+        <h2 className="font-display font-extrabold text-3xl text-pe-text leading-[1.2]">
+          Our <em className="not-italic text-pe-secondary-ink">values</em>
         </h2>
       </AnimatedSection>
 
@@ -52,14 +52,8 @@ export function AboutValues() {
           <AnimatedSection key={v.num} delay={i * 0.04} as="div">
             <Card variant="dark" pattern={3} className="h-full">
               <CardBody padding="lg" className="h-full">
-                <p
-                  className="font-display font-extrabold text-4xl leading-none mb-3"
-                  style={{ color: 'rgba(255,255,255,0.08)' }}
-                >
-                  {v.num}
-                </p>
-                <p className="font-display font-bold text-base text-white mb-2">{v.title}</p>
-                <p className="font-body text-sm leading-[1.75]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                <h3 className="font-display font-bold text-lg text-white mb-2">{v.title}</h3>
+                <p className="font-body text-sm leading-[1.75]" style={{ color: 'var(--color-on-dark-subtle)' }}>
                   {v.text}
                 </p>
               </CardBody>

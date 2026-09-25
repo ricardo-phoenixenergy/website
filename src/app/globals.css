@@ -1,24 +1,61 @@
 @import "tailwindcss";
 
+/* Audit reports and design-tool state are prose, not UI. Keep them out of class
+   detection: Windows paths in them (e.g. "\51015a") parse as CSS escapes and
+   crash the build. */
+@source not "../../docs";
+@source not "../../.impeccable";
+
 /* ─── Brand Design Tokens ──────────────────────────────────────────────────── */
-@theme {
+/* `static` emits every variable, so inline styles can use var(--color-…) too.
+   Ratios are WCAG contrast against the surface named. */
+@theme static {
   /* Core colours — generates bg-pe-*, text-pe-*, border-pe-* utilities */
   --color-pe-bg: #F5F5F5;
   --color-pe-primary: #39575C;
-  --color-pe-secondary: #709DA9;
+  --color-pe-primary-hover: #2a4045;
+  --color-pe-secondary: #709DA9;      /* Dusty Blue: fills, rules, icons; text only on dark */
   --color-pe-text: #1A1A1A;
-  --color-pe-muted: #6B7280;
-  --color-pe-border: #E5E7EB;
+  --color-pe-text-soft: #374151;
+  --color-pe-muted: #646B78;          /* secondary text: 4.9:1 on pe-bg, 5.4:1 on white */
+  --color-pe-border: #E5E7EB;         /* decorative: card edges, dividers, rules */
+  --color-pe-control-border: #848B96; /* a form control's own edge: 3.4:1 on white, 3.2:1 on pe-bg, above 3:1 on the dark tool cards (WCAG 1.4.11) */
   --color-pe-card: #FFFFFF;
   --color-pe-nav-dark: #0d1f22;
 
-  /* Vertical accent colours */
+  /* Ink tier: the text-safe version of each colour on light surfaces */
+  --color-pe-secondary-ink: #45727E;  /* Dusty Blue as text: 4.9:1 on pe-bg; white on it 5.3:1 */
+  --color-pe-error: #C0392B;          /* 5.0:1 on pe-bg */
+
+  /* On dark surfaces (#0d1f22 and the translucent cards on it) */
+  --color-on-dark: #FFFFFF;
+  --color-on-dark-muted: #B9C3C5;     /* 9.4:1 */
+  --color-on-dark-subtle: #9BA7A9;    /* 6.9:1; labels and captions, never lighter */
+  --color-on-dark-error: #F2B8B4;
+
+  /* Vertical accent colours: fills, bars, dots and text on dark surfaces */
   --color-accent-solar: #E3C58D;
   --color-accent-wheeling: #D97C76;
   --color-accent-optim: #709DA9;
   --color-accent-carbon: #9CAF88;
   --color-accent-wbs: #C97A40;
   --color-accent-ev: #A9D6CB;
+
+  /* Accent ink: the accent as text on light surfaces (4.8 to 5.4:1 on pe-bg, 4.7:1 or more on their own 12% tint) */
+  --color-accent-solar-ink: #8A6516;
+  --color-accent-wheeling-ink: #A8453E;
+  --color-accent-optim-ink: #45727E;
+  --color-accent-carbon-ink: #56733F;
+  --color-accent-wbs-ink: #9A5420;
+  --color-accent-ev-ink: #2F7565;
+
+  /* Text on a solid accent fill (4.6 to 5.1:1); white fails on every accent */
+  --color-accent-solar-on: #5E430C;
+  --color-accent-wheeling-on: #4A1E1B;
+  --color-accent-optim-on: #0F2E36;
+  --color-accent-carbon-on: #223D12;
+  --color-accent-wbs-on: #3A1C08;
+  --color-accent-ev-on: #1A5A48;
 
   /* Typography — font-display and font-body utility classes */
   --font-display: 'Plus Jakarta Sans', sans-serif;
@@ -41,8 +78,17 @@
   box-sizing: border-box;
 }
 
+/* Guard: nothing may widen the page sideways. Mobile browsers widen the layout
+   viewport to fit overflow, which pushed the fixed navbar's menu off-screen. */
+html,
+body {
+  overflow-x: clip;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
+  /* Keeps focused elements and #anchor targets clear of the fixed navbar pill. */
+  scroll-padding-top: 6rem;
 }
 
 body {
@@ -63,6 +109,77 @@ summary,
 select,
 label[for] {
   cursor: pointer;
+}
+
+/* ─── Keyboard focus ───────────────────────────────────────────────────────── */
+/* One ring for every control: a 2px halo hugging the control, then a 2px ring,
+   white and Deep Teal by default. This is the only rule that draws it. The
+   variants below set --ring-* variables and never the outline itself, because
+   the CSS minifier merges rules with identical declarations into one :is()
+   selector whose specificity is that of its strongest part: merged with the
+   choice-card ring, the base ring outranked the inset variants and the hero
+   panels lost their focus (GLB-17). With variables, specificity can't matter.
+   Unlayered, so it wins over any `outline-none` utility; `main` and other
+   tabindex="-1" targets are excluded because they only receive focus
+   programmatically. Choice cards and segments wrap a visually hidden native
+   radio or checkbox, so their ring moves to the visible label. */
+:where(
+  a[href], button, input, select, textarea, summary,
+  [tabindex]:not([tabindex="-1"])
+):focus-visible,
+.range-slider:focus-visible,
+.choice-card:has(input:focus-visible),
+.choice-segment:has(input:focus-visible) {
+  outline: 2px solid var(--ring-color, #39575C);
+  outline-offset: var(--ring-offset, 2px);
+  box-shadow: 0 0 0 var(--ring-halo-width, 2px) var(--ring-halo, #FFFFFF);
+}
+
+/* Clipped controls draw the ring inside, with no halo: tabs sit in a strip that
+   scrolls sideways, segments in a clipped strip, and full-panel controls fill a
+   clipped box, so an outer ring would be cut off. Over a photo, or on a filled
+   segment, the inset ring is white. */
+[role="tab"],
+.choice-segment,
+.focus-inset {
+  --ring-offset: -4px;
+  --ring-halo-width: 0px;
+}
+.focus-inset,
+.choice-segment:has(input:checked) {
+  --ring-color: #FFFFFF;
+}
+
+/* Dark surfaces: bands, dark heroes and their tools, dark cards and overlays.
+   On them the white halo merges into light and accent-filled buttons and
+   leaves only the teal ring, 2.2:1 on Night Teal (GLB-18). So the ring turns
+   white and the halo takes the surface's colour, which opens a gap between
+   the button and its ring. Set on a dark container, it reaches every control
+   inside; never set it on a container that holds a light panel. */
+.focus-on-dark {
+  --ring-color: #FFFFFF;
+  --ring-halo: var(--color-pe-nav-dark);
+}
+
+/* ─── Skip link ────────────────────────────────────────────────────────────── */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  padding: 12px 20px;
+  border-radius: 9999px;
+  background: #39575C;
+  color: #FFFFFF;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  transform: translateY(-200%);
+  transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.skip-link:focus {
+  transform: translateY(0);
 }
 
 /* ─── iOS Safari — prevent auto-zoom on input focus ───────────────────────── */
@@ -125,7 +242,7 @@ label[for] {
     top: 0; left: 0; right: 0;
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(112,157,169,0.5), transparent);
-    animation: tile-shimmer 2.5s ease-in-out infinite;
+    animation: tile-shimmer 2.5s ease-in-out 3; /* three passes, then still */
     animation-delay: var(--shimmer-delay, 0s);
   }
 }
@@ -188,12 +305,6 @@ label[for] {
   100% { transform: scale(1.22); opacity: 0; }
 }
 
-/* ─── Hero accordion progress bar ──────────────────────────────────────────── */
-@keyframes fillProgress {
-  from { transform: scaleX(0); }
-  to   { transform: scaleX(1); }
-}
-
 /* ─── Range slider — custom thumb/track ────────────────────────────────────── */
 .range-slider {
   -webkit-appearance: none;
@@ -224,10 +335,7 @@ label[for] {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
   cursor: pointer;
 }
-.range-slider:focus-visible {
-  outline: 2px solid #39575C;
-  outline-offset: 2px;
-}
+/* Its focus ring is the shared one (Keyboard focus, above). */
 
 /* ─── Google reCAPTCHA v3 badge ────────────────────────────────────────────── */
 /* The sticky bottom-right badge is injected on <body>. reCAPTCHA's terms allow
@@ -235,4 +343,25 @@ label[for] {
    render <RecaptchaNotice /> under the contact and valuation forms instead. */
 .grecaptcha-badge {
   visibility: hidden !important;
+}
+
+/* ─── Reduced motion ───────────────────────────────────────────────────────── */
+/* Framer Motion components follow MotionConfig reducedMotion="user" (SiteShell).
+   This covers the CSS loops: skeleton shimmers, pulses and decorative sweeps
+   hold still, and smooth scrolling becomes a jump. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .shimmer,
+  .animate-pulse,
+  .animate-ping,
+  .animate-spin,
+  .shimmer-tile::after,
+  .btn-shimmer::before {
+    animation: none;
+  }
+  .skip-link {
+    transition: none;
+  }
 }

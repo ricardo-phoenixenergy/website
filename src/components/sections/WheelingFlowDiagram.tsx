@@ -1,5 +1,6 @@
 import type { WheelingFlow, FlowIcon } from '@/config/wheelingFlows';
 import { IconSolarPanel, IconPylon, IconBuilding } from '@/components/ui/Icons';
+import { inkFor } from '@/types/solutions';
 
 const MONEY = '#39575C';
 
@@ -19,10 +20,10 @@ export function WheelingFlowDiagram({ flow, accent }: WheelingFlowDiagramProps) 
     <div
       role="img"
       aria-label={flow.summary}
-      className="rounded-2xl border border-[#E5E7EB] bg-[#F5F5F5] p-5 md:p-6"
+      className="rounded-2xl border border-pe-border bg-pe-bg p-5 md:p-6"
     >
       {/* Energy path — icon nodes, vertical stack with dashed connectors */}
-      <p className="font-body text-xs font-bold uppercase tracking-[0.1em] text-[#6B7280] mb-3">
+      <p className="font-body text-xs font-bold uppercase tracking-[0.1em] text-pe-muted mb-3">
         {flow.energyTitle}
       </p>
       <div className="mb-5">
@@ -33,15 +34,15 @@ export function WheelingFlowDiagram({ flow, accent }: WheelingFlowDiagramProps) 
                 className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                 style={{
                   background: node.emphasis ? 'rgba(217,124,118,0.20)' : 'rgba(217,124,118,0.14)',
-                  color: accent,
+                  color: inkFor(accent),
                   ...(node.emphasis ? { boxShadow: `inset 3px 0 0 ${accent}` } : {}),
                 }}
               >
                 {NODE_ICON[node.icon](20)}
               </div>
               <div className="pt-0.5">
-                <p className="font-display font-bold text-sm text-[#1A1A1A] leading-tight">{node.label}</p>
-                <p className="font-body text-xs text-[#6B7280] leading-snug mt-0.5">{node.desc}</p>
+                <p className="font-display font-bold text-sm text-pe-text leading-tight">{node.label}</p>
+                <p className="font-body text-xs text-pe-muted leading-snug mt-0.5">{node.desc}</p>
               </div>
             </div>
             {i < flow.energy.length - 1 && (
@@ -52,7 +53,7 @@ export function WheelingFlowDiagram({ flow, accent }: WheelingFlowDiagramProps) 
       </div>
 
       {/* Money flow */}
-      <p className="font-body text-xs font-bold uppercase tracking-[0.1em] text-[#6B7280] mb-2.5">
+      <p className="font-body text-xs font-bold uppercase tracking-[0.1em] text-pe-muted mb-2.5">
         {flow.moneyTitle}
       </p>
       <div className="space-y-3">
@@ -61,20 +62,20 @@ export function WheelingFlowDiagram({ flow, accent }: WheelingFlowDiagramProps) 
             <div className="flex items-center gap-2 mb-0.5">
               {flow.stepped && (
                 <span
-                  className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0"
+                  className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
                   style={{ background: MONEY, color: '#fff' }}
                 >
                   {i + 1}
                 </span>
               )}
-              <span className="font-body text-xs font-semibold text-[#1A1A1A]">{step.from}</span>
+              <span className="font-body text-xs font-semibold text-pe-text">{step.from}</span>
               <span aria-hidden className="inline-flex items-center" style={{ color: MONEY }}>
                 <span className="inline-block w-5" style={{ borderTop: `2px dashed ${MONEY}` }} />
-                <span className="text-[9px] -ml-1 leading-none">▶</span>
+                <span className="text-xs -ml-1 leading-none">▶</span>
               </span>
-              <span className="font-body text-xs font-semibold text-[#1A1A1A]">{step.to}</span>
+              <span className="font-body text-xs font-semibold text-pe-text">{step.to}</span>
             </div>
-            <p className="font-body text-sm text-[#374151] leading-snug">{step.label}</p>
+            <p className="font-body text-sm text-pe-text-soft leading-snug">{step.label}</p>
           </div>
         ))}
       </div>

@@ -11,7 +11,7 @@ export function PullQuote({ children, accent = '#C97A40' }: PullQuoteProps) {
   return (
     <AnimatedSection className="max-w-3xl mt-12">
       <blockquote
-        className="font-display font-extrabold text-xl md:text-2xl text-[#1A1A1A] leading-[1.4] pl-5"
+        className="font-display font-extrabold text-xl md:text-2xl text-pe-text leading-[1.4] pl-5"
         style={{ borderLeft: `3px solid ${accent}` }}
       >
         {children}

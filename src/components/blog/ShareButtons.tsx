@@ -19,11 +19,11 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
 
   const btnBase =
     'w-8 h-8 rounded-full flex items-center justify-center transition-all duration-150 font-body font-bold text-xs';
-  const btnStyle = { border: '1px solid #E5E7EB', background: '#fff', color: '#6B7280' };
+  const btnStyle = { border: '1px solid #E5E7EB', background: '#fff', color: 'var(--color-pe-muted)' };
 
   return (
     <div className="flex items-center gap-2">
-      <span className="font-body text-xs text-[#9CA3AF]">Share:</span>
+      <span className="font-body text-xs text-pe-muted">Share:</span>
 
       {/* LinkedIn */}
       <a
@@ -41,7 +41,7 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
         onMouseLeave={e => {
           (e.currentTarget as HTMLAnchorElement).style.background = '#fff';
           (e.currentTarget as HTMLAnchorElement).style.borderColor = '#E5E7EB';
-          (e.currentTarget as HTMLAnchorElement).style.color = '#6B7280';
+          (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-pe-muted)';
         }}
       >
         in
@@ -63,10 +63,10 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
         onMouseLeave={e => {
           (e.currentTarget as HTMLAnchorElement).style.background = '#fff';
           (e.currentTarget as HTMLAnchorElement).style.borderColor = '#E5E7EB';
-          (e.currentTarget as HTMLAnchorElement).style.color = '#6B7280';
+          (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-pe-muted)';
         }}
       >
-        𝕏
+        X
       </a>
 
       {/* Copy link */}

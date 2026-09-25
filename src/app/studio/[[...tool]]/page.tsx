@@ -3,8 +3,6 @@
 import dynamic from 'next/dynamic';
 import config from '../../../../sanity.config';
 
-export const dynamicRoute = 'force-dynamic';
-
 const NextStudio = dynamic(
   () => import('next-sanity/studio').then((mod) => mod.NextStudio),
   { ssr: false },

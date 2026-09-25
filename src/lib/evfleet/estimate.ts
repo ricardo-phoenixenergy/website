@@ -25,7 +25,7 @@ export const FLEET_VEHICLES: Record<FleetVehicleType, VehicleProfile> = {
   car:        { label: 'Passenger / car',      dieselLPer100: 7.0,  petrolLPer100: 8.0,  evKwhPer100: 17 },
   van:        { label: 'Light delivery van',   dieselLPer100: 9.0,  petrolLPer100: 11.0, evKwhPer100: 22 },
   minibus:    { label: 'Minibus / shuttle',    dieselLPer100: 11.0, petrolLPer100: 13.0, evKwhPer100: 28 },
-  truck:      { label: 'Medium truck (~4–8t)', dieselLPer100: 18.0, evKwhPer100: 60 },
+  truck:      { label: 'Medium truck (~4 to 8t)', dieselLPer100: 18.0, evKwhPer100: 60 },
   heavytruck: { label: 'Heavy truck (~26t+)',  dieselLPer100: 33.0, evKwhPer100: 130 },
 };
 

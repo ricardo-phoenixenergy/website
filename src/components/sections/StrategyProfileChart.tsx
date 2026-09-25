@@ -138,7 +138,7 @@ export function StrategyProfileChart({ strategyKey }: StrategyProfileChartProps)
     scales: {
       x: {
         grid: { display: false },
-        ticks: { autoSkip: false, maxRotation: 0, font: { size: 10 }, color: '#9CA3AF' },
+        ticks: { autoSkip: false, maxRotation: 0, font: { size: 12 }, color: '#646B78' /* --color-pe-muted */ },
       },
       y: {
         min: yMin,
@@ -152,7 +152,7 @@ export function StrategyProfileChart({ strategyKey }: StrategyProfileChartProps)
 
   return (
     <div className="rounded-xl border border-[#E5E7EB] p-4">
-      <p className="font-display font-bold text-[13px] text-[#1A1A1A] mb-3">A typical day</p>
+      <p className="font-display font-bold text-sm text-pe-text mb-3">A typical day</p>
       <div style={{ height: 200 }} aria-hidden="true">
         <Line data={{ labels: HOUR_LABELS, datasets }} options={options} />
       </div>
@@ -182,7 +182,7 @@ function LegendItem({
   dashed?: boolean;
 }) {
   return (
-    <span className="inline-flex items-center gap-1.5 font-body text-[11px] text-[#4B5563]">
+    <span className="inline-flex items-center gap-1.5 font-body text-xs text-[#4B5563]">
       {line ? (
         <span
           className="inline-block w-4"

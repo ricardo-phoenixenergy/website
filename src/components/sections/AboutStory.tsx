@@ -1,9 +1,7 @@
 'use client';
 
-import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { DEFAULT_COMPANY_STATS } from '@/lib/companyStats';
+import { DEFAULT_COMPANY_STATS, statAsOfCaption } from '@/lib/companyStats';
+import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import type { CompanyStat } from '@/types/sanity';
 import { AnimatedStatValue } from '@/components/ui/AnimatedStatValue';
 
@@ -38,90 +36,74 @@ function SouthAfricaMap({ fill }: { fill: string }) {
 }
 
 export function AboutStory({ stats = DEFAULT_COMPANY_STATS }: { stats?: CompanyStat[] }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
-  const reduced = useReducedMotion();
-
   return (
     <section className="bg-white py-16 md:py-24">
       <div className="page-container">
 
         {/* ── Intro ─────────────────────────────────────────────────────── */}
         <div className="max-w-2xl mx-auto text-center mb-14">
-          <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-3">
+          <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-pe-muted mb-3">
             Who we are
           </p>
-          <h2 className="font-display font-extrabold text-3xl text-[#1A1A1A] leading-[1.2] mb-4">
-            Phoenix at a <em style={{ color: '#709DA9', fontStyle: 'normal' }}>glance</em>
+          <h2 className="font-display font-extrabold text-3xl text-pe-text leading-[1.2] mb-4">
+            Phoenix at a <em className="not-italic text-pe-secondary-ink">glance</em>
           </h2>
-          <p className="font-body text-sm leading-[1.8] text-[#6B7280]">
+          <p className="font-body text-base leading-[1.75] text-pe-muted max-w-[60ch] mx-auto">
             Phoenix Energy is a South African commercial and industrial energy company.{' '}
-            <strong className="font-semibold text-[#1A1A1A]">Not a solar installer. Not an equipment supplier.</strong>{' '}
-            <strong className="font-semibold text-[#1A1A1A]">A sophisticated energy partner</strong>{' '}
+            <strong className="font-semibold text-pe-text">Not a solar installer. Not an equipment supplier.</strong>{' '}
+            <strong className="font-semibold text-pe-text">A sophisticated energy partner</strong>{' '}
             that designs, finances, acquires and optimises integrated energy ecosystems
             for businesses that are serious about their energy future.
           </p>
         </div>
 
         {/* ── Stats + map ───────────────────────────────────────────────── */}
-        <div ref={ref} className="grid gap-y-12 gap-x-8 md:grid-cols-[auto_minmax(0,400px)] md:items-center md:justify-center">
+        <AnimatedSection className="grid gap-y-12 gap-x-8 md:grid-cols-[auto_minmax(0,400px)] md:items-center md:justify-center">
 
           {/* Stats column */}
           <div className="flex flex-col gap-7">
-            {stats.map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={reduced ? { opacity: 1, x: 0 } : { opacity: 0, x: -16 }}
-                animate={inView ? { opacity: 1, x: 0 } : {}}
-                transition={reduced ? { duration: 0 } : { duration: 0.5, delay: 0.1 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className="border-l-2 pl-5"
-                style={{ borderColor: 'rgba(57,87,92,0.18)' }}
-              >
-                <div className="font-display font-extrabold leading-none text-[#39575C] text-3xl md:text-[2.4rem]">
-                  <AnimatedStatValue value={stat.value} inView={inView} delay={0.2 + i * 0.12} />
+            {stats.map((stat, i) => {
+              const asOf = statAsOfCaption(stat);
+              return (
+                <div
+                  key={stat.label}
+                  className="border-l-2 pl-5"
+                  style={{ borderColor: 'rgba(57,87,92,0.18)' }}
+                >
+                  <div className="font-display font-extrabold leading-none text-pe-primary text-3xl md:text-[2.4rem]">
+                    <AnimatedStatValue value={stat.value} delay={0.2 + i * 0.12} />
+                  </div>
+                  <div className="font-body uppercase tracking-[0.1em] text-pe-muted mt-2 text-xs">
+                    {stat.label}
+                  </div>
+                  {asOf && <p className="font-body text-xs text-pe-muted mt-1">{asOf}</p>}
                 </div>
-                <div className="font-body uppercase tracking-[0.1em] text-[#6B7280] mt-2 text-[0.72rem]">
-                  {stat.label}
-                </div>
-              </motion.div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Map column */}
           <div className="relative w-full max-w-[400px] mx-auto aspect-square">
-            <motion.div
-              initial={reduced ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.96 }}
-              animate={inView ? { opacity: 1, scale: 1 } : {}}
-              transition={reduced ? { duration: 0 } : { duration: 0.7, ease: 'easeOut' }}
-              className="absolute inset-0"
-            >
+            <div className="absolute inset-0">
               <SouthAfricaMap fill="rgba(57,87,92,0.16)" />
-            </motion.div>
+            </div>
 
-            {MARKERS.map((m, i) => (
-              <motion.div
+            {MARKERS.map((m) => (
+              <div
                 key={`${m.x}-${m.y}`}
-                initial={reduced ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
-                animate={inView ? { opacity: 1, scale: 1 } : {}}
-                transition={reduced ? { duration: 0 } : { type: 'spring', stiffness: 320, damping: 18, delay: 0.6 + i * 0.12 }}
                 className="absolute -translate-x-1/2 -translate-y-1/2"
                 style={{ left: `${m.x}%`, top: `${m.y}%` }}
                 title={m.region}
               >
                 <span
-                  aria-hidden
-                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full animate-ping"
-                  style={{ width: 22, height: 22, background: m.color, opacity: 0.3 }}
-                />
-                <span
                   className="relative block rounded-full"
                   style={{ width: 18, height: 18, background: m.color, boxShadow: `0 3px 8px ${m.color}80` }}
                 />
-              </motion.div>
+              </div>
             ))}
           </div>
 
-        </div>
+        </AnimatedSection>
       </div>
     </section>
   );

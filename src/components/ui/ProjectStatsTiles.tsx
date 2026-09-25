@@ -1,9 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 interface Stat {
   value: string;
@@ -16,7 +13,6 @@ interface ProjectStatsTilesProps {
 }
 
 const SHIMMER_DELAYS = ['0s', '0.55s', '1.1s', '1.65s'] as const;
-const STAGGER_DELAYS = [0, 0.1, 0.2, 0.3] as const;
 
 const MD_COLS: Record<number, string> = {
   1: 'md:grid-cols-1',
@@ -26,24 +22,18 @@ const MD_COLS: Record<number, string> = {
 };
 
 export function ProjectStatsTiles({ stats, className }: ProjectStatsTilesProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: '-40px' });
-  const reduced = useReducedMotion();
   const count = Math.min(stats.length, 4);
 
   return (
     <div
-      ref={ref}
       className={cn('grid grid-cols-2 gap-[3px] rounded-xl overflow-hidden p-[3px]', MD_COLS[count] ?? 'md:grid-cols-4', className)}
       style={{ background: '#0d1f22' }}
     >
       {stats.slice(0, count).map((stat, i) => (
-        <motion.div
+        <div
           key={i}
-          className="shimmer-tile"
-          initial={reduced ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.9, y: 4 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={reduced ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 24, delay: STAGGER_DELAYS[i] }}
+          // Two columns on phones: an odd last tile takes the full row instead of leaving an empty cell.
+          className={cn('shimmer-tile', count % 2 === 1 && i === count - 1 && 'col-span-2 md:col-span-1')}
           style={{
             borderRadius: 9,
             background: i === 0
@@ -81,8 +71,8 @@ export function ProjectStatsTiles({ stats, className }: ProjectStatsTilesProps) 
           <span
             className="font-body relative z-10 text-center"
             style={{
-              fontSize: 9,
-              color: 'rgba(255,255,255,0.38)',
+              fontSize: 12,
+              color: 'var(--color-on-dark-subtle)',
               textTransform: 'uppercase',
               letterSpacing: '0.09em',
               marginTop: 5,
@@ -90,7 +80,7 @@ export function ProjectStatsTiles({ stats, className }: ProjectStatsTilesProps) 
           >
             {stat.label}
           </span>
-        </motion.div>
+        </div>
       ))}
     </div>
   );

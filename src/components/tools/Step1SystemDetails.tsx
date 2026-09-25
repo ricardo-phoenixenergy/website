@@ -1,6 +1,10 @@
 'use client';
 
+import { useId, useState } from 'react';
 import type { SolarInputs, BessInputs } from '@/lib/valuation/types';
+import { CHEMISTRY_LABEL, INVERTER_TYPE_LABEL, SOH_LABEL, optionsFrom } from '@/lib/valuation/labels';
+import { SIZE_FIELDS, sizeMessage, type SizeField } from '@/lib/valuation/sizeFields';
+import type { AmountIssue } from '@/lib/parseAmount';
 import { RangeSlider } from './RangeSlider';
 import { NumberField } from './NumberField';
 import { SegmentedControl } from './SegmentedControl';
@@ -33,26 +37,28 @@ const INVERTER_BATTERY_BRANDS = toOptions([
   'CATL', 'EVE Energy', 'ATESS',
 ]);
 
-const INVERTER_OPTIONS: { value: SolarInputs['inverterType']; label: string }[] = [
-  { value: 'string', label: 'Grid-Tied / String' },
-  { value: 'hybrid', label: 'Hybrid' },
-];
+const INVERTER_OPTIONS = optionsFrom(INVERTER_TYPE_LABEL);
+const CHEM_OPTIONS = optionsFrom(CHEMISTRY_LABEL);
+const SOH_OPTIONS = optionsFrom(SOH_LABEL);
 
-const CHEM_OPTIONS: { value: BessInputs['chemistry']; label: string }[] = [
-  { value: 'lfp', label: 'LFP / LiFePO₄' },
-  { value: 'nmc', label: 'Li-NMC' },
-  { value: 'lead', label: 'Lead-acid' },
-];
+// Commissioning years offered: this year back to 2010.
+const THIS_YEAR = new Date().getFullYear();
+const FIRST_YEAR = 2010;
 
-const SOH_OPTIONS: { value: BessInputs['soh']; label: string }[] = [
-  { value: 'high', label: '90%+ (like new)' },
-  { value: 'mid', label: '70–90% (good)' },
-  { value: 'low', label: 'Below 70% (degraded)' },
-];
+type SizeIssues = Partial<Record<SizeField, AmountIssue>>;
 
-const SOLAR_MAX = 10000; // 10 MW
-const INVERTER_MAX = 10000; // 10 MW
-const BESS_MAX = 20000; // 20 MWh
+/** A message per size field, naming its actual problem, or nothing when the value is usable. */
+function sizeErrors(solar: SolarInputs, bess: BessInputs, issues: SizeIssues): Partial<Record<SizeField, string>> {
+  const errors: Partial<Record<SizeField, string>> = {};
+  const check = (key: SizeField, value: number) => {
+    const message = sizeMessage(key, value, issues[key] ?? null);
+    if (message) errors[key] = message;
+  };
+  check('kw', solar.kw);
+  check('inverterKw', solar.inverterKw);
+  if (bess.enabled) check('kWh', bess.kWh);
+  return errors;
+}
 
 const NEXT_BTN =
   'mt-6 w-full inline-flex items-center justify-center gap-2 font-body font-semibold text-sm text-white rounded-xl py-3 transition-opacity hover:opacity-90';
@@ -64,30 +70,59 @@ export function Step1SystemDetails({
   onBessChange,
   onNext,
 }: Step1SystemDetailsProps) {
+  const uid = useId();
+  const fieldId = (k: SizeField) => `${uid}-${k}`;
+  // Errors show once the visitor tries to continue, then update as they type.
+  const [attempted, setAttempted] = useState(false);
+  // Why each field's text isn't a number, if it isn't (the values alone can't say).
+  const [issues, setIssues] = useState<SizeIssues>({});
+  const errors = attempted ? sizeErrors(solar, bess, issues) : {};
+
+  const noteIssue = (key: SizeField, issue: AmountIssue | null) =>
+    setIssues((prev) => {
+      if ((prev[key] ?? null) === issue) return prev;
+      const next = { ...prev };
+      if (issue) next[key] = issue;
+      else delete next[key];
+      return next;
+    });
+
+  const handleNext = () => {
+    const found = sizeErrors(solar, bess, issues);
+    const first = (['kw', 'inverterKw', 'kWh'] as SizeField[]).find((k) => found[k]);
+    if (first) {
+      setAttempted(true);
+      document.getElementById(fieldId(first))?.focus();
+      return;
+    }
+    onNext();
+  };
+
   return (
     <div>
-      <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-4">
+      <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-pe-muted mb-4">
         Solar array
       </p>
 
       <NumberField
+        id={fieldId('kw')}
         label="Installed solar capacity"
         value={solar.kw}
-        min={0}
-        max={SOLAR_MAX}
-        unit="kWp"
-        hint="Total installed panel capacity — up to 10,000 kWp (10 MW)"
-        onChange={v => onSolarChange({ kw: v })}
+        unit={SIZE_FIELDS.kw.unit}
+        decimals={SIZE_FIELDS.kw.decimals}
+        error={errors.kw}
+        hint="Total installed panel capacity, up to 10,000 kWp (10 MW)."
+        onChange={(v, issue) => { onSolarChange({ kw: v }); noteIssue('kw', issue); }}
       />
 
       <RangeSlider
         label="Year of installation"
         value={solar.installYear}
-        min={2015}
-        max={2025}
+        min={FIRST_YEAR}
+        max={THIS_YEAR}
         step={1}
         unit=""
-        hint="Age determines panel degradation and remaining useful life"
+        hint="Age determines panel degradation and remaining useful life."
         onChange={v => onSolarChange({ installYear: v })}
         formatValue={v => String(v)}
       />
@@ -105,18 +140,19 @@ export function Step1SystemDetails({
         label="Inverter type"
         options={INVERTER_OPTIONS}
         value={solar.inverterType}
-        hint="Hybrid inverters command a premium as they support battery storage"
+        hint="Hybrid inverters command a premium as they support battery storage."
         onChange={v => onSolarChange({ inverterType: v })}
       />
 
       <NumberField
+        id={fieldId('inverterKw')}
         label="Inverter capacity"
         value={solar.inverterKw}
-        min={0}
-        max={INVERTER_MAX}
-        unit="kW"
-        hint="Combined rating of your inverter(s)"
-        onChange={v => onSolarChange({ inverterKw: v })}
+        unit={SIZE_FIELDS.inverterKw.unit}
+        decimals={SIZE_FIELDS.inverterKw.decimals}
+        error={errors.inverterKw}
+        hint="Combined rating of your inverter(s)."
+        onChange={(v, issue) => { onSolarChange({ inverterKw: v }); noteIssue('inverterKw', issue); }}
       />
 
       <SelectControl
@@ -130,25 +166,27 @@ export function Step1SystemDetails({
 
       <div
         className="mt-6 pt-6"
-        style={{ borderTop: '1px solid #E5E7EB' }}
+        style={{ borderTop: '1px solid var(--color-pe-border)' }}
       >
         <Toggle
           label="Does your system include battery storage?"
-          subLabel="Battery storage is valued separately and can significantly increase total buyback value"
+          subLabel="Include batteries so our team can value them with the rest of your system."
           checked={bess.enabled}
-          onChange={v => onBessChange({ enabled: v })}
+          // The battery field remounts from its value, so a reason from before goes with it.
+          onChange={v => { onBessChange({ enabled: v }); noteIssue('kWh', null); }}
         />
 
         {bess.enabled && (
           <div className="mt-2">
             <NumberField
+              id={fieldId('kWh')}
               label="Battery capacity"
               value={bess.kWh}
-              min={0}
-              max={BESS_MAX}
-              unit="kWh"
-              hint="Total usable capacity — up to 20,000 kWh (20 MWh)"
-              onChange={v => onBessChange({ kWh: v })}
+              unit={SIZE_FIELDS.kWh.unit}
+              decimals={SIZE_FIELDS.kWh.decimals}
+              error={errors.kWh}
+              hint="Total usable capacity, up to 20,000 kWh (20 MWh)."
+              onChange={(v, issue) => { onBessChange({ kWh: v }); noteIssue('kWh', issue); }}
             />
 
             <SelectControl
@@ -164,7 +202,7 @@ export function Step1SystemDetails({
               label="Battery chemistry"
               options={CHEM_OPTIONS}
               value={bess.chemistry}
-              hint="LFP retains value significantly better — 3,000+ cycle life vs 300–500 for lead-acid"
+              hint="LFP retains value significantly better, with a cycle life of 3,000+ against 300 to 500 for lead-acid."
               onChange={v => onBessChange({ chemistry: v })}
             />
 
@@ -172,14 +210,14 @@ export function Step1SystemDetails({
               label="Estimated battery health (SoH)"
               options={SOH_OPTIONS}
               value={bess.soh}
-              hint="State of Health — most LFP systems remain above 80% SoH for 8–10 years"
+              hint="SoH is State of Health. Most LFP systems remain above 80% SoH for 8 to 10 years."
               onChange={v => onBessChange({ soh: v })}
             />
           </div>
         )}
       </div>
 
-      <button type="button" onClick={onNext} className={NEXT_BTN} style={{ background: '#39575C' }}>
+      <button type="button" onClick={handleNext} className={NEXT_BTN} style={{ background: 'var(--color-pe-primary)' }}>
         Next: System condition <IconArrowRight size={14} />
       </button>
     </div>

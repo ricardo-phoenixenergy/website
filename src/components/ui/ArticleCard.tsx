@@ -34,7 +34,7 @@ export function ArticleCard({ post, delay = 0, className }: ArticleCardProps) {
           >
             {/* Article category badge — top-right */}
             <span
-              className="absolute top-3 right-3 font-body font-bold text-[10px] uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
+              className="absolute top-3 right-3 font-body font-bold text-xs uppercase tracking-[0.08em] px-2.5 py-1 rounded-full"
               style={{ background: cs.bg, color: cs.color }}
             >
               {post.category}
@@ -42,7 +42,7 @@ export function ArticleCard({ post, delay = 0, className }: ArticleCardProps) {
             {/* Vertical tag badge — bottom-left, accent colours matching ProjectCard */}
             {vm && (
               <span
-                className="absolute bottom-3 left-3 font-body font-bold text-[10px] uppercase tracking-[0.1em] px-2.5 py-1 rounded-full"
+                className="absolute bottom-3 left-3 font-body font-bold text-xs uppercase tracking-[0.1em] px-2.5 py-1 rounded-full"
                 style={{ background: vm.accent, color: vm.accentText }}
               >
                 {firstTag}
@@ -52,19 +52,19 @@ export function ArticleCard({ post, delay = 0, className }: ArticleCardProps) {
 
           <CardBody padding="sm">
             {/* Title */}
-            <p className="font-display font-bold text-sm text-[#1A1A1A] leading-[1.4] mb-2 flex-1 line-clamp-2">
+            <p className="font-display font-bold text-sm text-pe-text leading-[1.4] mb-2 flex-1 line-clamp-2">
               {post.title}
             </p>
 
             {/* Excerpt */}
-            <p className="font-body text-xs text-[#6B7280] leading-[1.65] mb-3 line-clamp-2">
+            <p className="font-body text-xs text-pe-muted leading-[1.65] mb-3 line-clamp-2">
               {post.excerpt}
             </p>
           </CardBody>
 
           <CardFooter variant="light">
-            <span className="font-body text-xs text-[#9CA3AF]">{formatDate(post.publishedAt)}</span>
-            <span className="font-body text-xs font-medium" style={{ color: '#709DA9' }}>
+            <span className="font-body text-xs text-pe-muted">{formatDate(post.publishedAt)}</span>
+            <span className="font-body text-xs font-medium text-pe-secondary-ink">
               {post.readTime} min read
             </span>
           </CardFooter>

@@ -13,6 +13,7 @@ import { AboutTimeline } from '@/components/sections/AboutTimeline';
 import { AboutTeam } from '@/components/sections/AboutTeam';
 import { AboutTrust } from '@/components/sections/AboutTrust';
 import { PageFooter } from '@/components/layout/PageFooter';
+import { DISCOVERY_CTA, INVESTOR_CTA, PARTNER_CTA } from '@/config/ctas';
 import type { TeamMember, MilestoneTimeline, Partner } from '@/types/sanity';
 
 // Safety-net ISR: refresh hourly even if the Sanity revalidate webhook isn't
@@ -20,12 +21,13 @@ import type { TeamMember, MilestoneTimeline, Partner } from '@/types/sanity';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'About Phoenix Energy — Our Story, Mission & Team',
+  // The root template adds "| Phoenix Energy", so the brand appears once.
+  title: 'About Us: Our Story, Mission & Team',
   description:
     "Learn about Phoenix Energy's founding story, mission to drive Net Zero across Africa, our values, and the team behind Southern Africa's leading clean energy company.",
   alternates: { canonical: 'https://phoenixenergy.solutions/about' },
   openGraph: {
-    title: 'About Phoenix Energy — Our Story, Mission & Team',
+    title: 'About Phoenix Energy: Our Story, Mission & Team',
     description:
       "The story, mission and team behind Southern Africa's leading integrated clean energy company.",
     url: 'https://phoenixenergy.solutions/about',
@@ -67,13 +69,13 @@ export default async function AboutPage() {
 
   return (
     <>
-    <main>
+    <div>
       {/* Hero — matches Solutions page: FloatingOrbs + dark background */}
-      <section className="relative overflow-hidden" style={{ background: '#0d1f22', minHeight: 480 }}>
+      <section className="focus-on-dark relative overflow-hidden" style={{ background: '#0d1f22', minHeight: 480 }}>
         <FloatingOrbs showConstellation={false} />
         <div className="page-container relative z-10 pt-28 pb-20 md:pt-36 md:pb-28">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-1.5 font-body text-sm mb-8" style={{ color: 'rgba(255,255,255,0.45)' }}>
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-body text-sm mb-8" style={{ color: 'var(--color-on-dark-subtle)' }}>
             <Link href="/" className="hover:text-white transition-colors">Home</Link>
             <span>/</span>
             <span className="font-semibold text-white">About</span>
@@ -81,13 +83,13 @@ export default async function AboutPage() {
           <AnimatedSection>
             <p
               className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-3"
-              style={{ color: 'rgba(255,255,255,0.50)' }}
+              style={{ color: 'var(--color-on-dark-subtle)' }}
             >
               The rise of Phoenix Energy
             </p>
             <h1 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl text-white leading-[1.1] mb-5 max-w-[860px]">
               Powering Africa&apos;s{' '}
-              <em className="whitespace-nowrap" style={{ color: '#709DA9', fontStyle: 'normal' }}>energy transition</em>
+              <em className="whitespace-nowrap not-italic text-pe-secondary">energy transition</em>
             </h1>
             <p
               className="font-body text-base md:text-lg leading-[1.75] mb-8 max-w-[560px]"
@@ -97,11 +99,11 @@ export default async function AboutPage() {
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
-                href="/contact"
+                href={DISCOVERY_CTA.href}
                 className="inline-flex items-center gap-2 font-body text-sm font-semibold rounded-full px-5 py-2.5 transition-colors duration-200 hover:bg-white"
                 style={{ background: '#F5F5F5', color: '#0d1f22' }}
               >
-                Get in touch <IconArrowRight size={13} />
+                {DISCOVERY_CTA.label} <IconArrowRight size={13} />
               </Link>
               <Link
                 href="/projects"
@@ -121,16 +123,12 @@ export default async function AboutPage() {
       <AboutValues />
       <AboutTimeline milestones={milestones} />
       <AboutTeam members={teamMembers} />
-      <AboutTrust partners={partners} />
+      {/* Clients book a discovery meeting (hero and footer band); partners and
+          investors get their own route beside the list of who we work with. */}
+      <AboutTrust partners={partners} ctas={[PARTNER_CTA, INVESTOR_CTA]} />
 
-    </main>
-    <PageFooter
-      ctaVariant="centered"
-      eyebrow="Start your energy transition"
-      heading="Find the right energy strategy for your business."
-      body="Meet with our engineers to identify the solutions that will reduce costs, generate new revenue and strengthen your energy resilience—at no cost or obligation."
-      primaryCta={{ label: 'Book a Discovery Meeting', href: '/contact' }}
-    />
+    </div>
+    <PageFooter ctaVariant="centered" />
     </>
   );
 }

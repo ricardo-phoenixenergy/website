@@ -34,7 +34,7 @@ export function ContactEmail({ intent, firstName, lastName, email, phone, compan
   return (
     <Html lang="en">
       <Head />
-      <Preview>{label} enquiry from {firstName} {lastName} — {company}, {location}</Preview>
+      <Preview>{label} enquiry from {firstName} {lastName} at {company}, {location}</Preview>
       <Body style={body}>
         <Container style={wrapper}>
 

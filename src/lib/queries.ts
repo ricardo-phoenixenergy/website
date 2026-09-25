@@ -2,6 +2,9 @@
 
 const IMAGE_FIELDS = `{ asset->, alt, hotspot, crop }`;
 
+/** A project is a case study once its challenge, solution and outcome are all written. */
+export const CASE_STUDY_READY = `defined(challenge[0]) && defined(solution[0]) && defined(outcome[0])`;
+
 const PROJECT_CARD_FIELDS = `
   _id,
   title,
@@ -9,7 +12,13 @@ const PROJECT_CARD_FIELDS = `
   vertical,
   location,
   systemSize,
-  "heroImage": heroImage ${IMAGE_FIELDS}
+  "heroImage": heroImage ${IMAGE_FIELDS},
+  clientName,
+  status,
+  metrics,
+  results,
+  resultsBasis,
+  "caseStudyReady": ${CASE_STUDY_READY}
 `;
 
 const BLOG_CARD_FIELDS = `
@@ -33,11 +42,8 @@ export const ALL_PROJECTS_QUERY = `
     ${PROJECT_CARD_FIELDS},
     featured,
     featuredOrder,
-    clientName,
     completionDate,
     projectValue,
-    status,
-    metrics,
     summary
   }
 `;
@@ -47,11 +53,8 @@ export const FEATURED_PROJECTS_QUERY = `
   | order(coalesce(featuredOrder, 99) asc, completionDate desc) {
     ${PROJECT_CARD_FIELDS},
     featuredOrder,
-    clientName,
     completionDate,
-    projectValue,
-    status,
-    metrics
+    projectValue
   }
 `;
 
@@ -60,11 +63,8 @@ export const FLAGSHIP_BY_VERTICAL_QUERY = `
   *[_type == "project" && vertical == $vertical && featured == true]
   | order(coalesce(featuredOrder, 99) asc, completionDate desc) [0] {
     ${PROJECT_CARD_FIELDS},
-    clientName,
     completionDate,
     projectValue,
-    status,
-    metrics,
     summary
   }
 `;
@@ -72,11 +72,8 @@ export const FLAGSHIP_BY_VERTICAL_QUERY = `
 export const PROJECTS_BY_VERTICAL_QUERY = `
   *[_type == "project" && vertical == $vertical] | order(completionDate desc) [0..5] {
     ${PROJECT_CARD_FIELDS},
-    clientName,
     completionDate,
-    projectValue,
-    status,
-    metrics
+    projectValue
   }
 `;
 
@@ -99,11 +96,21 @@ export const PROJECT_BY_SLUG_QUERY = `
     outcome[] { ... },
     metrics,
     results,
+    resultsBasis,
+    resultsAsOf,
+    resultsAssumptions,
     "related": *[
       _type == "project" &&
       vertical == ^.vertical &&
       slug.current != $slug
-    ] | order(completionDate desc) [0..2] {
+    ] | order((${CASE_STUDY_READY}) desc, _createdAt desc) [0..2] {
+      ${PROJECT_CARD_FIELDS}
+    },
+    "otherProjects": *[
+      _type == "project" &&
+      vertical != ^.vertical &&
+      slug.current != $slug
+    ] | order((${CASE_STUDY_READY}) desc, _createdAt desc) [0..1] {
       ${PROJECT_CARD_FIELDS}
     }
   }
@@ -182,6 +189,9 @@ export const ALL_BLOG_SLUGS_QUERY = `
 export const ALL_BLOG_TAGS_QUERY = `
   array::unique(*[_type == "blogPost"].tags[])
 `;
+
+/** Every published post, whatever the filters: while it is 0, the blog index stays out of search. */
+export const PUBLISHED_POSTS_COUNT_QUERY = `count(*[_type == "blogPost"])`;
 
 export const BLOG_COUNT_QUERY = `
   count(*[_type == "blogPost"
@@ -264,7 +274,7 @@ export const MILESTONE_TIMELINE_QUERY = `
 
 export const COMPANY_STATS_QUERY = `
   *[_type == "companyStats"][0] {
-    "stats": stats[]{ value, label }
+    "stats": stats[]{ value, label, definition, basis, source, asOf }
   }
 `;
 
@@ -291,9 +301,7 @@ export const HOW_IT_WORKS_QUERY = `
     title,
     subtitle,
     steps[]{ label, description, tag },
-    "showCTA": showCta,
-    ctaLabel,
-    ctaHref
+    "showCTA": showCta
   }
 `;
 

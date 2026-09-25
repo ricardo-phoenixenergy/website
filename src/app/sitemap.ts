@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { sanityServerClient } from '@/lib/sanity.server';
+import { CASE_STUDY_READY } from '@/lib/queries';
 
 const SITE = 'https://phoenixenergy.solutions';
 
@@ -17,7 +18,6 @@ const STATIC: MetadataRoute.Sitemap = [
   { url: `${SITE}/solutions/webuysolar`,                priority: 0.8, changeFrequency: 'monthly' },
   { url: `${SITE}/solutions/ev-fleets`,                 priority: 0.8, changeFrequency: 'monthly' },
   { url: `${SITE}/projects`,                            priority: 0.8, changeFrequency: 'weekly' },
-  { url: `${SITE}/blog`,                                priority: 0.8, changeFrequency: 'weekly' },
   { url: `${SITE}/tools`,                               priority: 0.7, changeFrequency: 'monthly' },
   { url: `${SITE}/tools/solar-valuation`,               priority: 0.7, changeFrequency: 'monthly' },
   { url: `${SITE}/privacy-policy`,        priority: 0.3, changeFrequency: 'yearly' as const },
@@ -38,19 +38,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   try {
+    // Case studies only: an unwritten project page is noindex, so it is not listed.
     projectEntries = await sanityServerClient.fetch<{ slug: string }[]>(
-      `*[_type == "project"]{ "slug": slug.current }`,
+      `*[_type == "project" && ${CASE_STUDY_READY}]{ "slug": slug.current }`,
     );
   } catch {
     // Sanity not yet configured — skip dynamic project routes
   }
 
-  const blogRoutes: MetadataRoute.Sitemap = blogEntries.map(({ slug, publishedAt }) => ({
-    url: `${SITE}/blog/${slug}`,
-    lastModified: publishedAt ? new Date(publishedAt) : undefined,
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }));
+  // The blog index is listed only once it has a post; until then it is noindex.
+  const blogRoutes: MetadataRoute.Sitemap = blogEntries.length === 0 ? [] : [
+    { url: `${SITE}/blog`, priority: 0.8, changeFrequency: 'weekly' },
+    ...blogEntries.map(({ slug, publishedAt }) => ({
+      url: `${SITE}/blog/${slug}`,
+      lastModified: publishedAt ? new Date(publishedAt) : undefined,
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    })),
+  ];
 
   const projectRoutes: MetadataRoute.Sitemap = projectEntries.map(({ slug }) => ({
     url: `${SITE}/projects/${slug}`,

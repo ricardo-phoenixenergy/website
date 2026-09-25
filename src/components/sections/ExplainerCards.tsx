@@ -8,6 +8,7 @@ import {
   IconClipboardCheck, IconTrendingUp, IconUsers, IconLayers, IconClock,
   IconTrendingDown, IconHourglass, IconSliders, IconUserTie, IconAward, IconTruck,
 } from '@/components/ui/Icons';
+import { inkFor } from '@/types/solutions';
 
 export type ExplainerIcon =
   | 'Sun' | 'Battery' | 'DollarSign' | 'Leaf' | 'Globe' | 'Activity'
@@ -64,7 +65,7 @@ function renderHeading(raw: string, accent: string) {
   return raw.split(/(<em>.*?<\/em>)/g).map((part, i) => {
     const m = part.match(/^<em>(.*)<\/em>$/);
     return m
-      ? <em key={i} style={{ color: accent, fontStyle: 'normal' }}>{m[1]}</em>
+      ? <em key={i} style={{ color: inkFor(accent), fontStyle: 'normal' }}>{m[1]}</em>
       : <span key={i}>{part}</span>;
   });
 }
@@ -84,23 +85,23 @@ export function ExplainerCards({
   return (
     <section
       id={id}
-      className={`${background === 'white' ? 'bg-white' : 'bg-[#F5F5F5]'} py-16 md:py-24`}
+      className={`${background === 'white' ? 'bg-white' : 'bg-pe-bg'} py-16 md:py-24`}
     >
       <div className="page-container">
         {(eyebrow || heading || subtitle) && (
           <AnimatedSection className="max-w-2xl mb-9">
             {eyebrow && (
-              <p className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-3" style={{ color: accent }}>
+              <p className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-3" style={{ color: inkFor(accent) }}>
                 {eyebrow}
               </p>
             )}
             {heading && (
-              <h2 className="font-display font-extrabold text-2xl md:text-3xl text-[#1A1A1A] leading-[1.2] mb-3">
+              <h2 className="font-display font-extrabold text-2xl md:text-3xl text-pe-text leading-[1.2] mb-3">
                 {renderHeading(heading, accent)}
               </h2>
             )}
             {subtitle && (
-              <p className="font-body text-sm md:text-base leading-[1.75] text-[#6B7280]">
+              <p className="font-body text-sm md:text-base leading-[1.75] text-pe-muted max-w-[60ch]">
                 {subtitle}
               </p>
             )}
@@ -117,14 +118,14 @@ export function ExplainerCards({
                 <CardBody padding="lg">
                   <div
                     className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
-                    style={{ background: `${accent}1F`, color: accent }}
+                    style={{ background: `${accent}1F`, color: inkFor(accent) }}
                   >
                     {ICONS[c.icon](20)}
                   </div>
-                  <h3 className="font-display font-extrabold text-lg text-[#1A1A1A] mb-2 leading-tight">
+                  <h3 className="font-display font-extrabold text-lg text-pe-text mb-2 leading-tight">
                     {c.title}
                   </h3>
-                  <p className="font-body text-sm text-[#374151] leading-[1.7]">
+                  <p className="font-body text-sm text-pe-text-soft leading-[1.7]">
                     {c.body}
                   </p>
                 </CardBody>

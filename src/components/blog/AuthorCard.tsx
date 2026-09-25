@@ -41,18 +41,18 @@ export function AuthorCard({ author }: AuthorCardProps) {
           </div>
         )}
         <div>
-          <p className="font-display font-bold text-[13px] text-[#1A1A1A] leading-tight group-hover:text-[#39575C] transition-colors">
+          <p className="font-display font-bold text-sm text-pe-text leading-tight group-hover:text-pe-primary transition-colors">
             {author.name}
           </p>
           {author.role && (
-            <p className="font-body font-medium text-[10px] mt-0.5" style={{ color: '#709DA9' }}>
+            <p className="font-body font-medium text-xs mt-0.5 text-pe-secondary-ink">
               {author.role}
             </p>
           )}
         </div>
       </Link>
       {author.bio && (
-        <p className="font-body text-[11px] text-[#6B7280] leading-[1.65]">{author.bio}</p>
+        <p className="font-body text-xs text-pe-muted leading-[1.65]">{author.bio}</p>
       )}
     </div>
   );

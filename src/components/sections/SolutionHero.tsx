@@ -19,6 +19,7 @@ export interface SolutionHeroProps {
   heroBg: string;      // CSS gradient fallback when no photo
   primaryCta: CtaLink;
   secondaryCta?: CtaLink;   // optional text link beside the primary button
+  ctaNote?: string;      // one short line under the buttons, e.g. who qualifies
   children?: ReactNode;  // calculator / interactive slot
   wideRight?: boolean;   // 40/60 split — give the right column 60% instead of the fixed 440px
   imagePosition?: 'center' | 'top' | 'bottom';  // object-position of the hero photo (default center)
@@ -60,6 +61,7 @@ export function SolutionHero({
   heroBg,
   primaryCta,
   secondaryCta,
+  ctaNote,
   children,
   wideRight = false,
   imagePosition = 'center',
@@ -67,7 +69,8 @@ export function SolutionHero({
   copyOnly = false,
 }: SolutionHeroProps) {
   return (
-    <section className="relative" style={{ minHeight: 'clamp(580px, 75vw, 760px)' }}>
+    // Dark from edge to edge, hero tools included: every control here takes the on-dark ring.
+    <section className="focus-on-dark relative" style={{ minHeight: 'clamp(580px, 75vw, 760px)' }}>
       {/* Background */}
       {heroImage ? (
         <Image
@@ -112,7 +115,7 @@ export function SolutionHero({
             {/* Breadcrumb — matches the dark-hero style used across the site */}
             <nav
               className="flex items-center gap-1.5 font-body text-sm mb-5"
-              style={{ color: 'rgba(255,255,255,0.45)' }}
+              style={{ color: 'var(--color-on-dark-subtle)' }}
               aria-label="Breadcrumb"
             >
               <Link href="/" className="hover:text-white transition-colors">Home</Link>
@@ -144,6 +147,14 @@ export function SolutionHero({
                 </Button>
               )}
             </div>
+            {ctaNote && (
+              <p
+                className="font-body text-xs leading-relaxed mt-3 max-w-[460px]"
+                style={{ color: 'var(--color-on-dark-muted)' }}
+              >
+                {ctaNote}
+              </p>
+            )}
           </div>
 
           {/* Right: calculator slot */}

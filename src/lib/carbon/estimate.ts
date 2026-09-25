@@ -5,7 +5,10 @@
 export const CARBON_YIELD_KWH_PER_KWP = 1600;
 /** Grid emission factor displaced by solar generation, tCO₂ per MWh. */
 export const GRID_FACTOR_T_PER_MWH = 0.95;
-/** Credit price band, ZAR per credit. */
+/**
+ * Credit price band, ZAR per credit. The claims register (src/config/claims.ts,
+ * carbon-credit-price-band) reads these, so the estimate and the register can't drift.
+ */
 export const CREDIT_PRICE_LOW = 50;
 export const CREDIT_PRICE_HIGH = 150;
 

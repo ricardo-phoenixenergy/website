@@ -17,13 +17,15 @@ import { getEnergyPrices } from '@/lib/getEnergyPrices';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import { EV_FLEETS } from '@/config/evFleetsContent';
+import { SERVICE_CTA } from '@/config/ctas';
 
 const vertical = 'ev-fleets' as const;
 const cfg = VERTICAL_CONFIG[vertical];
 const meta = SOLUTION_META[vertical];
+const cta = SERVICE_CTA[vertical];
 
 export const metadata: Metadata = {
-  title: cfg.seoTitle,
+  title: { absolute: cfg.seoTitle },
   description: cfg.seoDescription,
   alternates: { canonical: `https://phoenixenergy.solutions/solutions/${vertical}` },
   openGraph: { title: cfg.seoTitle, description: cfg.seoDescription, url: `https://phoenixenergy.solutions/solutions/${vertical}`, images: [{ url: 'https://phoenixenergy.solutions/og-solutions-ev-fleets.png', width: 1200, height: 630 }] },
@@ -47,9 +49,8 @@ export default async function EvFleetsPage() {
     bullets: t.bullets,
     imageBg: '',
     imageEmoji: '',
-    diagram: t.proof
-      ? <IndustryProofCard {...t.proof} accent={meta.accent} accentText={meta.accentText} />
-      : undefined,
+    // An industry example, styled neutrally so it can't read as Phoenix's project.
+    diagram: t.example ? <IndustryProofCard {...t.example} /> : undefined,
   }));
 
   const jsonLd = {
@@ -74,7 +75,7 @@ export default async function EvFleetsPage() {
         heroImage={hero?.url}
         heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #0d1f22 0%, #0f2a28 50%, #1a4040 100%)"
-        primaryCta={{ label: 'Assess my Fleet', href: '/contact' }}
+        primaryCta={cta}
       >
         <FleetSavingsEstimator prices={prices} />
       </SolutionHero>
@@ -111,8 +112,10 @@ export default async function EvFleetsPage() {
         accentText={meta.accentText}
         flushTop
       />
-      <div className="bg-[#F5F5F5] pb-12 md:pb-[52px] -mt-2">
-        <p className="page-container font-body text-[11px] text-[#6B7280]">{EV_FLEETS.financing.note}</p>
+      <div className="bg-pe-bg pb-12 md:pb-[52px] -mt-2">
+        <div className="page-container">
+          <p className="font-body text-xs leading-[1.7] text-pe-muted max-w-[60ch]">{EV_FLEETS.financing.note}</p>
+        </div>
       </div>
 
       {/* §5 — Industries (tabs) + vehicles */}
@@ -127,7 +130,7 @@ export default async function EvFleetsPage() {
       />
 
       {/* §7 — How it works (Sanity-driven) */}
-      {howItWorks && <HowItWorks {...howItWorks} accent={meta.accent} accentText={meta.accentText} />}
+      {howItWorks && <HowItWorks {...howItWorks} cta={cta} accent={meta.accent} accentText={meta.accentText} />}
 
       {/* §8 — Proof + FAQ */}
       <FeaturedProjects vertical={vertical} />
@@ -146,7 +149,7 @@ export default async function EvFleetsPage() {
         eyebrow={EV_FLEETS.cta.eyebrow}
         heading={EV_FLEETS.cta.heading}
         body={EV_FLEETS.cta.body}
-        primaryCta={{ label: 'Book a Fleet Assessment', href: '/contact' }}
+        primaryCta={cta}
       />
     </>
   );

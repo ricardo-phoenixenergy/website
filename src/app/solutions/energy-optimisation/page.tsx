@@ -11,25 +11,24 @@ import { getHowItWorks } from '@/lib/getHowItWorks';
 import { getHeroImages } from '@/lib/getHeroImages';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
+import { SERVICE_CTA } from '@/config/ctas';
 import type { TabItem } from '@/components/sections/SolutionTabs';
 import type { FinancingOption } from '@/components/sections/FinancingCards';
 
 const vertical = 'energy-optimisation' as const;
 const cfg = VERTICAL_CONFIG[vertical];
 const meta = SOLUTION_META[vertical];
+// "Book a free energy audit", prefilled (src/config/ctas.ts): hero, every lever tab, How It Works and the footer.
+const AUDIT_CTA = SERVICE_CTA[vertical];
 
 export const metadata: Metadata = {
-  title: cfg.seoTitle,
+  title: { absolute: cfg.seoTitle },
   description: cfg.seoDescription,
   alternates: { canonical: `https://phoenixenergy.solutions/solutions/${vertical}` },
   openGraph: { title: cfg.seoTitle, description: cfg.seoDescription, url: `https://phoenixenergy.solutions/solutions/${vertical}`, images: [{ url: 'https://phoenixenergy.solutions/og-solutions-energy-optimisation.png', width: 1200, height: 630 }] },
 };
 
 export const revalidate = 3600;
-
-const AUDIT_MESSAGE = "I'd like to book a free energy audit of my facility.";
-const AUDIT_HREF = `/contact?intent=client&message=${encodeURIComponent(AUDIT_MESSAGE)}`;
-const AUDIT_CTA = { label: 'Book an Energy Audit', href: AUDIT_HREF };
 
 const tabs: TabItem[] = [
   {
@@ -43,7 +42,7 @@ const tabs: TabItem[] = [
       'Variable speed drives (VSDs) to match motor speed to actual demand.',
       'Power factor correction (PFC) to reduce penalties and free up electrical capacity.',
       'Energy-efficient LED lighting with smart control systems.',
-      'Full turnkey delivery — engineering, supply, installation and financing options available.',
+      'Full turnkey delivery covering engineering, supply and installation, with financing options available.',
     ],
     imageBg: 'linear-gradient(135deg, rgba(112,157,169,0.18) 0%, rgba(57,87,92,0.22) 100%)',
     imageEmoji: '⚙️',
@@ -70,7 +69,7 @@ const tabs: TabItem[] = [
     icon: 'DollarSign',
     iconBg: 'rgba(112,157,169,0.18)',
     title: 'Stop overpaying for electricity.',
-    body: 'Your electricity tariff has a significant impact on your energy costs. We identify the most cost-effective tariff for your business, optimise your Notified Maximum Demand (NMD), and align your tariff structure with how your facility actually consumes electricity — unlocking savings without changing your operations.',
+    body: 'Your electricity tariff has a significant impact on your energy costs. We identify the most cost-effective tariff for your business, optimise your Notified Maximum Demand (NMD), and align your tariff structure with how your facility actually consumes electricity, so you save without changing your operations.',
     bullets: [
       'Independent review of your current tariff and billing structure.',
       'Comparison across all available Eskom and municipal tariffs.',
@@ -103,7 +102,7 @@ const EO_FINANCING: FinancingOption[] = [
     icon: 'purchase',
     title: 'Outright Purchase',
     description:
-      'Invest in your efficiency upgrade for maximum long-term return. Purchase your energy efficiency solution outright — covering motors, variable speed drives, power factor correction, and smart lighting systems — and capture 100% of the energy savings from day one. This option delivers the highest lifetime return and full ownership of all future savings.',
+      'Invest in your efficiency upgrade for maximum long-term return. Purchase your energy efficiency solution outright (motors, variable speed drives, power factor correction and smart lighting systems) and capture 100% of the energy savings from day one. This option delivers the highest lifetime return and full ownership of all future savings.',
     benefits: [
       'Full ownership of the system from day one.',
       'Maximum lifetime energy cost savings.',
@@ -115,11 +114,11 @@ const EO_FINANCING: FinancingOption[] = [
     title: 'Energy Efficiency Asset Lease',
     tag: 'Zero capex',
     description:
-      'Upgrade your facility with no upfront capital. We design, supply, install and maintain your energy efficiency upgrades, with the entire solution funded through fixed monthly payments structured around your energy savings. In most cases, the savings generated from reduced energy consumption offset the monthly cost from day one — making the system cashflow-neutral or positive.',
+      'Upgrade your facility with no upfront capital. We design, supply, install and maintain your energy efficiency upgrades, with the entire solution funded through fixed monthly payments structured around your energy savings. In most cases, the savings generated from reduced energy consumption offset the monthly cost from day one, so the system is cashflow-neutral or positive.',
     benefits: [
       'No upfront capital required.',
       'Savings-funded monthly payments.',
-      'Full turnkey delivery — supply, installation and maintenance included.',
+      'Full turnkey delivery, with supply, installation and maintenance included.',
       'Ownership transfers to you at the end of the term.',
     ],
   },
@@ -149,7 +148,7 @@ export default async function EnergyOptimisationPage() {
         heroImage={hero?.url}
         heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #0d1f22 0%, #1c3540 50%, #2a4a58 100%)"
-        primaryCta={{ label: 'Book a Free Energy Audit', href: AUDIT_HREF }}
+        primaryCta={AUDIT_CTA}
         primaryCtaArrow
         copyOnly
       />
@@ -159,16 +158,16 @@ export default async function EnergyOptimisationPage() {
         vertical="energy-optimisation"
         eyebrow="The levers"
         heading="How we <em>reduce your energy costs</em>"
-        subtitle="We reduce your energy costs through a structured combination of efficiency upgrades, load optimisation, and real-time monitoring — forming the first phase of your energy roadmap, before additional generation is introduced."
+        subtitle="We reduce your energy costs through a structured combination of efficiency upgrades, load optimisation and real-time monitoring. This is the first phase of your energy roadmap, before additional generation is introduced."
       />
       <FinancingBand
         eyebrow="How to fund it"
-        heading="Two ways to fund it — buy outright or start with zero capex"
+        heading="Buy it outright or start with zero capex"
         options={EO_FINANCING}
         accent={meta.accent}
         accentText="#39575C"
       />
-      {howItWorks && <HowItWorks {...howItWorks} accent={meta.accent} accentText={meta.accentText} flushTop />}
+      {howItWorks && <HowItWorks {...howItWorks} cta={AUDIT_CTA} accent={meta.accent} accentText={meta.accentText} flushTop />}
       <FeaturedProjects vertical={vertical} />
       <RelatedArticles vertical={vertical} />
       <PageFooter
@@ -176,7 +175,7 @@ export default async function EnergyOptimisationPage() {
         eyebrow="Get started"
         heading="Stop overpaying for energy."
         body="We analyse your energy use, identify inefficiencies, and deliver a prioritised energy efficiency roadmap so you know exactly where to reduce costs. Free. No obligation."
-        primaryCta={{ label: 'Book a Free Energy Audit', href: AUDIT_HREF }}
+        primaryCta={AUDIT_CTA}
       />
     </>
   );

@@ -4,6 +4,7 @@ import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { FloatingOrbs } from '@/components/ui/FloatingOrbs';
 import { SOLUTION_META, SOLUTION_VERTICALS } from '@/types/solutions';
 import { VERTICAL_CONFIG } from '@/config/verticals';
+import { DISCOVERY_CTA } from '@/config/ctas';
 import { IconArrowRight } from '@/components/ui/Icons';
 import { Card, CardImage, CardBody, CardFooter } from '@/components/ui/Card';
 import { getHeroImages } from '@/lib/getHeroImages';
@@ -11,7 +12,7 @@ import { getHeroImages } from '@/lib/getHeroImages';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Energy Solutions | Phoenix Energy',
+  title: 'Energy Solutions',
   description:
     'Commercial solar, wheeling, energy optimisation, carbon credits, WeBuySolar, and EV fleet solutions. Phoenix Energy delivers measurable savings across every energy challenge.',
   alternates: { canonical: 'https://phoenixenergy.solutions/solutions' },
@@ -45,11 +46,11 @@ export default async function SolutionsPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* Hero — full-bleed FloatingOrbs behind left-aligned headline */}
-      <section className="relative overflow-hidden" style={{ background: '#0d1f22', minHeight: 480 }}>
+      <section className="focus-on-dark relative overflow-hidden" style={{ background: '#0d1f22', minHeight: 480 }}>
         <FloatingOrbs />
         <div className="page-container relative z-10 pt-28 pb-20 md:pt-36 md:pb-28">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-1.5 font-body text-sm mb-8" style={{ color: 'rgba(255,255,255,0.45)' }}>
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-body text-sm mb-8" style={{ color: 'var(--color-on-dark-subtle)' }}>
             <Link href="/" className="hover:text-white transition-colors">Home</Link>
             <span>/</span>
             <span className="font-semibold text-white">Solutions</span>
@@ -57,13 +58,13 @@ export default async function SolutionsPage() {
           <AnimatedSection>
             <p
               className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-3"
-              style={{ color: 'rgba(255,255,255,0.50)' }}
+              style={{ color: 'var(--color-on-dark-subtle)' }}
             >
               Our Solutions
             </p>
             <h1 className="font-display font-extrabold text-4xl md:text-5xl text-white leading-[1.1] mb-5 max-w-[580px]">
               Every energy challenge,{' '}
-              <em style={{ color: '#709DA9', fontStyle: 'normal' }}>solved</em>
+              <em className="not-italic text-pe-secondary">solved</em>
             </h1>
             <p
               className="font-body text-base leading-[1.75] mb-8 max-w-[440px]"
@@ -73,11 +74,11 @@ export default async function SolutionsPage() {
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
-                href="/contact"
+                href={DISCOVERY_CTA.href}
                 className="inline-flex items-center gap-2 font-body text-sm font-semibold rounded-full px-5 py-2.5 transition-colors duration-200 hover:bg-white"
                 style={{ background: '#F5F5F5', color: '#0d1f22' }}
               >
-                Get a free assessment <IconArrowRight size={13} />
+                {DISCOVERY_CTA.label} <IconArrowRight size={13} />
               </Link>
               <a
                 href="#solutions"
@@ -92,7 +93,7 @@ export default async function SolutionsPage() {
       </section>
 
       {/* Solution cards grid */}
-      <section id="solutions" className="bg-[#F5F5F5] py-16 md:py-24">
+      <section id="solutions" className="bg-pe-bg py-16 md:py-24">
         <div className="page-container grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {SOLUTION_VERTICALS.map((vertical, i) => {
             const meta = SOLUTION_META[vertical];
@@ -115,7 +116,7 @@ export default async function SolutionsPage() {
                     <CardBody padding="sm">
                       <p
                         className="font-body text-sm leading-[1.75] flex-1 mb-4 line-clamp-3"
-                        style={{ color: 'rgba(255,255,255,0.55)' }}
+                        style={{ color: 'var(--color-on-dark-subtle)' }}
                       >
                         {cfg.seoDescription}
                       </p>
@@ -129,7 +130,7 @@ export default async function SolutionsPage() {
                             style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
                           >
                             <p className="font-display font-bold text-sm" style={{ color: meta.accent }}>{s.value}</p>
-                            <p className="font-body text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>{s.label}</p>
+                            <p className="font-body text-xs" style={{ color: 'var(--color-on-dark-subtle)' }}>{s.label}</p>
                           </div>
                         ))}
                       </div>

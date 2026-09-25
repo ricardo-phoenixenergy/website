@@ -5,6 +5,7 @@ import { sanityServerClient } from '@/lib/sanity.server';
 import {
   BLOG_INDEX_QUERY,
   BLOG_COUNT_QUERY,
+  PUBLISHED_POSTS_COUNT_QUERY,
   FEATURED_POST_QUERY,
   ALL_BLOG_TAGS_QUERY,
 } from '@/lib/queries';
@@ -44,11 +45,17 @@ export async function generateMetadata({
   const q = qParam ? `${qParam.trim()}*` : '';
   const canonical = page > 1 ? `${SITE}/blog?page=${page}` : `${SITE}/blog`;
 
-  const total = await sanityServerClient.fetch<number>(BLOG_COUNT_QUERY, { category, tag, q } as Record<string, string>);
+  const [total, published] = await Promise.all([
+    sanityServerClient.fetch<number>(BLOG_COUNT_QUERY, { category, tag, q } as Record<string, string>),
+    sanityServerClient.fetch<number>(PUBLISHED_POSTS_COUNT_QUERY),
+  ]);
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return {
-    title: 'News & Insights | Phoenix Energy',
+    title: 'News & Insights',
+    // An index with no posts has nothing for search engines. It is left out of
+    // the sitemap too (src/app/sitemap.ts) until the first post is published.
+    ...(published === 0 && { robots: { index: false, follow: true } }),
     description:
       'Expert perspectives on clean energy, SA market trends, project spotlights and company news.',
     alternates: {
@@ -109,29 +116,29 @@ export default async function BlogPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="bg-[#F5F5F5] min-h-screen flex flex-col">
+      <div className="bg-pe-bg min-h-screen flex flex-col">
 
         {/* Page header */}
-        <section className="bg-[#F5F5F5]">
+        <section className="bg-pe-bg">
           <AnimatedSection>
             <div className="page-container pt-24">
               {/* Breadcrumb */}
-              <nav className="flex items-center gap-1.5 font-body text-sm text-[#6B7280] mb-6">
-                <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
+              <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-body text-sm text-pe-muted mb-6">
+                <Link href="/" className="hover:text-pe-primary transition-colors">Home</Link>
                 <span>/</span>
-                <span className="font-semibold text-[#39575C]">News &amp; Insights</span>
+                <span className="font-semibold text-pe-primary">News &amp; Insights</span>
               </nav>
 
               {/* Title block */}
               <div className="mb-6">
-                <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-2">
+                <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-pe-muted mb-2">
                   News &amp; Insights
                 </p>
-                <h1 className="font-display font-extrabold text-4xl text-[#1A1A1A] leading-[1.2] mb-3">
+                <h1 className="font-display font-extrabold text-4xl text-pe-text leading-[1.2] mb-3">
                   Energy intelligence,{' '}
-                  <em style={{ color: '#709DA9', fontStyle: 'normal' }}>delivered</em>
+                  <em className="not-italic text-pe-secondary-ink">delivered</em>
                 </h1>
-                <p className="font-body text-base text-[#6B7280] leading-[1.7] max-w-lg">
+                <p className="font-body text-base text-pe-muted leading-[1.7] max-w-lg">
                   Expert perspectives on clean energy, SA market trends, project spotlights and company news.
                 </p>
               </div>
@@ -157,7 +164,7 @@ export default async function BlogPage({
 
         {/* Featured card */}
         {featured && (
-          <section className="bg-[#F5F5F5] pb-5">
+          <section className="bg-pe-bg pb-5">
             <AnimatedSection delay={0.1}>
               <div className="page-container">
                 <FeaturedArticleCard post={featured} />
@@ -167,14 +174,14 @@ export default async function BlogPage({
         )}
 
         {/* Article grid */}
-        <section className="flex-1 bg-[#F5F5F5] pb-2">
+        <section className="flex-1 bg-pe-bg pb-2">
           <div className="page-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
             {posts.map((post, i) => (
               <ArticleCard key={post._id} post={post} delay={i * 0.04} />
             ))}
             {posts.length === 0 && (
               <div className="col-span-3 py-16 text-center">
-                <p className="font-body text-sm text-[#9CA3AF]">No articles found.</p>
+                <p className="font-body text-sm text-pe-muted">No articles found.</p>
               </div>
             )}
           </div>
@@ -185,7 +192,7 @@ export default async function BlogPage({
               {page > 1 && (
                 <Link
                   href={buildBlogHref(page - 1, category, tag)}
-                  className="font-body text-xs text-[#6B7280] px-4 py-2 rounded-full border border-[#E5E7EB] transition-colors hover:bg-white"
+                  className="font-body text-xs text-pe-muted px-4 py-2 rounded-full border border-pe-border transition-colors hover:bg-white"
                 >
                   <IconArrowLeft size={14} /> Prev
                 </Link>
@@ -196,8 +203,8 @@ export default async function BlogPage({
                   href={buildBlogHref(p, category, tag)}
                   className={`font-body text-xs rounded-full px-3.5 py-2 transition-colors border ${
                     p === page
-                      ? 'bg-[#39575C] text-white border-[#39575C]'
-                      : 'bg-white text-[#6B7280] border-[#E5E7EB]'
+                      ? 'bg-pe-primary text-white border-pe-primary'
+                      : 'bg-white text-pe-muted border-pe-border'
                   }`}
                 >
                   {p}
@@ -206,7 +213,7 @@ export default async function BlogPage({
               {page < totalPages && (
                 <Link
                   href={buildBlogHref(page + 1, category, tag)}
-                  className="font-body text-xs text-[#6B7280] px-4 py-2 rounded-full border border-[#E5E7EB] transition-colors hover:bg-white"
+                  className="font-body text-xs text-pe-muted px-4 py-2 rounded-full border border-pe-border transition-colors hover:bg-white"
                 >
                   Next <IconArrowRight size={14} />
                 </Link>
@@ -217,13 +224,7 @@ export default async function BlogPage({
 
       </div>
 
-      <PageFooter
-        ctaVariant="centered"
-        eyebrow="Start your energy transition"
-        heading="Find the right energy strategy for your business."
-        body="Meet with our engineers to identify the solutions that will reduce costs, generate new revenue and strengthen your energy resilience—at no cost or obligation."
-        primaryCta={{ label: 'Book a Discovery Meeting', href: '/contact' }}
-      />
+      <PageFooter ctaVariant="centered" />
     </>
   );
 }

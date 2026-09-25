@@ -45,7 +45,7 @@ export const howItWorks = defineType({
           fields: [
             defineField({ name: 'label', title: 'Label', type: 'string', validation: (r) => r.required() }),
             defineField({ name: 'description', title: 'Description', type: 'text', rows: 2, validation: (r) => r.required() }),
-            defineField({ name: 'tag', title: 'Tag', type: 'string', description: 'Optional pill, e.g. "Free", "5-7 days".' }),
+            defineField({ name: 'tag', title: 'Tag', type: 'string', description: 'Optional pill, e.g. "Free", "5 to 7 days".' }),
           ],
           preview: { select: { title: 'label', subtitle: 'tag' } },
         }),
@@ -57,17 +57,23 @@ export const howItWorks = defineType({
       type: 'boolean',
       initialValue: true,
     }),
+    // The button's label and link are set in code (src/config/ctas.ts) so every
+    // page uses the same few labels and a link that fills in the contact form.
+    // These two fields are kept only so existing documents still validate.
     defineField({
       name: 'ctaLabel',
       title: 'CTA label',
       type: 'string',
+      deprecated: { reason: 'Not used. The site sets this button’s label in src/config/ctas.ts so every page uses the same labels.' },
+      readOnly: true,
       hidden: ({ parent }) => !parent?.showCta,
     }),
     defineField({
       name: 'ctaHref',
       title: 'CTA link',
       type: 'string',
-      description: 'e.g. /contact',
+      deprecated: { reason: 'Not used. The site links this button to a prefilled contact form set in src/config/ctas.ts.' },
+      readOnly: true,
       hidden: ({ parent }) => !parent?.showCta,
     }),
   ],

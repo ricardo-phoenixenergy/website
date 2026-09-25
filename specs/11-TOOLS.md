@@ -1,325 +1,159 @@
-# 11 — Tools: Solar Asset Valuation Tool
-> Spoke | Hub: [`/CLAUDE.md`](/CLAUDE.md) | Version 3.1
+# 11 · Tools: Solar Valuation Request
+> Spoke | Hub: [`/CLAUDE.md`](/CLAUDE.md) | Version 3.2
 > Route: `/tools/solar-valuation`
-> **Approved April 2026**
+> **Approved April 2026. Updated 2026-09-24:** rewritten as the valuation request the site now ships. The April calculator, its valuation model and the soft paywall were removed in September 2026 (UX fix programme, steps 8a and 10a).
 
 ---
 
 ## Overview
 
-The Solar Asset Valuation Tool is a three-step interactive calculator that gives owners of existing solar systems (and BESS) an indicative buyback valuation using industry-standard DCF + depreciated cost + market comparables methodology. It sits under the WeBuySolar vertical and is the primary lead-capture mechanism for that service.
+The Solar Valuation Request is a three-step form for owners of existing commercial solar systems, with or without battery storage. It collects the system's details and the owner's contact details and emails them to the WeBuySolar team. A specialist then contacts the owner to book a free on-site audit, and the valuation arrives with the preliminary offer after that audit. The page shows no figure.
+
+It sits under the WeBuySolar vertical and is linked from `/tools` and the WeBuySolar page. Every link to it uses `VALUATION_CTA` in `src/config/ctas.ts`: "Request a valuation".
 
 **Key design principles:**
-- Generation is calculated from installed kWp and regional SA yield — never from the user's net electricity bill (which is net-of-solar and would understate the system's actual contribution)
-- Solar and BESS are valued independently using separate depreciation models, then combined
-- A soft paywall gates the full results — the user sees blurred results and unlocks by submitting name + email + phone
-- The tool is a lead generator: captured details route to the WeBuySolar team via the same `/api/contact` Resend pipeline as the Contact page
+- A request, not a calculator. Nothing on the page estimates a value, and no copy promises an on-screen figure.
+- One source for the offer. The eligibility rule, the first contact and the process steps come from `WEBUYSOLAR_OFFER` in `src/config/webuysolarOffer.ts`, which the WeBuySolar page also renders, so the two can't promise different things.
+- One reply promise. The first contact uses `REPLY_PROMISE.window` from `src/config/contact.ts` ("within 1 business day").
+- The deal is an acquisition, never a "buyback".
+- Leads go to the WeBuySolar team through the same `/api/contact` Resend route as the contact form, with `intent: 'webuysolar'`.
 
 ---
 
 ## Page Structure
 
 ```
-[Navbar — light glass pill]
-[Breadcrumb — Home / Tools / Solar Asset Valuation]
-[Page header — eyebrow + H1 + subtitle]
-[Three-step tool card]
-  Step 1: System details (solar + BESS toggle)
-  Step 2: Condition & context
-  Step 3: Results — blurred behind soft paywall
-[Footer]
+[Navbar]
+[Breadcrumb: Home / Tools / Solar Valuation Request]
+[Page header: eyebrow, H1, intro, eligibility line, "How WeBuySolar works" link]
+[Three-step request card]
+  Step 1: System details (solar array, battery storage toggle)
+  Step 2: Condition
+  Step 3: Your details (what happens next, contact fields, privacy notice)
+[Site footer]
 ```
 
 ---
 
 ## Page Header
 
-- Eyebrow: `WEBUYSOLAR TOOL`
-- H1: `What is your solar system worth?` — "worth" in Dusty Blue `#709DA9`
-- Subtitle: *"Get an indicative buyback valuation in under 2 minutes. Based on real SA market data, DCF analysis, and WeBuySolar transaction comparables."*
-- `max-width: 600px`
+- Eyebrow: `WeBuySolar` (set in capitals by the eyebrow style).
+- H1: "Request a *valuation* of your solar system", with "valuation" in `text-pe-secondary-ink`.
+- Intro: *"Tell us about your system in three short steps. Our WeBuySolar team prepares your valuation after a free on-site audit, so you won’t see a figure on this page."*
+- Eligibility line: `WEBUYSOLAR_OFFER.eligibility`, *"We acquire systems built on BloombergNEF Tier 1 equipment, with or without battery storage."*
+- The header column is centred at `max-width: 600px`; the eligibility line is capped at 52ch.
+- Under it, a "How WeBuySolar works" link to `/solutions/webuysolar` (`SOLUTION_META.webuysolar.slug`), where the full six-step process and the FAQ live (added September 2026, audit VRT-04). Inter 600, 14px, Deep Teal, with an arrow that nudges right on hover, underlined on hover, as the site's other standalone arrow links; `padding: 4px 0` gives a 28px target.
 
 ---
 
 ## Step Indicator
 
-Three steps connected by lines — same pattern as How It Works:
+Three numbered steps in an ordered list labelled "Progress":
 ```
-[1 System details] ——— [2 Condition] ——— [3 Your valuation]
+[1 System details] · [2 Condition] · [3 Your details]
 ```
-- Inactive: `border: 0.5px solid var(--color-border-secondary)`, muted text
-- Active: Deep Teal `#39575C` filled circle, primary text, `font-weight: 500`
-- Done: `background: var(--color-background-secondary)`
+- Active: Deep Teal (`pe-primary`) filled circle, white numeral, `aria-current="step"`, label at weight 500.
+- Done: `pe-bg` circle; screen readers hear "(done)" after the label.
+- Upcoming: white circle with a `pe-border` outline, muted label.
+- The connecting lines are decorative (`aria-hidden`).
+
+A visually hidden H2 ("Step 2 of 3: Condition") takes focus whenever the visitor changes step, so keyboard and screen reader users know where they are.
 
 ---
 
-## Step 1 — System Details
+## Step 1: System Details
 
-### Solar Array section
+### Solar array section
 
-#### Installed solar capacity (kWp)
-- **Type:** Range slider
-- **Range:** 3–500 kWp, `step: 1`
-- **Default:** 20 kWp
-- **Live readout:** e.g. `20 kWp`
-- **Hint:** *"Residential: 5–30 kWp · Small C&I: 30–100 kWp · Large C&I: 100 kWp+"*
-
-#### Year of installation
-- **Type:** Range slider
-- **Range:** 2015–2025, `step: 1`
-- **Default:** 2021
-- **Hint:** *"Age determines panel degradation rate and remaining warranty value"*
-
-#### Panel brand tier
-- **Type:** 3-option segmented control
-- **Options:** `Tier 1` · `Tier 2` · `Tier 3 / unknown`
-- **Default:** Tier 1
-- **Hint:** *"Tier 1: JA Solar, Canadian Solar, LONGi, Trina · Tier 3: unbranded / Chinese no-name"*
-- **Valuation impact:** Tier multiplier applied to blended solar value (T1: 1.00, T2: 0.88, T3: 0.72)
-
-#### Inverter type
-- **Type:** 4-option segmented control
-- **Options:** `String` · `Hybrid` · `Micro` · `Off-grid`
-- **Default:** String
-- **Hint:** *"Hybrid inverters command a significant premium as they support BESS"*
-- **Valuation impact:** Sets replacement cost rate per kWp (see market rates table below)
+| Field | Control | Default | Hint |
+|---|---|---|---|
+| Installed solar capacity | Number field (kWp, 1 decimal) | 250 | "Total installed panel capacity, up to 10,000 kWp (10 MW)." |
+| Year of installation | Range slider, 2010 to the current year | 2021 | "Age determines panel degradation and remaining useful life." |
+| Panel brand | Select: 13 brands in alphabetical order, plus Other (free text) | JA Solar | None |
+| Inverter type | Segmented control: Grid-tied / string, Hybrid | Grid-tied / string | "Hybrid inverters command a premium as they support battery storage." |
+| Inverter capacity | Number field (kW, 1 decimal) | 250 | "Combined rating of your inverter(s)." |
+| Inverter brand | Select: 21 inverter and battery brands, plus Other | Sunsynk | None |
 
 ---
 
-### BESS section (toggle)
+### Battery storage section (toggle)
 
-A toggle switch labelled *"Does your system include battery storage?"* with sub-label *"BESS is valued separately and can significantly increase total buyback value"*. Default: off.
+A switch labelled *"Does your system include battery storage?"*, with the sub-label *"Include batteries so our team can value them with the rest of your system."* Default: off.
 
-When toggled on, four fields appear below:
+When it is on, four fields appear:
 
-#### Battery capacity (kWh)
-- **Type:** Range slider
-- **Range:** 5–500 kWh, `step: 5`
-- **Default:** 20 kWh
-- **Hint:** *"Total usable capacity installed"*
+| Field | Control | Default | Hint |
+|---|---|---|---|
+| Battery capacity | Number field (kWh, 2 decimals) | 250 | "Total usable capacity, up to 20,000 kWh (20 MWh)." |
+| Battery brand | Select: the same brand list, plus Other | Pylontech | None |
+| Battery chemistry | Segmented control: LFP / LiFePO₄, Li-NMC, Lead-acid | LFP | "LFP retains value significantly better, with a cycle life of 3,000+ against 300 to 500 for lead-acid." |
+| Estimated battery health (SoH) | Segmented control: 90% or more (like new), 70 to 90% (good), Below 70% (degraded) | 90% or more | "SoH is State of Health. Most LFP systems remain above 80% SoH for 8 to 10 years." |
 
-#### Battery chemistry
-- **Type:** 3-option segmented control
-- **Options:** `LFP / LiFePO₄` · `Li-NMC` · `Lead-acid`
-- **Default:** LFP
-- **Hint:** *"LFP retains value significantly better — 3,000+ cycle life vs 300–500 for lead-acid"*
-- **Valuation impact:** Sets replacement rate per kWh and depreciation life (see BESS model below)
+### Validation
 
-#### Estimated battery health (SoH)
-- **Type:** 3-option segmented control
-- **Options:** `90%+ (like new)` · `70–90% (good)` · `Below 70% (degraded)`
-- **Default:** 90%+
-- **Hint:** *"State of Health — most LFP systems remain above 80% SoH for 8–10 years"*
+The size fields are checked when the visitor presses **Next: System condition**, then again as they type. The first field with a problem takes focus.
 
-#### Battery brand
-- **Type:** 3-option segmented control
-- **Options:** `Premium (Pylontech, BYD, CATL)` · `Mid-range` · `Generic`
-- **Default:** Premium
+- Each message names the actual problem (`src/lib/valuation/sizeFields.ts`, updated September 2026, VAL-27); the examples follow the field:
+  - Empty, zero or negative: *"Enter a number above 0, for example 250 or 82.8."*
+  - Too many decimal places (kWp and kW take one, kWh two): *"Use up to one decimal place, for example 82.8."*
+  - A unit typed after the number, such as "250 kWp": *"Enter the number only, without the unit, for example 250."*
+  - Not a number at all: *"Enter a number, for example 250 or 82.8."*
+- Above the limit (10,000 kWp, 10,000 kW or 20,000 kWh): *"That's above 10 000 kWp. For larger portfolios, contact us directly."* The figure is formatted with `toLocaleString('en-ZA')`, which groups thousands with a space, while the hints use a comma.
+
+The brand lists are not limited to Tier 1 brands. Whether they should be is a business decision (see Open Items).
 
 ---
 
-## Step 2 — Condition & Context
-
-Six segmented control fields:
+## Step 2: Condition
 
 | Field | Options | Default | Hint |
 |---|---|---|---|
 | Overall system condition | Excellent / Good / Fair / Poor | Excellent | Excellent: no faults, recently serviced · Poor: inverter faults or physical damage |
-| Monitoring system | Yes — remote monitoring / No monitoring | Yes | Verified production data substantially increases buyer confidence |
-| Panel warranty remaining | 15+ years / 5–15 years / Under 5 years / Expired | 15+ years | — |
-| COC / electrical compliance cert | Yes — in hand / No / not sure | Yes | Required for resale — absence discounted from value |
-| Province / region | Gauteng / Western Cape / KZN / Other | Gauteng | Affects regional solar yield used in DCF |
-| Reason for selling | Upgrading / Relocating / Refinancing / Other | Upgrading | Informational only — routed to WeBuySolar team |
+| Monitoring system | Yes, remote monitoring / No monitoring | Yes | Verified production data substantially increases buyer confidence. |
+| Documentation & compliance | Full pack / COC only / None / not sure | Full pack | Full pack = Certificate of Compliance (COC), single-line diagrams (SLDs) and the system handover documents. Complete paperwork de-risks resale and improves value. |
+| Province / region | All nine provinces, alphabetical | Gauteng | Used to reflect regional solar performance. |
 
-### Information callout
-```
-How we value your system:
-Phoenix Energy uses a weighted three-method approach — DCF analysis (present value
-of future displaced tariff savings calculated from actual system capacity, not your
-net bill), depreciated replacement cost (current SA market rate adjusted for age,
-condition and component quality), and market comparables from recent WeBuySolar
-transactions. Solar and BESS are valued independently and then combined.
-```
+Buttons: **Back** and **Next: your contact details**.
+
+The April fields for panel warranty and reason for selling, and the "How we value your system" callout, were removed with the calculator.
 
 ---
 
-## Step 3 — Results (soft paywall)
+## Step 3: Your Details
 
-### Blurred results layer
+- Heading: "Your contact details", then *"There’s no cost, and no obligation to sell."*
+- **What happens next** (`NextSteps`, an ordered list), worded from `WEBUYSOLAR_OFFER`:
+  1. *"A WeBuySolar specialist reviews your details and contacts you within 1 business day to book your free audit."*
+  2. **Free expert audit.** *"On-site inspection: drone scan, string-level review, inverter config audit, opportunity mapping. Written report within 10 business days."*
+  3. **Preliminary offer & valuation.** *"Fair market valuation, indicative PPA or lease, and a forecasted savings model with an optimisation roadmap."*
+- Fields: First name (required, at least 2 letters) · Last name (optional) · Email address (required) · Phone number (optional).
+- Button: **Request my valuation** ("Sending…" while the request is on its way).
+- Privacy: `FormPrivacyNotice form="valuation"` under the form: *"Phoenix Energy Solutions (Pty) Ltd uses these details only to reply to your valuation request. Our Privacy Policy explains how we handle personal information and your rights."*, followed by Google's reCAPTCHA disclosure (the badge is hidden site-wide). The wording lives in `src/config/privacyNotice.ts` and is pending legal review (`docs/legal/privacy-review-draft.md`).
 
-The full results card renders immediately and is blurred via `filter: blur(7px)` + `user-select: none` + `pointer-events: none`. The user can see shapes and numbers are there but cannot read them. The blur lifts smoothly on unlock (`transition: filter 0.4s`).
+**Validation:** errors show under each field, and the first one takes focus: *"Enter your first name (at least 2 letters)."* and *"Enter an email address like name@company.co.za."*
 
-### Soft paywall overlay card
-
-Positioned absolute over the blurred results, centred:
-
-- Icon: Deep Teal circle with lightning bolt `⚡`
-- Title: *"Your valuation is ready"*
-- Body: *"Enter your details to unlock your full report — including the year-by-year DCF breakdown and your personalised WeBuySolar buyback offer."*
-- Four fields: First name · Last name · Email address · Phone number
-- CTA button: `Unlock my full valuation →`
-- Privacy note: *"Used only to send your report and for a WeBuySolar specialist to follow up. Never shared or sold."*
-
-**Validation:** First name + email required. Phone + last name optional but strongly prompted. On submit: overlay hides, blur removes, "what happens next" panel appears below.
-
-**Lead routing:** On unlock, POST to `/api/contact` with `intent: 'webuysolar'` + all form fields + full valuation data object (kWp, kWh, age, blended value, range). Same Resend pipeline as Contact page. Email subject: `[WeBuySolar] Valuation request — {kWp}kWp system, {firstName} {lastName}`.
+**If sending fails:** `SendFailureNotice` says why (the spam check couldn't run, the spam check failed, or the message didn't send), keeps the details in the form, and gives the email address and phone number.
 
 ---
 
-## Results Panel Content
+## After Sending
 
-### 6 metric cards (3×2 grid)
-
-| Position | Label | Source |
-|---|---|---|
-| Top-left (accent) | Indicative buyback value | `solarFinal + bessVal` |
-| Top-centre | Solar array value | `solarFinal` |
-| Top-right | BESS value | `bessVal` (or "N/A" if no BESS) |
-| Bottom-left | 10-yr displaced savings (PV) | `dcfTotal` |
-| Bottom-centre | Replacement cost (new) | `solarReplacement + bessReplacement` |
-| Bottom-right | Retained value | `total / solarReplacement × 100` |
-
-Accent card: `background: #39575C`, white text, white-60% label, white-50% sub.
-Standard cards: `background: var(--color-background-secondary)`.
-
-### Bar chart — 10-year projected annual savings
-
-- Chart.js bar chart
-- X axis: years (e.g. `2022`, `2023` ... `2031`)
-- Y axis: annual displaced saving in Rand (R000s)
-- Bar colour: Deep Teal `#39575C`
-- Each bar: `gen_yr_i × tariff_yr_i` where gen degrades by `degRate` per year and tariff escalates 12.7%/yr
-- Tooltip: full Rand value formatted with `.toLocaleString('en-ZA')`
-
-### Breakdown rows
-
-Key-value table showing all inputs and intermediate calculations:
-Solar capacity · Battery storage (if present) · System age / panel degradation · Regional solar yield · Yr 1 displaced electricity saving · 10-yr DCF · Solar array depreciated cost value · BESS depreciated value (if present) · Blended solar valuation · Indicative total buyback range
-
-### Methodology note
-
-Small muted text block citing all assumptions and sources. Includes disclaimer: *"This is an indicative estimate only — a formal offer requires on-site verification."*
-
-### Post-unlock: What happens next
-
-Three-step promise list (same pattern as Contact page):
-1. WeBuySolar specialist reviews valuation and contacts you within 1 business day
-2. Free on-site verification arranged to confirm system condition and production data
-3. Formal written offer within 5 business days — no obligation to accept
+The card is replaced by a confirmation. Its heading, *"Thank you. We’ve got your request."*, takes focus, and the same What happens next list follows. Nothing is calculated or shown: the team works from the email described under Lead Capture API.
 
 ---
 
-## Valuation Model
+## How the Valuation Is Prepared
 
-### Solar array — three-method weighted blend
+The site holds no valuation model. The WeBuySolar team values the system after the free on-site audit and presents the valuation with the preliminary offer. The process, as `WEBUYSOLAR_OFFER.steps` states it and the WeBuySolar page's How It Works shows it:
 
-```
-Blended solar value = (DCF × 0.45) + (Depreciated cost × 0.35) + (Market comps × 0.20)
-Final solar value   = Blended solar value × Tier multiplier
-```
+1. Free expert audit (free, no obligation).
+2. Preliminary offer & valuation (indicative).
+3. Due diligence (at Phoenix's cost).
+4. Final offer & contracting (either side can step back, no obligation).
+5. Acquisition & handover (settlement on the date agreed in the sale agreement).
+6. Ongoing optimisation (each upgrade justified by its own return).
 
-#### Method 1: DCF — displaced tariff savings (45% weight)
-
-```typescript
-const saYield = { gp: 1680, wc: 1900, kzn: 1750, other: 1680 }; // kWh/kWp/yr
-const selfConsumptionRatio = 0.80;   // Industry standard
-const tariff2025 = 3.50;             // R/kWh (Eskom/municipal avg, 2025)
-const tariffEscalation = 0.127;      // NERSA-approved 2025/26 rate
-const wacc = 0.12;                   // SA risk-adjusted cost of capital
-
-let dcfTotal = 0;
-for (let i = 1; i <= 10; i++) {
-  const tariff = tariff2025 * Math.pow(1 + tariffEscalation, i - 1);
-  const gen    = kw * saYield[prov] * perfFactor * (1 - degRate * (i - 1)) * selfConsumptionRatio;
-  const saving = gen * tariff;
-  dcfTotal    += saving / Math.pow(1 + wacc, i);
-}
-```
-
-**Data sources:**
-- SA solar yield: SA PV Know-How (average 1,680 kWh/kWp/yr Gauteng)
-- Eskom tariff: R3.50/kWh (2025 direct + municipal average)
-- Tariff escalation: 12.7% (NERSA approved 2025/26, Standard Bank energy report Feb 2025)
-- WACC: 12% (SA risk-adjusted rate for energy assets)
-- Self-consumption: 80% industry standard (remainder fed back to grid or curtailed)
-
-#### Method 2: Depreciated replacement cost (35% weight)
-
-```typescript
-// 2025 SA installed market rates (EnergyBee, LZY Energy)
-const invRate = { string: 20000, hybrid: 25000, micro: 27000, offgrid: 30000 }; // R/kWp
-
-const solarReplacement = kw * invRate[inv];
-const ageFactor        = Math.max(0, 1 - age / 25);  // 25-yr panel lifespan
-const solarCostVal     = solarReplacement * ageFactor * condM * monM * warrM * cocM;
-```
-
-**Condition multipliers:**
-| Factor | Excellent | Good | Fair | Poor |
-|---|---|---|---|---|
-| Condition | 1.00 | 0.88 | 0.72 | 0.52 |
-
-**Quality multipliers:**
-| Factor | Yes/Full | Mid | No/None/Expired |
-|---|---|---|---|
-| Monitoring | 1.04 | — | 0.97 |
-| Warranty | 1.05 (15+ yr) | 1.00 (5–15) | 0.93 (<5) / 0.85 (expired) |
-| COC cert | 1.00 | — | 0.93 |
-
-#### Method 3: Market comparables (20% weight)
-
-```typescript
-const solarMktAdj = solarCostVal * 0.92;
-// Applied discount reflects that secondary market transactions typically clear
-// at 8% below depreciated replacement cost in current SA market conditions.
-// Updated periodically based on WeBuySolar transaction data.
-```
-
-#### Tier multiplier (applied after blend)
-
-| Tier | Multiplier | Rationale |
-|---|---|---|
-| Tier 1 (JA, Canadian, LONGi, Trina) | 1.00 | Bloomberg Tier 1, bankable warranty |
-| Tier 2 (mid-range) | 0.88 | Reduced secondary market demand |
-| Tier 3 / unknown | 0.72 | Warranty risk, unverifiable performance data |
-
-#### Panel degradation rates
-
-| Tier | Rate | Standard |
-|---|---|---|
-| Tier 1 | 0.5%/yr | IEC 61215 / manufacturer spec |
-| Tier 2 | 0.7%/yr | Industry estimate |
-| Tier 3 | 1.0%/yr | Conservative estimate for no-name panels |
-| Maximum applied | 30% | Floor: no system valued below 70% performance factor |
-
----
-
-### BESS — independent valuation model
-
-```typescript
-// 2025 SA installed BESS cost (LZY Energy, EnergyBee)
-const chemRate = { lfp: 12000, nmc: 10500, lead: 4000 }; // R/kWh installed
-const chemLife = { lfp: 12,    nmc: 8,     lead: 4 };    // Calendar life (years)
-
-const brandMult = { premium: 1.00, mid: 0.85, generic: 0.65 };
-const sohMult   = { high: 1.00, mid: 0.80, low: 0.55 };
-
-const bessReplacement = bessKwh * chemRate[chem];
-const bessAgeFactor   = Math.max(0, 1 - age / chemLife[chem]);
-const bessVal         = bessReplacement * bessAgeFactor * sohMult[soh] * brandMult[brand] * condM;
-```
-
-**BESS chemistry rationale:**
-| Chemistry | Rate | Life | Cycles | Notes |
-|---|---|---|---|---|
-| LFP (LiFePO₄) | R12,000/kWh | 12 yr | 3,000–4,000 | Pylontech, BYD, CATL — dominant in SA market |
-| Li-NMC | R10,500/kWh | 8 yr | 1,500–2,000 | Higher energy density, shorter cycle life |
-| Lead-acid | R4,000/kWh | 4 yr | 300–500 | Rapidly depreciated, low secondary value |
-
-**Brand tier rationale:**
-- Premium (Pylontech, BYD, CATL): transferable BMS warranty, verified SoH reporting
-- Mid-range: limited warranty transferability
-- Generic: no BMS data, no warranty — priced on chemistry value only
+An indicative valuation range may be added to the tool later (a decision from the September 2026 UX audit). It would need its own spec, a source for every assumption, and entries in the claims register (`docs/content/claims-register.md`).
 
 ---
 
@@ -330,24 +164,28 @@ src/
 ├── app/
 │   └── tools/
 │       └── solar-valuation/
-│           └── page.tsx                    ← Page wrapper, metadata
+│           └── page.tsx                    ← Page, metadata, HowTo JSON-LD
 ├── components/
-│   └── tools/
-│       └── SolarValuationTool.tsx          ← Main tool component
-│           ├── StepIndicator.tsx
-│           ├── Step1SystemDetails.tsx
-│           ├── Step2Condition.tsx
-│           ├── Step3Results.tsx
-│           │   ├── ResultsGrid.tsx
-│           │   ├── DCFBarChart.tsx         ← Chart.js bar chart
-│           │   ├── BreakdownRows.tsx
-│           │   └── SoftPaywall.tsx
-│           └── useValuation.ts             ← All calculation logic
-└── lib/
-    └── valuation/
-        ├── solarModel.ts                   ← DCF + cost model
-        ├── bessModel.ts                    ← BESS model
-        └── constants.ts                    ← All market rate constants
+│   ├── tools/
+│   │   ├── SolarValuationTool.tsx          ← Step state, focus, analytics, reCAPTCHA script
+│   │   ├── StepIndicator.tsx
+│   │   ├── Step1SystemDetails.tsx
+│   │   ├── Step2Condition.tsx
+│   │   ├── Step3Capture.tsx                ← Contact fields, send, confirmation
+│   │   └── NumberField.tsx, RangeSlider.tsx, SegmentedControl.tsx, SelectControl.tsx, Toggle.tsx
+│   └── ui/
+│       └── NextSteps.tsx, FormPrivacyNotice.tsx, SendFailureNotice.tsx, RecaptchaScript.tsx
+├── config/
+│   └── webuysolarOffer.ts                  ← Eligibility, first contact, process steps
+├── lib/
+│   ├── valuation/
+│   │   ├── types.ts                        ← The answers collected
+│   │   ├── labels.ts                       ← One wording per answer, for the form and the email
+│   │   └── provinces.ts
+│   └── validators/
+│       └── contact.ts                      ← webBuySolarSchema
+└── emails/
+    └── WeBuySolarEmail.tsx                 ← The team's lead email
 ```
 
 ---
@@ -357,43 +195,32 @@ src/
 ```typescript
 // src/lib/valuation/types.ts
 
-interface SolarInputs {
-  kw: number;                           // Installed kWp
-  installYear: number;                  // Year of installation
-  tier: 'T1' | 'T2' | 'T3';            // Panel brand tier
-  inverterType: 'string' | 'hybrid' | 'micro' | 'offgrid';
+export interface SolarInputs {
+  kw: number;
+  installYear: number;
+  inverterType: 'string' | 'hybrid';
+  /** Combined inverter rating (kW). */
+  inverterKw: number;
+  panelBrand: string;
+  inverterBrand: string;
 }
 
-interface BessInputs {
+export interface BessInputs {
   enabled: boolean;
-  kWh: number;                          // Installed capacity
+  kWh: number;
   chemistry: 'lfp' | 'nmc' | 'lead';
-  soh: 'high' | 'mid' | 'low';         // State of health
-  brand: 'premium' | 'mid' | 'generic';
+  soh: 'high' | 'mid' | 'low';
+  brand: string;
 }
 
-interface ConditionInputs {
+export type Province = 'ec' | 'fs' | 'gp' | 'kzn' | 'lp' | 'mp' | 'nw' | 'nc' | 'wc';
+
+export interface ConditionInputs {
   condition: 'exc' | 'good' | 'fair' | 'poor';
   monitoring: boolean;
-  warrantyYears: 'full' | 'mid' | 'low' | 'none';
-  hasCoc: boolean;
-  province: 'gp' | 'wc' | 'kzn' | 'other';
-  reason: 'upgrade' | 'relocate' | 'finance' | 'other';
-}
-
-interface ValuationResult {
-  solarDcf: number;                     // 10-yr DCF present value
-  solarCostVal: number;                 // Depreciated replacement cost
-  solarMktAdj: number;                  // Market comparables
-  solarFinal: number;                   // Blended + tier multiplier
-  bessVal: number;                      // BESS valuation (0 if none)
-  total: number;                        // solarFinal + bessVal
-  rangeLow: number;                     // total × 0.88
-  rangeHigh: number;                    // total × 1.12
-  solarReplacement: number;             // New system cost
-  bessReplacement: number;              // New BESS cost
-  retained: number;                     // % of replacement cost retained
-  yrCashFlows: number[];                // 10 annual saving values for chart
+  /** Documentation held: full handover pack (COC + SLDs + docs), COC only, or none. */
+  docs: 'full' | 'coc' | 'none';
+  province: Province;
 }
 ```
 
@@ -402,45 +229,54 @@ interface ValuationResult {
 ## Lead Capture API
 
 ```typescript
-// POST /api/contact — same route as Contact page
-// Additional fields for WeBuySolar tool:
+// POST /api/contact, the same route as the contact form.
+// Validated by webBuySolarSchema (src/lib/validators/contact.ts).
 
 interface WeBuySolarLead {
   intent: 'webuysolar';
-  firstName: string;
-  lastName: string;
+  firstName: string;            // at least 2 characters
+  lastName?: string;
   email: string;
-  phone: string;
-  valuation: {
+  phone?: string;
+  valuation: {                  // the owner's answers, as the labels they chose
     kw: number;
-    bessKwh: number;
+    bessKwh: number;            // 0 without battery storage
     installYear: number;
-    tier: string;
+    inverterType?: string;
+    inverterKw?: number;
+    panelBrand?: string;
+    inverterBrand?: string;
+    batteryBrand?: string;
+    batteryChemistry?: string;
+    batteryHealth?: string;
+    condition?: string;
+    monitoring?: string;
+    documentation?: string;
     province: string;
-    indicativeValue: number;
-    rangeLow: number;
-    rangeHigh: number;
-    dcfValue: number;
   };
-  recaptchaToken: string;    // reCAPTCHA v3, same as Contact page
+  recaptchaToken?: string;      // reCAPTCHA v3, action 'valuation_submit'
 }
 
-// Email to info@phoenixenergy.solutions:
-// Subject: [WeBuySolar] {kWp}kWp valuation — {firstName} {lastName} — {fmtK(indicativeValue)}
-// Body: full valuation summary + contact details
+// Email to info@phoenixenergy.solutions, reply-to the owner.
+// Subject: [WeBuySolar] {kw} kWp system: {firstName} {lastName}
+// Template: WeBuySolarEmail ("New valuation request"), with contact, system and condition sections.
 ```
+
+**Spam check:** a missing or invalid reCAPTCHA token is refused, and the form then offers email and phone. A low score (below 0.5) is accepted, and the subject starts with "[Check: low reCAPTCHA score]".
+
+**Analytics:** `valuation_complete` fires once, when the visitor reaches step 3 (`kw`, `bess_kwh`, `install_year`). `valuation_lead` fires after a successful send (`kw`, `has_battery`). The names predate the relabel (see Open Items).
 
 ---
 
 ## SEO & Metadata
 
 ```typescript
-export const metadata = {
-  title: 'Solar Asset Valuation Tool — What Is Your System Worth? | Phoenix Energy',
-  description: 'Get an instant indicative buyback valuation for your solar system and BESS. Based on DCF analysis, SA market rates, and WeBuySolar transaction data.',
-  openGraph: {
-    images: [{ url: '/og-tools-valuation.jpg' }],
-  },
+export const metadata: Metadata = {
+  title: 'Solar System Valuation Request',   // the root layout adds " | Phoenix Energy"
+  description:
+    'Request a valuation of your solar system and battery storage. Our WeBuySolar team prepares it after a free on-site audit, with no obligation.',
+  openGraph: { images: [{ url: '/og-default.png', width: 1200, height: 630 }] },
+  alternates: { canonical: 'https://phoenixenergy.solutions/tools/solar-valuation' },
 };
 ```
 
@@ -449,45 +285,20 @@ export const metadata = {
 {
   '@context': 'https://schema.org',
   '@type': 'HowTo',
-  name: 'How to value a solar system in South Africa',
+  name: 'How to request a solar system valuation in South Africa',
   step: [
-    { '@type': 'HowToStep', name: 'Enter system details', text: 'Input your installed kWp, year, panel tier and inverter type.' },
-    { '@type': 'HowToStep', name: 'Describe system condition', text: 'Rate condition, warranty status, monitoring, and COC certificate.' },
-    { '@type': 'HowToStep', name: 'Receive your valuation', text: 'Get a DCF-based indicative buyback range from WeBuySolar.' },
+    { '@type': 'HowToStep', name: 'Enter system details', text: 'Input your installed kWp, year of installation, brands and inverter type.' },
+    { '@type': 'HowToStep', name: 'Describe system condition', text: 'Rate condition, monitoring, documentation and province.' },
+    { '@type': 'HowToStep', name: 'Submit your details', text: `Share your contact details. ${WEBUYSOLAR_OFFER.firstContact}` },
   ],
 }
 ```
 
 ---
 
-## Market Rate Constants (update annually)
+## Market Rates
 
-```typescript
-// src/lib/valuation/constants.ts
-// Last updated: April 2026
-// Sources: EnergyBee, LZY Energy, SA PV Know-How, NERSA, Standard Bank
-
-export const CONSTANTS = {
-  SA_YIELD_KWH_PER_KWP: { gp: 1680, wc: 1900, kzn: 1750, other: 1680 },
-  SELF_CONSUMPTION_RATIO: 0.80,
-  TARIFF_2025_RAND_PER_KWH: 3.50,
-  TARIFF_ESCALATION_ANNUAL: 0.127,
-  WACC: 0.12,
-  DCF_YEARS: 10,
-  PANEL_LIFESPAN_YEARS: 25,
-  DEGRADATION_RATE: { t1: 0.005, t2: 0.007, t3: 0.010 },
-  MAX_DEGRADATION: 0.30,
-  INVERTER_RATE_PER_KWP: { string: 20000, hybrid: 25000, micro: 27000, offgrid: 30000 },
-  BESS_RATE_PER_KWH: { lfp: 12000, nmc: 10500, lead: 4000 },
-  BESS_LIFE_YEARS: { lfp: 12, nmc: 8, lead: 4 },
-  DCF_WEIGHT: 0.45,
-  COST_WEIGHT: 0.35,
-  MKT_WEIGHT: 0.20,
-  MKT_COMPS_DISCOUNT: 0.92,
-};
-```
-
-> ⚠️ **Review constants annually** — Eskom tariff, installed cost per kWp, and BESS rates change year-on-year. The methodology note shown to users must always cite the year of the data.
+None. The April 2026 calculator's constants (tariffs, regional yields, replacement rates, discount rate and method weights) are not in the code, and the site states none of them.
 
 ---
 
@@ -495,30 +306,21 @@ export const CONSTANTS = {
 
 | # | Item | Owner |
 |---|---|---|
-| 1 | reCAPTCHA v3 site key for tool paywall form | Dev |
-| 2 | Extend `/api/contact` route to handle `intent: 'webuysolar'` with valuation payload | Dev |
-| 3 | Update `CONSTANTS` annually with latest NERSA tariff ruling and EnergyBee cost data | Dev |
-| 4 | Review WeBuySolar market comparables discount factor (currently 0.92) against real transaction data | Phoenix Energy |
+| 1 | Confirm the WeBuySolar timings (first contact, audit report, settlement), the Tier 1 eligibility rule, and whether the brand lists should offer only Tier 1 brands (claims register, step 8a confirmations) | Phoenix Energy |
+| 2 | Rename `valuation_complete`, which fires before any valuation exists, and remove the unused `paywall_unlock` event type, together with the GTM container | Dev + marketing |
+| 3 | Legal sign-off of the form privacy notice, and of the privacy policy's section 2 and 3 wording for the request (`docs/legal/privacy-review-draft.md`, gaps 2.6 and 2.7) | Legal |
+| 4 | An indicative valuation range, if it is added later, with a source for every assumption | Phoenix Energy |
+| 5 | A link from the tool to `/solutions/webuysolar`, where the full process and FAQ live (polish backlog, VRT-04) | Dev |
 
 ---
 
-*Spoke of [`CLAUDE.md`](/CLAUDE.md) | Version 3.1 | Approved April 2026*
+*Spoke of [`CLAUDE.md`](/CLAUDE.md) | Version 3.2 | Approved April 2026, updated 2026-09-24*
 
 ---
 
-## Accessibility Fix (Engineering Review April 2026)
+## Accessibility
 
-### Blurred results layer — screen reader handling
-The blurred results div (visible before paywall unlock) must have `aria-hidden="true"` so screen readers skip it entirely. On unlock, remove `aria-hidden` and add `aria-live="polite"` to announce the revealed content.
-
-```tsx
-<div
-  ref={resultsRef}
-  aria-hidden={!unlocked}
-  aria-live={unlocked ? 'polite' : undefined}
-  style={{ filter: unlocked ? 'none' : 'blur(7px)', userSelect: unlocked ? 'auto' : 'none' }}
->
-  {/* results content */}
-</div>
-```
-
+- Controls are native: the segmented controls are radio groups (`.choice-segment`), the battery toggle is a `role="switch"` button, and the year is a range input.
+- Focus moves with the visitor: to the hidden step heading on every step change, to the first invalid field on a failed check, and to the confirmation heading after sending.
+- Errors are tied to their fields with `aria-invalid` and `aria-describedby`, and a status line announces "Sending your request".
+- The April rule for a blurred results layer (`aria-hidden` until the visitor gave their details) no longer applies: there is no results layer.

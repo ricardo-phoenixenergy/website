@@ -9,7 +9,9 @@ export const contactSchema = z.object({
   company: z.string().min(1, 'Company name is required'),
   location: z.string().min(2, 'Location is required'),
   message: z.string().optional(),
-  recaptchaToken: z.string().min(1),
+  // The route decides about the token (src/lib/recaptchaCheck.ts): with no site
+  // key the browser sends none, and that enquiry must still get through.
+  recaptchaToken: z.string().optional(),
 });
 
 export const webBuySolarSchema = z.object({
@@ -18,14 +20,20 @@ export const webBuySolarSchema = z.object({
   lastName: z.string().min(1).optional(),
   email: z.string().email(),
   phone: z.string().optional(),
+  // Every answer from the valuation tool (see src/lib/valuation/labels.ts).
   valuation: z.object({
-    kw: z.number(),
-    bessKwh: z.number(),
-    installYear: z.number(),
-    inverterKw: z.number().optional(),
+    kw: z.number().positive(),
+    bessKwh: z.number().nonnegative(),
+    installYear: z.number().int(),
+    inverterType: z.string().optional(),
+    inverterKw: z.number().positive().optional(),
     panelBrand: z.string().optional(),
     inverterBrand: z.string().optional(),
     batteryBrand: z.string().optional(),
+    batteryChemistry: z.string().optional(),
+    batteryHealth: z.string().optional(),
+    condition: z.string().optional(),
+    monitoring: z.string().optional(),
     documentation: z.string().optional(),
     province: z.string(),
   }),

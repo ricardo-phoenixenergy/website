@@ -13,13 +13,16 @@ import { getHeroImages } from '@/lib/getHeroImages';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import { CARBON_CREDITS } from '@/config/carbonCreditsContent';
+import { SERVICE_CTA } from '@/config/ctas';
 
 const vertical = 'carbon-credits' as const;
 const cfg = VERTICAL_CONFIG[vertical];
 const meta = SOLUTION_META[vertical];
+// "Check my eligibility": nothing is registered until we've checked the system.
+const cta = SERVICE_CTA[vertical];
 
 export const metadata: Metadata = {
-  title: cfg.seoTitle,
+  title: { absolute: cfg.seoTitle },
   description: cfg.seoDescription,
   alternates: { canonical: `https://phoenixenergy.solutions/solutions/${vertical}` },
   openGraph: { title: cfg.seoTitle, description: cfg.seoDescription, url: `https://phoenixenergy.solutions/solutions/${vertical}`, images: [{ url: 'https://phoenixenergy.solutions/og-solutions-carbon-credits.png', width: 1200, height: 630 }] },
@@ -53,7 +56,7 @@ export default async function CarbonCreditsPage() {
         heroImage={hero?.url}
         heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #0d1f22 0%, #182a1a 50%, #2a4a28 100%)"
-        primaryCta={{ label: 'Register my Carbon Credits', href: '/contact' }}
+        primaryCta={cta}
       >
         <CarbonRevenueEstimator />
       </SolutionHero>
@@ -83,7 +86,7 @@ export default async function CarbonCreditsPage() {
       />
 
       {/* §5 — From generation to payout (Sanity-driven) */}
-      {howItWorks && <HowItWorks {...howItWorks} accent={meta.accent} accentText={meta.accentText} flushTop />}
+      {howItWorks && <HowItWorks {...howItWorks} cta={cta} accent={meta.accent} accentText={meta.accentText} flushTop />}
 
       {/* §7 — FAQ */}
       <FaqAccordion
@@ -104,7 +107,7 @@ export default async function CarbonCreditsPage() {
         eyebrow={CARBON_CREDITS.cta.eyebrow}
         heading={CARBON_CREDITS.cta.heading}
         body={CARBON_CREDITS.cta.body}
-        primaryCta={{ label: 'Book an Assessment', href: '/contact' }}
+        primaryCta={cta}
       />
     </>
   );

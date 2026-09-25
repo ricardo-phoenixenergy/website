@@ -13,13 +13,17 @@ import { getHeroImages } from '@/lib/getHeroImages';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import { WEBUYSOLAR } from '@/config/webuysolarContent';
+import { WEBUYSOLAR_OFFER } from '@/config/webuysolarOffer';
+import { SERVICE_CTA, VALUATION_CTA } from '@/config/ctas';
 
 const vertical = 'webuysolar' as const;
 const cfg = VERTICAL_CONFIG[vertical];
 const meta = SOLUTION_META[vertical];
+// "Book a free WeBuySolar audit", prefilled; the valuation request is the tool (VALUATION_CTA).
+const AUDIT_CTA = SERVICE_CTA[vertical];
 
 export const metadata: Metadata = {
-  title: cfg.seoTitle,
+  title: { absolute: cfg.seoTitle },
   description: cfg.seoDescription,
   alternates: { canonical: `https://phoenixenergy.solutions/solutions/${vertical}` },
   openGraph: {
@@ -31,8 +35,6 @@ export const metadata: Metadata = {
 };
 
 export const revalidate = 3600;
-
-const AUDIT_HREF = `/contact?intent=client&message=${encodeURIComponent(WEBUYSOLAR.auditPrefill)}`;
 
 export default async function WeBuySolarPage() {
   const hero = (await getHeroImages())[vertical];
@@ -83,8 +85,9 @@ export default async function WeBuySolarPage() {
         heroBlur={hero?.lqip}
         heroBg="linear-gradient(135deg, #1a0f00 0%, #3a2000 50%, #5a3a10 100%)"
         imagePosition="top"
-        primaryCta={{ label: 'Book your free audit', href: AUDIT_HREF }}
-        secondaryCta={{ label: "What's my system worth?", href: 'https://phoenixenergy.solutions/tools/solar-valuation' }}
+        primaryCta={AUDIT_CTA}
+        secondaryCta={VALUATION_CTA}
+        ctaNote={WEBUYSOLAR_OFFER.eligibility}
       />
 
       {/* §3 — Why now */}
@@ -151,7 +154,7 @@ export default async function WeBuySolarPage() {
         eyebrow="Start today"
         heading={WEBUYSOLAR.audit.heading}
         body={WEBUYSOLAR.audit.subtitle}
-        primaryCta={{ label: 'Arrange your free audit', href: AUDIT_HREF }}
+        primaryCta={AUDIT_CTA}
         deliverables={WEBUYSOLAR.audit.deliverables}
       />
     </>

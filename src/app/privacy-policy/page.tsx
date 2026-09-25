@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { PageFooter } from '@/components/layout/PageFooter';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | Phoenix Energy',
+  title: 'Privacy Policy',
   description:
     'How Phoenix Energy Solutions (Pty) Ltd collects, uses and protects your personal information in accordance with POPIA.',
   alternates: { canonical: 'https://phoenixenergy.solutions/privacy-policy' },
@@ -13,14 +12,12 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <div className="mt-8 first:mt-0">
       <h2
-        className="font-display font-bold mb-3"
-        style={{ fontSize: '15px', color: '#1A1A1A' }}
+        className="font-display font-bold text-xl text-pe-text mb-3"
       >
         {title}
       </h2>
       <div
-        className="font-body space-y-3"
-        style={{ fontSize: '14px', color: '#6B7280', lineHeight: '1.8' }}
+        className="font-body text-base leading-[1.75] text-pe-text-soft space-y-3 max-w-[60ch]"
       >
         {children}
       </div>
@@ -31,25 +28,25 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function PrivacyPolicyPage() {
   return (
     <>
-    <main className="bg-[#F5F5F5] min-h-screen">
+    <div className="bg-pe-bg min-h-screen">
       <div className="page-container pt-24 pb-16">
 
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-1.5 font-body text-sm text-[#6B7280] mb-6">
-          <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-body text-sm text-pe-muted mb-6">
+          <Link href="/" className="hover:text-pe-primary transition-colors">Home</Link>
           <span>/</span>
-          <span className="font-semibold text-[#39575C]">Privacy Policy</span>
+          <span className="font-semibold text-pe-primary">Privacy Policy</span>
         </nav>
 
         {/* Page header */}
         <div className="max-w-[760px] mx-auto mb-8">
-          <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-[#6B7280] mb-2">
+          <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-pe-muted mb-2">
             Legal
           </p>
-          <h1 className="font-display font-extrabold text-4xl text-[#1A1A1A] leading-[1.2] mb-3">
+          <h1 className="font-display font-extrabold text-4xl text-pe-text leading-[1.2] mb-3">
             Privacy Policy
           </h1>
-          <p className="font-body text-base text-[#6B7280] leading-[1.75]">
+          <p className="font-body text-base text-pe-muted leading-[1.75]">
             How we collect, use and protect your personal information.
           </p>
         </div>
@@ -67,7 +64,7 @@ export default function PrivacyPolicyPage() {
               Cape Town, 7441, South Africa. You can reach us at{' '}
               <a
                 href="mailto:info@phoenixenergy.solutions"
-                className="text-[#39575C] hover:underline"
+                className="text-pe-primary underline underline-offset-2 hover:text-pe-primary-hover"
               >
                 info@phoenixenergy.solutions
               </a>
@@ -132,7 +129,7 @@ export default function PrivacyPolicyPage() {
               To exercise any of these rights, email{' '}
               <a
                 href="mailto:info@phoenixenergy.solutions"
-                className="text-[#39575C] hover:underline"
+                className="text-pe-primary underline underline-offset-2 hover:text-pe-primary-hover"
               >
                 info@phoenixenergy.solutions
               </a>
@@ -177,7 +174,7 @@ export default function PrivacyPolicyPage() {
                   href="https://tools.google.com/dlpage/gaoptout"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#39575C] hover:underline"
+                  className="text-pe-primary underline underline-offset-2 hover:text-pe-primary-hover"
                 >
                   Google Analytics Opt-out Browser Add-on
                 </a>
@@ -213,7 +210,7 @@ export default function PrivacyPolicyPage() {
               For any privacy-related queries, contact us at{' '}
               <a
                 href="mailto:info@phoenixenergy.solutions"
-                className="text-[#39575C] hover:underline"
+                className="text-pe-primary underline underline-offset-2 hover:text-pe-primary-hover"
               >
                 info@phoenixenergy.solutions
               </a>
@@ -225,7 +222,7 @@ export default function PrivacyPolicyPage() {
             className="font-body mt-10 pt-6"
             style={{
               fontSize: '12px',
-              color: '#9ca3af',
+              color: 'var(--color-pe-muted)',
               borderTop: '1px solid #E5E7EB',
             }}
           >
@@ -233,8 +230,7 @@ export default function PrivacyPolicyPage() {
           </p>
         </div>
       </div>
-    </main>
-    <PageFooter showCta={false} />
+    </div>
     </>
   );
 }

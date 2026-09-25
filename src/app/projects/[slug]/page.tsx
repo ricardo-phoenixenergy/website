@@ -9,17 +9,29 @@ import { PROJECT_BY_SLUG_QUERY, ALL_PROJECT_SLUGS_QUERY } from '@/lib/queries';
 import { SOLUTION_META } from '@/types/solutions';
 import { ProjectStatsTiles } from '@/components/ui/ProjectStatsTiles';
 import { ProjectCard } from '@/components/sections/ProjectCard';
+import { FeaturedProjectCard } from '@/components/sections/FeaturedProjectCard';
 import { ProjectGallery } from '@/components/sections/ProjectGallery';
-import { IconArrowRight } from '@/components/ui/Icons';
+import { describeResults } from '@/lib/projectResults';
+import { selectRelated } from '@/lib/relatedProjects';
+import { PROJECTS_CTA, projectCta } from '@/config/ctas';
+import { REPLY_PROMISE } from '@/config/contact';
 import type { Project } from '@/types/sanity';
-import { PageFooter } from '@/components/layout/PageFooter';
 
 export const revalidate = 3600;
+
+/** A search-snippet length description: whole words, at most `max` characters. */
+function snippet(text: string | undefined, max = 155): string | undefined {
+  if (!text) return undefined;
+  const clean = text.replace(/\s+/g, ' ').trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max - 1);
+  return `${cut.slice(0, cut.lastIndexOf(' '))}…`;
+}
 
 const PT_COMPONENTS = {
   block: {
     normal: ({ children }: { children?: React.ReactNode }) => (
-      <p className="font-body text-sm text-[#6B7280] leading-[1.8] mb-3 last:mb-0">
+      <p className="font-body text-base text-pe-text-soft leading-[1.75] mb-4 last:mb-0">
         {children}
       </p>
     ),
@@ -41,19 +53,25 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  try {
-    const project = await sanityServerClient.fetch<Project | null>(PROJECT_BY_SLUG_QUERY, { slug });
-    if (!project) return { title: 'Project | Phoenix Energy' };
-    return {
-      title: `${project.title} | Phoenix Energy`,
-      description: project.summary,
-      openGraph: project.heroImage
-        ? { images: [{ url: urlFor(project.heroImage).width(1200).height(630).url() }] }
-        : undefined,
-    };
-  } catch {
-    return { title: 'Project | Phoenix Energy' };
-  }
+  const project = await sanityServerClient.fetch<Project | null>(PROJECT_BY_SLUG_QUERY, { slug });
+  if (!project) return { title: 'Project not found', robots: { index: false } };
+  const description = snippet(project.summary);
+  const ready = [project.challenge, project.solution, project.outcome].every((b) => b && b.length > 0);
+  return {
+    title: project.title,
+    description,
+    alternates: { canonical: `/projects/${slug}` },
+    // A project whose story isn't written yet stays out of search until it is.
+    ...(!ready && { robots: { index: false, follow: true } }),
+    openGraph: {
+      title: project.title,
+      description,
+      url: `/projects/${slug}`,
+      ...(project.heroImage && {
+        images: [{ url: urlFor(project.heroImage).width(1200).height(630).url() }],
+      }),
+    },
+  };
 }
 
 export default async function ProjectPage({
@@ -63,23 +81,28 @@ export default async function ProjectPage({
 }) {
   const { slug } = await params;
 
-  let project: Project | null = null;
-  try {
-    project = await sanityServerClient.fetch<Project | null>(PROJECT_BY_SLUG_QUERY, { slug });
-  } catch {
-    // fall through to notFound
-  }
-
+  // Only a missing project is a 404. A CMS error throws, so the error page (or,
+  // on revalidation, the last good static page) is served instead of a cached 404.
+  const project = await sanityServerClient.fetch<Project | null>(PROJECT_BY_SLUG_QUERY, { slug });
   if (!project) notFound();
 
   const meta = SOLUTION_META[project.vertical];
   const stats = project.metrics?.slice(0, 4) ?? [];
 
+  // Only sections with content render: an unwritten case study shows what it
+  // has instead of "Content coming soon" three times.
   const sections = [
-    { num: '01', tag: 'The Challenge', content: project.challenge },
-    { num: '02', tag: 'Our Solution',  content: project.solution },
-    { num: '03', tag: 'The Outcome',   content: project.outcome },
-  ];
+    { key: 'challenge', tag: 'The challenge', content: project.challenge },
+    { key: 'solution', tag: 'Our solution', content: project.solution },
+    { key: 'outcome', tag: 'The outcome', content: project.outcome },
+  ].filter((section) => section.content && section.content.length > 0);
+  // Matches the card: "Read case study" only once all three parts are written.
+  const isCaseStudy = sections.length === 3;
+  // Forecasts are labelled as forecasts: "Measured results" only when the editor says so.
+  const resultsLabel = describeResults(project);
+  const cta = projectCta(project.vertical, project.title);
+  // One related project is a wide card, never one card in a row of three.
+  const related = selectRelated(project.related ?? [], project.otherProjects ?? []);
 
   const metaRows = [
     { label: 'Client',    value: project.clientName },
@@ -90,16 +113,16 @@ export default async function ProjectPage({
   ].filter((r) => r.value);
 
   return (
-    <div className="bg-[#F5F5F5] min-h-screen">
+    <div className="bg-pe-bg min-h-screen">
 
       {/* Breadcrumb */}
       <div className="page-container pt-24 pb-0">
-        <nav className="flex items-center gap-1.5 font-body text-sm text-[#6B7280]">
-          <Link href="/" className="hover:text-[#39575C] transition-colors">Home</Link>
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-body text-sm text-pe-muted">
+          <Link href="/" className="hover:text-pe-primary transition-colors">Home</Link>
           <span>/</span>
-          <Link href="/projects" className="hover:text-[#39575C] transition-colors">Projects</Link>
+          <Link href="/projects" className="hover:text-pe-primary transition-colors">Projects</Link>
           <span>/</span>
-          <span className="font-semibold text-[#39575C] truncate" style={{ maxWidth: 200 }}>
+          <span className="font-semibold text-pe-primary truncate" style={{ maxWidth: 200 }}>
             {project.title}
           </span>
         </nav>
@@ -109,18 +132,19 @@ export default async function ProjectPage({
       <div className="page-container pt-3">
         <div className="rounded-2xl overflow-hidden md:flex md:min-h-[380px]">
 
-          {/* Desktop: dark left panel */}
+          {/* Desktop: dark left panel. Its content sits together at the bottom,
+              so a project with few details leaves space above, not a gap inside. */}
           <div
-            className="hidden md:flex md:w-[44%] flex-col justify-between p-8"
+            className="hidden md:flex md:w-[44%] flex-col justify-end p-8"
             style={{ background: 'linear-gradient(155deg, #1a3a3e 0%, #0d1f22 100%)' }}
           >
-            <p className="font-body font-bold text-xs uppercase tracking-[0.14em]" style={{ color: '#709DA9' }}>
-              Case Study
+            <p className="font-body font-bold text-xs uppercase tracking-[0.14em] mb-4" style={{ color: 'var(--color-on-dark-muted)' }}>
+              {isCaseStudy ? 'Case study' : 'Project'}
             </p>
 
             <div>
               <span
-                className="inline-flex font-body font-bold text-[10px] uppercase tracking-[0.1em] rounded-full px-2.5 py-1 mb-4"
+                className="inline-flex font-body font-bold text-xs uppercase tracking-[0.1em] rounded-full px-2.5 py-1 mb-4"
                 style={{ background: meta.accent, color: meta.accentText }}
               >
                 {meta.label}
@@ -140,8 +164,8 @@ export default async function ProjectPage({
                     }}
                   >
                     <span
-                      className="font-body font-bold text-[10px] uppercase tracking-[0.1em]"
-                      style={{ color: 'rgba(255,255,255,0.35)' }}
+                      className="font-body font-bold text-xs uppercase tracking-[0.1em]"
+                      style={{ color: 'var(--color-on-dark-subtle)' }}
                     >
                       {row.label}
                     </span>
@@ -191,7 +215,7 @@ export default async function ProjectPage({
             {/* Mobile: bottom-anchored content */}
             <div className="absolute inset-x-0 bottom-0 z-20 p-5 md:hidden">
               <span
-                className="inline-flex font-body font-bold text-[10px] uppercase tracking-[0.1em] rounded-full px-2.5 py-1 mb-3"
+                className="inline-flex font-body font-bold text-xs uppercase tracking-[0.1em] rounded-full px-2.5 py-1 mb-3"
                 style={{ background: meta.accent, color: meta.accentText }}
               >
                 {meta.label}
@@ -199,7 +223,7 @@ export default async function ProjectPage({
               <h1 className="font-display font-extrabold text-lg text-white leading-[1.2] mb-2">
                 {project.title}
               </h1>
-              <p className="font-body text-xs flex gap-2 flex-wrap" style={{ color: 'rgba(255,255,255,0.55)' }}>
+              <p className="font-body text-xs flex gap-2 flex-wrap" style={{ color: 'var(--color-on-dark-subtle)' }}>
                 {project.location && <span>{project.location}</span>}
                 {project.completionDate && <span>· {project.completionDate}</span>}
                 {project.projectValue && <span>· {project.projectValue}</span>}
@@ -221,79 +245,86 @@ export default async function ProjectPage({
 
         {/* Intro paragraph */}
         {project.summary && (
-          <p
-            className="font-body font-medium text-base text-[#1A1A1A] leading-[1.75] mb-6 pb-6"
-            style={{ borderBottom: '1px solid #E5E7EB' }}
-          >
-            {project.summary}
-          </p>
+          <div className="mb-6 pb-6" style={{ borderBottom: '1px solid var(--color-pe-border)' }}>
+            <p className="font-body font-medium text-lg text-pe-text leading-[1.7] max-w-[56ch]">
+              {project.summary}
+            </p>
+          </div>
         )}
 
         {/* Numbered sections — single responsive layout */}
         {sections.map((section, idx) => (
-          <div
-            key={section.num}
-            className="py-5 md:grid md:gap-6"
+          <section
+            key={section.key}
+            aria-labelledby={`section-${section.key}`}
+            className="py-6 md:grid md:gap-8"
             style={{
-              borderBottom: idx < sections.length - 1 ? '1px solid #E5E7EB' : undefined,
-              gridTemplateColumns: '96px 1fr',
+              borderBottom: idx < sections.length - 1 ? '1px solid var(--color-pe-border)' : undefined,
+              gridTemplateColumns: '160px 1fr',
             }}
           >
-            {/* Number + tag: inline flex on mobile, stacked block in left column on desktop */}
-            <div className="flex items-baseline gap-2.5 mb-3 md:block md:mb-0">
-              <p
-                className="font-display font-extrabold text-3xl md:text-5xl leading-none md:mb-2"
-                style={{ color: '#E5E7EB' }}
-              >
-                {section.num}
-              </p>
-              <p
-                className="font-body font-bold text-xs uppercase tracking-[0.12em]"
-                style={{ color: '#709DA9' }}
-              >
-                {section.tag}
-              </p>
-            </div>
+            <h2
+              id={`section-${section.key}`}
+              className="font-display font-bold text-lg text-pe-text leading-snug mb-3 md:mb-0 md:pt-0.5"
+            >
+              {section.tag}
+            </h2>
 
-            {/* Content */}
-            <div>
-              {section.content && section.content.length > 0 ? (
-                <PortableText value={section.content} components={PT_COMPONENTS} />
-              ) : (
-                <p className="font-body text-sm text-[#6B7280] leading-[1.8]">Content coming soon.</p>
-              )}
+            {/* Content: a reading column of about 75 characters (56ch of Inter) */}
+            <div className="max-w-[56ch]">
+              <PortableText value={section.content} components={PT_COMPONENTS} />
             </div>
-          </div>
+          </section>
         ))}
 
         {/* Results strip */}
         {project.results && project.results.length > 0 && (
-          <div className="rounded-2xl px-5 py-5 my-6" style={{ background: '#0d1f22' }}>
-            <p
-              className="font-body font-bold text-xs uppercase tracking-[0.14em] mb-4"
-              style={{ color: '#709DA9' }}
-            >
-              Project Results
-            </p>
+          <section
+            aria-labelledby="results-heading"
+            className="rounded-2xl px-5 py-5 my-6"
+            style={{ background: 'var(--color-pe-nav-dark)' }}
+          >
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-4">
+              <h2
+                id="results-heading"
+                className="font-body font-bold text-xs uppercase tracking-[0.14em]"
+                style={{ color: 'var(--color-pe-secondary)' }}
+              >
+                {resultsLabel.heading}
+              </h2>
+              {resultsLabel.asOf && (
+                <p className="font-body text-xs" style={{ color: 'var(--color-on-dark-subtle)' }}>
+                  As of {resultsLabel.asOf}
+                </p>
+              )}
+            </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-0">
               {project.results.slice(0, 4).map((r, i) => (
                 <div
                   key={i}
-                  className="text-center rounded-xl p-3 bg-white/[0.06] md:rounded-none md:p-0 md:bg-transparent md:[&:not(:last-child)]:border-r md:border-white/[0.08]"
+                  className="text-center rounded-xl p-3 bg-white/[0.06] md:rounded-none md:px-4 md:py-0 md:bg-transparent md:[&:not(:last-child)]:border-r md:border-white/[0.08]"
                 >
                   <p className="font-display font-extrabold text-lg md:text-xl text-white leading-none">
                     {r.value}
                   </p>
                   <p
                     className="font-body text-xs uppercase tracking-[0.07em] mt-1.5"
-                    style={{ color: 'rgba(255,255,255,0.4)' }}
+                    style={{ color: 'var(--color-on-dark-subtle)' }}
                   >
                     {r.label}
                   </p>
                 </div>
               ))}
             </div>
-          </div>
+            {resultsLabel.note && (
+              <p
+                className="font-body text-xs leading-relaxed mt-4 max-w-[60ch]"
+                style={{ color: 'var(--color-on-dark-muted)' }}
+              >
+                {resultsLabel.note}
+              </p>
+            )}
+          </section>
         )}
       </div>
 
@@ -304,43 +335,38 @@ export default async function ProjectPage({
         </div>
       )}
 
-      {/* ── Related projects ─────────────────────────────────────────────────── */}
-      {project.related && project.related.length > 0 && (
-        <div className="bg-white py-8">
+      {/* ── Related projects (the id stays `similar-projects` whatever the heading says) ──
+          The heading names the section, so the wide card's pill names the service
+          rather than repeating it, and the one link to /projects is the CTA's below. */}
+      {related && (
+        <section aria-labelledby="similar-projects" className="bg-white py-8">
           <div className="page-container">
-            <div className="flex items-center justify-between mb-5">
-              <p className="font-body font-bold text-xs uppercase tracking-[0.14em] text-[#6B7280]">
-                Similar Projects
-              </p>
-              <Link href="/projects" className="group flex items-center gap-1.5 font-body text-sm text-[#39575C] font-semibold hover:underline">
-                View all
-                <span className="transition-transform duration-200 group-hover:translate-x-1">
-                  <IconArrowRight size={13} />
-                </span>
-              </Link>
-            </div>
+            <h2 id="similar-projects" className="font-body font-bold text-xs uppercase tracking-[0.14em] text-pe-muted mb-5">
+              {related.heading}
+            </h2>
 
-            {/* Desktop: 3-col grid */}
-            <div className="hidden md:grid grid-cols-3 gap-4">
-              {project.related.map((rel) => (
-                <ProjectCard key={rel._id} project={rel} fluid />
-              ))}
-            </div>
-
-            {/* Mobile: 2-col grid */}
-            <div className="grid grid-cols-2 gap-3 md:hidden">
-              {project.related.map((rel) => (
-                <ProjectCard key={rel._id} project={rel} fluid />
-              ))}
-            </div>
+            {related.layout === 'wide' ? (
+              <FeaturedProjectCard
+                project={related.projects[0]}
+                headingLevel={3}
+                kicker={related.projects[0].vertical ? SOLUTION_META[related.projects[0].vertical].label : 'Project'}
+              />
+            ) : (
+              // One card per row on phones: an outcomes-first card needs the full width there.
+              <div className={related.layout === 'three' ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4' : 'grid grid-cols-1 md:grid-cols-2 gap-6'}>
+                {related.projects.map((rel) => (
+                  <ProjectCard key={rel._id} project={rel} fluid size={related.layout === 'two' ? 'large' : 'default'} />
+                ))}
+              </div>
+            )}
           </div>
-        </div>
+        </section>
       )}
 
       {/* ── CTA banner ───────────────────────────────────────────────────────── */}
       <div className="page-container py-5">
         <div
-          className="rounded-2xl px-7 py-8 md:px-10 md:py-10"
+          className="focus-on-dark rounded-2xl px-7 py-8 md:px-10 md:py-10"
           style={{
             background: 'linear-gradient(135deg, #1a3a3e 0%, #0d1f22 100%)',
             border: '1px solid rgba(255,255,255,0.08)',
@@ -351,33 +377,33 @@ export default async function ProjectPage({
             <div className="md:max-w-sm">
               <p
                 className="font-body font-bold text-xs uppercase tracking-[0.14em] mb-2"
-                style={{ color: '#709DA9' }}
+                style={{ color: 'var(--color-on-dark-subtle)' }}
               >
                 Start your project
               </p>
               <h2 className="font-display font-extrabold text-xl md:text-2xl text-white leading-[1.2] mb-2.5">
                 Ready for a similar project?
               </h2>
-              <p className="font-body text-sm leading-[1.7]" style={{ color: 'rgba(255,255,255,0.55)' }}>
-                Get a free assessment for your facility in under 48 hours.
+              <p className="font-body text-sm leading-[1.7]" style={{ color: 'var(--color-on-dark-subtle)' }}>
+                Tell us about your site. {REPLY_PROMISE.sentence}
               </p>
             </div>
 
-            {/* Buttons */}
+            {/* Buttons: the service's CTA, with this project named in the message */}
             <div className="flex gap-3 flex-col sm:flex-row md:flex-col lg:flex-row flex-shrink-0">
               <Link
-                href="/contact"
-                className="flex items-center justify-center font-body font-semibold text-sm text-[#39575C] rounded-full px-5 py-2.5 transition-colors hover:bg-[#e8e8e8]"
+                href={cta.href}
+                className="flex items-center justify-center font-body font-semibold text-sm text-pe-primary rounded-full px-5 py-2.5 transition-colors hover:bg-[#e8e8e8]"
                 style={{ background: '#F5F5F5' }}
               >
-                Get a Quote
+                {cta.label}
               </Link>
               <Link
-                href="/projects"
+                href={PROJECTS_CTA.href}
                 className="flex items-center justify-center font-body font-semibold text-sm text-white rounded-full px-5 py-2.5 transition-all hover:bg-white/20"
                 style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
               >
-                View all projects
+                {PROJECTS_CTA.label}
               </Link>
             </div>
           </div>

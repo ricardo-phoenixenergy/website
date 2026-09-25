@@ -15,10 +15,15 @@ interface ValuationSummary {
   kw: number;
   bessKwh: number;
   installYear: number;
+  inverterType?: string;
   inverterKw?: number;
   panelBrand?: string;
   inverterBrand?: string;
   batteryBrand?: string;
+  batteryChemistry?: string;
+  batteryHealth?: string;
+  condition?: string;
+  monitoring?: string;
   documentation?: string;
   province: string;
 }
@@ -37,7 +42,7 @@ export function WeBuySolarEmail({ firstName, lastName, email, phone, valuation }
   return (
     <Html lang="en">
       <Head />
-      <Preview>{`WeBuySolar: ${fullName} — ${valuation.kw}kWp system`}</Preview>
+      <Preview>{`WeBuySolar valuation request from ${fullName} for a ${valuation.kw}kWp system`}</Preview>
       <Body style={body}>
         <Container style={wrapper}>
 
@@ -53,11 +58,11 @@ export function WeBuySolarEmail({ firstName, lastName, email, phone, valuation }
             {/* Badge */}
             <Text style={badge}>WeBuySolar Valuation Request</Text>
 
-            <Heading style={heading}>New valuation submitted</Heading>
+            <Heading style={heading}>New valuation request</Heading>
             <Text style={subtext}>
               Submitted via{' '}
-              <Link href="https://phoenixenergy.solutions/tools/solar-asset-valuation" style={inlineLink}>
-                Solar Asset Valuation Tool
+              <Link href="https://phoenixenergy.solutions/tools/solar-valuation" style={inlineLink}>
+                Solar Valuation Request
               </Link>
             </Text>
 
@@ -73,16 +78,28 @@ export function WeBuySolarEmail({ firstName, lastName, email, phone, valuation }
 
             {/* System details */}
             <Text style={sectionTitle}>System Details</Text>
-            <Field label="System size"   value={`${valuation.kw} kWp`} />
-            <Field label="Inverter size" value={valuation.inverterKw ? `${valuation.inverterKw} kW` : '—'} />
-            <Field label="Install year"  value={String(valuation.installYear)} />
+            <Field label="System size"    value={`${valuation.kw} kWp`} />
+            <Field label="Install year"   value={String(valuation.installYear)} />
+            <Field label="Panel brand"    value={valuation.panelBrand || 'Not given'} />
+            <Field label="Inverter type"  value={valuation.inverterType || 'Not given'} />
+            <Field label="Inverter size"  value={valuation.inverterKw ? `${valuation.inverterKw} kW` : 'Not given'} />
+            <Field label="Inverter brand" value={valuation.inverterBrand || 'Not given'} />
             <Field label="Battery (BESS)" value={valuation.bessKwh > 0 ? `${valuation.bessKwh} kWh` : 'None'} />
-            <Field label="Panel brand"    value={valuation.panelBrand || '—'} />
-            <Field label="Inverter brand" value={valuation.inverterBrand || '—'} />
             {valuation.bessKwh > 0 && (
-              <Field label="Battery brand"  value={valuation.batteryBrand || '—'} />
+              <>
+                <Field label="Battery brand"     value={valuation.batteryBrand || 'Not given'} />
+                <Field label="Battery chemistry" value={valuation.batteryChemistry || 'Not given'} />
+                <Field label="Battery health"    value={valuation.batteryHealth || 'Not given'} />
+              </>
             )}
-            <Field label="Documentation" value={valuation.documentation || '—'} />
+
+            <Hr style={divider} />
+
+            {/* Condition */}
+            <Text style={sectionTitle}>Condition and paperwork</Text>
+            <Field label="Condition"     value={valuation.condition || 'Not given'} />
+            <Field label="Monitoring"    value={valuation.monitoring || 'Not given'} />
+            <Field label="Documentation" value={valuation.documentation || 'Not given'} />
             <Field label="Province"      value={valuation.province} />
 
             <Hr style={divider} />

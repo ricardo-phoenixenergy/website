@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { render } from '@react-email/render';
 import { contactSchema, webBuySolarSchema } from '@/lib/validators/contact';
+import { REFUSAL, SUBJECT_FLAG, checkRecaptcha, missingRecaptchaKeys, type SiteVerifyAnswer } from '@/lib/recaptchaCheck';
 import { ContactEmail } from '@/emails/ContactEmail';
 import { WeBuySolarEmail } from '@/emails/WeBuySolarEmail';
 
@@ -14,13 +15,22 @@ function getResend() {
   return new Resend(key);
 }
 
-async function verifyRecaptcha(token: string): Promise<boolean> {
-  const res = await fetch(
-    `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${token}`,
-    { method: 'POST' },
-  );
-  const data = (await res.json()) as { success: boolean; score: number };
-  return data.success && data.score >= 0.5;
+/** Google's verdict on a token. Throws when Google can't be reached, which checkRecaptcha accepts and marks. */
+async function siteVerify(secret: string, token: string): Promise<SiteVerifyAnswer> {
+  try {
+    const res = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ secret, response: token }),
+      signal: AbortSignal.timeout(5000),
+    });
+    const answer = (await res.json()) as SiteVerifyAnswer;
+    if (!answer.success) console.warn('[contact] reCAPTCHA did not verify the token:', answer['error-codes'] ?? []);
+    return answer;
+  } catch (err) {
+    console.error('[contact] reCAPTCHA verify threw:', err);
+    throw err;
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -31,15 +41,30 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
 
-  const raw = body as { intent?: string; recaptchaToken?: string };
+  const raw = body as { intent?: string; recaptchaToken?: unknown };
 
-  // Verify reCAPTCHA
-  if (raw.recaptchaToken && process.env.RECAPTCHA_SECRET_KEY) {
-    const valid = await verifyRecaptcha(raw.recaptchaToken);
-    if (!valid) {
-      return NextResponse.json({ error: 'Verification failed' }, { status: 400 });
-    }
+  // The site key is read the way the browser bundle reads it (inlined at build
+  // time), so the route and the forms agree on whether reCAPTCHA is on.
+  const setup = {
+    secretKey: process.env.RECAPTCHA_SECRET_KEY,
+    siteKey: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
+  };
+  const spam = await checkRecaptcha(setup, raw.recaptchaToken, siteVerify);
+  const refusal = REFUSAL[spam];
+  if (refusal) {
+    return NextResponse.json({ error: refusal }, { status: 400 });
   }
+  if (spam === 'unconfigured') {
+    const missing = missingRecaptchaKeys(setup);
+    const why = missing.length > 0
+      ? `${missing.join(' and ')} not set; the site key is read at build time`
+      : 'Google rejected RECAPTCHA_SECRET_KEY';
+    console.warn(
+      `[contact] reCAPTCHA is not fully configured (${why}). This enquiry was accepted without a spam check ` +
+        'and marked in its subject. Set both keys in the deployment environment and redeploy.',
+    );
+  }
+  const flag = SUBJECT_FLAG[spam];
 
   // ─── WeBuySolar ────────────────────────────────────────────────────────────
   if (raw.intent === 'webuysolar') {
@@ -64,7 +89,7 @@ export async function POST(req: NextRequest) {
         from: FROM,
         to: TO,
         replyTo: d.email,
-        subject: `[WeBuySolar] ${d.valuation.kw}kWp system — ${d.firstName} ${d.lastName ?? ''}`.trim(),
+        subject: `${flag}[WeBuySolar] ${d.valuation.kw} kWp system: ${d.firstName} ${d.lastName ?? ''}`.trim(),
         html,
       });
 
@@ -106,7 +131,7 @@ export async function POST(req: NextRequest) {
       from: FROM,
       to: TO,
       replyTo: d.email,
-      subject: `[${intentLabel}] ${d.firstName} ${d.lastName} — ${d.company} — ${d.location}`,
+      subject: `${flag}[${intentLabel}] ${d.firstName} ${d.lastName}, ${d.company}, ${d.location}`,
       html,
     });
 

@@ -10,34 +10,34 @@ import { urlFor } from '@/lib/sanity';
 export const portableTextComponents: PortableTextComponents = {
   block: {
     normal: ({ children }) => (
-      <p className="font-body text-xs leading-[1.85] text-[#6B7280] mb-3.5">{children}</p>
+      <p className="font-body text-lg leading-[1.75] text-pe-text-soft mb-6">{children}</p>
     ),
     h2: ({ children }) => (
-      <h2 className="font-display font-extrabold text-[17px] text-[#1A1A1A] leading-tight mt-6 mb-2.5">
+      <h2 className="font-display font-extrabold text-2xl text-pe-text leading-[1.25] mt-12 mb-4 text-balance">
         {children}
       </h2>
     ),
     h3: ({ children }) => (
-      <h3 className="font-display font-bold text-sm text-[#1A1A1A] leading-tight mt-[18px] mb-2">
+      <h3 className="font-display font-bold text-xl text-pe-text leading-[1.3] mt-9 mb-3">
         {children}
       </h3>
     ),
     blockquote: ({ children }) => (
       <blockquote
-        className="my-5 rounded-r-lg pl-4 py-3 pr-3"
+        className="my-8 rounded-r-lg pl-5 py-4 pr-4"
         style={{
           borderLeft: '3px solid #709DA9',
           background: 'rgba(112,157,169,0.06)',
         }}
       >
-        <p className="font-display font-bold text-[13px] text-[#1A1A1A] italic leading-[1.5]">
+        <p className="font-display font-bold text-xl text-pe-text italic leading-[1.45]">
           {children}
         </p>
       </blockquote>
     ),
   },
   marks: {
-    strong: ({ children }) => <strong className="font-semibold text-[#1A1A1A]">{children}</strong>,
+    strong: ({ children }) => <strong className="font-semibold text-pe-text">{children}</strong>,
     em: ({ children }) => <em>{children}</em>,
     link: ({ value, children }) => {
       const href: string = value?.href ?? '#';
@@ -47,12 +47,12 @@ export const portableTextComponents: PortableTextComponents = {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[#39575C] underline underline-offset-2 hover:text-[#2a4045]"
+          className="text-pe-primary underline underline-offset-2 hover:text-pe-primary-hover"
         >
           {children}
         </a>
       ) : (
-        <Link href={href} className="text-[#39575C] underline underline-offset-2 hover:text-[#2a4045]">
+        <Link href={href} className="text-pe-primary underline underline-offset-2 hover:text-pe-primary-hover">
           {children}
         </Link>
       );
@@ -60,12 +60,12 @@ export const portableTextComponents: PortableTextComponents = {
   },
   list: {
     bullet: ({ children }) => (
-      <ul className="list-disc list-inside font-body text-xs text-[#6B7280] leading-[1.85] mb-3.5 space-y-1 pl-1">
+      <ul className="list-disc list-outside pl-6 font-body text-lg text-pe-text-soft leading-[1.75] mb-6 space-y-2 marker:text-pe-muted">
         {children}
       </ul>
     ),
     number: ({ children }) => (
-      <ol className="list-decimal list-inside font-body text-xs text-[#6B7280] leading-[1.85] mb-3.5 space-y-1 pl-1">
+      <ol className="list-decimal list-outside pl-6 font-body text-lg text-pe-text-soft leading-[1.75] mb-6 space-y-2 marker:text-pe-muted">
         {children}
       </ol>
     ),
@@ -80,7 +80,7 @@ export const portableTextComponents: PortableTextComponents = {
       const src = urlFor(value).width(680).auto('format').url();
       const blurSrc: string | undefined = value?.asset?.metadata?.lqip;
       return (
-        <figure className="my-5">
+        <figure className="my-8">
           <div className="relative w-full rounded-xl overflow-hidden" style={{ aspectRatio: '16/9' }}>
             <Image
               src={src}
@@ -92,7 +92,7 @@ export const portableTextComponents: PortableTextComponents = {
             />
           </div>
           {value.caption && (
-            <figcaption className="font-body text-[10px] text-[#9CA3AF] text-center italic mt-2">
+            <figcaption className="font-body text-sm text-pe-muted text-center mt-3">
               {value.caption}
             </figcaption>
           )}

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { IconArrowRight } from '@/components/ui/Icons';
+import { inkFor } from '@/types/solutions';
 
 export interface FaqItem {
   question: string;
@@ -49,12 +50,12 @@ export function FaqAccordion({
         {(eyebrow || heading) && (
           <AnimatedSection className="mb-8">
             {eyebrow && (
-              <p className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-3" style={{ color: accent }}>
+              <p className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-3" style={{ color: inkFor(accent) }}>
                 {eyebrow}
               </p>
             )}
             {heading && (
-              <h2 className="font-display font-extrabold text-2xl md:text-3xl text-[#1A1A1A] leading-[1.2]">
+              <h2 className="font-display font-extrabold text-2xl md:text-3xl text-pe-text leading-[1.2]">
                 {heading}
               </h2>
             )}
@@ -65,7 +66,7 @@ export function FaqAccordion({
           {items.map((it, i) => {
             const isOpen = open === i;
             return (
-              <div key={it.question} className="border-t border-[#E5E7EB] last:border-b">
+              <div key={it.question} className="border-t border-pe-border last:border-b">
                 <dt>
                   <button
                     type="button"
@@ -73,19 +74,19 @@ export function FaqAccordion({
                     className="w-full flex items-center justify-between gap-4 py-5 text-left"
                     aria-expanded={isOpen}
                   >
-                    <span className="font-display font-bold text-base md:text-lg text-[#1A1A1A]">
+                    <span className="font-display font-bold text-base md:text-lg text-pe-text">
                       {it.question}
                     </span>
                     <span
                       className="flex-shrink-0 transition-transform duration-200"
-                      style={{ color: accent, transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}
+                      style={{ color: inkFor(accent), transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}
                     >
                       <IconArrowRight size={18} />
                     </span>
                   </button>
                 </dt>
                 {isOpen && (
-                  <dd className="pb-5 -mt-1 font-body text-sm md:text-base text-[#374151] leading-[1.75] max-w-[640px]">
+                  <dd className="pb-5 -mt-1 font-body text-sm md:text-base text-pe-text-soft leading-[1.75] max-w-[60ch]">
                     {it.answer}
                   </dd>
                 )}

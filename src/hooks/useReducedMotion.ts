@@ -1,17 +1,29 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useSyncExternalStore } from 'react';
 
+const QUERY = '(prefers-reduced-motion: reduce)';
+
+function subscribe(onChange: () => void) {
+  const mq = window.matchMedia(QUERY);
+  mq.addEventListener('change', onChange);
+  return () => mq.removeEventListener('change', onChange);
+}
+
+/**
+ * True when the visitor asks for reduced motion. The server render assumes
+ * false, so anything gated on this must already be visible in the server HTML;
+ * never use it to decide whether content starts hidden.
+ */
 export function useReducedMotion(): boolean {
-  const [reduced, setReduced] = useState(false);
+  return useSyncExternalStore(
+    subscribe,
+    () => window.matchMedia(QUERY).matches,
+    () => false,
+  );
+}
 
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReduced(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setReduced(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
-
-  return reduced;
+/** Imperative check for effects and event handlers. */
+export function prefersReducedMotion(): boolean {
+  return typeof window !== 'undefined' && window.matchMedia(QUERY).matches;
 }

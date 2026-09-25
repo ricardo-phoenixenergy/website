@@ -10,13 +10,13 @@ const CALLOUT_STYLES = {
     bg: 'rgba(112,157,169,0.08)',
     border: '1px solid rgba(112,157,169,0.25)',
     titleColor: '#1A1A1A',
-    textColor: '#6B7280',
+    textColor: 'var(--color-pe-muted)',
   },
   warning: {
     bg: 'rgba(227,197,141,0.12)',
     border: '1px solid rgba(227,197,141,0.35)',
     titleColor: '#1A1A1A',
-    textColor: '#6B7280',
+    textColor: 'var(--color-pe-muted)',
   },
   stat: {
     bg: '#0d1f22',
@@ -50,7 +50,7 @@ export function Callout({ type, icon, title, text }: CalloutProps) {
         >
           {title}
         </p>
-        <p className="font-body text-[11px] leading-[1.7]" style={{ color: s.textColor }}>
+        <p className="font-body text-xs leading-[1.7]" style={{ color: s.textColor }}>
           {text}
         </p>
       </div>

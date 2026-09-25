@@ -26,13 +26,15 @@ export function FilterPills({ pills, activeKey, onSelect }: FilterPillsProps) {
         return (
           <button
             key={pill.key}
+            type="button"
+            aria-pressed={isActive}
             onClick={() => onSelect(pill.key)}
             className="cursor-pointer flex-shrink-0 font-body font-medium text-sm rounded-full transition-all duration-200"
             style={{
               padding: '7px 16px',
               background: isActive ? (pill.accent ?? '#39575C') : '#ffffff',
               border: isActive ? 'none' : '1px solid #E5E7EB',
-              color: isActive ? (pill.accentText ?? '#ffffff') : '#6B7280',
+              color: isActive ? (pill.accentText ?? '#ffffff') : 'var(--color-pe-muted)',
               boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.12)' : undefined,
             }}
           >

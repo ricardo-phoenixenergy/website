@@ -40,7 +40,7 @@ export async function RelatedArticles({ vertical }: RelatedArticlesProps) {
       title={
         <>
           Further reading on{' '}
-          <em style={{ color: meta.accent, fontStyle: 'normal' }}>{meta.label}</em>
+          <em style={{ color: meta.accentInk, fontStyle: 'normal' }}>{meta.label}</em>
         </>
       }
       viewAllHref="/blog"

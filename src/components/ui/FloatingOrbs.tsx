@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useInView, useReducedMotion } from 'framer-motion';
 
 /* ─── Timing ──────────────────────────────────────────────────────────────── */
 const INTERVAL = 0.8;   // seconds between consecutive node activations
@@ -10,7 +10,6 @@ const N        = 6;     // one node per solution vertical
 const TOTAL    = N * INTERVAL + HOLD;  // full cycle length (6.8s)
 
 const norm          = (t: number) => t / TOTAL;
-const T_LAST_NODE   = norm((N - 1) * INTERVAL);
 const T_FADE_START  = norm((N - 1) * INTERVAL + HOLD * 0.4);
 const T_FADE_END    = norm((N - 1) * INTERVAL + HOLD * 0.9);
 
@@ -75,6 +74,8 @@ export function FloatingOrbs({ className, showConstellation = true }: FloatingOr
   const reduced   = useReducedMotion();
   const wrapRef   = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState({ w: 0, h: 0 });
+  // Decorative loop: it only exists while the hero is on screen.
+  const inView = useInView(wrapRef, { margin: '120px' });
 
   // Measure the container so we can use real pixel coordinates in the SVG
   useEffect(() => {
@@ -105,7 +106,7 @@ export function FloatingOrbs({ className, showConstellation = true }: FloatingOr
            Each blob starts below the container and rises continuously.
            Because both start and end positions are outside the clipping
            boundary, the repeatType:'loop' jump is invisible — seamless. */}
-      {dims.h > 0 && PARTICLES.map((p) => (
+      {inView && dims.h > 0 && PARTICLES.map((p) => (
         <motion.div
           key={p.id}
           style={{
@@ -137,7 +138,7 @@ export function FloatingOrbs({ className, showConstellation = true }: FloatingOr
       ))}
 
       {/* ── Layer 2: constellation (only once we have real dimensions) ── */}
-      {showConstellation && !reduced && dims.w > 0 && (
+      {showConstellation && inView && !reduced && dims.w > 0 && (
         <svg
           width={dims.w}
           height={dims.h}

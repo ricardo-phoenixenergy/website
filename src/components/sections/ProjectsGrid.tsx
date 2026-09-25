@@ -4,69 +4,77 @@ import { useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FeaturedProjectCard } from './FeaturedProjectCard';
-import { SOLUTION_META } from '@/types/solutions';
+import { SOLUTION_META, SOLUTION_VERTICALS } from '@/types/solutions';
 import type { SolutionVertical } from '@/types/solutions';
 import type { ProjectPreview } from '@/types/sanity';
 import { ProjectCard } from './ProjectCard';
-import { ProjectDrawer } from '@/components/ui/ProjectDrawer';
 import { FilterPills } from '@/components/ui/FilterPills';
 import { IconArrowRight } from '../ui/Icons';
 import { dlPush } from '@/lib/analytics';
+import { DISCOVERY_CTA } from '@/config/ctas';
 
-/* ── Filter pills ────────────────────────────────────────────────────────────── */
+/** Below this many projects there is nothing to filter: show equal cards instead. */
+const FILTER_THRESHOLD = 4;
+const PAGE_SIZE = 6;
 
-const FILTER_PILLS: { key: SolutionVertical | 'all'; label: string }[] = [
-  { key: 'all', label: 'All projects' },
-  { key: 'ci-solar-storage', label: 'C&I Solar & Storage' },
-  { key: 'wheeling', label: 'Wheeling' },
-  { key: 'carbon-credits', label: 'Carbon Credits' },
-  { key: 'energy-optimisation', label: 'Energy Optimisation' },
-  { key: 'ev-fleets', label: 'EV Fleets' },
-  { key: 'webuysolar', label: 'WeBuySolar' },
-];
+type Filter = SolutionVertical | 'all';
 
-/* ── Empty state ─────────────────────────────────────────────────────────────── */
+/** Complete case studies first, then the editor's featured order. */
+function byReadiness(a: ProjectPreview, b: ProjectPreview) {
+  const ready = Number(b.caseStudyReady ?? false) - Number(a.caseStudyReady ?? false);
+  if (ready !== 0) return ready;
+  return (a.featuredOrder ?? 99) - (b.featuredOrder ?? 99);
+}
 
-function EmptyState({ vertical }: { vertical: SolutionVertical | 'all' }) {
-  const meta = vertical !== 'all' ? SOLUTION_META[vertical] : null;
+/* ── Empty state (no projects published at all) ─────────────────────────────── */
+
+function EmptyState() {
   return (
-    <div className="col-span-full">
-      <div
-        className="rounded-2xl p-10 text-center"
-        style={{ background: '#fff', border: '1px dashed #E5E7EB' }}
+    <div className="rounded-2xl p-10 text-center bg-white" style={{ border: '1px dashed var(--color-pe-border)' }}>
+      <h2 className="font-display font-bold text-base text-pe-text mb-1.5">No projects published yet</h2>
+      <p className="font-body text-sm text-pe-muted leading-[1.7] mx-auto mb-5" style={{ maxWidth: 380 }}>
+        In the meantime, tell us about your site.
+      </p>
+      <Link
+        href={DISCOVERY_CTA.href}
+        className="inline-flex items-center gap-1.5 font-body font-semibold text-sm text-white rounded-full px-5 py-2.5 transition-colors bg-pe-primary hover:bg-pe-primary-hover"
       >
-        {meta && (
-          <div className="flex justify-center mb-3">
-            <span
-              className="w-8 h-8 rounded-full flex items-center justify-center"
-              style={{ background: `${meta.accent}22` }}
-            >
-              <span className="w-2.5 h-2.5 rounded-full" style={{ background: meta.accent }} />
-            </span>
-          </div>
-        )}
-        <p className="font-display font-bold text-base text-[#1A1A1A] mb-1.5">
-          {vertical === 'all'
-            ? 'Projects coming soon'
-            : `We're working on our first ${meta?.label} project`}
-        </p>
-        <p
-          className="font-body text-sm text-[#6B7280] leading-[1.7]"
-          style={{ maxWidth: 380, margin: '0 auto 20px' }}
-        >
-          {vertical === 'all'
-            ? 'Our portfolio is being built out. Check back soon to see our latest installations across Southern Africa.'
-            : `We have exciting work underway in the ${meta?.label} space. Check back soon, or get in touch to discuss your requirements.`}
-        </p>
-        <Link
-          href="/contact"
-          className="inline-flex items-center gap-1.5 font-body font-semibold text-sm text-white rounded-full px-5 py-2.5 transition-colors hover:bg-[#2a4045]"
-          style={{ background: '#39575C' }}
-        >
-          Discuss your project <IconArrowRight />
-        </Link>
-      </div>
+        {DISCOVERY_CTA.label} <IconArrowRight />
+      </Link>
     </div>
+  );
+}
+
+/* ── Services with no published project yet ─────────────────────────────────── */
+
+function OtherServices({ verticals }: { verticals: SolutionVertical[] }) {
+  if (verticals.length === 0) return null;
+  return (
+    <section aria-labelledby="other-services" className="mt-12 pt-8" style={{ borderTop: '1px solid var(--color-pe-border)' }}>
+      <h2 id="other-services" className="font-display font-bold text-lg text-pe-text mb-1">
+        Our other services
+      </h2>
+      <p className="font-body text-sm text-pe-muted mb-4">
+        No case study is published for these yet. See how each one works.
+      </p>
+      <ul className="flex flex-wrap gap-2">
+        {verticals.map((v) => {
+          const meta = SOLUTION_META[v];
+          return (
+            <li key={v}>
+              <Link
+                href={meta.slug}
+                className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 font-body text-sm font-medium text-pe-text transition-colors hover:text-pe-primary"
+                style={{ border: '1px solid var(--color-pe-border)' }}
+              >
+                <span aria-hidden="true" className="size-2 rounded-full" style={{ background: meta.accent }} />
+                {meta.label}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }
 
@@ -74,79 +82,97 @@ function EmptyState({ vertical }: { vertical: SolutionVertical | 'all' }) {
 
 interface ProjectsGridProps {
   projects: ProjectPreview[];
+  /** Page header (breadcrumb, H1, intro), rendered above the projects. */
+  header: React.ReactNode;
 }
 
-export function ProjectsGrid({ projects }: ProjectsGridProps) {
-  const [activeFilter, setActiveFilter] = useState<SolutionVertical | 'all'>('all');
-  const [visibleCount, setVisibleCount] = useState(6);
-  const [drawerProject, setDrawerProject] = useState<ProjectPreview | null>(null);
+export function ProjectsGrid({ projects, header }: ProjectsGridProps) {
+  const [activeFilter, setActiveFilter] = useState<Filter>('all');
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  // Cards render visible on the server; only a filter change animates them in.
+  const [hasFiltered, setHasFiltered] = useState(false);
 
-  const handleFilterChange = useCallback((filter: SolutionVertical | 'all') => {
+  const verticalsWithProjects = useMemo(
+    () => SOLUTION_VERTICALS.filter((v) => projects.some((p) => p.vertical === v)),
+    [projects],
+  );
+  const otherVerticals = SOLUTION_VERTICALS.filter((v) => !verticalsWithProjects.includes(v));
+  const filtersShown = projects.length >= FILTER_THRESHOLD && verticalsWithProjects.length > 1;
+
+  const handleFilterChange = useCallback((filter: Filter) => {
     if (filter === activeFilter) return;
+    setHasFiltered(true);
     setActiveFilter(filter);
-    setVisibleCount(6);
+    setVisibleCount(PAGE_SIZE);
     dlPush({ event: 'filter_change', filter_value: filter });
   }, [activeFilter]);
 
-  const pills = useMemo(() => FILTER_PILLS.map(pill => {
-    const meta = pill.key !== 'all' ? SOLUTION_META[pill.key] : null;
-    return {
-      key: pill.key,
-      label: pill.label,
-      accent: pill.key === 'all' ? '#39575C' : (meta?.accent ?? '#39575C'),
-      accentText: pill.key === 'all' ? '#ffffff' : (meta?.accentText ?? '#ffffff'),
-    };
-  }), []);
+  // Filters come from the data, with counts, so no pill leads to an empty grid.
+  const pills = useMemo(() => [
+    { key: 'all', label: `All projects (${projects.length})`, accent: 'var(--color-pe-primary)', accentText: '#ffffff' },
+    ...verticalsWithProjects.map((v) => ({
+      key: v,
+      label: `${SOLUTION_META[v].label} (${projects.filter((p) => p.vertical === v).length})`,
+      accent: SOLUTION_META[v].accent,
+      accentText: SOLUTION_META[v].accentText,
+    })),
+  ], [projects, verticalsWithProjects]);
 
-  const filteredProjects = activeFilter === 'all'
-    ? projects
-    : projects.filter((p) => p.vertical === activeFilter);
+  const sorted = useMemo(() => [...projects].sort(byReadiness), [projects]);
 
-  const featuredProject = filteredProjects
-    .filter(p => p.featured)
-    .sort((a, b) => (a.featuredOrder ?? 99) - (b.featuredOrder ?? 99))[0] ?? null;
+  if (projects.length === 0) {
+    return (
+      <div className="bg-pe-bg">
+        <div className="page-container pt-24 pb-16">
+          {header}
+          <EmptyState />
+        </div>
+      </div>
+    );
+  }
 
-  const gridProjects = filteredProjects.filter(p => p._id !== featuredProject?._id);
+  // ── A few projects: equal cards, complete case studies first ────────────────
+  if (!filtersShown) {
+    return (
+      <div className="bg-pe-bg">
+        <div className="page-container pt-24 pb-16">
+          {header}
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {sorted.map((project) => (
+              <li key={project._id}>
+                <ProjectCard project={project} fluid size="large" headingLevel={2} />
+              </li>
+            ))}
+          </ul>
+          <OtherServices verticals={otherVerticals} />
+        </div>
+      </div>
+    );
+  }
 
+  // ── Four or more: filters, one complete case study featured, then a grid ────
+  const filtered = activeFilter === 'all' ? sorted : sorted.filter((p) => p.vertical === activeFilter);
+  const featuredProject = filtered.find((p) => p.featured && p.caseStudyReady) ?? null;
+  const gridProjects = filtered.filter((p) => p._id !== featuredProject?._id);
   const visibleProjects = gridProjects.slice(0, visibleCount);
+  const shown = visibleProjects.length + (featuredProject ? 1 : 0);
 
   return (
-    <main className="bg-[#F5F5F5] min-h-screen">
+    <div className="bg-pe-bg">
       <div className="page-container pt-24 pb-16">
+        {header}
 
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 mb-5 font-body text-sm text-[#6B7280]">
-          <Link href="/" className="hover:text-[#39575C] transition-colors duration-150">Home</Link>
-          <span>/</span>
-          <span className="font-semibold text-[#39575C]">Projects</span>
-        </div>
-
-        {/* Page header */}
         <div className="mb-6">
-          <p className="font-body font-bold text-xs uppercase tracking-[0.14em] text-[#709DA9] mb-2">
-            OUR WORK
-          </p>
-          <h1 className="font-display font-extrabold text-4xl text-[#1A1A1A] leading-[1.2] mb-2">
-            Projects &amp;{' '}
-            <em style={{ color: '#39575C', fontStyle: 'normal' }}>installations</em>
-          </h1>
-          <p className="font-body text-base text-[#6B7280] leading-[1.7]" style={{ maxWidth: 520 }}>
-            A portfolio of renewable energy projects delivered across Southern Africa — from
-            rooftop solar to grid wheeling, EV fleets to carbon credits.
-          </p>
+          <FilterPills pills={pills} activeKey={activeFilter} onSelect={(key) => handleFilterChange(key as Filter)} />
         </div>
 
-        {/* Filter pills */}
-        <div className="mb-6">
-          <FilterPills
-            pills={pills}
-            activeKey={activeFilter}
-            onSelect={(key) => handleFilterChange(key as SolutionVertical | 'all')}
-          />
-        </div>
+        <p role="status" className="font-body text-sm text-pe-muted mb-4">
+          Showing <span className="font-semibold text-pe-text">{shown}</span> of{' '}
+          <span className="font-semibold text-pe-text">{filtered.length}</span>{' '}
+          project{filtered.length !== 1 ? 's' : ''}
+        </p>
 
-        {/* Featured card — pinned above the grid, animates in/out per filter */}
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" initial={false}>
           {featuredProject && (
             <motion.div
               key={featuredProject._id}
@@ -156,70 +182,40 @@ export function ProjectsGrid({ projects }: ProjectsGridProps) {
               transition={{ duration: 0.25, ease: 'easeOut' }}
               className="mb-4"
             >
-              <FeaturedProjectCard project={featuredProject} />
+              <FeaturedProjectCard project={featuredProject} priority />
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Grid toolbar — only when there are grid results */}
-        {gridProjects.length > 0 && (
-          <div className="mb-4">
-            <p className="font-body text-sm text-[#6B7280]">
-              Showing{' '}
-              <span className="font-semibold text-[#1A1A1A]">
-                {Math.min(visibleCount, gridProjects.length)}
-              </span>
-              {' '}of{' '}
-              <span className="font-semibold text-[#1A1A1A]">{gridProjects.length}</span>
-              {' '}project{gridProjects.length !== 1 ? 's' : ''}
-            </p>
-          </div>
-        )}
+        <ul key={activeFilter} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+          {visibleProjects.map((project, idx) => (
+            <motion.li
+              key={project._id}
+              className="h-full"
+              initial={hasFiltered ? { opacity: 0, y: 8 } : false}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.28, delay: idx * 0.04, ease: 'easeOut' }}
+            >
+              <ProjectCard project={project} fluid headingLevel={2} />
+            </motion.li>
+          ))}
+        </ul>
 
-        {/* Cards grid — key resets on filter change so enter animations restart */}
-        <div
-          key={activeFilter}
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6"
-        >
-          {visibleProjects.length > 0 ? (
-            visibleProjects.map((project, idx) => (
-              <motion.div
-                key={project._id}
-                className="h-full"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.28, delay: idx * 0.04, ease: 'easeOut' }}
-              >
-                <ProjectCard
-                  project={project}
-                  fluid
-                  onClick={() => setDrawerProject(project)}
-                />
-              </motion.div>
-            ))
-          ) : (
-            <EmptyState vertical={activeFilter} />
-          )}
-        </div>
-
-        {/* Load more */}
         {visibleCount < gridProjects.length && (
           <div className="flex justify-center mt-2">
             <button
-              onClick={() => setVisibleCount((prev) => prev + 6)}
-              className="font-body font-medium text-base text-[#6B7280] rounded-full px-8 py-[11px] bg-white transition-all duration-200 hover:border-[#aaaaaa] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]"
-              style={{ border: '1px solid #E5E7EB' }}
+              type="button"
+              onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
+              className="font-body font-medium text-base text-pe-muted rounded-full px-8 py-[11px] bg-white transition-all duration-200 hover:border-[#aaaaaa] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]"
+              style={{ border: '1px solid var(--color-pe-border)' }}
             >
               Load more projects
             </button>
           </div>
         )}
-      </div>
 
-      <ProjectDrawer
-        project={drawerProject}
-        onClose={() => setDrawerProject(null)}
-      />
-    </main>
+        <OtherServices verticals={otherVerticals} />
+      </div>
+    </div>
   );
 }

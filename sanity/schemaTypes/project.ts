@@ -28,13 +28,13 @@ export const project = defineType({
       title: 'Featured / Flagship',
       type: 'boolean',
       initialValue: false,
-      description: '⚠️ Only ONE project per vertical should be featured. This project appears on the homepage carousel AND as the flagship representative for its category on the Solutions page.',
+      description: 'Shows this project in the projects section on the home page. On /projects, once there are enough projects to filter, the first featured case study also leads as the large card.',
     }),
     defineField({
       name: 'featuredOrder',
       title: 'Homepage carousel order',
       type: 'number',
-      description: 'Controls position in the homepage carousel. Lower = first (1, 2, 3…). Only applies when Featured is checked. If two projects in the same vertical are accidentally both featured, the one with the lower number wins.',
+      description: 'Its place among the featured projects on the home page: lower numbers come first (1, 2, 3). Give each featured project its own number. /projects uses the same order after its complete case studies.',
     }),
     defineField({ name: 'location', title: 'Location', type: 'string' }),
     defineField({ name: 'clientName', title: 'Client name', type: 'string' }),
@@ -88,6 +88,36 @@ export const project = defineType({
           { name: 'value', type: 'string', title: 'Value' },
         ],
       }],
+    }),
+    // What the results rest on. Empty means projected: the site never calls
+    // modelled figures measured unless an editor says so here.
+    defineField({
+      name: 'resultsBasis',
+      title: 'Results basis',
+      type: 'string',
+      description: 'Projected: figures from the financial model (the default when empty). Measured: figures from metered or billed data. Sets the strip heading ("Projected results" or "Measured results") and the label on project cards.',
+      options: {
+        list: [
+          { title: 'Projected (financial model)', value: 'projected' },
+          { title: 'Measured (metered or billed data)', value: 'measured' },
+        ],
+        layout: 'radio',
+      },
+    }),
+    defineField({
+      name: 'resultsAsOf',
+      title: 'Results as of',
+      type: 'date',
+      description: 'The date of the model, or the end of the measured period. Shown beside the results heading.',
+      options: { dateFormat: 'D MMMM YYYY' },
+    }),
+    defineField({
+      name: 'resultsAssumptions',
+      title: 'Results note',
+      type: 'text',
+      rows: 3,
+      description: 'One or two sentences on what the figures rest on: tariff escalation, degradation, baseline, data source. Replaces the default note under the results strip.',
+      validation: (r) => r.max(300).warning('Keep the note to one or two short sentences.'),
     }),
   ],
   preview: {

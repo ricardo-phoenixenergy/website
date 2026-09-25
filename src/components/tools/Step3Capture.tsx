@@ -1,17 +1,18 @@
 // src/components/tools/Step3Capture.tsx
 'use client';
-import { useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import type { SolarInputs, BessInputs, ConditionInputs } from '@/lib/valuation/types';
 import { dlPush } from '@/lib/analytics';
 import { IconArrowLeft, IconArrowRight, IconZap, IconCheck } from '@/components/ui/Icons';
 import { PROVINCE_LABELS } from '@/lib/valuation/provinces';
-import { RecaptchaNotice } from '@/components/ui/RecaptchaNotice';
-
-const DOCS_LABEL: Record<ConditionInputs['docs'], string> = {
-  full: 'Full handover pack (COC, SLDs & docs)',
-  coc: 'COC only',
-  none: 'None / not sure',
-};
+import {
+  CHEMISTRY_LABEL, CONDITION_LABEL, DOCS_LABEL, INVERTER_TYPE_LABEL, MONITORING_LABEL, SOH_LABEL,
+} from '@/lib/valuation/labels';
+import { getRecaptchaToken, type RecaptchaErrorCode } from '@/lib/recaptcha';
+import { FormPrivacyNotice } from '@/components/ui/FormPrivacyNotice';
+import { NextSteps, type NextStep } from '@/components/ui/NextSteps';
+import { SendFailureNotice, type SendFailure } from '@/components/ui/SendFailureNotice';
+import { WEBUYSOLAR_OFFER } from '@/config/webuysolarOffer';
 
 interface Step3CaptureProps {
   solar: SolarInputs;
@@ -27,62 +28,78 @@ interface LeadForm {
   phone: string;
 }
 
-function WhatHappensNext() {
-  const steps = [
-    'A WeBuySolar specialist reviews your system details and prepares your indicative valuation.',
-    'We contact you within 1 business day to talk through it and arrange a free on-site verification.',
-    'You receive a formal written offer within 5 business days — no obligation to accept.',
-  ];
-  return (
-    <div
-      className="rounded-xl p-5 mt-6 text-left"
-      style={{ background: 'rgba(57,87,92,0.06)', border: '1px solid rgba(57,87,92,0.15)' }}
-    >
-      <p className="font-display font-bold text-sm text-[#39575C] mb-3">What happens next</p>
-      <div className="flex flex-col gap-3">
-        {steps.map((text, i) => (
-          <div key={i} className="flex items-start gap-3">
-            <div
-              className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-              style={{ background: '#39575C' }}
-            >
-              <span className="font-display font-bold text-[10px] text-white">{i + 1}</span>
-            </div>
-            <p className="font-body text-xs text-[#6B7280] leading-[1.65]">{text}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+type LeadField = keyof LeadForm;
+
+const FIELD_ORDER: LeadField[] = ['firstName', 'lastName', 'email', 'phone'];
+
+function validate(form: LeadForm): Partial<Record<LeadField, string>> {
+  const errors: Partial<Record<LeadField, string>> = {};
+  if (form.firstName.trim().length < 2) errors.firstName = 'Enter your first name (at least 2 letters).';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+    errors.email = 'Enter an email address like name@company.co.za.';
+  }
+  return errors;
 }
 
+/**
+ * The steps a request leads to, worded exactly as the WeBuySolar page words
+ * them (shared config): first contact, the free audit, then the preliminary
+ * offer that carries the valuation.
+ */
+const [AUDIT_STEP, OFFER_STEP] = WEBUYSOLAR_OFFER.steps;
+const NEXT_STEPS: NextStep[] = [
+  { key: 'contact', text: WEBUYSOLAR_OFFER.firstContact },
+  { key: 'audit', label: AUDIT_STEP.label, text: AUDIT_STEP.description },
+  { key: 'offer', label: OFFER_STEP.label, text: OFFER_STEP.description },
+];
+
 export function Step3Capture({ solar, bess, cond, onBack }: Step3CaptureProps) {
+  const uid = useId();
   const [form, setForm] = useState<LeadForm>({ firstName: '', lastName: '', email: '', phone: '' });
+  const [errors, setErrors] = useState<Partial<Record<LeadField, string>>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [failure, setFailure] = useState<SendFailure | null>(null);
+  const focusFieldRef = useRef<LeadField | null>(null);
+  const successHeadingRef = useRef<HTMLHeadingElement>(null);
 
-  const valid =
-    form.firstName.trim().length >= 2 &&
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
+  const fieldId = (k: LeadField) => `${uid}-${k}`;
+  const errorId = (k: LeadField) => `${uid}-${k}-error`;
 
-  function patch(field: keyof LeadForm) {
-    return (e: React.ChangeEvent<HTMLInputElement>) =>
+  useEffect(() => {
+    const key = focusFieldRef.current;
+    if (!key) return;
+    focusFieldRef.current = null;
+    document.getElementById(`${uid}-${key}`)?.focus();
+  }, [errors, uid]);
+
+  useEffect(() => {
+    if (submitted) successHeadingRef.current?.focus();
+  }, [submitted]);
+
+  function patch(field: LeadField) {
+    return (e: React.ChangeEvent<HTMLInputElement>) => {
       setForm(prev => ({ ...prev, [field]: e.target.value }));
+      if (errors[field]) setErrors(prev => { const n = { ...prev }; delete n[field]; return n; });
+    };
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!valid || submitting) return;
+    if (submitting) return;
+
+    const found = validate(form);
+    if (Object.keys(found).length > 0) {
+      focusFieldRef.current = FIELD_ORDER.find((k) => found[k]) ?? null;
+      setErrors(found);
+      return;
+    }
+
     setSubmitting(true);
-    setError(null);
+    setFailure(null);
 
     try {
-      const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-      let recaptchaToken = '';
-      if (siteKey && typeof window !== 'undefined' && window.grecaptcha) {
-        recaptchaToken = await window.grecaptcha.execute(siteKey, { action: 'valuation_submit' });
-      }
+      const recaptchaToken = await getRecaptchaToken('valuation_submit');
 
       const res = await fetch('/api/contact', {
         method: 'POST',
@@ -93,14 +110,20 @@ export function Step3Capture({ solar, bess, cond, onBack }: Step3CaptureProps) {
           lastName: form.lastName.trim() || undefined,
           email: form.email.trim(),
           phone: form.phone.trim() || undefined,
+          // Every answer the owner gave, in the words they chose from.
           valuation: {
             kw: solar.kw,
             bessKwh: bess.enabled ? bess.kWh : 0,
             installYear: solar.installYear,
+            inverterType: INVERTER_TYPE_LABEL[solar.inverterType],
             inverterKw: solar.inverterKw,
             panelBrand: solar.panelBrand || undefined,
             inverterBrand: solar.inverterBrand || undefined,
             batteryBrand: bess.enabled ? (bess.brand || undefined) : undefined,
+            batteryChemistry: bess.enabled ? CHEMISTRY_LABEL[bess.chemistry] : undefined,
+            batteryHealth: bess.enabled ? SOH_LABEL[bess.soh] : undefined,
+            condition: CONDITION_LABEL[cond.condition],
+            monitoring: cond.monitoring ? MONITORING_LABEL.yes : MONITORING_LABEL.no,
             documentation: DOCS_LABEL[cond.docs],
             province: PROVINCE_LABELS[cond.province],
           },
@@ -108,92 +131,130 @@ export function Step3Capture({ solar, bess, cond, onBack }: Step3CaptureProps) {
         }),
       });
 
-      if (!res.ok) throw new Error('Submission failed');
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({})) as { error?: string };
+        const code = data.error as RecaptchaErrorCode | undefined;
+        setFailure(code === 'recaptcha-missing' || code === 'recaptcha-failed' ? code : 'send-failed');
+        setSubmitting(false);
+        return;
+      }
       dlPush({ event: 'valuation_lead', kw: solar.kw, has_battery: bess.enabled });
       setSubmitted(true);
     } catch {
-      setError('Something went wrong. Please try again.');
+      setFailure('send-failed');
       setSubmitting(false);
     }
   }
 
   const inputClass =
-    'w-full font-body text-sm text-[#1A1A1A] rounded-xl px-4 py-2.5 outline-none transition-shadow focus:shadow-[0_0_0_3px_rgba(57,87,92,0.08)]';
-  const inputStyle = { border: '1px solid #E5E7EB', background: 'white' };
+    'w-full font-body text-sm text-pe-text rounded-xl px-4 py-2.5 bg-white transition-colors';
+  const borderFor = (k: LeadField) =>
+    errors[k] ? 'border-2 border-pe-error' : 'border border-pe-control-border focus:border-pe-primary';
+  const labelClass = 'font-body font-semibold text-xs text-pe-text block mb-2';
 
   if (submitted) {
     return (
       <div className="text-center py-4">
         <div
+          aria-hidden="true"
           className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 text-white"
-          style={{ background: '#39575C' }}
+          style={{ background: 'var(--color-pe-primary)' }}
         >
           <IconCheck size={26} />
         </div>
-        <h2 className="font-display font-extrabold text-xl text-[#1A1A1A] mb-2">
-          Thank you — we&rsquo;ve got your details
-        </h2>
-        <p className="font-body text-sm text-[#6B7280] leading-[1.7] max-w-[420px] mx-auto">
-          Our WeBuySolar team will review your system and be in touch with your indicative
-          buyback valuation.
-        </p>
-        <WhatHappensNext />
+        <h3
+          ref={successHeadingRef}
+          tabIndex={-1}
+          className="font-display font-extrabold text-xl text-pe-text mb-2 focus:outline-none"
+        >
+          Thank you. We&rsquo;ve got your request.
+        </h3>
+        <NextSteps steps={NEXT_STEPS} className="mt-6" />
       </div>
     );
   }
 
+  const renderField = (
+    key: LeadField,
+    label: string,
+    type: 'text' | 'email' | 'tel',
+    autoComplete: string,
+    required: boolean,
+  ) => (
+    <div>
+      <label htmlFor={fieldId(key)} className={labelClass}>
+        {label}
+        {!required && <span className="font-normal text-pe-muted ml-1">(optional)</span>}
+      </label>
+      <input
+        id={fieldId(key)}
+        name={key}
+        type={type}
+        value={form[key]}
+        onChange={patch(key)}
+        autoComplete={autoComplete}
+        required={required}
+        aria-invalid={errors[key] ? true : undefined}
+        aria-describedby={errors[key] ? errorId(key) : undefined}
+        className={`${inputClass} ${borderFor(key)}`}
+      />
+      {errors[key] && (
+        <p id={errorId(key)} className="font-body text-xs text-pe-error mt-1.5">{errors[key]}</p>
+      )}
+    </div>
+  );
+
   return (
     <div>
       <div
+        aria-hidden="true"
         className="w-12 h-12 rounded-full flex items-center justify-center mb-4 text-white"
-        style={{ background: '#39575C' }}
+        style={{ background: 'var(--color-pe-primary)' }}
       >
         <IconZap size={22} />
       </div>
 
-      <h2 className="font-display font-extrabold text-xl text-[#1A1A1A] mb-2">
-        Get your buyback valuation
-      </h2>
-      <p className="font-body text-sm text-[#6B7280] leading-[1.7] mb-6">
-        Enter your details and our WeBuySolar team will review your system and send you an
-        indicative buyback valuation.
+      <h3 className="font-display font-extrabold text-xl text-pe-text mb-2">
+        Your contact details
+      </h3>
+      <p className="font-body text-sm text-pe-muted leading-[1.7] mb-5">
+        There&rsquo;s no cost, and no obligation to sell.
       </p>
 
-      <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-2 gap-3 mb-3">
-          <input type="text" placeholder="First name *" value={form.firstName} onChange={patch('firstName')} required className={inputClass} style={inputStyle} />
-          <input type="text" placeholder="Last name" value={form.lastName} onChange={patch('lastName')} className={inputClass} style={inputStyle} />
-        </div>
-        <input type="email" placeholder="Email address *" value={form.email} onChange={patch('email')} required className={`${inputClass} mb-3`} style={inputStyle} />
-        <input type="tel" placeholder="Phone number" value={form.phone} onChange={patch('phone')} className={`${inputClass} mb-4`} style={inputStyle} />
+      <NextSteps steps={NEXT_STEPS} className="mb-6" />
 
-        {error && <p className="font-body text-xs text-red-600 mb-3">{error}</p>}
+      <form onSubmit={handleSubmit} noValidate>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-4 mb-4">
+          {renderField('firstName', 'First name', 'text', 'given-name', true)}
+          {renderField('lastName', 'Last name', 'text', 'family-name', false)}
+          <div className="sm:col-span-2">{renderField('email', 'Email address', 'email', 'email', true)}</div>
+          <div className="sm:col-span-2">{renderField('phone', 'Phone number', 'tel', 'tel', false)}</div>
+        </div>
+
+        {failure && <SendFailureNotice reason={failure} className="mb-4" />}
 
         <div className="flex gap-3">
           <button
             type="button"
             onClick={onBack}
-            className="inline-flex items-center justify-center gap-2 font-body font-semibold text-sm text-[#6B7280] rounded-xl py-3 px-6 transition-colors hover:text-[#39575C]"
-            style={{ border: '1px solid #E5E7EB', background: 'white' }}
+            className="inline-flex items-center justify-center gap-2 font-body font-semibold text-sm text-pe-muted rounded-xl py-3 px-6 transition-colors hover:text-pe-primary"
+            style={{ border: '1px solid var(--color-pe-border)', background: 'white' }}
           >
             <IconArrowLeft size={14} /> Back
           </button>
           <button
             type="submit"
-            disabled={!valid || submitting}
-            className="flex-1 inline-flex items-center justify-center gap-2 font-body font-semibold text-sm text-white rounded-xl py-3 transition-opacity"
-            style={{ background: '#39575C', opacity: valid && !submitting ? 1 : 0.5 }}
+            disabled={submitting}
+            className="flex-1 inline-flex items-center justify-center gap-2 font-body font-semibold text-sm text-white rounded-xl py-3 transition-opacity disabled:opacity-60"
+            style={{ background: 'var(--color-pe-primary)' }}
           >
-            {submitting ? 'Sending…' : <>Send my details <IconArrowRight size={14} /></>}
+            {submitting ? 'Sending…' : <>Request my valuation <IconArrowRight size={14} /></>}
           </button>
         </div>
+        <p role="status" className="sr-only">{submitting ? 'Sending your request' : ''}</p>
       </form>
 
-      <p className="font-body text-[11px] text-[#9CA3AF] mt-4 leading-[1.6]">
-        Used only to prepare your valuation and for a WeBuySolar specialist to follow up.
-        Never shared or sold.
-      </p>
-      <RecaptchaNotice className="font-body text-[11px] text-[#9CA3AF] mt-2 leading-[1.6]" />
+      <FormPrivacyNotice form="valuation" className="mt-4" />
     </div>
   );
 }

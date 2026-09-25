@@ -1,14 +1,14 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useId, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { SOLUTION_META } from '@/types/solutions';
 import type { SolutionVertical } from '@/types/solutions';
 import type { HeroImages } from '@/types/sanity';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { IconArrowRight } from '@/components/ui/Icons';
+import { DISCOVERY_CTA } from '@/config/ctas';
 
 interface Panel {
   vertical: SolutionVertical;
@@ -38,7 +38,7 @@ const PANELS: Panel[] = [
     number: '03',
     href: '/solutions/webuysolar',
     title: 'Cash in your solar investment',
-    description: 'Sell your existing solar system while continuing to buy the electricity it generates at a lower cost than your utility—unlocking capital without losing the benefits.',
+    description: 'Sell your existing solar system while continuing to buy the electricity it generates at a lower cost than your utility. You free up capital without losing the benefits.',
   },
   {
     vertical: 'energy-optimisation',
@@ -52,7 +52,7 @@ const PANELS: Panel[] = [
     number: '05',
     href: '/solutions/ev-fleets',
     title: 'Electrify your fleet from day one',
-    description: 'End-to-end fleet electrification — infrastructure, vehicles, financing and management in one solution.',
+    description: 'End-to-end fleet electrification, with infrastructure, vehicles, financing and management in one solution.',
   },
   {
     vertical: 'carbon-credits',
@@ -63,7 +63,11 @@ const PANELS: Panel[] = [
   },
 ];
 
-const INTERVAL = 4000;
+// The company-level promise, from the site's own title and description.
+const HERO_HEADING = 'Phoenix Energy: integrated clean energy solutions for South African businesses';
+const HERO_HEADING_VISIBLE = 'Integrated clean energy for South African businesses';
+const HERO_SUMMARY =
+  'Six solutions, one partner. Cut your electricity costs, buy renewable power through the grid, electrify your fleet or earn from the solar you already have.';
 
 const revealVariants = {
   hidden: { opacity: 0, y: 10 },
@@ -87,157 +91,139 @@ const barVariants = {
 
 // ─── Shared panel content (active state) ─────────────────────────────────────
 
+// One `sizes` for every hero image, so the static phone hero and the first
+// desktop panel resolve to the same file at any width and download it once.
+const HERO_SIZES = '(max-width: 1279px) 100vw, 50vw';
+
 function PanelBackground({
-  img, alt, accent, isActive, sizes, priority,
+  img, accent, isActive, sizes, preload,
 }: {
   img: { url: string; lqip?: string } | null | undefined;
-  alt: string;
   accent: string;
   isActive: boolean;
   sizes: string;
-  priority: boolean;
+  preload: boolean;
 }) {
   if (!img?.url) {
     return (
       <div
         className="absolute inset-0"
-        style={{ background: `linear-gradient(135deg, #0d1f22 0%, ${accent} 160%)` }}
+        style={{ background: `linear-gradient(135deg, var(--color-pe-nav-dark) 0%, ${accent} 160%)` }}
       />
     );
   }
   return (
     <Image
       src={img.url}
-      alt={alt}
+      alt=""
       fill
-      className={`object-cover transition-transform duration-[800ms] ease-in-out ${isActive ? 'scale-105' : 'scale-100'}`}
+      className={`object-cover transition-transform duration-[800ms] ease-in-out motion-reduce:transition-none ${isActive ? 'motion-safe:scale-105' : 'scale-100'}`}
       sizes={sizes}
-      priority={priority}
+      preload={preload}
       quality={85}
       {...(img.lqip ? { placeholder: 'blur' as const, blurDataURL: img.lqip } : {})}
     />
   );
 }
 
-function ActivePanelContent({ panel, i }: { panel: Panel; i: number }) {
+function ActivePanelContent({ panel, animateIn }: { panel: Panel; animateIn: boolean }) {
   const meta = SOLUTION_META[panel.vertical];
+  // On first load the hero text is in the server HTML at full opacity; the
+  // staggered reveal plays only when the visitor opens another panel.
+  const initial = animateIn ? 'hidden' : false;
   return (
-    <AnimatePresence mode="wait">
-      <motion.div key={`content-${i}`}>
-        <motion.div
-          variants={barVariants}
-          initial="hidden" animate="visible" exit="exit"
-          className="h-0.5 mb-4 origin-left"
-          style={{ width: 40, background: meta.accent }}
-        />
-        <motion.p
-          custom={0.18} variants={revealVariants} initial="hidden" animate="visible" exit="exit"
-          className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-2"
+    <div>
+      <motion.div
+        variants={barVariants}
+        initial={initial} animate="visible"
+        className="h-0.5 mb-4 origin-left"
+        style={{ width: 40, background: meta.accent }}
+      />
+      <motion.p
+        custom={0.18} variants={revealVariants} initial={initial} animate="visible"
+        className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-2"
+        style={{ color: meta.accent }}
+      >
+        {meta.label}
+      </motion.p>
+      <motion.h2
+        custom={0.22} variants={revealVariants} initial={initial} animate="visible"
+        className="font-display font-extrabold text-white leading-[1.15] mb-3"
+        style={{ fontSize: 'clamp(1.75rem, 3vw, 2.75rem)', maxWidth: 520 }}
+      >
+        {panel.title}
+      </motion.h2>
+      <motion.p
+        custom={0.3} variants={revealVariants} initial={initial} animate="visible"
+        className="font-body text-base font-normal leading-[1.75] mb-5"
+        style={{ color: 'var(--color-on-dark-muted)', maxWidth: 440 }}
+      >
+        {panel.description}
+      </motion.p>
+      <motion.div custom={0.38} variants={revealVariants} initial={initial} animate="visible">
+        <Link
+          href={panel.href}
+          className="group inline-flex items-center gap-2 font-body font-semibold text-base transition-colors duration-150 rounded-full"
           style={{ color: meta.accent }}
         >
-          {meta.label}
-        </motion.p>
-        <motion.h2
-          custom={0.22} variants={revealVariants} initial="hidden" animate="visible" exit="exit"
-          className="font-display font-extrabold text-white leading-[1.15] mb-3"
-          style={{ fontSize: 'clamp(1.75rem, 3vw, 2.75rem)', maxWidth: 520 }}
-        >
-          {panel.title}
-        </motion.h2>
-        <motion.p
-          custom={0.3} variants={revealVariants} initial="hidden" animate="visible" exit="exit"
-          className="font-body text-base font-normal leading-[1.75] mb-5"
-          style={{ color: 'rgba(255,255,255,0.65)', maxWidth: 440 }}
-        >
-          {panel.description}
-        </motion.p>
-        <motion.div
-          custom={0.38} variants={revealVariants} initial="hidden" animate="visible" exit="exit"
-        >
-          <Link
-            href={panel.href}
-            className="group inline-flex items-center gap-2 font-body font-semibold text-base transition-colors duration-150"
-            style={{ color: meta.accent }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            Explore {meta.label}
-            <span className="transition-transform duration-200 group-hover:translate-x-1">
-              <IconArrowRight size={14} />
-            </span>
-          </Link>
-        </motion.div>
+          Explore {meta.label}
+          <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1">
+            <IconArrowRight size={14} />
+          </span>
+        </Link>
       </motion.div>
-    </AnimatePresence>
+    </div>
   );
 }
 
-// ─── Desktop: horizontal accordion (hover + auto-advance) ────────────────────
+// ─── Desktop: horizontal accordion ────────────────────────────────────────────
+// Panels open on hover, click or keyboard. Nothing rotates on its own: content
+// that moves by itself for more than five seconds needs a pause control
+// (WCAG 2.2.2), and the auto-advance removed the link a keyboard user had focused.
 
 function DesktopAccordion({ heroImages }: { heroImages: HeroImages }) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [progressKey, setProgressKey] = useState(0);
-  const isPausedRef = useRef(false);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const reduced = useReducedMotion();
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const uid = useId();
 
-  const startInterval = useCallback(() => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    intervalRef.current = setInterval(() => {
-      if (!isPausedRef.current) {
-        setActiveIndex((prev) => (prev + 1) % PANELS.length);
-        setProgressKey((k) => k + 1);
-      }
-    }, INTERVAL);
-  }, []);
-
-  useEffect(() => {
-    startInterval();
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [startInterval]);
-
-  const handlePanelEnter = (i: number) => {
-    isPausedRef.current = true;
+  const open = (i: number) => {
+    if (i === activeIndex) return;
+    setHasInteracted(true);
     setActiveIndex(i);
-    setProgressKey((k) => k + 1);
-  };
-
-  const handleWrapperLeave = () => {
-    isPausedRef.current = false;
-    startInterval();
-    setProgressKey((k) => k + 1);
   };
 
   return (
     <div
-      className="relative flex w-full overflow-hidden"
+      className="focus-on-dark relative flex w-full overflow-hidden"
       style={{ height: 'calc(100vh - 60px)', minHeight: 500 }}
-      onMouseLeave={handleWrapperLeave}
     >
+      <h1 className="sr-only">{HERO_HEADING}</h1>
       {PANELS.map((panel, i) => {
         const meta = SOLUTION_META[panel.vertical];
         const isActive = i === activeIndex;
+        const contentId = `${uid}-panel-${i}`;
 
         return (
           <div
             key={panel.vertical}
-            className="relative overflow-hidden cursor-pointer transition-all duration-[600ms]"
+            className="relative overflow-hidden transition-all duration-[600ms] motion-reduce:transition-none"
             style={{
               flex: isActive ? 5 : 1,
               transitionTimingFunction: 'cubic-bezier(0.4,0,0.2,1)',
               borderRight: i < PANELS.length - 1 ? '1px solid rgba(255,255,255,0.06)' : undefined,
             }}
-            onMouseEnter={() => handlePanelEnter(i)}
+            onMouseEnter={() => open(i)}
           >
             <PanelBackground
               img={heroImages[panel.vertical]}
-              alt={panel.title}
               accent={meta.accent}
               isActive={isActive}
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority={i === 0}
+              sizes={HERO_SIZES}
+              preload={i === 0}
             />
             <div
-              className="absolute inset-0 transition-all duration-500"
+              aria-hidden="true"
+              className="absolute inset-0 transition-all duration-500 motion-reduce:transition-none"
               style={{
                 background: isActive
                   ? 'linear-gradient(180deg, rgba(13,31,34,0.1) 0%, rgba(13,31,34,0.82) 60%, rgba(13,31,34,0.95) 100%)'
@@ -245,34 +231,27 @@ function DesktopAccordion({ heroImages }: { heroImages: HeroImages }) {
               }}
             />
 
-            {!isActive && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <p
-                  className="font-body text-xs font-bold uppercase tracking-[0.14em] whitespace-nowrap"
-                  style={{ color: 'rgba(255,255,255,0.45)', writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-                >
-                  {meta.label}
-                </p>
-              </div>
-            )}
+            {/* The whole panel is the control. One element in both states, so
+                keyboard focus stays put when the panel expands. */}
+            <button
+              type="button"
+              aria-expanded={isActive}
+              aria-controls={contentId}
+              onClick={() => open(i)}
+              className={`focus-inset absolute inset-0 z-[1] flex items-center justify-center ${isActive ? 'cursor-default' : 'cursor-pointer'}`}
+            >
+              <span
+                className={isActive ? 'sr-only' : 'font-body text-xs font-bold uppercase tracking-[0.14em] whitespace-nowrap'}
+                // on-dark-muted: over the darkened photos on-dark-subtle measured 3.8:1.
+                style={isActive ? undefined : { color: 'var(--color-on-dark-muted)', writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+              >
+                {meta.label}
+              </span>
+            </button>
 
-            {/* Active content */}
-            {isActive && (
-              <div className="absolute inset-x-0 bottom-0 px-6 pb-10 md:px-8 md:pb-12">
-                <ActivePanelContent panel={panel} i={i} />
-              </div>
-            )}
-
-            {/* Progress bar */}
-            {isActive && !reduced && (
-              <div className="absolute bottom-0 inset-x-0 h-0.5" style={{ background: 'rgba(255,255,255,0.1)' }}>
-                <div
-                  key={`bar-${progressKey}`}
-                  className="h-full origin-left"
-                  style={{ background: meta.accent, animation: `fillProgress ${INTERVAL}ms linear forwards` }}
-                />
-              </div>
-            )}
+            <div id={contentId} className="absolute inset-x-0 bottom-0 z-[2] px-6 pb-10 md:px-8 md:pb-12">
+              {isActive && <ActivePanelContent panel={panel} animateIn={hasInteracted} />}
+            </div>
           </div>
         );
       })}
@@ -280,110 +259,95 @@ function DesktopAccordion({ heroImages }: { heroImages: HeroImages }) {
   );
 }
 
-// ─── Mobile: vertical accordion driven by scroll ──────────────────────────────
+// ─── Below 1280px: one static hero, then a row per solution ──────────────────
+// Replaces a 600svh scroll-driven accordion: the first screen now says what
+// Phoenix does, and every solution is one tap away without scrolling six screens.
 
-function MobileAccordion({ heroImages }: { heroImages: HeroImages }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const reduced = useReducedMotion();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const container = containerRef.current;
-      if (!container) return;
-      const { top, height } = container.getBoundingClientRect();
-      const scrollable = height - window.innerHeight;
-      if (scrollable <= 0) return;
-      const progress = Math.max(0, Math.min(1, -top / scrollable));
-      setActiveIndex(Math.min(PANELS.length - 1, Math.floor(progress * PANELS.length)));
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const scrollToPanel = useCallback((i: number) => {
-    const container = containerRef.current;
-    if (!container) return;
-    const scrollable = container.offsetHeight - window.innerHeight;
-    const target = container.offsetTop + (i / PANELS.length) * scrollable;
-    window.scrollTo({ top: target, behavior: reduced ? 'auto' : 'smooth' });
-  }, [reduced]);
+function MobileHero({ heroImages }: { heroImages: HeroImages }) {
+  const lead = PANELS[0];
+  const leadImg = heroImages[lead.vertical];
 
   return (
-    <div ref={containerRef} style={{ height: `${PANELS.length * 100}svh` }}>
-      <div className="sticky top-0 h-[100dvh] overflow-hidden flex flex-col">
-        {PANELS.map((panel, i) => {
-          const meta = SOLUTION_META[panel.vertical];
-          const isActive = i === activeIndex;
-
-          return (
-            <div
-              key={panel.vertical}
-              className="relative overflow-hidden transition-all duration-[600ms]"
-              style={{
-                flex: isActive ? 8 : 1,
-                transitionTimingFunction: 'cubic-bezier(0.4,0,0.2,1)',
-                borderBottom: i < PANELS.length - 1 ? '1px solid rgba(255,255,255,0.06)' : undefined,
-                cursor: isActive ? 'default' : 'pointer',
-              }}
-              onClick={() => !isActive && scrollToPanel(i)}
-            >
-              <PanelBackground
-                img={heroImages[panel.vertical]}
-                alt={panel.title}
-                accent={meta.accent}
-                isActive={isActive}
-                sizes="100vw"
-                priority={i === 0}
-              />
-              <div
-                className="absolute inset-0 transition-all duration-500"
-                style={{
-                  background: isActive
-                    ? 'linear-gradient(180deg, rgba(13,31,34,0.15) 0%, rgba(13,31,34,0.72) 55%, rgba(13,31,34,0.95) 100%)'
-                    : 'rgba(13,31,34,0.80)',
-                }}
-              />
-
-              {/* Collapsed strip */}
-              {!isActive && (
-                <div className="absolute inset-0 flex items-center px-5 gap-3 pointer-events-none">
-                  <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: meta.accent }} />
-                  <p className="font-body text-xs font-bold uppercase tracking-[0.14em] truncate" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                    {meta.label}
-                  </p>
-                </div>
-              )}
-
-              {/* Active content */}
-              {isActive && (
-                <div className="absolute inset-x-0 bottom-0 px-5 pb-8">
-                  <ActivePanelContent panel={panel} i={i} />
-                </div>
-              )}
-            </div>
-          );
-        })}
-
-        {/* Scroll indicator dots */}
-        <div className="absolute bottom-5 right-5 flex flex-col items-center gap-1.5 z-20">
-          {PANELS.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => scrollToPanel(i)}
-              aria-label={`Go to panel ${i + 1}`}
-              className="rounded-full transition-all duration-300 flex-shrink-0"
-              style={{
-                width: 4,
-                height: i === activeIndex ? 18 : 4,
-                background: i === activeIndex ? '#ffffff' : 'rgba(255,255,255,0.3)',
-              }}
-            />
-          ))}
+    <section aria-labelledby="home-hero-heading" className="focus-on-dark bg-pe-nav-dark">
+      <div className="relative flex flex-col justify-end overflow-hidden min-h-[min(78svh,720px)]">
+        {leadImg?.url ? (
+          <Image
+            src={leadImg.url}
+            alt=""
+            fill
+            preload
+            quality={85}
+            sizes={HERO_SIZES}
+            className="object-cover"
+            {...(leadImg.lqip ? { placeholder: 'blur' as const, blurDataURL: leadImg.lqip } : {})}
+          />
+        ) : (
+          <div
+            className="absolute inset-0"
+            style={{ background: `linear-gradient(135deg, var(--color-pe-nav-dark) 0%, ${SOLUTION_META[lead.vertical].accent} 160%)` }}
+          />
+        )}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{ background: 'linear-gradient(180deg, rgba(13,31,34,0.30) 0%, rgba(13,31,34,0.55) 40%, rgba(13,31,34,0.97) 100%)' }}
+        />
+        <div className="relative page-container w-full pt-32 pb-10">
+          <h1
+            id="home-hero-heading"
+            className="font-display font-extrabold text-white leading-[1.1] text-balance max-w-[18ch]"
+            style={{ fontSize: 'clamp(2rem, 6.4vw, 3.25rem)' }}
+          >
+            {HERO_HEADING_VISIBLE}
+          </h1>
+          <p className="font-body text-base leading-[1.7] mt-4 max-w-[34rem]" style={{ color: 'rgba(255,255,255,0.78)' }}>
+            {HERO_SUMMARY}
+          </p>
+          <Link
+            href={DISCOVERY_CTA.href}
+            className="mt-7 inline-flex items-center justify-center gap-2 rounded-full bg-pe-bg px-6 py-3.5 font-body text-base font-semibold text-pe-nav-dark transition-colors hover:bg-white"
+          >
+            {DISCOVERY_CTA.label} <IconArrowRight size={15} />
+          </Link>
         </div>
       </div>
-    </div>
+
+      <div className="page-container pb-12">
+        <h2 className="sr-only">Our solutions</h2>
+        <ul className="grid md:grid-cols-2 md:gap-x-8 border-b border-white/10">
+          {PANELS.map((panel) => {
+            const meta = SOLUTION_META[panel.vertical];
+            const thumb = heroImages[panel.vertical];
+            return (
+              <li key={panel.vertical} className="border-t border-white/10">
+                <Link
+                  href={panel.href}
+                  className="group flex min-h-[72px] items-center gap-4 rounded-xl py-3"
+                >
+                  <span className="relative size-14 flex-shrink-0 overflow-hidden rounded-xl" style={{ background: '#1a3035' }}>
+                    {thumb?.url && (
+                      <Image src={thumb.url} alt="" fill sizes="56px" className="object-cover" />
+                    )}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center gap-2 font-display text-base font-bold text-white">
+                      <span aria-hidden="true" className="size-2 flex-shrink-0 rounded-full" style={{ background: meta.accent }} />
+                      {meta.label}
+                    </span>
+                    <span className="mt-0.5 block font-body text-sm leading-snug" style={{ color: 'rgba(255,255,255,0.72)' }}>
+                      {panel.title}
+                    </span>
+                  </span>
+                  <span aria-hidden="true" className="flex-shrink-0 text-white/60 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-white">
+                    <IconArrowRight size={16} />
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
   );
 }
 
@@ -396,7 +360,7 @@ export function HeroAccordion({ heroImages }: { heroImages: HeroImages }) {
         <DesktopAccordion heroImages={heroImages} />
       </div>
       <div className="xl:hidden">
-        <MobileAccordion heroImages={heroImages} />
+        <MobileHero heroImages={heroImages} />
       </div>
     </>
   );

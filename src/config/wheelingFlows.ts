@@ -65,7 +65,7 @@ export const MICRO_FLOW: WheelingFlow = {
   ],
   moneyTitle: 'How you pay',
   money: [
-    { from: 'You', to: 'Plant', label: 'Own the asset — either through purchase or financing.' },
+    { from: 'You', to: 'Plant', label: 'Own the asset through either purchase or financing.' },
     { from: 'You', to: 'Eskom', label: 'Pay network and wheeling (generator use-of-system) charges for transporting electricity through the grid.' },
   ],
   summary:
