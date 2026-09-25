@@ -54,7 +54,8 @@ Full spec in `specs/04-HOME.md` under Hero Accordion — see approved mockup. Re
 - `1px solid rgba(255,255,255,0.06)` right-edge divider (none on the last panel).
 
 ### Panel active
-- `flex: 5`, transition `0.6s cubic-bezier(0.4,0,0.2,1)`.
+- `flex: 7.5` against `flex: 1` for each of the five closed panels, so the open panel takes 60% of the width (it was 50%, `flex: 5`, until 25 September 2026). Transition `0.6s cubic-bezier(0.4,0,0.2,1)`.
+- The panel photos load at `sizes="(max-width: 1279px) 100vw, 60vw"`, the open panel's width.
 - Photo: `scale(1.05)` over `0.8s` ease-in-out; no zoom under reduced motion.
 - Tint: `linear-gradient(180deg, rgba(13,31,34,0.1) 0%, rgba(13,31,34,0.82) 60%, rgba(13,31,34,0.95) 100%)`.
 - The vertical label becomes screen-reader only. The content sits at the bottom of the panel (`padding: 0 32px 48px`): a 40 × 2px accent bar, the solution name as an eyebrow (Inter 700, 12px, uppercase, accent colour), the heading as an H2 (Plus Jakarta Sans 800, white, `clamp(1.75rem, 3vw, 2.75rem)`, max-width 520px), the description (Inter 400, 16px, `#B9C3C5`, max-width 440px) and an "Explore {solution}" link with an arrow (`ArrowLink` `lg`: Inter 600, 16px, accent colour).

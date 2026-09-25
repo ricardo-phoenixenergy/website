@@ -95,7 +95,8 @@ const barVariants = {
 
 // One `sizes` for every hero image, so the static phone hero and the first
 // desktop panel resolve to the same file at any width and download it once.
-const HERO_SIZES = '(max-width: 1279px) 100vw, 50vw';
+// 60vw is the open desktop panel's width.
+const HERO_SIZES = '(max-width: 1279px) 100vw, 60vw';
 
 function PanelBackground({
   img, accent, isActive, sizes, preload,
@@ -203,7 +204,8 @@ function DesktopAccordion({ heroImages }: { heroImages: HeroImages }) {
             key={panel.vertical}
             className="relative overflow-hidden transition-all duration-[600ms] motion-reduce:transition-none"
             style={{
-              flex: isActive ? 5 : 1,
+              // The open panel takes 60% of the width: 7.5 against 1 for each of the five closed ones.
+              flex: isActive ? 7.5 : 1,
               transitionTimingFunction: 'cubic-bezier(0.4,0,0.2,1)',
               borderRight: i < PANELS.length - 1 ? '1px solid rgba(255,255,255,0.06)' : undefined,
             }}
