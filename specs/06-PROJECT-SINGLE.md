@@ -204,7 +204,8 @@ gap: 6px;
 
 ### Photo dialog
 - A modal (`role="dialog"`, `aria-modal="true"`) over a `rgba(13,31,34,0.92)` backdrop. The photo is `object-fit: contain`, up to 900px wide and `min(600px, 80vh)` tall.
-- A close button (focused on open), previous and next buttons when there is more than one photo, and a live "n / total" counter.
+- A close button (focused on open), previous and next buttons when there is more than one photo, and a live "n / total" counter. The three buttons are 44px ghost `IconButton`s with 20px glyphs: a translucent white disc with a faint edge, so they read over the photo.
+- The dialog carries `focus-on-dark` (updated September 2026): a white focus ring on a Night Teal halo. On a phone the previous and next buttons sit on the photo, where the default white halo and teal ring fell to 1.2 to 3.0:1 over a light one.
 - The left and right arrow keys page through the photos and Escape closes. `useModalDialog` keeps Tab inside the dialog, locks page scroll and returns focus to the tile that opened it. A click on the backdrop also closes it.
 - The dialog pages through every gallery photo, including any after the first six.
 
@@ -239,8 +240,8 @@ A `section` labelled by its heading (`aria-labelledby="similar-projects"`), whit
 - Headline: the `h2` *"Ready for a similar project?"*, Plus Jakarta Sans 800, 20px on phones and 24px from md, white, `line-height: 1.2`.
 - Subtext: Inter 400, 14px, `on-dark-subtle`: *"Tell us about your site. We reply within 1 business day."* (updated September 2026: the old "in under 48 hours" contradicted the site's one response time, `REPLY_PROMISE` in `src/config/contact.ts`, whose no-break spaces keep "1 business day" on one line)
 - Buttons, `gap: 12px`: stacked on phones and at md (768 to 1023px), side by side at sm (640 to 767px) and from lg (1024px).
-  - The project's service CTA, `projectCta(vertical, title)` from `src/config/ctas.ts` (was `Get a Quote`): the service's label, for C&I "Book a discovery meeting", linking to the contact form with the service and the project named in the message. `#F5F5F5` bg, Deep Teal text, pill shape
-  - `View published projects` (`PROJECTS_CTA`): links to `/projects`, `rgba(255,255,255,0.08)` bg, `border: 1px solid rgba(255,255,255,0.15)`, white text, pill shape.
+  - The project's service CTA, `projectCta(vertical, title)` from `src/config/ctas.ts` (was `Get a Quote`): the service's label, for C&I "Book a discovery meeting", linking to the contact form with the service and the project named in the message. `Button`, light, default size: a 48px pill, `#F5F5F5` fill, Night Teal text, white on hover.
+  - `View published projects` (`PROJECTS_CTA`): links to `/projects`. `Button`, ghost, default size: the same 48px box, white at 8% with a white 20% edge, white text.
   - Stacked, the buttons share one width (the full card width on phones). Side by side, each takes its text width.
 
 ---

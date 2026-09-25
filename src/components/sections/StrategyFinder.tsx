@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect, useId, useRef } from 'react';
-import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
+import { IconButton } from '@/components/ui/IconButton';
+import { TextButton } from '@/components/ui/TextButton';
 import { dlPush } from '@/lib/analytics';
 import { recommendStrategy } from '@/lib/strategy/recommendStrategy';
 import { buildRationale } from '@/lib/strategy/rationale';
@@ -294,14 +296,10 @@ export function StrategyFinder({ vertical }: StrategyFinderProps) {
             className="rounded-xl p-5"
             style={{ border: `1px solid ${ACCENT}66`, background: 'rgba(227,197,141,0.06)' }}
           >
-            <button
-              type="button"
-              onClick={back}
-              className="inline-flex items-center gap-1 font-body text-xs mb-3"
-              style={{ color: 'var(--color-on-dark-subtle)' }}
-            >
-              <IconArrowLeft size={13} /> Back
-            </button>
+            {/* The same back control as the questions', in the same corner */}
+            <IconButton variant="ghost" label="Back to the previous question" onClick={back} className="mb-3">
+              <IconArrowLeft />
+            </IconButton>
             <p aria-hidden="true" className="font-body text-xs uppercase tracking-[0.12em] text-center mb-3" style={{ color: 'var(--color-on-dark-subtle)' }}>
               Your recommended strategy
             </p>
@@ -333,16 +331,17 @@ export function StrategyFinder({ vertical }: StrategyFinderProps) {
             </p>
 
             {/* The next step, carrying the answer into the contact form */}
-            <Link
+            <Button
+              variant="accent"
+              vertical="ci-solar-storage"
               href={`/contact?intent=client&strategy=${result.primary}&source=finder`}
               onClick={() => dlPush({ event: 'cta_click', cta_label: 'Book a discovery meeting about this', cta_location: `strategy_finder_result:${result.primary}` })}
-              className="flex items-center justify-center gap-1.5 w-full rounded-full px-5 py-3 font-display font-bold text-sm mb-6"
-              style={{ background: ACCENT, color: SOLUTION_META['ci-solar-storage'].accentText }}
+              className="mb-6 w-full"
             >
-              Book a discovery meeting about this <IconArrowRight size={14} />
-            </Link>
+              Book a discovery meeting about this <IconArrowRight />
+            </Button>
 
-            {/* Learn-more links — secondary, auto-width chips that don't compete with the CTA */}
+            {/* Learn-more buttons: compact and auto-width, so they don't compete with the CTA */}
             <p
               className="font-body text-xs uppercase tracking-[0.12em] text-center mb-2.5"
               style={{ color: 'var(--color-on-dark-subtle)' }}
@@ -351,27 +350,23 @@ export function StrategyFinder({ vertical }: StrategyFinderProps) {
             </p>
             <div className="flex flex-wrap justify-center gap-2 mb-5">
               {[result.primary, ...result.secondary].map((s) => (
-                <button
+                <Button
                   key={s}
-                  type="button"
+                  variant="ghost"
+                  vertical="ci-solar-storage"
+                  size="compact"
                   onClick={() => onLearnMore(`strategy-${s}`, s)}
-                  className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 font-display font-bold text-xs transition-colors duration-200"
-                  style={{ border: `1.5px solid ${ACCENT}66`, color: ACCENT, background: 'rgba(227,197,141,0.06)' }}
                 >
                   {STRATEGIES[s].label}
-                  <IconArrowRight size={13} />
-                </button>
+                  <IconArrowRight />
+                </Button>
               ))}
             </div>
 
-            <button
-              type="button"
-              onClick={restart}
-              className="block w-full text-center font-body text-xs mt-4"
-              style={{ color: 'var(--color-on-dark-subtle)' }}
-            >
+            {/* The 44px target reaches 14px past the text each way; the margins keep the text where it sat. */}
+            <TextButton onClick={restart} className="flex w-full -mt-3.5 -mb-3.5">
               Start over
-            </button>
+            </TextButton>
           </div>
         )}
     </div>
@@ -391,16 +386,11 @@ function Question({
   return (
     <div>
       <div className="flex items-start gap-3 mb-4">
+        {/* Centred on the heading's first line (28px); the margins keep the row that tall. */}
         {onBack && (
-          <button
-            type="button"
-            onClick={onBack}
-            aria-label="Back to the previous question"
-            className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-            style={{ border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.7)' }}
-          >
-            <IconArrowLeft size={14} />
-          </button>
+          <IconButton variant="ghost" label="Back to the previous question" onClick={onBack} className="-my-2">
+            <IconArrowLeft />
+          </IconButton>
         )}
         <h3
           ref={headingRef}

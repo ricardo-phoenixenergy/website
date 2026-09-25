@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { IconArrowRight } from '@/components/ui/Icons';
+import { arrowLinkClasses } from '@/components/ui/buttonStyles';
 import { SOLUTION_META } from '@/types/solutions';
 import { VALUATION_CTA } from '@/config/ctas';
 
@@ -126,7 +127,8 @@ export default function ToolsPage() {
                         ))}
                       </div>
 
-                      <p className="flex items-center gap-2 justify-end font-body text-sm font-semibold text-pe-primary transition-colors group-hover:text-pe-primary-hover">
+                      {/* The card is the link, so this line only takes the arrow link's look. */}
+                      <p className={arrowLinkClasses({ className: 'self-end group-hover:text-pe-primary-hover' })}>
                         {tool.cta} <IconArrowRight />
                       </p>
                     </div>

@@ -5,6 +5,7 @@ import { PROVINCE_OPTIONS } from '@/lib/valuation/provinces';
 import { CONDITION_LABEL, DOCS_SHORT_LABEL, MONITORING_LABEL, optionsFrom } from '@/lib/valuation/labels';
 import { SegmentedControl } from './SegmentedControl';
 import { SelectControl } from './SelectControl';
+import { Button } from '@/components/ui/Button';
 import { IconArrowLeft, IconArrowRight } from '@/components/ui/Icons';
 
 interface Step2ConditionProps {
@@ -17,11 +18,6 @@ interface Step2ConditionProps {
 const CONDITION_OPTIONS = optionsFrom(CONDITION_LABEL);
 const DOCS_OPTIONS = optionsFrom(DOCS_SHORT_LABEL);
 const MONITORING_OPTIONS = optionsFrom(MONITORING_LABEL);
-
-const BACK_BTN =
-  'inline-flex items-center justify-center gap-2 font-body font-semibold text-sm text-pe-muted rounded-xl py-3 px-6 transition-colors hover:text-pe-primary';
-const NEXT_BTN =
-  'flex-1 inline-flex items-center justify-center gap-2 font-body font-semibold text-sm text-white rounded-xl py-3 transition-opacity hover:opacity-90';
 
 export function Step2Condition({ cond, onChange, onBack, onNext }: Step2ConditionProps) {
   return (
@@ -58,13 +54,14 @@ export function Step2Condition({ cond, onChange, onBack, onNext }: Step2Conditio
         onChange={v => onChange({ province: v as ConditionInputs['province'] })}
       />
 
-      <div className="flex gap-3 mt-6">
-        <button type="button" onClick={onBack} className={BACK_BTN} style={{ border: '1px solid var(--color-pe-border)', background: 'white' }}>
-          <IconArrowLeft size={14} /> Back
-        </button>
-        <button type="button" onClick={onNext} className={NEXT_BTN} style={{ background: 'var(--color-pe-primary)' }}>
-          Next: your contact details <IconArrowRight size={14} />
-        </button>
+      {/* Below 640px the pair stacks, Back above Next and both full width; side by side, Next's label wrapped there. */}
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+        <Button variant="outline" onClick={onBack}>
+          <IconArrowLeft /> Back
+        </Button>
+        <Button onClick={onNext} className="sm:flex-1">
+          Next: your contact details <IconArrowRight />
+        </Button>
       </div>
     </div>
   );

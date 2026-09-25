@@ -69,12 +69,13 @@
 
 `BlogFilterPills` (`src/components/blog/BlogFilterPills.tsx`) wraps the shared `FilterPills` (`src/components/ui/FilterPills.tsx`).
 
-- One row that scrolls sideways with a hidden scrollbar, at every width: `display: flex`, `gap: 8px`, `overflow-x: auto`, no wrapping.
+- One row that scrolls sideways with a hidden scrollbar, at every width: `display: flex`, `gap: 8px`, `overflow-x: auto`, no wrapping. It keeps 6px of padding and 6px of scroll padding, and a pill that takes keyboard focus scrolls fully into view, so it keeps its whole focus ring (see `specs/05-PROJECTS.md`, Filter bar).
 - In the same `page-container` as the search bar, with `padding-bottom: 24px` under the pair.
 
-**Default state:** white bg, `border: 1px solid #E5E7EB`, muted text, Inter 500, 14px, `padding: 7px 16px`, pill shape
-**Active state:** Deep Teal bg, no border, white text, `box-shadow: 0 2px 8px rgba(0,0,0,0.12)`, `aria-pressed="true"`
-**Hover:** no hover style
+Each pill is a `Chip` toggle (`src/components/ui/Chip.tsx`, updated September 2026, the button programme): 36px tall, `padding: 0 16px`, pill shape, Inter 500, 14px, in both states.
+**Default state:** white bg, `border: 1px solid #E5E7EB`, muted text
+**Active state:** Deep Teal bg and edge, white text, no shadow, `aria-pressed="true"`
+**Hover:** the default text turns Deep Teal
 
 **Pills (one row):**
 
@@ -182,10 +183,12 @@ On article cards the vertical tag uses its vertical's solid accent with the acce
 
 ### Pagination
 
-Load more is not built. As approved in the Engineering Review Fixes below, the index uses numbered pagination at every width, phones included:
-- It shows when there is more than one page: Prev (from page 2), one pill per page, then Next (before the last page), centred, `padding: 40px 0`.
-- Each is a link to `/blog?page=N` that keeps the category and tag but drops the search term (`buildBlogHref` in `src/app/blog/page.tsx`).
-- Inter 12px pills: the current page in Deep Teal with white text, the others white with a `#E5E7EB` border and muted text.
+Load more is not built. As approved in the Engineering Review Fixes below, the index uses numbered pagination at every width, phones included. It is `BlogPagination` (`src/components/blog/BlogPagination.tsx`):
+- It shows when there is more than one page: Prev (from page 2), the page numbers, then Next (before the last page), `padding: 40px 0`.
+- Up to 7 pages, every page number shows. Past 7, it shows the first and last pages, the current page and one either side, with an ellipsis (`…`, hidden from screen readers) for each run of hidden pages; a run of one page shows that page instead. That is 7 numbers at most: page 5 of 10 reads Prev, 1, …, 4, 5, 6, …, 10, Next.
+- The row sits in the page container, centred, and wraps rather than running off a phone (updated September 2026): chips 8px apart, wrapped rows 10px apart, so the 44px touch targets stay clear of each other. From 3 to 10 pages the row takes one or two rows at 320 to 414px, never three.
+- Each is a link to `/blog?page=N` that keeps the category and tag but drops the search term (`buildBlogHref` in `src/app/blog/page.tsx`, passed in as `hrefFor`).
+- Every one is a `Chip` link (updated September 2026), so the row is one height, 36px: Inter 500, 14px, white with a `#E5E7EB` border and muted text. The current page is `current`: Deep Teal with white text and `aria-current="page"`. Prev and Next keep their 14px arrows.
 
 ---
 
@@ -221,9 +224,9 @@ border-bottom: 1px solid #E5E7EB;
 
 **Right — share buttons:**
 - Label: `Share:` in Inter 400, 12px, muted.
-- Three circles: LinkedIn (the text `in`), X (the letter `X`, which replaced the `𝕏` glyph in September 2026), Copy link (`🔗`, until the planned copy-link button replaces it)
-- Each: 32px circle, `border: 1px solid #E5E7EB`, `background: #fff`.
-- Hover: Deep Teal bg + white icon on LinkedIn and X. The copy button has no hover; after a copy it shows ✓ on Deep Teal for 2 seconds.
+- Three 44px outline `IconButton`s (updated September 2026, the button programme) with drawn glyphs in Deep Teal: LinkedIn (`IconLinkedIn`), X (`IconXLogo`) and Copy link (`IconLink`). They replaced the text `in`, the letter `X` and the `🔗` emoji. The X and link glyphs are 20px; the LinkedIn mark, a filled square that reads larger and darker at the same size, is 16px, the same height as the X.
+- Each: white, `border: 1px solid #E5E7EB`, which turns Deep Teal on hover over a `#F5F5F5` fill.
+- After a copy, the link glyph turns into a check (`IconCheck`) for 2 seconds.
 
 **Share behaviour:**
 - LinkedIn: `https://www.linkedin.com/sharing/share-offsite/?url={canonicalUrl}`
@@ -334,7 +337,8 @@ margin: 24px 0;
 ```
 - Title: Plus Jakarta Sans 800, 16px (`text-base`), white
 - Subtitle: Inter 400, 12px, `rgba(255,255,255,0.65)`
-- Button: white bg, Deep Teal text, pill, `border: none`, `padding: 9px 20px`
+- Button: `Button`, light, compact size (updated September 2026): a 40px pill, `#F5F5F5` fill, Night Teal Inter 600 14px, white on hover. An external link opens in a new tab.
+- The block carries `focus-on-dark`, so the focus ring is white on it: the default Deep Teal ring vanished on the Deep Teal block.
 
 **Sanity fields:** `title`, `subtitle`, `btnText`, `btnHref` (internal route or external URL)
 
@@ -344,15 +348,16 @@ margin: 24px 0;
 
 ```css
 display: flex;
-gap: 6px;
+align-items: center;
+gap: 10px 8px; /* each chip's touch target reaches 4px above and below, so wrapped rows keep 2px between them */
 flex-wrap: wrap;
 padding-top: 20px;
 border-top: 1px solid #E5E7EB;
 margin-top: 28px;
 ```
-- "Tags:" label: Inter 600, 11px, `#1A1A1A`
-- Each tag: Deep Teal bg at 10%, Deep Teal text, `padding: 4px 10px`, pill
-- Each tag links to `/blog?tag={tag}` — drives internal linking
+- "Tags:" label: Inter 600, 12px, `#1A1A1A`
+- Each tag: a `Chip` link (updated September 2026), like the /blog tag pills: 36px, white with a `#E5E7EB` border, muted Inter 500 14px text that turns Deep Teal on hover
+- Each tag links to `/blog?tag={tag}`, which drives internal linking
 
 ---
 
@@ -678,7 +683,7 @@ array::unique(*[_type == "blogPost"].tags[])
 
 ### E-E-A-T signals built into template
 - Named authors on every post: the author card shows the photo (or initials), role and bio, and links to the author's profile, which carries the LinkedIn link when one is set.
-- Author profile pages at `/blog/authors/[slug]` with post archive
+- Author profile pages at `/blog/authors/[slug]` with post archive. The dark hero shows the LinkedIn link, when one is set, as a compact ghost `Button` (40px, white at 8% with a white 20% edge, opens in a new tab).
 - The published date shows on the page. `datePublished` and `dateModified` (which falls back to the published date) are in the JSON-LD.
 - JSON-LD `Article` schema with `publisher` organisation markup
 - Internal links from every post to relevant solution pages
@@ -716,6 +721,7 @@ array::unique(*[_type == "blogPost"].tags[])
 | Featured article card | `src/components/ui/FeaturedArticleCard.tsx` |
 | Blog filter pills | `src/components/blog/BlogFilterPills.tsx` (wraps the shared `src/components/ui/FilterPills.tsx`) |
 | Blog search input | `src/components/blog/BlogSearchInput.tsx` |
+| Pagination | `src/components/blog/BlogPagination.tsx` |
 | Read-depth analytics (`blog_read_complete`) | `src/components/analytics/BlogReadDepth.tsx` |
 | CTA band before the footer | `src/components/layout/PageFooter.tsx` |
 | Category colours, tag to vertical, dates | `src/lib/blogUtils.ts` |
@@ -789,5 +795,5 @@ export async function generateMetadata({ searchParams }: { searchParams: BlogSea
 }
 ```
 **With no posts** (updated September 2026, audit BLG-01 and BLG-05): `/blog` is `noindex, follow`, the sitemap leaves out `/blog` until the first post exists (`src/app/sitemap.ts`), and the home page's `WebSite` JSON-LD carries its `SearchAction` (which targets `/blog?q=`) only when a post exists. The revalidation webhook refreshes `/` and `/blog` when a post is published; the sitemap refreshes within the hour.
-UI as built: page number pills with Prev and Next at the bottom of the grid, at every width. There is no Load more, on mobile or anywhere else.
+UI as built: page number chips with Prev and Next at the bottom of the grid, at every width, all `Chip` links, wrapping on a phone, with a window of numbers past 7 pages (`BlogPagination`; see Pagination above). There is no Load more, on mobile or anywhere else.
 

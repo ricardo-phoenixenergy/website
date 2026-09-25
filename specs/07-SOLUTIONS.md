@@ -84,7 +84,7 @@ background: linear-gradient(105deg, rgba(13,31,34,0.92) 0%, rgba(13,31,34,0.84) 
 - **Breadcrumb:** see §2. There is no vertical badge: the `badge` prop is the breadcrumb's last item and the photo's alt text.
 - **Headline (H1):** Plus Jakarta Sans 800, 30px (42px from 768px), white, `line-height: 1.18`, `max-width: 560px`. `<em>` renders in the vertical accent, upright, not italic.
 - **Subtitle:** Inter, 14px (16px from 768px), `rgba(255,255,255,0.70)`, `line-height: 1.75`, `max-width: 460px` (640px on the copy-only hero). Line breaks in the string show from 1024px.
-- **One button:** `Button variant="light"` (`#F5F5F5` fill, `#0d1f22` text, pill) with a right arrow. It is the page CTA, `SERVICE_CTA[vertical]` (`src/config/ctas.ts`), which opens the contact form at step 2 as a client with the service already written in the message. The component also takes an optional ghost button and a note under the buttons; only WeBuySolar uses them.
+- **One button:** `Button variant="light"` at the default size (a 48px pill, `#F5F5F5` fill, `#0d1f22` text) with a right arrow. It is the page CTA, `SERVICE_CTA[vertical]` (`src/config/ctas.ts`), which opens the contact form at step 2 as a client with the service already written in the message. The component also takes an optional ghost button, the same 48px size, and a note under the buttons; only WeBuySolar uses them.
 
 | Page | H1 (accent words in italics) | Right column | Button |
 |---|---|---|---|
@@ -128,7 +128,13 @@ Removed from the solution pages in May 2026; the unused `SolutionPain` component
 - **EV Fleets:** `FleetSavingsEstimator` (`src/lib/evfleet/estimate.ts`), which takes the number of vehicles, vehicle type, fuel, distance and charging source, with fuel and electricity prices from the Sanity energy prices document (`getEnergyPrices()`). On the result step, "Edit inputs" and "Get a fleet assessment" sit side by side from 640px and stack full width below it, where each label used to wrap onto two lines.
 - **Energy Optimisation:** no tool; the hero is copy only.
 
-**The tool cards** (updated September 2026). All four cards sit on a 55% Night Teal fill (`bg-pe-nav-dark/55`, with a `rgba(255,255,255,0.10)` border). They used to be 6% white veils, so their text depended on the hero photo behind them and fell to 2.3:1 where a photo was bright (measured pixel by pixel at 1440 and 390px, in every state of each tool). On the fill, the small labels and hints that still measured low use `on-dark-muted`: the Strategy Finder's intro and option hints, the Wheeling check's "Check eligibility" eyebrow (the coral accent measured 3.1:1), its intro and its secondary result links (coral outline, `on-dark-muted` text), the Carbon estimator's credit labels, and the fleet estimator's title and its result tiles' labels. Every text run on the cards now measures 4.5:1 or more.
+**The tool cards** (updated September 2026). All four cards sit on a 55% Night Teal fill (`bg-pe-nav-dark/55`, with a `rgba(255,255,255,0.10)` border). They used to be 6% white veils, so their text depended on the hero photo behind them and fell to 2.3:1 where a photo was bright (measured pixel by pixel at 1440 and 390px, in every state of each tool). On the fill, the small labels and hints that still measured low use `on-dark-muted`: the Strategy Finder's intro and option hints, the Wheeling check's "Check eligibility" eyebrow (the coral accent measured 3.1:1), its intro, the Carbon estimator's credit labels, and the fleet estimator's title and its result tiles' labels. Every text run on the cards now measures 4.5:1 or more.
+
+**The tools' buttons** (updated September 2026) sit on the shared scale (`specs/01-BRAND.md`, Buttons and controls):
+- Result CTAs are `Button` `accent` at the default size: the vertical's accent fill with its "on" ink. That covers "Book a discovery meeting about this" (Strategy Finder) and "Book a free wheeling assessment" and the first not-eligible link (Wheeling), all full width, and "See savings" and "Get a fleet assessment" (fleet). The Wheeling "Continue" and the Carbon "Check my eligibility" are `light`, full width.
+- Secondary result buttons are plain `ghost`: the Wheeling "How … works" buttons and second not-eligible link (coral text on the card measured 2.3 to 3.9:1, so they don't take the coral tint) and the fleet "Edit inputs". The Strategy Finder's "Learn more" strategy buttons are compact `ghost` with the solar tint.
+- Back is the 44px ghost `IconButton`, on the questions and on the result, in the same corner, named for where it goes. "Start over" is a `TextButton`: quiet 12px text in a 44px target.
+- The Strategy Finder and Wheeling result CTAs wrap onto two lines at 390px (58px tall); the labels are the owner's call.
 
 ```typescript
 // WeBuySolar (updated 2026-09-24)
@@ -165,7 +171,7 @@ Removed from the solution pages in May 2026; the unused `SolutionPain` component
 Both layouts render on the server and CSS shows one (`hidden xl:block` for the tabs, `xl:hidden` for the accordion), so nothing waits on a JavaScript width check. The switch sits at 1280px because at 1024px the C&I, Energy Optimisation and EV Fleets strips need 993 to 1,085px in a 960px row, which cut their last tab.
 
 - Tab strip: `role="tablist"`, a 1px inset bottom rule in `#E5E7EB`, and horizontal scroll with a thin scrollbar when the labels don't fit.
-- Each tab: Inter 500, 14px, `padding: 12px 16px`, with a 28px icon chip before the label (the page's icon background, the icon in the accent).
+- Each tab: 48px tall (`tabClasses()`, shared with the About partner tabs), 16px side padding, Inter 500, 14px, with a 28px icon chip before the label (the page's icon background, the icon in the accent).
 - Inactive tabs use muted text. The active tab uses the body text colour and a 2px bottom border in the vertical accent.
 - Arrow keys move and select; Home and End jump to the first and last tab. A selected tab scrolls into view if the strip ever overflows (a larger default text size, for example).
 - Each tab change pushes `tab_change` (with `vertical` and `tab_label`) to the data layer.
@@ -282,7 +288,7 @@ interface HowItWorksProps {
 - Playback: the server render shows the finished state, with every step done. A section that starts below the fold resets to step 1 as it nears the viewport and plays once when 35% of it is in view, one step every **2600ms** (`autoAdvanceInterval`), then stops on the last step. A section already in view or scrolled past at load, and any section under reduced motion, stays finished.
 - Progress dots (`ProgressDots`): 8px dots centred below; the active one is 24px wide in the accent's text-safe ink. Each dot jumps to its step and stops the playback.
 - Step count: one grid column per step, with the row capped at 220px per step; the connector's ends follow `steps.length`.
-- Button: when `showCTA` is true, the `cta` button (`Button variant="primary"`, a Deep Teal pill with an arrow) sits under the dots.
+- Button: when `showCTA` is true, the `cta` button (`Button variant="primary"`, a 48px Deep Teal pill with an arrow) sits under the dots.
 - Mobile (below 768px): spine layout with 44px circles (see `specs/04-HOME.md` mobile section).
 
 ### Steps per vertical
@@ -348,7 +354,7 @@ Body: page-specific
 [Page CTA button]
 ```
 
-- The button is a white pill with Night Teal text and an arrow. It is the page's `SERVICE_CTA[vertical]`, the same label as the hero button (see §4).
+- The button is `Button variant="light"` at the default size: a 48px `#F5F5F5` pill with Night Teal text and an arrow, white on hover. It is the page's `SERVICE_CTA[vertical]`, the same label as the hero button (see §4).
 - There is no "Explore other solutions" button. The site footer (`SiteFooter`, from the layout) follows the band.
 
 ### CTA copy per vertical

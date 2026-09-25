@@ -2,12 +2,18 @@
 'use client';
 
 import { useState } from 'react';
+import { IconButton } from '@/components/ui/IconButton';
+import { IconCheck, IconLink, IconLinkedIn, IconXLogo } from '@/components/ui/Icons';
 
 interface ShareButtonsProps {
   url: string;
   title: string;
 }
 
+// Three 44px outline icon buttons with drawn glyphs; after a copy the link
+// glyph turns into a check for 2 seconds. The LinkedIn mark is a filled square,
+// which reads larger and darker than the open X and link glyphs at the same
+// size, so it is drawn at 16px beside their 20px: the same height as the X.
 export function ShareButtons({ url, title }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false);
 
@@ -17,72 +23,38 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const btnBase =
-    'w-8 h-8 rounded-full flex items-center justify-center transition-all duration-150 font-body font-bold text-xs';
-  const btnStyle = { border: '1px solid #E5E7EB', background: '#fff', color: 'var(--color-pe-muted)' };
-
   return (
     <div className="flex items-center gap-2">
       <span className="font-body text-xs text-pe-muted">Share:</span>
 
-      {/* LinkedIn */}
-      <a
+      <IconButton
+        variant="outline"
+        label="Share on LinkedIn"
         href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`}
         target="_blank"
         rel="noopener noreferrer"
-        className={btnBase}
-        style={btnStyle}
-        aria-label="Share on LinkedIn"
-        onMouseEnter={e => {
-          (e.currentTarget as HTMLAnchorElement).style.background = '#39575C';
-          (e.currentTarget as HTMLAnchorElement).style.borderColor = '#39575C';
-          (e.currentTarget as HTMLAnchorElement).style.color = '#fff';
-        }}
-        onMouseLeave={e => {
-          (e.currentTarget as HTMLAnchorElement).style.background = '#fff';
-          (e.currentTarget as HTMLAnchorElement).style.borderColor = '#E5E7EB';
-          (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-pe-muted)';
-        }}
       >
-        in
-      </a>
+        <IconLinkedIn className="size-4" />
+      </IconButton>
 
-      {/* X (Twitter) */}
-      <a
+      <IconButton
+        variant="outline"
+        label="Share on X"
         href={`https://x.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`}
         target="_blank"
         rel="noopener noreferrer"
-        className={btnBase}
-        style={btnStyle}
-        aria-label="Share on X"
-        onMouseEnter={e => {
-          (e.currentTarget as HTMLAnchorElement).style.background = '#39575C';
-          (e.currentTarget as HTMLAnchorElement).style.borderColor = '#39575C';
-          (e.currentTarget as HTMLAnchorElement).style.color = '#fff';
-        }}
-        onMouseLeave={e => {
-          (e.currentTarget as HTMLAnchorElement).style.background = '#fff';
-          (e.currentTarget as HTMLAnchorElement).style.borderColor = '#E5E7EB';
-          (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-pe-muted)';
-        }}
       >
-        X
-      </a>
+        <IconXLogo />
+      </IconButton>
 
-      {/* Copy link */}
-      <button
+      <IconButton
+        variant="outline"
+        label="Copy link"
         onClick={handleCopy}
-        className={btnBase}
-        style={
-          copied
-            ? { border: '1px solid #39575C', background: '#39575C', color: '#fff' }
-            : btnStyle
-        }
-        aria-label="Copy link"
         title={copied ? 'Copied!' : 'Copy link'}
       >
-        {copied ? '✓' : '🔗'}
-      </button>
+        {copied ? <IconCheck /> : <IconLink />}
+      </IconButton>
     </div>
   );
 }

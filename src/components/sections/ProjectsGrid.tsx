@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FeaturedProjectCard } from './FeaturedProjectCard';
 import { SOLUTION_META, SOLUTION_VERTICALS } from '@/types/solutions';
@@ -9,6 +8,8 @@ import type { SolutionVertical } from '@/types/solutions';
 import type { ProjectPreview } from '@/types/sanity';
 import { ProjectCard } from './ProjectCard';
 import { FilterPills } from '@/components/ui/FilterPills';
+import { Button } from '@/components/ui/Button';
+import { Chip } from '@/components/ui/Chip';
 import { IconArrowRight } from '../ui/Icons';
 import { dlPush } from '@/lib/analytics';
 import { DISCOVERY_CTA } from '@/config/ctas';
@@ -35,12 +36,9 @@ function EmptyState() {
       <p className="font-body text-sm text-pe-muted leading-[1.7] mx-auto mb-5" style={{ maxWidth: 380 }}>
         In the meantime, tell us about your site.
       </p>
-      <Link
-        href={DISCOVERY_CTA.href}
-        className="inline-flex items-center gap-1.5 font-body font-semibold text-sm text-white rounded-full px-5 py-2.5 transition-colors bg-pe-primary hover:bg-pe-primary-hover"
-      >
+      <Button href={DISCOVERY_CTA.href}>
         {DISCOVERY_CTA.label} <IconArrowRight />
-      </Link>
+      </Button>
     </div>
   );
 }
@@ -57,19 +55,15 @@ function OtherServices({ verticals }: { verticals: SolutionVertical[] }) {
       <p className="font-body text-sm text-pe-muted mb-4">
         No case study is published for these yet. See how each one works.
       </p>
-      <ul className="flex flex-wrap gap-2">
+      {/* 10px between wrapped rows, so each chip's 44px touch target stays clear of the next row's */}
+      <ul className="flex flex-wrap gap-x-2 gap-y-2.5">
         {verticals.map((v) => {
           const meta = SOLUTION_META[v];
           return (
             <li key={v}>
-              <Link
-                href={meta.slug}
-                className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 font-body text-sm font-medium text-pe-text transition-colors hover:text-pe-primary"
-                style={{ border: '1px solid var(--color-pe-border)' }}
-              >
-                <span aria-hidden="true" className="size-2 rounded-full" style={{ background: meta.accent }} />
+              <Chip href={meta.slug} dot={meta.accent}>
                 {meta.label}
-              </Link>
+              </Chip>
             </li>
           );
         })}
@@ -203,14 +197,9 @@ export function ProjectsGrid({ projects, header }: ProjectsGridProps) {
 
         {visibleCount < gridProjects.length && (
           <div className="flex justify-center mt-2">
-            <button
-              type="button"
-              onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
-              className="font-body font-medium text-base text-pe-muted rounded-full px-8 py-[11px] bg-white transition-all duration-200 hover:border-[#aaaaaa] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]"
-              style={{ border: '1px solid var(--color-pe-border)' }}
-            >
+            <Button variant="outline" onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}>
               Load more projects
-            </button>
+            </Button>
           </div>
         )}
 

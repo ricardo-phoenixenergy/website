@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useId, useRef } from 'react';
 import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
+import { IconButton } from '@/components/ui/IconButton';
+import { TextButton } from '@/components/ui/TextButton';
 import { dlPush } from '@/lib/analytics';
 import { evaluateWheeling } from '@/lib/wheeling/eligibility';
 import { ELIGIBLE_MODELS, wheelingEnquiry } from '@/lib/wheeling/enquiry';
@@ -14,14 +17,6 @@ import {
 import { SOLUTION_META } from '@/types/solutions';
 
 const ACCENT = SOLUTION_META.wheeling.accent;
-const ACCENT_ON = SOLUTION_META.wheeling.accentText;
-// Secondary result links: the coral outline carries the accent; coral text on the
-// dark card measured 2.3 to 3.9:1, so the label is on-dark-muted.
-const OUTLINE_LINK = {
-  border: `1.5px solid ${ACCENT}66`,
-  color: 'var(--color-on-dark-muted)',
-  background: 'rgba(217,124,118,0.06)',
-} as const;
 const ICON = 18;
 const VERTICAL = 'wheeling';
 
@@ -183,29 +178,19 @@ export function WheelingEligibility() {
               Choose your supplier to continue.
             </p>
           )}
-          <button
-            type="button"
-            onClick={continueFromSupply}
-            className="mt-4 inline-flex items-center justify-center gap-1.5 w-full rounded-full px-5 py-2.5 font-display font-bold text-sm"
-            style={{ background: 'var(--color-pe-bg)', color: 'var(--color-pe-nav-dark)' }}
-          >
-            Continue <IconArrowRight size={14} />
-          </button>
+          <Button variant="light" onClick={continueFromSupply} className="mt-4 w-full">
+            Continue <IconArrowRight />
+          </Button>
         </div>
       )}
 
       {step === 'tou' && (
         <div>
           <div className="flex items-start gap-3 mb-4">
-            <button
-              type="button"
-              onClick={() => goTo('supply')}
-              aria-label="Back to your supplier"
-              className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-              style={{ border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.7)' }}
-            >
-              <IconArrowLeft size={14} />
-            </button>
+            {/* Centred on the heading's first line (24px); the margins keep the row that tall. */}
+            <IconButton variant="ghost" label="Back to your supplier" onClick={() => goTo('supply')} className="-my-2.5">
+              <IconArrowLeft />
+            </IconButton>
             <h3
               ref={headingRef}
               id={touHeadingId}
@@ -258,6 +243,7 @@ export function WheelingEligibility() {
           tou={tou}
           headingRef={headingRef}
           onBack={() => goTo(needsTou(supplyPointId) ? 'tou' : 'supply')}
+          backLabel={needsTou(supplyPointId) ? 'Back to the Time-of-Use question' : 'Back to your supplier'}
           onRestart={restart}
         />
       )}
@@ -300,7 +286,7 @@ const NEEDS_CHECK = {
 const ASSESSMENT_LABEL = 'Book a free wheeling assessment';
 
 function Reveal({
-  outcome, enquiry, tou, headingRef, onBack, onRestart,
+  outcome, enquiry, tou, headingRef, onBack, backLabel, onRestart,
 }: {
   outcome: WheelingOutcome;
   /** The message the result writes into the contact form. */
@@ -308,6 +294,8 @@ function Reveal({
   tou: WheelingTou | null;
   headingRef: React.RefObject<HTMLHeadingElement | null>;
   onBack: () => void;
+  /** The back button's name: the question it returns to. */
+  backLabel: string;
   onRestart: () => void;
 }) {
   const eligible = outcome.status === 'eskom' || outcome.status === 'virtual';
@@ -322,14 +310,10 @@ function Reveal({
       className="rounded-xl p-5"
       style={{ border: `1px solid ${ACCENT}66`, background: 'rgba(217,124,118,0.06)' }}
     >
-      <button
-        type="button"
-        onClick={onBack}
-        className="inline-flex items-center gap-1 font-body text-xs mb-3"
-        style={{ color: 'var(--color-on-dark-subtle)' }}
-      >
-        <IconArrowLeft size={13} /> Back
-      </button>
+      {/* The same back control as the Time-of-Use question's, in the same corner */}
+      <IconButton variant="ghost" label={backLabel} onClick={onBack} className="mb-3">
+        <IconArrowLeft />
+      </IconButton>
 
       {eligible ? (
         <>
@@ -350,25 +334,26 @@ function Reveal({
               : `${outcome.supplyPointLabel} supports virtual wheeling. Here’s how the Virtual Wheeling model works.`}
           </p>
 
+          {/* Secondary buttons are plain ghost, not the coral tint: coral text on this card measured 2.3 to 3.9:1. */}
           <div className="flex flex-col gap-2.5">
-            <Link
+            <Button
+              variant="accent"
+              vertical="wheeling"
               href={assessmentHref}
               onClick={() => trackAssessment(ASSESSMENT_LABEL)}
-              className="flex items-center justify-center gap-1.5 w-full rounded-full px-5 py-3 font-display font-bold text-sm"
-              style={{ background: ACCENT, color: ACCENT_ON }}
+              className="w-full"
             >
-              {ASSESSMENT_LABEL} <IconArrowRight size={14} />
-            </Link>
+              {ASSESSMENT_LABEL} <IconArrowRight />
+            </Button>
             {models.map((m) => (
-              <button
+              <Button
                 key={m.anchor}
-                type="button"
+                variant="ghost"
                 onClick={() => window.location.assign(`#${m.anchor}`)}
-                className="flex items-center justify-center gap-1.5 w-full rounded-full px-5 py-2.5 font-display font-bold text-sm"
-                style={OUTLINE_LINK}
+                className="w-full"
               >
-                How {m.label} works <IconArrowRight size={14} />
-              </button>
+                How {m.label} works <IconArrowRight />
+              </Button>
             ))}
           </div>
         </>
@@ -384,14 +369,15 @@ function Reveal({
           <p className="font-body text-sm text-center leading-relaxed mb-5" style={{ color: 'var(--color-on-dark-muted)' }}>
             {tou === 'unsure' ? NEEDS_CHECK.unsureTariff : NEEDS_CHECK.unlistedSupplier}
           </p>
-          <Link
+          <Button
+            variant="accent"
+            vertical="wheeling"
             href={assessmentHref}
             onClick={() => trackAssessment(ASSESSMENT_LABEL)}
-            className="flex items-center justify-center gap-1.5 w-full rounded-full px-5 py-3 font-display font-bold text-sm"
-            style={{ background: ACCENT, color: ACCENT_ON }}
+            className="w-full"
           >
-            {ASSESSMENT_LABEL} <IconArrowRight size={14} />
-          </Link>
+            {ASSESSMENT_LABEL} <IconArrowRight />
+          </Button>
         </>
       ) : (
         <>
@@ -406,17 +392,19 @@ function Reveal({
             {neg.body}
           </p>
 
+          {/* The accent first, then a plain ghost, as in the eligible result. */}
           <div className="flex flex-col gap-2.5">
-            {neg.links.map((link, i) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="flex items-center justify-center gap-1.5 w-full rounded-full px-5 py-2.5 font-display font-bold text-sm"
-                style={i === 0 ? { background: ACCENT, color: ACCENT_ON } : OUTLINE_LINK}
-              >
-                {link.label} <IconArrowRight size={14} />
-              </Link>
-            ))}
+            {neg.links.map((link, i) =>
+              i === 0 ? (
+                <Button key={link.href} variant="accent" vertical="wheeling" href={link.href} className="w-full">
+                  {link.label} <IconArrowRight />
+                </Button>
+              ) : (
+                <Button key={link.href} variant="ghost" href={link.href} className="w-full">
+                  {link.label} <IconArrowRight />
+                </Button>
+              ),
+            )}
             <Link
               href={assessmentHref}
               onClick={() => trackAssessment('Or talk to us about your site')}
@@ -429,14 +417,10 @@ function Reveal({
         </>
       )}
 
-      <button
-        type="button"
-        onClick={onRestart}
-        className="block w-full text-center font-body text-xs mt-4"
-        style={{ color: 'var(--color-on-dark-subtle)' }}
-      >
+      {/* The 44px target reaches 14px past the text each way; the margins keep the text where it sat. */}
+      <TextButton onClick={onRestart} className="flex w-full mt-0.5 -mb-3.5">
         Start over
-      </button>
+      </TextButton>
     </div>
   );
 }

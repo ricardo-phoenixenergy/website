@@ -201,10 +201,10 @@ export default nextConfig;
 Removed in September 2026. There are no route `loading.tsx` files and no skeleton screens, and nothing replaced them. The `.shimmer` keyframes and class are still in `src/app/globals.css` but no component uses them.
 
 ### `src/app/not-found.tsx`
-Full-screen Night Teal (`#0d1f22`) page: eyebrow "404", H1 "Page not found", one line of body copy, then "Back to home" and "Explore solutions" (`/solutions`). Its metadata sets `noindex`.
+Full-screen Night Teal (`#0d1f22`) page: eyebrow "404", H1 "Page not found", one line of body copy, then "Back to home" (`Button` light) and "Explore solutions" (`/solutions`, `Button` ghost), both at the default 48px size. Its metadata sets `noindex`.
 
 ### `src/app/error.tsx`
-A light `#F5F5F5` page, not the 404 pattern: eyebrow "Something went wrong", H1 "An error occurred", then a "Try again" button (calls `reset()`) and a "Go to home" link. It logs the error to the console.
+A light `#F5F5F5` page, not the 404 pattern: eyebrow "Something went wrong", H1 "An error occurred", then a "Try again" button (`Button` primary, calls `reset()`) and a "Go to home" link (`Button` outline: on a light page the second button is outline, never ghost), both at the default 48px size. It logs the error to the console.
 
 ### `src/hooks/useReducedMotion.ts`
 See `01-BRAND.md` animation section.
@@ -346,7 +346,7 @@ Each vertical card:
 - A dark `Card` (pattern 1, no hover overlay) linking to `/solutions/[vertical]`; it lifts 4px with a shadow on hover.
 - Image: the vertical's hero image from Sanity (`heroImages`), 180px tall, with the vertical's name as `alt`.
 - Body: the vertical's SEO description from `src/config/verticals.ts`, cut to three lines, then two stats from the claims register with the value in the accent colour.
-- Footer: an "Explore {vertical}" pill in the accent colour.
+- Footer: an "Explore {vertical}" pill, drawn with `buttonClasses({ variant: 'ghost', size: 'compact', inCard: true })` on a span (the card is the link, so the pill brightens and presses with the card): 40px, plain ghost on all six cards, because in the accent tint WeBuySolar's copper label measured 4.3:1 on hover.
 
 ### `/tools` — Tools index page
 Route: `src/app/tools/page.tsx`
@@ -361,7 +361,7 @@ Route: `src/app/tools/page.tsx`
 ```
 
 Tool card:
-- A dark gradient header with a "WeBuySolar" badge and the title "Solar Valuation Request", over a white body with the description, three feature chips (Solar & battery, Team-reviewed, No obligation) and "Request a valuation", linking to `/tools/solar-valuation`.
+- A dark gradient header with a "WeBuySolar" badge and the title "Solar Valuation Request", over a white body with the description, three feature chips (Solar & battery, Team-reviewed, No obligation) and "Request a valuation", linking to `/tools/solar-valuation`. The card is the link, so "Request a valuation" is a line in the arrow link's style (`arrowLinkClasses()`: Inter 600 14px, Deep Teal, a 14px arrow), darker when the card is hovered.
 - It lifts 5px with a shadow on hover.
 
 Coming soon cards: not built. The page lists only the valuation request.

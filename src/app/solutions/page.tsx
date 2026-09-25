@@ -6,6 +6,8 @@ import { SOLUTION_META, SOLUTION_VERTICALS } from '@/types/solutions';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { DISCOVERY_CTA } from '@/config/ctas';
 import { IconArrowRight } from '@/components/ui/Icons';
+import { Button } from '@/components/ui/Button';
+import { buttonClasses } from '@/components/ui/buttonStyles';
 import { Card, CardImage, CardBody, CardFooter } from '@/components/ui/Card';
 import { getHeroImages } from '@/lib/getHeroImages';
 
@@ -73,19 +75,13 @@ export default async function SolutionsPage() {
               Six specialist solutions that cut costs, generate revenue, and future-proof your commercial energy operations.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link
-                href={DISCOVERY_CTA.href}
-                className="inline-flex items-center gap-2 font-body text-sm font-semibold rounded-full px-5 py-2.5 transition-colors duration-200 hover:bg-white"
-                style={{ background: '#F5F5F5', color: '#0d1f22' }}
-              >
-                {DISCOVERY_CTA.label} <IconArrowRight size={13} />
-              </Link>
-              <a
-                href="#solutions"
-                className="inline-flex items-center gap-2 font-body text-sm font-semibold rounded-full px-5 py-2.5"
-                style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.80)', border: '1px solid rgba(255,255,255,0.15)' }}
-              >
-                Explore solutions <IconArrowRight size={13} />
+              <Button variant="light" href={DISCOVERY_CTA.href}>
+                {DISCOVERY_CTA.label} <IconArrowRight />
+              </Button>
+              {/* A plain anchor, not a Link: the browser's own jump also moves the
+                  keyboard's starting point to the cards. */}
+              <a href="#solutions" className={buttonClasses({ variant: 'ghost' })}>
+                Explore solutions <IconArrowRight />
               </a>
             </div>
           </AnimatedSection>
@@ -137,16 +133,12 @@ export default async function SolutionsPage() {
                     </CardBody>
 
                     <CardFooter variant="dark">
-                      <span
-                        className="inline-flex items-center gap-2 font-body text-sm font-semibold rounded-full px-4 py-2"
-                        style={{
-                          background: `${meta.accent}18`,
-                          color: meta.accent,
-                          border: `1px solid ${meta.accent}35`,
-                        }}
-                      >
+                      {/* The card is the link, so its action is drawn as a button, not built as one,
+                          and brightens and presses with the card.
+                          Plain ghost on all six: in the accent tint, WeBuySolar's copper measured 4.3:1 on hover. */}
+                      <span className={buttonClasses({ variant: 'ghost', size: 'compact', inCard: true })}>
                         Explore {meta.label}
-                        <IconArrowRight size={13} />
+                        <IconArrowRight />
                       </span>
                     </CardFooter>
                   </Card>

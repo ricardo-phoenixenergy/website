@@ -53,8 +53,8 @@ Home / About
 - H1: *"Powering Africa's energy transition"*, with "energy transition" in Dusty Blue `#709DA9` and kept on one line. Plus Jakarta Sans 800, 36px, 48px from md and 60px from lg, white, `line-height: 1.1`, `max-width: 860px`.
 - Subtitle: *"Meet the team, story and values behind a company on a mission to become Africa's most innovative energy service provider."* Inter 400, 16px (18px from md), `line-height: 1.75`, `rgba(255,255,255,0.60)`, `max-width: 560px`.
 - Two buttons, `gap: 12px`, wrapping onto a new line when they don't fit.
-  - "Book a discovery meeting" (`DISCOVERY_CTA` from `src/config/ctas.ts`): `#F5F5F5` fill, Night Teal text, arrow, pill.
-  - "View our projects" (`/projects`): `rgba(255,255,255,0.08)` fill, `border: 1px solid rgba(255,255,255,0.15)`, white text at 80%, arrow, pill.
+  - "Book a discovery meeting" (`DISCOVERY_CTA` from `src/config/ctas.ts`): `Button`, light, default size (a 48px pill, `#F5F5F5` fill, Night Teal text, white on hover), with a 16px arrow.
+  - "View our projects" (`/projects`): `Button`, ghost, default size (the same 48px box, white at 8% with a white 20% edge, white text), with a 16px arrow.
 
 ---
 
@@ -164,7 +164,7 @@ The copy lives in `VALUES` in `src/components/sections/AboutValues.tsx`. Ubuntu 
 - A heading row, 32px above the track.
   - Eyebrow: `Roadmap` (eyebrow role, `pe-muted`).
   - H2: `Our story so far`, with "so far" in `pe-secondary-ink`.
-  - From md, previous and next buttons on the right: 36px circles (previous white with a border, next Deep Teal), disabled and faded to 30% at either end.
+  - From md, previous and next buttons on the right: 44px outline `IconButton`s, both alike (white, a hairline border that turns Deep Teal on hover, a 20px Deep Teal arrow), disabled and faded to 30% at either end.
 
 ### Track
 ```css
@@ -247,10 +247,10 @@ This is the April 2026 mockup's list. The live milestones are Sanity documents.
 [All]  [Founders]  [Business]  [Technical]
 ```
 - A fixed list in the component (`ALL_CATS`). "All" always shows; each other tab shows only when at least one member has that category.
-- Toggle buttons in a group named "Filter the team", each with `aria-pressed`, so a screen reader hears which filter is on. The strip keeps 4px of padding (offset by a negative margin) so the focus ring isn’t clipped.
+- `Chip` toggles in a group named "Filter the team", each with `aria-pressed`, so a screen reader hears which filter is on. The strip keeps 6px of padding (offset by negative margins) so neither the focus ring nor a chip's 44px touch target is clipped, and 6px of scroll padding (`scroll-px-1.5`). A chip that takes keyboard focus scrolls fully into view (`revealFocusedChip`, from `FilterPills.tsx`), 6px inside the edge, so it keeps its whole ring.
 - Default: white bg, `border: 1px solid #E5E7EB`, `pe-muted` text, Inter 500.
-- Active: Deep Teal fill and border, white text, `font-weight: 600`.
-- `border-radius: 9999px`, Inter 14px, `padding: 6px 16px`, 8px apart, 32px above the grid.
+- Active: Deep Teal fill and border, white text, Inter 500 as well, so a chip keeps its width.
+- `border-radius: 9999px`, 36px tall, Inter 14px, 16px side padding, 8px apart, 36px above the grid (the strip's 6px padding plus a 30px margin).
 - Filter logic: React state (`activeCat`) filters the `members` array, so hidden cards are not rendered at all.
 
 ### Team grid
@@ -290,7 +290,7 @@ With no members, the grid holds only the join card and "Team members coming soon
 - `background: #0d1f22`, `border-radius: 16px`, `padding: 24px`.
 - Stacked on phones; from md a row with `align-items: center`, `justify-content: space-between`, `gap: 16px`.
 - Left: title *"Become a part of our journey"* (Plus Jakarta Sans 700, 16px, white) + sub *"We're always looking for passionate, ambitious individuals who share our vision for a prosperous Africa."* (Inter 400, 14px, `on-dark-subtle`).
-- Right: `See career opportunities →`, a link to the Phoenix Energy LinkedIn company page (new tab): `#F5F5F5` bg, Night Teal text, pill, white on hover.
+- Right: `See career opportunities →`, a link to the Phoenix Energy LinkedIn company page (new tab): `Button`, light, compact (40px), `#F5F5F5` bg, Night Teal text, pill, white on hover.
 
 ### Mobile: 1 column, filter tabs scroll horizontally
 
@@ -310,11 +310,11 @@ With no members, the grid holds only the join card and "Team members coming soon
 ```
 - Two tabs; there is no Media & Press tab. Each tab shows a count badge when its category has partners.
 - WAI-ARIA tabs, as in `SolutionTabs`: `role="tablist"` named by the H2, `role="tab"` with `aria-selected` and a roving `tabIndex`, Left and Right arrows, Home and End, and a `role="tabpanel"` around the logos. As tabs they take the inset focus ring, which the scrolling strip can’t clip.
-- `border-bottom: 1px solid #E5E7EB`, `margin-top: 28px`, `margin-bottom: 32px`. The strip scrolls sideways when it doesn't fit.
-- Each tab: Inter 600, 14px, `pe-muted`, `padding: 12px 20px`.
-- Active: Deep Teal text, `border-bottom: 2px solid #39575C`, `margin-bottom: -1px`.
+- A 1px inset bottom rule in `#E5E7EB` (as in `SolutionTabs`), `margin-top: 28px`, `margin-bottom: 32px`. The strip scrolls sideways when it doesn't fit.
+- Each tab: 48px tall (`tabClasses()`, shared with the solution tabs), 16px side padding, Inter 500, 14px, `pe-muted`.
+- Active: Deep Teal text and a 2px Deep Teal bottom rule, which paints over the baseline inside the strip.
 - A tab with no partners shows a dashed box with "Coming soon" and "Our {tab name} will be listed here shortly."
-- Under the logos, above a 1px rule: "Partner with us" and "Talk to us about investing" (`PARTNER_CTA` and `INVESTOR_CTA` in `src/config/ctas.ts`), Deep Teal text links with an arrow. They open the contact form at step 2 as a partner or an investor, with a message of their own, so the page’s only routes are no longer the client form (JRN-22). The hero and the footer band keep "Book a discovery meeting" for clients.
+- Under the logos, above a 1px rule: "Partner with us" and "Talk to us about investing" (`PARTNER_CTA` and `INVESTOR_CTA` in `src/config/ctas.ts`), Deep Teal text links with an arrow (`ArrowLink`). They open the contact form at step 2 as a partner or an investor, with a message of their own, so the page’s only routes are no longer the client form (JRN-22). The hero and the footer band keep "Book a discovery meeting" for clients.
 
 ### Logo cards (both tabs)
 ```css
@@ -382,7 +382,7 @@ Body: "Meet with our engineers to identify the solutions that will reduce costs,
 - Eyebrow: eyebrow role, `#709DA9`.
 - Headline: Plus Jakarta Sans 800, 30px (36px from md), white, `line-height: 1.2`.
 - Body: Inter 400, 16px, `on-dark-subtle`, `line-height: 1.75`, `margin-bottom: 32px`.
-- One button: white fill, Night Teal text, arrow, pill, `#F5F5F5` on hover. There is no second button.
+- One button (`Button`, light, default size): a 48px pill, `#F5F5F5` fill, Night Teal text, arrow, white on hover. There is no second button.
 
 ---
 

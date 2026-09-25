@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { SOLUTION_META } from '@/types/solutions';
 import type { ProjectCard as ProjectCardData } from '@/types/sanity';
 import { IconArrowRight } from '@/components/ui/Icons';
+import { buttonClasses } from '@/components/ui/buttonStyles';
 import { Card } from '@/components/ui/Card';
 import { isMeasured } from '@/lib/projectResults';
 
@@ -133,8 +134,10 @@ export function FeaturedProjectCard({
               )}
             </div>
             <div className="flex items-center justify-end pt-4 border-t border-pe-border">
-              <span className="font-body font-bold text-xs text-white rounded-full px-4 py-2 flex items-center gap-1.5 bg-pe-primary">
-                {ready ? 'Read case study' : 'View project'} <IconArrowRight size={12} />
+              {/* The card is the link, so its action is drawn as a button, not built as one,
+                  and darkens and presses with the card. */}
+              <span className={buttonClasses({ size: 'compact', inCard: true })}>
+                {ready ? 'Read case study' : 'View project'} <IconArrowRight />
               </span>
             </div>
           </div>

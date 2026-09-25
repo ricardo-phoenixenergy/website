@@ -161,6 +161,24 @@ label[for] {
   --ring-halo: var(--color-pe-nav-dark);
 }
 
+/* ─── Touch hit area ───────────────────────────────────────────────────────── */
+/* The brand's 44px tap target for controls drawn smaller: compact buttons (40px)
+   and chips (36px), which carry this class through buttonStyles.ts. On a touch
+   screen a transparent ::after grows the target to 44px each way, centred,
+   without moving anything; a side already 44px or longer gets no extension.
+   The element must be positioned (Button and Chip are `relative`). A strip that
+   scrolls sideways clips whatever leaves its padding box, so it keeps 4px of
+   padding or more above and below its chips. */
+@utility hit-area {
+  @media (pointer: coarse) {
+    &::after {
+      content: '';
+      position: absolute;
+      inset: min(0px, calc((100% - 44px) / 2));
+    }
+  }
+}
+
 /* ─── Skip link ────────────────────────────────────────────────────────────── */
 .skip-link {
   position: fixed;

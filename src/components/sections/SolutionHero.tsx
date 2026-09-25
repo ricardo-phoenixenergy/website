@@ -18,7 +18,7 @@ export interface SolutionHeroProps {
   heroBlur?: string;   // LQIP blur placeholder for heroImage
   heroBg: string;      // CSS gradient fallback when no photo
   primaryCta: CtaLink;
-  secondaryCta?: CtaLink;   // optional text link beside the primary button
+  secondaryCta?: CtaLink;   // optional ghost button beside the primary one, same size
   ctaNote?: string;      // one short line under the buttons, e.g. who qualifies
   children?: ReactNode;  // calculator / interactive slot
   wideRight?: boolean;   // 40/60 split — give the right column 60% instead of the fixed 440px
@@ -139,11 +139,11 @@ export function SolutionHero({
             <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
               <Button variant="light" href={primaryCta.href}>
                 {primaryCta.label}
-                {primaryCtaArrow && <IconArrowRight size={14} />}
+                {primaryCtaArrow && <IconArrowRight />}
               </Button>
               {secondaryCta && (
                 <Button variant="ghost" href={secondaryCta.href}>
-                  {secondaryCta.label} <IconArrowRight size={14} />
+                  {secondaryCta.label} <IconArrowRight />
                 </Button>
               )}
             </div>

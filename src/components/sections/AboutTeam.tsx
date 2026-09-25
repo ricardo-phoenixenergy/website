@@ -6,6 +6,9 @@ import Link from 'next/link';
 import type { TeamMember } from '@/types/sanity';
 import type { TeamCategory } from '@/types/sanity';
 import { IconArrowRight } from '../ui/Icons';
+import { Button } from '../ui/Button';
+import { Chip } from '../ui/Chip';
+import { revealFocusedChip } from '../ui/FilterPills';
 import { Card, CardImage, CardBody } from '../ui/Card';
 
 interface AboutTeamProps {
@@ -40,36 +43,29 @@ export function AboutTeam({ members }: AboutTeamProps) {
           <em className="not-italic text-pe-secondary-ink">behind Phoenix Energy</em>
         </h2>
 
-        {/* Filters: toggle buttons that narrow the grid below, so each says
+        {/* Filters: toggle chips that narrow the grid below, so each says
             whether it is on. The strip scrolls sideways, which clips anything
-            outside it; the ring reaches 4px out, so 6px of padding (offset by
-            negative margins, the gap below kept at 36px) keeps it whole. */}
+            outside it; the ring reaches 4px out and a chip's touch target 4px
+            above and below, so 6px of padding (offset by negative margins, the
+            gap below kept at 36px) keeps both whole. A chip that takes keyboard
+            focus scrolls fully into view (revealFocusedChip), 6px inside the
+            edge (the scroll padding), so its ring shows whole. */}
         <div
           role="group"
           aria-label="Filter the team"
-          className="flex gap-2 mb-[30px] overflow-x-auto scrollbar-none p-1.5 -mx-1.5 -mt-1.5"
-          style={{ WebkitOverflowScrolling: 'touch', whiteSpace: 'nowrap' }}
+          className="flex gap-2 mb-[30px] overflow-x-auto scrollbar-none p-1.5 -mx-1.5 -mt-1.5 scroll-px-1.5"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+          onFocus={revealFocusedChip}
         >
-          {availableCats.map((cat) => {
-            const isActive = activeCat === cat.value;
-            return (
-              <button
-                key={cat.value}
-                type="button"
-                aria-pressed={isActive}
-                onClick={() => setActiveCat(cat.value)}
-                className="cursor-pointer rounded-full font-body font-medium text-sm px-4 py-1.5 transition-all duration-200 flex-shrink-0"
-                style={{
-                  background: isActive ? '#39575C' : '#ffffff',
-                  color: isActive ? '#ffffff' : 'var(--color-pe-muted)',
-                  border: isActive ? '1px solid #39575C' : '1px solid #E5E7EB',
-                  fontWeight: isActive ? 600 : 500,
-                }}
-              >
-                {cat.label}
-              </button>
-            );
-          })}
+          {availableCats.map((cat) => (
+            <Chip
+              key={cat.value}
+              selected={activeCat === cat.value}
+              onClick={() => setActiveCat(cat.value)}
+            >
+              {cat.label}
+            </Chip>
+          ))}
         </div>
 
         {/* Team grid */}
@@ -127,14 +123,16 @@ export function AboutTeam({ members }: AboutTeamProps) {
                   for a prosperous Africa.
                 </p>
               </div>
-              <Link
+              <Button
                 href="https://linkedin.com/company/105465145"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-row gap-2 items-center self-start md:self-auto flex-shrink-0 rounded-full px-5 py-2.5 font-body font-semibold text-sm text-pe-nav-dark bg-pe-bg hover:bg-white transition-colors duration-200"
+                variant="light"
+                size="compact"
+                className="self-start md:self-auto shrink-0"
               >
-                See career opportunities <IconArrowRight size={14} />
-              </Link>
+                See career opportunities <IconArrowRight />
+              </Button>
             </CardBody>
           </Card>
         </div>

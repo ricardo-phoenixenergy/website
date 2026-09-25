@@ -1,6 +1,5 @@
-import Link from 'next/link';
 import { AnimatedSection } from './AnimatedSection';
-import { IconArrowRight } from './Icons';
+import { ArrowLink } from './ArrowLink';
 
 interface SectionCarouselProps {
   label: string;
@@ -41,15 +40,9 @@ export function SectionCarousel({
               {title}
             </h2>
           </div>
-          <Link
-            href={viewAllHref}
-            className="group flex items-center gap-1.5 font-body text-sm font-medium text-pe-primary hover:text-pe-primary-hover transition-colors flex-shrink-0"
-          >
+          <ArrowLink href={viewAllHref} className="shrink-0">
             {viewAllLabel}
-            <span className="transition-transform duration-200 group-hover:translate-x-1">
-              <IconArrowRight size={14} />
-            </span>
-          </Link>
+          </ArrowLink>
         </div>
       </AnimatedSection>
 

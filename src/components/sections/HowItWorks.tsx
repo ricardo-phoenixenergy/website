@@ -262,7 +262,7 @@ export function HowItWorks({
         {showCTA && (
           <div className="text-center mt-7">
             <Button variant="primary" href={cta.href}>
-              {cta.label} <IconArrowRight size={14} />
+              {cta.label} <IconArrowRight />
             </Button>
           </div>
         )}
@@ -340,7 +340,7 @@ export function HowItWorks({
         {showCTA && (
           <div className="text-center mt-7">
             <Button variant="primary" href={cta.href}>
-              {cta.label} <IconArrowRight size={14} />
+              {cta.label} <IconArrowRight />
             </Button>
           </div>
         )}

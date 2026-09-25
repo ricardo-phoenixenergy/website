@@ -2,7 +2,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SolarValuationTool } from '@/components/tools/SolarValuationTool';
-import { IconArrowRight } from '@/components/ui/Icons';
+import { ArrowLink } from '@/components/ui/ArrowLink';
 import { WEBUYSOLAR_OFFER } from '@/config/webuysolarOffer';
 import { SOLUTION_META } from '@/types/solutions';
 
@@ -80,15 +80,9 @@ export default function SolarValuationPage() {
               {WEBUYSOLAR_OFFER.eligibility}
             </p>
             {/* The full process and FAQ live on the WeBuySolar page. */}
-            <Link
-              href={SOLUTION_META.webuysolar.slug}
-              className="group mt-2 inline-flex items-center gap-1.5 py-1 font-body text-sm font-semibold text-pe-primary hover:underline"
-            >
+            <ArrowLink href={SOLUTION_META.webuysolar.slug} className="mt-2">
               How WeBuySolar works
-              <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1">
-                <IconArrowRight size={13} />
-              </span>
-            </Link>
+            </ArrowLink>
           </div>
 
         </div>

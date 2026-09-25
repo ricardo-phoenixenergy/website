@@ -2,8 +2,8 @@
 'use client';
 
 import { useId, useState } from 'react';
-import Link from 'next/link';
 import { contactHref } from '@/lib/contactLink';
+import { Button } from '@/components/ui/Button';
 import { IconArrowRight } from '@/components/ui/Icons';
 import { dlPush } from '@/lib/analytics';
 import {
@@ -110,16 +110,16 @@ export function CarbonRevenueEstimator() {
       <p className="font-body text-xs mt-3 text-center leading-relaxed" style={{ color: 'var(--color-on-dark-muted)' }}>
         {ASSUMPTIONS}
       </p>
-      <Link
+      <Button
+        variant="light"
         href={contactHref(
           `We have about ${formatSize(sizeKwp)} of solar. Your carbon estimator showed potential gross revenue of ${formatRand(est.revenueLow)} to ${formatRand(est.revenueHigh)} a year. I'd like to check whether our system is eligible for carbon credits.`,
         )}
         onClick={() => dlPush({ event: 'cta_click', cta_label: 'Check my eligibility', cta_location: 'carbon_estimator_result' })}
-        className="mt-4 flex items-center justify-center gap-1.5 w-full rounded-full px-5 py-3 font-display font-bold text-sm"
-        style={{ background: '#F5F5F5', color: '#0d1f22' }}
+        className="mt-4 w-full"
       >
-        Check my eligibility <IconArrowRight size={14} />
-      </Link>
+        Check my eligibility <IconArrowRight />
+      </Button>
     </div>
   );
 }

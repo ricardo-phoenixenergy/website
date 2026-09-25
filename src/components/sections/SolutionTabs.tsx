@@ -5,6 +5,7 @@ import { MountWhenVisible } from '@/components/ui/MountWhenVisible';
 import dynamic from 'next/dynamic';
 import { dlPush } from '@/lib/analytics';
 import { Button } from '@/components/ui/Button';
+import { tabClasses } from '@/components/ui/buttonStyles';
 import { FinancingCards } from './FinancingCards';
 
 // Charts are CI-only and pull in chart.js — load on the client, only when a tab has one.
@@ -267,7 +268,7 @@ export function SolutionTabs({
                   tabIndex={selected ? 0 : -1}
                   onClick={() => selectTab(i)}
                   onKeyDown={(e) => onTabKeyDown(e, i)}
-                  className="flex flex-shrink-0 items-center gap-2 px-4 py-3 font-body text-sm font-medium whitespace-nowrap transition-colors duration-200 border-b-2 rounded-t-lg"
+                  className={tabClasses()}
                   style={{
                     borderBottomColor: selected ? accent : 'transparent',
                     color: selected ? 'var(--color-pe-text)' : 'var(--color-pe-muted)',

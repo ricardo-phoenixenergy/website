@@ -2,8 +2,8 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
-import Link from 'next/link';
 import { contactHref } from '@/lib/contactLink';
+import { Button } from '@/components/ui/Button';
 import { motion } from 'framer-motion';
 import { dlPush } from '@/lib/analytics';
 import {
@@ -50,8 +50,6 @@ const UNSELECTED_BTN = {
   color: 'rgba(255,255,255,0.7)',
   border: '1px solid rgba(255,255,255,0.12)',
 } as const;
-
-const NAV_BTN = 'inline-flex items-center justify-center gap-1.5 rounded-full py-2.5 px-5 font-body text-sm font-semibold transition-colors';
 
 function formatRand(n: number): string {
   if (n >= 1_000_000) return `R${(n / 1_000_000).toFixed(1)}M`;
@@ -363,34 +361,24 @@ export function FleetSavingsEstimator({ prices }: { prices: ResolvedEnergyPrices
           640px, where their labels would otherwise wrap onto two lines each. */}
       <div className={`mt-6 flex gap-2 ${step === 0 ? 'justify-end' : 'flex-col sm:flex-row sm:items-center sm:justify-between'}`}>
         {step === 0 ? (
-          <button
-            type="button"
-            onClick={() => goTo(1)}
-            className={NAV_BTN}
-            style={{ background: ACCENT, color: ACCENT_TEXT }}
-          >
-            See savings <IconArrowRight size={15} />
-          </button>
+          <Button variant="accent" vertical="ev-fleets" onClick={() => goTo(1)}>
+            See savings <IconArrowRight />
+          </Button>
         ) : (
           <>
-            <button
-              type="button"
-              onClick={() => goTo(0)}
-              className={NAV_BTN}
-              style={UNSELECTED_BTN}
-            >
-              <IconArrowLeft size={15} /> Edit inputs
-            </button>
-            <Link
+            <Button variant="ghost" onClick={() => goTo(0)}>
+              <IconArrowLeft /> Edit inputs
+            </Button>
+            <Button
+              variant="accent"
+              vertical="ev-fleets"
               href={contactHref(
                 `Our fleet: ${vehicles} ${vehicles === 1 ? VEHICLE_NOUN[type].one : VEHICLE_NOUN[type].many} on ${fuelLabel.toLowerCase()}, about ${kmPerMonth.toLocaleString('en-ZA')} km a month each, charging from ${charging === 'grid' ? 'the grid' : 'solar and battery'}. Your estimator showed an energy cost saving of about ${formatRand(est.monthlySaving)} a month (fuel against electricity only). I'd like a fleet assessment.`,
               )}
               onClick={() => dlPush({ event: 'cta_click', cta_label: 'Get a fleet assessment', cta_location: 'fleet_estimator_result' })}
-              className={NAV_BTN}
-              style={{ background: ACCENT, color: ACCENT_TEXT }}
             >
-              Get a fleet assessment <IconArrowRight size={15} />
-            </Link>
+              Get a fleet assessment <IconArrowRight />
+            </Button>
           </>
         )}
       </div>

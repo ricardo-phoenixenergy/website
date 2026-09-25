@@ -10,6 +10,7 @@ import type { Author, BlogPostCard } from '@/types/sanity';
 import { ArticleCard } from '@/components/ui/ArticleCard';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
+import { Button } from '@/components/ui/Button';
 import { IconArrowRight } from '@/components/ui/Icons';
 import { cache } from 'react';
 
@@ -97,15 +98,16 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
             </p>
           )}
           {author.linkedin && (
-            <a
+            <Button
+              variant="ghost"
+              size="compact"
               href={author.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block mt-4 font-body font-semibold text-xs text-white rounded-full px-4 py-2 transition-opacity hover:opacity-80"
-              style={{ border: '1px solid rgba(255,255,255,0.25)' }}
+              className="mt-4"
             >
-              LinkedIn <IconArrowRight size={14} />
-            </a>
+              LinkedIn <IconArrowRight />
+            </Button>
           )}
         </AnimatedSection>
       </section>

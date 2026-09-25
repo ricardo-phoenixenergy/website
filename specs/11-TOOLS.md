@@ -42,7 +42,7 @@ It sits under the WeBuySolar vertical and is linked from `/tools` and the WeBuyS
 - Intro: *"Tell us about your system in three short steps. Our WeBuySolar team prepares your valuation after a free on-site audit, so you won’t see a figure on this page."*
 - Eligibility line: `WEBUYSOLAR_OFFER.eligibility`, *"We acquire systems built on BloombergNEF Tier 1 equipment, with or without battery storage."*
 - The header column is centred at `max-width: 600px`; the eligibility line is capped at 52ch.
-- Under it, a "How WeBuySolar works" link to `/solutions/webuysolar` (`SOLUTION_META.webuysolar.slug`), where the full six-step process and the FAQ live (added September 2026, audit VRT-04). Inter 600, 14px, Deep Teal, with an arrow that nudges right on hover, underlined on hover, as the site's other standalone arrow links; `padding: 4px 0` gives a 28px target.
+- Under it, a "How WeBuySolar works" link to `/solutions/webuysolar` (`SOLUTION_META.webuysolar.slug`), where the full six-step process and the FAQ live (added September 2026, audit VRT-04). It is the shared `ArrowLink` (updated September 2026, the button programme), like the site's other standalone arrow links: Inter 600, 14px, Deep Teal, darker on hover, with a 14px arrow that nudges right. The old `padding: 4px 0` is gone, so the link is its 20px line; it has nothing else within 24px, which meets WCAG 2.5.8.
 
 ---
 
@@ -91,7 +91,9 @@ When it is on, four fields appear:
 
 ### Validation
 
-The size fields are checked when the visitor presses **Next: System condition**, then again as they type. The first field with a problem takes focus.
+The size fields are checked when the visitor presses **Next: system condition** (sentence case since September 2026), then again as they type. The first field with a problem takes focus.
+
+The button is a full-width `Button` (primary, default size: a 48px Deep Teal pill, Inter 600 14px, with a 16px arrow). All the request's buttons moved from 12px corners to the pill in September 2026, like every other button on the site.
 
 - Each message names the actual problem (`src/lib/valuation/sizeFields.ts`, updated September 2026, VAL-27); the examples follow the field:
   - Empty, zero or negative: *"Enter a number above 0, for example 250 or 82.8."*
@@ -113,7 +115,7 @@ The brand lists are not limited to Tier 1 brands. Whether they should be is a bu
 | Documentation & compliance | Full pack / COC only / None / not sure | Full pack | Full pack = Certificate of Compliance (COC), single-line diagrams (SLDs) and the system handover documents. Complete paperwork de-risks resale and improves value. |
 | Province / region | All nine provinces, alphabetical | Gauteng | Used to reflect regional solar performance. |
 
-Buttons: **Back** and **Next: your contact details**.
+Buttons: **Back** (`Button` outline, with a left arrow) and **Next: your contact details** (`Button` primary), both 48px pills. From 640px they share a row and Next takes the rest of it; below 640px they stack, Back above Next, both full width, because side by side Next's label wrapped.
 
 The April fields for panel warranty and reason for selling, and the "How we value your system" callout, were removed with the calculator.
 
@@ -127,7 +129,7 @@ The April fields for panel warranty and reason for selling, and the "How we valu
   2. **Free expert audit.** *"On-site inspection: drone scan, string-level review, inverter config audit, opportunity mapping. Written report within 10 business days."*
   3. **Preliminary offer & valuation.** *"Fair market valuation, indicative PPA or lease, and a forecasted savings model with an optimisation roadmap."*
 - Fields: First name (required, at least 2 letters) · Last name (optional) · Email address (required) · Phone number (optional).
-- Button: **Request my valuation** ("Sending…" while the request is on its way).
+- Buttons: **Back** (outline) and **Request my valuation** (primary, "Sending…" while the request is on its way), in the same row as step 2's: stacked full width below 640px, side by side from 640px.
 - Privacy: `FormPrivacyNotice form="valuation"` under the form: *"Phoenix Energy Solutions (Pty) Ltd uses these details only to reply to your valuation request. Our Privacy Policy explains how we handle personal information and your rights."*, followed by Google's reCAPTCHA disclosure (the badge is hidden site-wide). The wording lives in `src/config/privacyNotice.ts` and is pending legal review (`docs/legal/privacy-review-draft.md`).
 
 **Validation:** errors show under each field, and the first one takes focus: *"Enter your first name (at least 2 letters)."* and *"Enter an email address like name@company.co.za."*

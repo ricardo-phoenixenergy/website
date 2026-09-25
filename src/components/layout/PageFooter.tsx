@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { Button } from '@/components/ui/Button';
 import { IconArrowRight, IconCheck } from '@/components/ui/Icons';
@@ -85,12 +84,9 @@ export function PageFooter({
             >
               {body}
             </p>
-            <Link
-              href={primaryCta.href}
-              className="inline-flex items-center gap-2 font-body font-semibold text-sm leading-none rounded-full px-5 py-2.5 bg-white text-pe-nav-dark hover:bg-pe-bg transition-colors duration-150"
-            >
-              {primaryCta.label} <IconArrowRight size={13} />
-            </Link>
+            <Button variant="light" href={primaryCta.href}>
+              {primaryCta.label} <IconArrowRight />
+            </Button>
           </AnimatedSection>
         ) : ctaVariant === 'deliverables' ? (
           <div className="page-container grid gap-10 md:grid-cols-2 md:items-center">
@@ -111,7 +107,7 @@ export function PageFooter({
                 {body}
               </p>
               <Button variant="light" href={primaryCta.href}>
-                {primaryCta.label} <IconArrowRight size={13} />
+                {primaryCta.label} <IconArrowRight />
               </Button>
             </AnimatedSection>
 

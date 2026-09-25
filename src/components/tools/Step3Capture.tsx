@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { SolarInputs, BessInputs, ConditionInputs } from '@/lib/valuation/types';
 import { dlPush } from '@/lib/analytics';
+import { Button } from '@/components/ui/Button';
 import { IconArrowLeft, IconArrowRight, IconZap, IconCheck } from '@/components/ui/Icons';
 import { PROVINCE_LABELS } from '@/lib/valuation/provinces';
 import {
@@ -233,23 +234,14 @@ export function Step3Capture({ solar, bess, cond, onBack }: Step3CaptureProps) {
 
         {failure && <SendFailureNotice reason={failure} className="mb-4" />}
 
-        <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={onBack}
-            className="inline-flex items-center justify-center gap-2 font-body font-semibold text-sm text-pe-muted rounded-xl py-3 px-6 transition-colors hover:text-pe-primary"
-            style={{ border: '1px solid var(--color-pe-border)', background: 'white' }}
-          >
-            <IconArrowLeft size={14} /> Back
-          </button>
-          <button
-            type="submit"
-            disabled={submitting}
-            className="flex-1 inline-flex items-center justify-center gap-2 font-body font-semibold text-sm text-white rounded-xl py-3 transition-opacity disabled:opacity-60"
-            style={{ background: 'var(--color-pe-primary)' }}
-          >
-            {submitting ? 'Sending…' : <>Request my valuation <IconArrowRight size={14} /></>}
-          </button>
+        {/* Below 640px the pair stacks, Back above the submit button, both full width. */}
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button variant="outline" onClick={onBack}>
+            <IconArrowLeft /> Back
+          </Button>
+          <Button type="submit" disabled={submitting} className="sm:flex-1">
+            {submitting ? 'Sending…' : <>Request my valuation <IconArrowRight /></>}
+          </Button>
         </div>
         <p role="status" className="sr-only">{submitting ? 'Sending your request' : ''}</p>
       </form>

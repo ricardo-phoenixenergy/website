@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
 
 export default function Error({
   error,
@@ -37,25 +37,12 @@ export default function Error({
       >
         We couldn&apos;t load this page. Try again or head back to the homepage.
       </p>
+      {/* A light page, so the second action is the outline button, not ghost. */}
       <div className="flex gap-3 flex-wrap justify-center">
-        <button
-          onClick={reset}
-          className="font-body font-medium text-sm px-5 py-2.5 rounded-full transition-colors cursor-pointer"
-          style={{ background: '#39575C', color: '#ffffff', border: 'none' }}
-        >
-          Try again
-        </button>
-        <Link
-          href="/"
-          className="font-body font-medium text-sm px-5 py-2.5 rounded-full transition-colors"
-          style={{
-            background: '#ffffff',
-            border: '1px solid #E5E7EB',
-            color: '#39575C',
-          }}
-        >
+        <Button onClick={reset}>Try again</Button>
+        <Button variant="outline" href="/">
           Go to home
-        </Link>
+        </Button>
       </div>
     </div>
   );

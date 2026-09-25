@@ -4,6 +4,7 @@ import { useRef, useState, useEffect, useCallback, useId } from 'react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import type { MilestoneTimeline } from '@/types/sanity';
 import { IconArrowLeft, IconArrowRight } from '../ui/Icons';
+import { IconButton } from '../ui/IconButton';
 import { ProgressDots } from '@/components/ui/ProgressDots';
 
 interface Props {
@@ -100,22 +101,22 @@ export function AboutTimeline({ milestones }: Props) {
           </div>
 
           <div className="hidden md:flex items-center gap-2">
-            <button
+            <IconButton
+              variant="outline"
+              label="Previous milestone"
               onClick={() => goTo(activeIndex - 1)}
               disabled={!canGoPrev}
-              aria-label="Previous milestone"
-              className="cursor-pointer w-9 h-9 rounded-full border border-pe-border bg-white flex items-center justify-center text-pe-primary transition-all duration-200 hover:border-pe-primary hover:bg-pe-bg disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <IconArrowLeft />
-            </button>
-            <button
+            </IconButton>
+            <IconButton
+              variant="outline"
+              label="Next milestone"
               onClick={() => goTo(activeIndex + 1)}
               disabled={!canGoNext}
-              aria-label="Next milestone"
-              className="cursor-pointer w-9 h-9 rounded-full border bg-pe-primary border-pe-primary flex items-center justify-center text-white transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <IconArrowRight />
-            </button>
+            </IconButton>
           </div>
         </div>
 

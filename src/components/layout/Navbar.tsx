@@ -6,6 +6,9 @@ import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SOLUTION_META, SOLUTION_VERTICALS } from '@/types/solutions';
 import { IconArrowRight, IconX } from '../ui/Icons';
+import { ArrowLink } from '../ui/ArrowLink';
+import { Button } from '../ui/Button';
+import { IconButton } from '../ui/IconButton';
 import { useModalDialog } from '@/hooks/useModalDialog';
 import { CONTACT_CTA } from '@/config/ctas';
 import { Zap, ZapIcon } from 'lucide-react';
@@ -282,16 +285,10 @@ export function Navbar({ showBlog }: { showBlog: boolean }) {
                     className="px-5 py-3 flex items-center justify-between"
                     style={{ borderTop: '1px solid var(--color-pe-border)' }}
                   >
-                    <Link
-                      href="/solutions"
-                      className="group inline-flex items-center gap-1.5 font-body text-sm font-semibold transition-colors duration-150 rounded-full text-pe-secondary-ink"
-                      onClick={closeMenu}
-                    >
+                    {/* Secondary Ink on hover too: this link has never darkened; its arrow still nudges */}
+                    <ArrowLink href="/solutions" className="text-pe-secondary-ink hover:text-pe-secondary-ink" onClick={closeMenu}>
                       View all solutions
-                      <span className="transition-transform duration-200 group-hover:translate-x-0.5">
-                        <IconArrowRight size={13} />
-                      </span>
-                    </Link>
+                    </ArrowLink>
                   </div>
                 </motion.div>
               )}
@@ -325,30 +322,31 @@ export function Navbar({ showBlog }: { showBlog: boolean }) {
           animate="rest"
           whileHover="hover"
         >
-          <Link
-            href={CONTACT_CTA.href}
-            className="relative isolate inline-flex items-center gap-4 rounded-full pl-4 pr-2 py-2 font-body text-sm font-semibold overflow-hidden bg-pe-primary text-white"
-          >
-            {/* Expanding circle — starts at icon size, grows to fill the button on hover */}
-            <span className="absolute top-1/2 -translate-y-1/2 pointer-events-none" style={{ right: '4%', top: '50%' }}>
-              <motion.span
-                aria-hidden
-                className="block rounded-full bg-pe-secondary-ink"
-                style={{ width: 26, height: 26 }}
-                variants={{ rest: { scale: 1 }, hover: { scale: 18 } }}
-                transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }}
-              />
+          {/* The compact button (40px). Its 26px icon disc fills the content box
+              and, 6px from the end (pr-1.5), sits concentric with the pill's round end. */}
+          <Button href={CONTACT_CTA.href} size="compact" className="isolate pr-1.5">
+            {/* Expanding circle: it is the icon disc at rest and grows to fill the
+                button on hover. This layer clips it to the pill, border included;
+                the link itself doesn't clip, so its touch hit area stays whole. */}
+            <span aria-hidden="true" className="pointer-events-none absolute -inset-px overflow-hidden rounded-full">
+              <span className="absolute right-1.75 top-1/2 -translate-y-1/2">
+                <motion.span
+                  className="block size-6.5 rounded-full bg-pe-secondary-ink"
+                  variants={{ rest: { scale: 1 }, hover: { scale: 18 } }}
+                  transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }}
+                />
+              </span>
             </span>
 
             {/* Label */}
-            <span className="relative z-10 leading-none">{CONTACT_CTA.label}</span>
+            <span className="relative z-10">{CONTACT_CTA.label}</span>
 
             {/* Icon container */}
             <span
               aria-hidden="true"
-              className="relative z-10 w-[22px] h-[22px] rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
+              className="relative z-10 size-6.5 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0"
             >
-              {/* Power / standby — visible at rest, spins out on hover */}
+              {/* Power / standby: visible at rest, spins out on hover */}
               <motion.span
                 className="absolute inset-0 flex items-center justify-center"
                 style={{ color: 'var(--color-pe-bg)' }}
@@ -361,7 +359,7 @@ export function Navbar({ showBlog }: { showBlog: boolean }) {
                 <ZapIcon size={16} />
               </motion.span>
 
-              {/* Zap / charging — hidden at rest, spins in on hover */}
+              {/* Zap / charging: hidden at rest, spins in on hover */}
               <motion.span
                 className="absolute inset-0 flex items-center justify-center"
                 style={{ color: 'var(--color-pe-bg)' }}
@@ -374,15 +372,15 @@ export function Navbar({ showBlog }: { showBlog: boolean }) {
                 <Zap size={16} />
               </motion.span>
             </span>
-          </Link>
+          </Button>
         </motion.div>
 
-        {/* Mobile menu button: a 44px target that doesn't change the pill's height */}
-        <button
-          type="button"
-          className="xl:hidden ml-auto -my-2 -mr-2.5 w-11 h-11 rounded-full flex flex-col items-center justify-center gap-1.5"
+        {/* Mobile menu button: a 44px target whose negative margins keep the pill 44px tall */}
+        <IconButton
+          variant="plain"
+          label="Menu"
+          className="xl:hidden ml-auto -my-2 -mr-2.5 flex-col gap-1.5"
           onClick={() => setMobileNavOpen(true)}
-          aria-label="Menu"
           aria-haspopup="dialog"
           aria-expanded={mobileNavOpen}
           aria-controls={mobileNavOpen ? mobileMenuId : undefined}
@@ -390,7 +388,7 @@ export function Navbar({ showBlog }: { showBlog: boolean }) {
           <span aria-hidden="true" className="block w-5 h-px bg-pe-primary" />
           <span aria-hidden="true" className="block w-5 h-px bg-pe-primary" />
           <span aria-hidden="true" className="block w-5 h-px bg-pe-primary origin-left scale-x-[0.7]" />
-        </button>
+        </IconButton>
       </nav>
 
       {/* Mobile menu: a modal dialog */}
@@ -432,15 +430,15 @@ export function Navbar({ showBlog }: { showBlog: boolean }) {
                     <span style={{ color: 'var(--color-pe-bg)', transition: 'color 500ms' }}>Phoenix</span>
                     <span style={{ color: 'var(--color-pe-bg)', transition: 'color 500ms'}}>Energy</span>
                   </Link>
-                  <button
-                    type="button"
+                  <IconButton
+                    variant="ghost"
+                    label="Close menu"
                     data-autofocus
-                    className="-mr-2.5 w-11 h-11 rounded-full flex items-center justify-center text-white/70 hover:text-white transition-colors"
+                    className="-mr-2.5"
                     onClick={closeMobileNav}
-                    aria-label="Close menu"
                   >
-                    <IconX size={22} />
-                  </button>
+                    <IconX />
+                  </IconButton>
                 </div>
 
                 {/* Links */}
@@ -524,16 +522,17 @@ export function Navbar({ showBlog }: { showBlog: boolean }) {
                 </nav>
 
                 {/* Mobile CTA */}
-                <Link
+                <Button
                   href={CONTACT_CTA.href}
-                  className="mt-8 w-full flex items-center justify-center gap-2 bg-pe-bg text-pe-nav-dark rounded-full py-3.5 font-body font-semibold text-base"
+                  variant="light"
+                  className="mt-8 w-full"
                   onClick={closeMobileNav}
                 >
                   {CONTACT_CTA.label}
-                  <span aria-hidden="true" className="w-5 h-5 rounded-full flex items-center justify-center text-xs bg-pe-nav-dark text-white">
+                  <span aria-hidden="true" className="size-5 rounded-full flex items-center justify-center bg-pe-nav-dark text-white">
                     <IconArrowRight />
                   </span>
-                </Link>
+                </Button>
               </div>
             </motion.div>
           </div>

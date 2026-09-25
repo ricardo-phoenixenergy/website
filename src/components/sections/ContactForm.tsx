@@ -12,6 +12,8 @@ import {
   IconArrowRight,
   IconArrowLeft,
 } from '@/components/ui/Icons';
+import { Button } from '@/components/ui/Button';
+import { IconButton } from '@/components/ui/IconButton';
 import { FormPrivacyNotice } from '@/components/ui/FormPrivacyNotice';
 import { RecaptchaScript } from '@/components/ui/RecaptchaScript';
 import { SendFailureNotice, type SendFailure } from '@/components/ui/SendFailureNotice';
@@ -377,15 +379,10 @@ export function ContactForm() {
             </p>
           )}
 
-          <button
-            type="button"
-            onClick={handleContinue}
-            className="w-full flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-display font-bold text-base text-white transition-all duration-200 hover:-translate-y-px"
-            style={{ background: 'var(--color-pe-primary)' }}
-          >
+          <Button onClick={handleContinue} className="w-full">
             Continue
-            <IconArrowRight size={16} />
-          </button>
+            <IconArrowRight />
+          </Button>
         </div>
       )}
 
@@ -395,14 +392,13 @@ export function ContactForm() {
 
           {/* Header row with back button */}
           <div className="flex items-center gap-3 mb-5">
-            <button
-              type="button"
-              aria-label="Back to step 1"
+            <IconButton
+              variant="outline"
+              label="Back to step 1"
               onClick={() => { goToStep(1); setFieldErrors({}); setFailure(null); setStatus('idle'); }}
-              className="w-10 h-10 rounded-full border border-pe-border flex items-center justify-center text-pe-muted hover:bg-pe-bg transition-colors flex-shrink-0"
             >
-              <IconArrowLeft size={14} />
-            </button>
+              <IconArrowLeft />
+            </IconButton>
             <div>
               <p className="font-body font-bold text-xs uppercase tracking-[0.14em] text-pe-muted">
                 Step 2 of 2
@@ -478,14 +474,9 @@ export function ContactForm() {
           {failure && <SendFailureNotice reason={failure} className="mb-4" />}
 
           {/* Submit */}
-          <button
-            type="submit"
-            disabled={status === 'submitting'}
-            className="w-full flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-display font-bold text-base text-white transition-all duration-200 hover:brightness-90 disabled:opacity-60"
-            style={{ background: 'var(--color-pe-primary)' }}
-          >
-            {status === 'submitting' ? 'Sending…' : config.submitLabel} <IconArrowRight size={16} />
-          </button>
+          <Button type="submit" disabled={status === 'submitting'} className="w-full">
+            {status === 'submitting' ? 'Sending…' : config.submitLabel} <IconArrowRight />
+          </Button>
           <p role="status" className="sr-only">
             {status === 'submitting' ? 'Sending your enquiry' : ''}
           </p>

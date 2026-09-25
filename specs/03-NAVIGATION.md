@@ -52,8 +52,8 @@ The current page is marked on its link (see Nav links).
 
 ### CTA button (Get in touch)
 - Label and link from `CONTACT_CTA` in `src/config/ctas.ts`: "Get in touch", `/contact` (step 1 of the form, where the visitor says who they are).
-- Deep Teal pill, white text, Inter 600, 14px, with a lightning icon on the right.
-- Hover: a Secondary Ink circle grows from the icon to fill the button (0.55s), and the icon turns (Framer Motion variants).
+- `Button`, primary, compact (40px; see `specs/01-BRAND.md`, Buttons and controls): a Deep Teal pill, white text, Inter 600, 14px, with a lightning icon in a 26px Secondary Ink disc at the right end, 6px from the edge (`pr-1.5`), so the disc sits concentric with the pill's round end. From 1280px the navbar pill is 60px tall (10px padding around the 40px button).
+- Hover: the disc grows to fill the button (0.55s), and the icon turns (Framer Motion variants). A layer inside the button clips the growing circle, so the link itself doesn't clip and its touch hit area stays whole.
 
 ---
 
@@ -72,7 +72,7 @@ The current page is marked on its link (see Nav links).
 - Below the pill, centred under Solutions: `width: 500px`, white, `border-radius: 16px`, `border: 1px solid var(--color-pe-border)`, a deep soft shadow.
 - Header: the eyebrow "Our Solutions".
 - A 2-column list of the six solutions: `[8px accent dot] [name, Plus Jakarta Sans 600, 14px] [one-liner, Inter 400, 12px, muted]`. Each is a link, marked current on its own page.
-- Footer: "View all solutions →", in Secondary Ink, to `/solutions`.
+- Footer: "View all solutions →" (`ArrowLink`), in Secondary Ink at rest and on hover (it doesn't darken), to `/solutions`. On hover its arrow nudges 4px right, like every arrow link.
 - Entrance: `opacity 0 → 1` and `translateY(-6px → 0)` over 200ms ease-out. Exit: `opacity 1 → 0` and `translateY(0 → -4px)` over 140ms.
 
 ### Menu items
@@ -92,16 +92,16 @@ In this order:
 
 ## Mobile Nav (below 1280px)
 
-- The pill holds the logo and a **menu button**: three lines in a 44px target, `aria-label="Menu"`, `aria-haspopup="dialog"`, `aria-expanded`, `aria-controls` while open.
+- The pill holds the logo and a **menu button**: three lines in a 44px `IconButton` (the `plain` variant: no disc until hover), `aria-label="Menu"`, `aria-haspopup="dialog"`, `aria-expanded`, `aria-controls` while open. Negative margins keep the pill 44px tall.
 - The menu is a **modal dialog** (`role="dialog"`, `aria-modal="true"`, `aria-label="Menu"`) run by `useModalDialog` (`src/hooks/useModalDialog.ts`). While it is open:
   - focus moves to the close button, and Tab stays inside the dialog;
   - Escape closes it;
   - the page behind can't scroll and is inert, so screen readers and the keyboard can't reach it;
   - on close, focus returns to the menu button.
-- Layout: a full-screen Deep Nav (`pe-nav-dark`) panel over a 40% black backdrop. The header row has the inverted logo and a close button (`aria-label="Close menu"`, 44px).
+- Layout: a full-screen Deep Nav (`pe-nav-dark`) panel over a 40% black backdrop. The header row has the inverted logo and a close button (`aria-label="Close menu"`): a 44px ghost `IconButton` with a 20px cross.
 - Links: a **Solutions** accordion button (`aria-expanded`), then Projects, About, Tools, News & Insights (once the blog has 3 posts) and Contact, in Plus Jakarta Sans 700, 24px, white.
 - The Solutions accordion lists the six solutions with their accent dots, then "All solutions →" (`/solutions`).
-- At the bottom: the full-width "Get in touch" pill (`CONTACT_CTA`).
+- At the bottom: the full-width "Get in touch" button (`CONTACT_CTA`): `Button`, light, default size (48px), with an arrow in a 20px Night Teal disc.
 - Choosing any link, the backdrop or the close button closes the menu and collapses the accordion.
 
 ---

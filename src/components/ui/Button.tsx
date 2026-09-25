@@ -1,58 +1,35 @@
-'use client';
-
+// src/components/ui/Button.tsx
+// The site's button: a Next Link when `href` is set, otherwise a <button>
+// (type="button" unless a form passes type="submit"). Variants, sizes and the
+// class builder for pills inside card links are in buttonStyles.ts. It holds no
+// state, so it has no 'use client' and server components render it directly.
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ComponentPropsWithoutRef, ReactNode } from 'react';
+import { buttonClasses, type ButtonStyle } from './buttonStyles';
 
-type BaseProps = {
-  variant?: 'primary' | 'light' | 'ghost' | 'outline';
-  className?: string;
-  children: React.ReactNode;
-};
-
-type AsButton = BaseProps & ComponentPropsWithoutRef<'button'> & { href?: undefined };
-type AsLink = BaseProps & { href: string; target?: string; rel?: string };
-type ButtonProps = AsButton | AsLink;
-
-const variants: Record<NonNullable<BaseProps['variant']>, string> = {
-  // teal fill — for light-background sections
-  primary:
-    'bg-pe-primary text-white hover:bg-pe-primary-hover active:scale-[0.98]',
-  // light fill — for dark-background sections (hero, CTA banner)
-  light:
-    'bg-pe-bg text-pe-nav-dark hover:bg-white active:scale-[0.98]',
-  // translucent dark-bg ghost
-  ghost:
-    'bg-white/[0.08] border border-white/20 text-white hover:bg-white/[0.14] active:scale-[0.98]',
-  // teal border outline — for light sections
-  outline:
-    'border border-pe-primary text-pe-primary hover:bg-pe-primary/[0.06] active:scale-[0.98]',
-};
-
-const base =
-  'inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 font-body text-sm font-semibold leading-none transition-all duration-200 select-none disabled:pointer-events-none disabled:opacity-50';
+type OwnProps = ButtonStyle & { children: ReactNode };
+type AsButton = OwnProps &
+  Omit<ComponentPropsWithoutRef<'button'>, keyof ButtonStyle | 'children'> & { href?: undefined };
+type AsLink = OwnProps & Omit<ComponentPropsWithoutRef<typeof Link>, keyof ButtonStyle | 'children'>;
+export type ButtonProps = AsButton | AsLink;
 
 export function Button(props: ButtonProps) {
-  const { variant = 'primary', className, children, ...rest } = props;
-  const cls = cn(base, variants[variant], className);
-
-  if ('href' in props && props.href !== undefined) {
-    const { href, target, rel, ...linkRest } = rest as AsLink;
+  if (props.href !== undefined) {
+    const { variant, vertical, size, className, children, ...linkProps } = props;
     return (
-      <Link
-        href={href}
-        target={target}
-        rel={rel}
-        className={cls}
-        {...(linkRest as object)}
-      >
+      <Link className={buttonClasses({ variant, vertical, size, className } as ButtonStyle)} {...linkProps}>
         {children}
       </Link>
     );
   }
 
+  const { variant, vertical, size, className, children, type = 'button', ...buttonProps } = props;
   return (
-    <button className={cls} {...(rest as ComponentPropsWithoutRef<'button'>)}>
+    <button
+      type={type}
+      className={buttonClasses({ variant, vertical, size, className } as ButtonStyle)}
+      {...buttonProps}
+    >
       {children}
     </button>
   );

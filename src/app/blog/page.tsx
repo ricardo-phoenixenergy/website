@@ -14,9 +14,9 @@ import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { FeaturedArticleCard } from '@/components/ui/FeaturedArticleCard';
 import { ArticleCard } from '@/components/ui/ArticleCard';
 import { PageFooter } from '@/components/layout/PageFooter';
-import { IconArrowLeft, IconArrowRight } from '@/components/ui/Icons';
 import { BlogSearchInput } from '@/components/blog/BlogSearchInput';
 import { BlogFilterPills } from '@/components/blog/BlogFilterPills';
+import { BlogPagination } from '@/components/blog/BlogPagination';
 import Link from 'next/link';
 
 export const revalidate = 3600;
@@ -186,40 +186,8 @@ export default async function BlogPage({
             )}
           </div>
 
-          {/* SSR Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 py-10">
-              {page > 1 && (
-                <Link
-                  href={buildBlogHref(page - 1, category, tag)}
-                  className="font-body text-xs text-pe-muted px-4 py-2 rounded-full border border-pe-border transition-colors hover:bg-white"
-                >
-                  <IconArrowLeft size={14} /> Prev
-                </Link>
-              )}
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                <Link
-                  key={p}
-                  href={buildBlogHref(p, category, tag)}
-                  className={`font-body text-xs rounded-full px-3.5 py-2 transition-colors border ${
-                    p === page
-                      ? 'bg-pe-primary text-white border-pe-primary'
-                      : 'bg-white text-pe-muted border-pe-border'
-                  }`}
-                >
-                  {p}
-                </Link>
-              ))}
-              {page < totalPages && (
-                <Link
-                  href={buildBlogHref(page + 1, category, tag)}
-                  className="font-body text-xs text-pe-muted px-4 py-2 rounded-full border border-pe-border transition-colors hover:bg-white"
-                >
-                  Next <IconArrowRight size={14} />
-                </Link>
-              )}
-            </div>
-          )}
+          {/* SSR pagination: chip links, the current page filled; nothing for a single page */}
+          <BlogPagination page={page} totalPages={totalPages} hrefFor={(p) => buildBlogHref(p, category, tag)} />
         </section>
 
       </div>

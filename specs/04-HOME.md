@@ -39,7 +39,7 @@ Full spec in `specs/04-HOME.md` under Hero Accordion — see approved mockup. Re
 - A panel opens on hover (`mouseenter`), click or keyboard: each panel is filled by a `<button aria-expanded>`. Nothing rotates on its own (WCAG 2.2.2), so there is no timer and no progress bar.
 - On first load the open panel's text is in the server HTML at full opacity. The staggered reveal plays only after the visitor opens another panel.
 - The desktop H1 is screen-reader only: "Phoenix Energy: integrated clean energy solutions for South African businesses".
-- Below 1280px there is no accordion. A static hero shows the C&I photo under a dark gradient, the H1 "Integrated clean energy for South African businesses", a summary ("Six solutions, one partner. Cut your electricity costs, buy renewable power through the grid, electrify your fleet or earn from the solar you already have.") and a "Book a discovery meeting" button (`DISCOVERY_CTA`). Below it comes a list of the six solutions, two columns from 768px. Each row has a 56px thumbnail, an accent dot, the solution name and its panel heading, and links to the solution page.
+- Below 1280px there is no accordion. A static hero shows the C&I photo under a dark gradient, the H1 "Integrated clean energy for South African businesses", a summary ("Six solutions, one partner. Cut your electricity costs, buy renewable power through the grid, electrify your fleet or earn from the solar you already have.") and a "Book a discovery meeting" button (`DISCOVERY_CTA`; `Button`, light, default size, 48px). Below it comes a list of the six solutions, two columns from 768px. Each row has a 56px thumbnail, an accent dot, the solution name and its panel heading, and links to the solution page.
 
 ### Dimensions
 - Accordion: full width, `height: calc(100vh - 60px)`, `min-height: 500px`.
@@ -57,7 +57,7 @@ Full spec in `specs/04-HOME.md` under Hero Accordion — see approved mockup. Re
 - `flex: 5`, transition `0.6s cubic-bezier(0.4,0,0.2,1)`.
 - Photo: `scale(1.05)` over `0.8s` ease-in-out; no zoom under reduced motion.
 - Tint: `linear-gradient(180deg, rgba(13,31,34,0.1) 0%, rgba(13,31,34,0.82) 60%, rgba(13,31,34,0.95) 100%)`.
-- The vertical label becomes screen-reader only. The content sits at the bottom of the panel (`padding: 0 32px 48px`): a 40 × 2px accent bar, the solution name as an eyebrow (Inter 700, 12px, uppercase, accent colour), the heading as an H2 (Plus Jakarta Sans 800, white, `clamp(1.75rem, 3vw, 2.75rem)`, max-width 520px), the description (Inter 400, 16px, `#B9C3C5`, max-width 440px) and an "Explore {solution}" link with an arrow (Inter 600, 16px, accent colour).
+- The vertical label becomes screen-reader only. The content sits at the bottom of the panel (`padding: 0 32px 48px`): a 40 × 2px accent bar, the solution name as an eyebrow (Inter 700, 12px, uppercase, accent colour), the heading as an H2 (Plus Jakarta Sans 800, white, `clamp(1.75rem, 3vw, 2.75rem)`, max-width 520px), the description (Inter 400, 16px, `#B9C3C5`, max-width 440px) and an "Explore {solution}" link with an arrow (`ArrowLink` `lg`: Inter 600, 16px, accent colour).
 
 ### Staggered content reveal
 Plays only when a visitor opens a panel, never on first load.
@@ -233,7 +233,7 @@ animation: pulseRing 1.8s ease-out infinite;
 - Clicking a dot jumps to that step and stops the play.
 
 **CTA button:**
-- `Book a discovery meeting` with an arrow, a Deep Teal pill with white text, centred, `margin-top: 28px`. The label and link come from `DISCOVERY_CTA` in `src/config/ctas.ts`, which opens the contact form with a discovery-meeting message filled in.
+- `Book a discovery meeting` with an arrow, a Deep Teal pill with white text (`Button`, primary, default size, 48px), centred, `margin-top: 28px`. The label and link come from `DISCOVERY_CTA` in `src/config/ctas.ts`, which opens the contact form with a discovery-meeting message filled in.
 - Shown only when Show CTA button (`showCta`) is ticked in the Sanity document.
 
 ---
@@ -315,7 +315,7 @@ Phones show the same steps as desktop, on the vertical spine, with the same dots
 
 ### Section header row
 - Left: eyebrow `Our work` (Inter 700, 12px, uppercase, `#646B78`) + H2 `Projects` (Plus Jakarta Sans 800, 30px).
-- Right: `View published projects` (`PROJECTS_CTA` in `src/config/ctas.ts`) with an arrow, linking to `/projects`, Inter 500, 14px, Deep Teal. It sits under the company stats, and /projects holds only the published projects, so the label names what the page holds rather than "all projects" (PRJ-18).
+- Right: `View published projects` (`PROJECTS_CTA` in `src/config/ctas.ts`) with an arrow, linking to `/projects` (`ArrowLink`: Inter 600, 14px, Deep Teal). It sits under the company stats, and /projects holds only the published projects, so the label names what the page holds rather than "all projects" (PRJ-18).
 
 ### Scroll container
 ```css
@@ -375,7 +375,7 @@ padding-bottom: 16px;
 
 - `background: #F5F5F5`.
 - No top padding (flush under How It Works, also `#F5F5F5`); `padding-bottom: 64px`, 96px from 768px.
-- Header row: eyebrow `Latest insights` + H2 `News, views & analysis`, with "analysis" in Dusty Blue ink `#45727E`. On the right, `View all articles` with an arrow, linking to `/blog` (Inter 500, 14px, Deep Teal).
+- Header row: eyebrow `Latest insights` + H2 `News, views & analysis`, with "analysis" in Dusty Blue ink `#45727E`. On the right, `View all articles` with an arrow, linking to `/blog` (`ArrowLink`: Inter 600, 14px, Deep Teal).
 - A horizontal scroller (gap 14px, no scrollbar), even for three posts. Cards are `82vw` on phones and a third of the container from 768px, so all three show from there.
 - The section is hidden when there are no posts.
 - Card: the same shell and hover as the project cards. Photo 160px tall; category badge top-right (solid category colour, white text, Inter 700, 12px, uppercase); the first tag, when it names a vertical, as an accent badge bottom-left; title in Plus Jakarta Sans 700, 14px, two lines at most; excerpt in Inter 12px, `#646B78`, two lines at most; footer with the date and "{n} min read" (12px, the read time in Dusty Blue ink).
@@ -396,7 +396,7 @@ Categories: `Industry Insights` · `Project Spotlight` · `Company News` · `Pre
 - Eyebrow: `Start your energy transition`, Inter 700, 12px, uppercase, `#709DA9`.
 - Headline: `Find the right energy strategy for your business.`, Plus Jakarta Sans 800, 30px (36px from 768px), white.
 - Body: "Meet with our engineers to identify the solutions that will reduce costs, generate new revenue and strengthen your energy resilience, at no cost or obligation. We reply within 1 business day." Inter 400, 16px, `#9BA7A9`. The last sentence is `REPLY_PROMISE` in `src/config/contact.ts`.
-- One button: `Book a discovery meeting` with an arrow, a white pill with `#0d1f22` text, Inter 600, 14px. It opens the contact form with a discovery-meeting message filled in.
+- One button: `Book a discovery meeting` with an arrow (`Button`, light, default size): a 48px `#F5F5F5` pill with `#0d1f22` text, white on hover, Inter 600, 14px. It opens the contact form with a discovery-meeting message filled in.
 - Phones get the same centred stack.
 - Superseded September 2026: the shared footer's default is now the company-level band in `src/config/ctas.ts` (`DISCOVERY_BAND`, "Find the right energy strategy for your business.", with the "Book a discovery meeting" CTA and "We reply within 1 business day."). The old default body promised "results delivered in 48 hours", which contradicted the site's one response time.
 

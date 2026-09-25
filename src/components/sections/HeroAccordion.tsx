@@ -8,6 +8,8 @@ import { SOLUTION_META } from '@/types/solutions';
 import type { SolutionVertical } from '@/types/solutions';
 import type { HeroImages } from '@/types/sanity';
 import { IconArrowRight } from '@/components/ui/Icons';
+import { ArrowLink } from '@/components/ui/ArrowLink';
+import { Button } from '@/components/ui/Button';
 import { DISCOVERY_CTA } from '@/config/ctas';
 
 interface Panel {
@@ -161,16 +163,9 @@ function ActivePanelContent({ panel, animateIn }: { panel: Panel; animateIn: boo
         {panel.description}
       </motion.p>
       <motion.div custom={0.38} variants={revealVariants} initial={initial} animate="visible">
-        <Link
-          href={panel.href}
-          className="group inline-flex items-center gap-2 font-body font-semibold text-base transition-colors duration-150 rounded-full"
-          style={{ color: meta.accent }}
-        >
+        <ArrowLink href={panel.href} size="lg" style={{ color: meta.accent }}>
           Explore {meta.label}
-          <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1">
-            <IconArrowRight size={14} />
-          </span>
-        </Link>
+        </ArrowLink>
       </motion.div>
     </div>
   );
@@ -303,12 +298,9 @@ function MobileHero({ heroImages }: { heroImages: HeroImages }) {
           <p className="font-body text-base leading-[1.7] mt-4 max-w-[34rem]" style={{ color: 'rgba(255,255,255,0.78)' }}>
             {HERO_SUMMARY}
           </p>
-          <Link
-            href={DISCOVERY_CTA.href}
-            className="mt-7 inline-flex items-center justify-center gap-2 rounded-full bg-pe-bg px-6 py-3.5 font-body text-base font-semibold text-pe-nav-dark transition-colors hover:bg-white"
-          >
-            {DISCOVERY_CTA.label} <IconArrowRight size={15} />
-          </Link>
+          <Button variant="light" href={DISCOVERY_CTA.href} className="mt-7">
+            {DISCOVERY_CTA.label} <IconArrowRight />
+          </Button>
         </div>
       </div>
 

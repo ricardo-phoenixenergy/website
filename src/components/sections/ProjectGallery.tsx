@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import type { SanityImage } from '@/types/sanity';
 import { IconArrowLeft, IconArrowRight, IconX } from '@/components/ui/Icons';
+import { IconButton } from '@/components/ui/IconButton';
 import { useModalDialog } from '@/hooks/useModalDialog';
 
 interface ProjectGalleryProps {
@@ -90,14 +91,16 @@ export function ProjectGallery({ images }: ProjectGalleryProps) {
         })}
       </ul>
 
-      {/* Lightbox */}
+      {/* Lightbox. focus-on-dark: on a phone the arrows sit on the photo, where the
+          default white halo and teal ring vanish over a light one; the white ring
+          on a Night Teal halo shows over light and dark photos alike. */}
       {open && (
         <div
           ref={dialogRef}
           role="dialog"
           aria-modal="true"
           aria-label={`Photo ${lightboxIndex + 1} of ${total}`}
-          className="fixed inset-0 z-[90] flex items-center justify-center"
+          className="focus-on-dark fixed inset-0 z-[90] flex items-center justify-center"
           style={{ background: 'rgba(13,31,34,0.92)' }}
           onClick={close}
         >
@@ -119,41 +122,38 @@ export function ProjectGallery({ images }: ProjectGalleryProps) {
             </div>
 
             {/* Close */}
-            <button
-              type="button"
+            <IconButton
+              variant="ghost"
+              label="Close photo viewer"
               data-autofocus
               onClick={close}
-              className="absolute -top-12 right-0 w-11 h-11 rounded-full flex items-center justify-center text-white transition-colors hover:bg-white/20"
-              style={{ background: 'rgba(255,255,255,0.1)' }}
-              aria-label="Close photo viewer"
+              className="absolute -top-12 right-0"
             >
-              <IconX size={20} />
-            </button>
+              <IconX />
+            </IconButton>
 
             {/* Prev */}
             {total > 1 && (
-              <button
-                type="button"
+              <IconButton
+                variant="ghost"
+                label="Previous photo"
                 onClick={prev}
-                className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex items-center justify-center text-white transition-colors hover:bg-white/20"
-                style={{ background: 'rgba(255,255,255,0.1)' }}
-                aria-label="Previous photo"
+                className="absolute left-2 top-1/2 -translate-y-1/2"
               >
-                <IconArrowLeft size={18} />
-              </button>
+                <IconArrowLeft />
+              </IconButton>
             )}
 
             {/* Next */}
             {total > 1 && (
-              <button
-                type="button"
+              <IconButton
+                variant="ghost"
+                label="Next photo"
                 onClick={next}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex items-center justify-center text-white transition-colors hover:bg-white/20"
-                style={{ background: 'rgba(255,255,255,0.1)' }}
-                aria-label="Next photo"
+                className="absolute right-2 top-1/2 -translate-y-1/2"
               >
-                <IconArrowRight size={18} />
-              </button>
+                <IconArrowRight />
+              </IconButton>
             )}
 
             {/* Counter */}

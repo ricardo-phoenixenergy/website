@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { FloatingOrbs } from '@/components/ui/FloatingOrbs';
+import { Button } from '@/components/ui/Button';
 import { IconArrowRight } from '@/components/ui/Icons';
 import { sanityServerClient } from '@/lib/sanity.server';
 import { TEAM_MEMBERS_QUERY, MILESTONE_TIMELINE_QUERY, PARTNERS_QUERY } from '@/lib/queries';
@@ -98,20 +99,12 @@ export default async function AboutPage() {
               Meet the team, story and values behind a company on a mission to become Africa&apos;s most innovative energy service provider.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link
-                href={DISCOVERY_CTA.href}
-                className="inline-flex items-center gap-2 font-body text-sm font-semibold rounded-full px-5 py-2.5 transition-colors duration-200 hover:bg-white"
-                style={{ background: '#F5F5F5', color: '#0d1f22' }}
-              >
-                {DISCOVERY_CTA.label} <IconArrowRight size={13} />
-              </Link>
-              <Link
-                href="/projects"
-                className="inline-flex items-center gap-2 font-body text-sm font-semibold rounded-full px-5 py-2.5"
-                style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.80)', border: '1px solid rgba(255,255,255,0.15)' }}
-              >
-                View our projects <IconArrowRight size={13} />
-              </Link>
+              <Button variant="light" href={DISCOVERY_CTA.href}>
+                {DISCOVERY_CTA.label} <IconArrowRight />
+              </Button>
+              <Button variant="ghost" href="/projects">
+                View our projects <IconArrowRight />
+              </Button>
             </div>
           </AnimatedSection>
         </div>

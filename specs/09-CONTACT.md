@@ -115,17 +115,16 @@ transition: all 0.2s;
 - Radio dot → filled `#45727E` with a white centre dot (default: transparent with a `#E5E7EB` border).
 - Label colour → `#45727E` (default: `#1A1A1A`).
 
-**Continue button:**
-- Full-width, `border-radius: 12px`, Plus Jakarta Sans 700, 16px.
+**Continue button** (updated September 2026, the button programme):
+- `Button`, primary, default size, full width: a 48px pill, Deep Teal fill, white Inter 600 14px, darker on hover. It used to be a 12px-radius Plus Jakarta Sans 700 16px button that lifted on hover.
 - **Always enabled.** With no intent chosen, it stays on step 1 and shows *"Choose how you'd like to work with us to continue."* below the options (Inter 14px, `--color-pe-error`, `role="alert"`).
-- `background: #39575C`, `color: #fff`. Hover lifts it 1px (`translateY(-1px)`) with no colour change.
 - Right: a 16px arrow icon, with no circle.
 
 ---
 
 ### Step 2 — Contact Form
 
-**Back button:** 40px circle, `border: 1px solid #E5E7EB`, a 14px left-arrow icon, `aria-label="Back to step 1"`, top-left of step header. Returns to Step 1 and keeps the intent and anything typed; it clears any errors.
+**Back button:** a 44px outline `IconButton` (white, a `#E5E7EB` hairline that turns Deep Teal on hover, a 20px Deep Teal left arrow), `aria-label="Back to step 1"`, top-left of step header. Returns to Step 1 and keeps the intent and anything typed; it clears any errors.
 
 **Step label:** `STEP 2 OF 2`
 
@@ -177,7 +176,7 @@ gap: 16px;
 | Partner | Send partnership enquiry → |
 | Investor | Send investor enquiry → |
 
-Same size and fill as Continue (full-width, Deep Teal), with a 16px arrow icon after the label. On hover it darkens (`brightness(0.9)`) instead of lifting. While sending, the label reads "Sending…" and the button is disabled at 60% opacity.
+The same `Button` as Continue (primary, default size, full width), with a 16px arrow icon after the label. While sending, the label reads "Sending…" and the button is disabled at 50% opacity.
 
 **Privacy notice** (below button), updated September 2026:
 - The shared `FormPrivacyNotice` component, also used by the solar valuation request. Inter 400, 12px, muted, centred.
@@ -431,7 +430,7 @@ Email body structure (HTML, React Email components rendered with `@react-email/r
 
 ### Solutions index page — /solutions
 Route: `src/app/solutions/page.tsx`. The April layout described here (white cards with a 3px accent bar and "→ Learn more", then a CTABanner) is not the built page. As built:
-- A Night Teal hero with floating orbs: breadcrumb Home / Solutions, eyebrow "Our Solutions", H1 "Every energy challenge, solved", and two buttons, "Book a discovery meeting" (opens the contact form at step 2) and "Explore solutions" (jumps to the cards).
-- One dark card per vertical, in 1 column, 2 from 768px and 3 from 1024px. Each card shows the vertical's hero image from Sanity, its SEO description, two stats from `VERTICAL_CONFIG` (`src/config/verticals.ts`, figures from the claims register) and an "Explore {vertical}" pill in the accent colour. The whole card links to the solution page.
+- A Night Teal hero with floating orbs: breadcrumb Home / Solutions, eyebrow "Our Solutions", H1 "Every energy challenge, solved", and two 48px buttons: "Book a discovery meeting" (`Button` light; opens the contact form at step 2) and "Explore solutions" (ghost, jumps to the cards). "Explore solutions" is a plain `<a href="#solutions">` drawn with `buttonClasses({ variant: 'ghost' })`, not a Link, so the browser's own jump also moves the keyboard's starting point to the cards.
+- One dark card per vertical, in 1 column, 2 from 768px and 3 from 1024px. Each card shows the vertical's hero image from Sanity, its SEO description, two stats from `VERTICAL_CONFIG` (`src/config/verticals.ts`, figures from the claims register) and an "Explore {vertical}" pill: `buttonClasses({ variant: 'ghost', size: 'compact', inCard: true })` on a span (40px, white at 8% with a white 20% edge, white text; 14% when the card is hovered). It was in the accent colour until September 2026; in the accent tint, WeBuySolar's copper label measured 4.3:1 on hover, so all six take plain ghost. The whole card links to the solution page.
 - No CTA band. An `ItemList` JSON-LD lists the six solution pages.
 

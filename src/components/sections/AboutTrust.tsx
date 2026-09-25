@@ -2,9 +2,9 @@
 
 import { useId, useRef, useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { IconArrowRight } from '@/components/ui/Icons';
+import { ArrowLink } from '@/components/ui/ArrowLink';
+import { tabClasses } from '@/components/ui/buttonStyles';
 import type { Cta } from '@/config/ctas';
 import type { Partner } from '@/types/sanity';
 
@@ -194,14 +194,15 @@ export function AboutTrust({ partners, showTabs = true, justify = 'start', flush
         </div>
 
         {/* Tabs, only shown when showTabs is true. Their ring is drawn inset
-            (role="tab" in globals.css), so the scrolling strip can't clip it. */}
+            (role="tab" in globals.css), so the scrolling strip can't clip it.
+            The baseline is an inset shadow, as in SolutionTabs: the selected
+            tab's rule paints over it without leaving the strip. */}
         {showTabs ? (
           <>
             <div
               role="tablist"
               aria-labelledby={headingId}
-              className="flex overflow-x-auto scrollbar-none mt-7 mb-8"
-              style={{ borderBottom: '1px solid #E5E7EB' }}
+              className="flex overflow-x-auto scrollbar-none mt-7 mb-8 shadow-[inset_0_-1px_0_var(--color-pe-border)]"
             >
               {TABS.map((tab, i) => {
                 const count = partners.filter((p) => p.category === tab.value).length;
@@ -218,11 +219,10 @@ export function AboutTrust({ partners, showTabs = true, justify = 'start', flush
                     tabIndex={isActive ? 0 : -1}
                     onClick={() => setActiveTab(tab.value)}
                     onKeyDown={(e) => onTabKeyDown(e, i)}
-                    className="cursor-pointer flex-shrink-0 flex items-center gap-2 font-body font-semibold text-sm px-5 py-3 transition-colors duration-150 whitespace-nowrap"
+                    className={tabClasses()}
                     style={{
-                      color: isActive ? '#39575C' : 'var(--color-pe-muted)',
-                      borderBottom: isActive ? '2px solid #39575C' : '2px solid transparent',
-                      marginBottom: -1,
+                      color: isActive ? 'var(--color-pe-primary)' : 'var(--color-pe-muted)',
+                      borderBottomColor: isActive ? 'var(--color-pe-primary)' : 'transparent',
                     }}
                   >
                     {tab.label}
@@ -254,15 +254,7 @@ export function AboutTrust({ partners, showTabs = true, justify = 'start', flush
           <ul className="mt-10 pt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-x-8" style={{ borderTop: '1px solid #E5E7EB' }}>
             {ctas.map((cta) => (
               <li key={cta.href}>
-                <Link
-                  href={cta.href}
-                  className="group inline-flex items-center gap-1.5 font-body text-sm font-semibold text-pe-primary hover:text-pe-primary-hover transition-colors rounded"
-                >
-                  {cta.label}
-                  <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1">
-                    <IconArrowRight size={14} />
-                  </span>
-                </Link>
+                <ArrowLink href={cta.href}>{cta.label}</ArrowLink>
               </li>
             ))}
           </ul>

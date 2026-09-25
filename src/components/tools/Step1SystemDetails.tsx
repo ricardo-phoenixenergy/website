@@ -10,6 +10,7 @@ import { NumberField } from './NumberField';
 import { SegmentedControl } from './SegmentedControl';
 import { SelectControl } from './SelectControl';
 import { Toggle } from './Toggle';
+import { Button } from '@/components/ui/Button';
 import { IconArrowRight } from '@/components/ui/Icons';
 
 interface Step1SystemDetailsProps {
@@ -59,9 +60,6 @@ function sizeErrors(solar: SolarInputs, bess: BessInputs, issues: SizeIssues): P
   if (bess.enabled) check('kWh', bess.kWh);
   return errors;
 }
-
-const NEXT_BTN =
-  'mt-6 w-full inline-flex items-center justify-center gap-2 font-body font-semibold text-sm text-white rounded-xl py-3 transition-opacity hover:opacity-90';
 
 export function Step1SystemDetails({
   solar,
@@ -217,9 +215,9 @@ export function Step1SystemDetails({
         )}
       </div>
 
-      <button type="button" onClick={handleNext} className={NEXT_BTN} style={{ background: 'var(--color-pe-primary)' }}>
-        Next: System condition <IconArrowRight size={14} />
-      </button>
+      <Button onClick={handleNext} className="mt-6 w-full">
+        Next: system condition <IconArrowRight />
+      </Button>
     </div>
   );
 }

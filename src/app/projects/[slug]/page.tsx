@@ -8,6 +8,7 @@ import { sanityServerClient } from '@/lib/sanity.server';
 import { PROJECT_BY_SLUG_QUERY, ALL_PROJECT_SLUGS_QUERY } from '@/lib/queries';
 import { SOLUTION_META } from '@/types/solutions';
 import { ProjectStatsTiles } from '@/components/ui/ProjectStatsTiles';
+import { Button } from '@/components/ui/Button';
 import { ProjectCard } from '@/components/sections/ProjectCard';
 import { FeaturedProjectCard } from '@/components/sections/FeaturedProjectCard';
 import { ProjectGallery } from '@/components/sections/ProjectGallery';
@@ -391,20 +392,12 @@ export default async function ProjectPage({
 
             {/* Buttons: the service's CTA, with this project named in the message */}
             <div className="flex gap-3 flex-col sm:flex-row md:flex-col lg:flex-row flex-shrink-0">
-              <Link
-                href={cta.href}
-                className="flex items-center justify-center font-body font-semibold text-sm text-pe-primary rounded-full px-5 py-2.5 transition-colors hover:bg-[#e8e8e8]"
-                style={{ background: '#F5F5F5' }}
-              >
+              <Button variant="light" href={cta.href}>
                 {cta.label}
-              </Link>
-              <Link
-                href={PROJECTS_CTA.href}
-                className="flex items-center justify-center font-body font-semibold text-sm text-white rounded-full px-5 py-2.5 transition-all hover:bg-white/20"
-                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
-              >
+              </Button>
+              <Button variant="ghost" href={PROJECTS_CTA.href}>
                 {PROJECTS_CTA.label}
-              </Link>
+              </Button>
             </div>
           </div>
         </div>

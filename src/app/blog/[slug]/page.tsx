@@ -11,6 +11,7 @@ import type { BlogPost, PortableTextBlock } from '@/types/sanity';
 import { portableTextComponents } from '@/lib/portableTextComponents';
 import { TableOfContents, type TocItem } from '@/components/blog/TableOfContents';
 import { ShareButtons } from '@/components/blog/ShareButtons';
+import { Chip } from '@/components/ui/Chip';
 import { AuthorCard } from '@/components/blog/AuthorCard';
 import { RelatedPosts } from '@/components/blog/RelatedPosts';
 import { PageFooter } from '@/components/layout/PageFooter';
@@ -300,22 +301,19 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             }}
           />
 
-          {/* Tags footer */}
+          {/* Tags footer: chip links, like the /blog tag pills. Wrapped rows sit
+              10px apart, so each chip's 44px touch target stays clear of the
+              next row's. */}
           {post.tags?.length > 0 && (
             <div
-              className="flex flex-wrap gap-1.5 pt-5 mt-7"
+              className="flex flex-wrap items-center gap-x-2 gap-y-2.5 pt-5 mt-7"
               style={{ borderTop: '1px solid #E5E7EB' }}
             >
               <span className="font-body font-semibold text-xs text-pe-text">Tags:</span>
               {post.tags.map(tag => (
-                <Link
-                  key={tag}
-                  href={`/blog?tag=${encodeURIComponent(tag)}`}
-                  className="font-body text-xs rounded-full px-2.5 py-1 transition-opacity hover:opacity-80"
-                  style={{ background: 'rgba(57,87,92,0.10)', color: '#39575C' }}
-                >
+                <Chip key={tag} href={`/blog?tag=${encodeURIComponent(tag)}`}>
                   {tag}
-                </Link>
+                </Chip>
               ))}
             </div>
           )}

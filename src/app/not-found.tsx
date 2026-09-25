@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
 
 export const metadata: Metadata = {
   title: 'Page not found',
@@ -31,24 +31,12 @@ export default function NotFound() {
         The page you&apos;re looking for doesn&apos;t exist or may have moved.
       </p>
       <div className="flex gap-3 flex-wrap justify-center">
-        <Link
-          href="/"
-          className="font-body font-medium text-sm px-5 py-2.5 rounded-full transition-colors"
-          style={{ background: '#F5F5F5', color: '#0d1f22' }}
-        >
+        <Button variant="light" href="/">
           Back to home
-        </Link>
-        <Link
-          href="/solutions"
-          className="font-body font-medium text-sm px-5 py-2.5 rounded-full transition-colors"
-          style={{
-            background: 'rgba(255,255,255,0.08)',
-            border: '1px solid rgba(255,255,255,0.15)',
-            color: '#ffffff',
-          }}
-        >
+        </Button>
+        <Button variant="ghost" href="/solutions">
           Explore solutions
-        </Link>
+        </Button>
       </div>
     </div>
   );
