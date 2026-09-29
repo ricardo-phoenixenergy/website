@@ -130,4 +130,30 @@ describe('ProjectResults', () => {
   it('renders nothing without results', () => {
     expect(html(createElement(ProjectResults, { results: [], labelling }))).toBe('');
   });
+
+  it("puts a figure's note under it, inside the list, and nothing for a figure without one", () => {
+    const noted = html(createElement(ProjectResults, { results: [{ label: 'Payback period', value: '51 months', note: 'Year 1, against 2025 municipal bills' }, results[1]], labelling }));
+    expect(noted).toMatch(/<dt[^>]*>Payback period<\/dt><dd[^>]*>51 months<\/dd><dd class="[^"]*text-xs[^"]*text-pe-muted[^"]*">Year 1, against 2025 municipal bills<\/dd>/);
+    expect(noted.match(/<dd\b/g)).toHaveLength(3);
+  });
+
+  it('shows no disclosure without calculation inputs, with the disclaimer link after the sentence', () => {
+    expect(markup).not.toContain('<details');
+    expect(markup).not.toContain('How we calculated this');
+  });
+
+  it('lists the calculation inputs under "How we calculated this", ending with the disclaimer link', () => {
+    const inputs = [
+      { label: 'Tariff escalation', value: '8% a year' },
+      { label: 'Panel degradation', value: '0.5% a year' },
+    ];
+    const withInputs = html(createElement(ProjectResults, { results, labelling, inputs }));
+    const [before, disclosure] = withInputs.split('<details');
+    expect(before).toContain('Projections from our financial model for this site.');
+    expect(before).not.toContain('Read the disclaimer');
+    expect(disclosure).toMatch(/<summary[^>]*>How we calculated this/);
+    expect(disclosure).toMatch(/<dl class="[^"]*lg:grid-cols-3[^"]*">/);
+    expect(disclosure).toMatch(/<dt[^>]*>Tariff escalation<\/dt><dd[^>]*>8% a year<\/dd>/);
+    expect(disclosure.indexOf('Panel degradation')).toBeLessThan(disclosure.indexOf('Read the disclaimer'));
+  });
 });
