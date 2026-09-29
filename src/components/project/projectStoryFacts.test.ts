@@ -46,12 +46,32 @@ describe('ProjectFacts', () => {
     expect(closed).toContain('Service');
   });
 
-  it('columns: the groups side by side across the full width, with the booking row and its sentence', () => {
+  it("compact: the full panel's 18px heading, with 20px of padding on phones and 24px from 640px", () => {
+    const markup = facts('compact');
+    expect(markup).toMatch(/<section [^>]*class="[^"]*\bp-5 sm:p-6\b/);
+    expect(markup).toMatch(/<h2 id="project-facts-compact" class="[^"]*\btext-lg\b/);
+  });
+
+  it('columns: one column per group, with the booking row and its sentence', () => {
     const markup = facts('columns');
     expect(markup).toMatch(/<h2 id="project-facts-columns"/);
-    // auto-fit, not auto-fill: two groups share the width instead of leaving empty tracks beside them.
-    expect(markup).toContain('grid-cols-[repeat(auto-fit,minmax(240px,1fr))]');
+    // Two groups, two columns (factColumnsClass in src/lib/projectFacts.ts).
+    expect(markup).toContain('class="mt-3 grid gap-x-8 gap-y-4 grid-cols-2"');
     expect(markup).toContain(`Planning something similar? ${REPLY_PROMISE.sentence}`);
+  });
+
+  it('puts each Financing option and each approval on its own line, the options linking to the financing section', () => {
+    const withLines = projectFacts({
+      vertical: 'ci-solar-storage',
+      financing: ['outright-purchase', 'ppa'],
+      approvals: ['Municipal SSEG approval', 'Certificate of Compliance'],
+    });
+    const markup = html(createElement(ProjectFacts, { groups: withLines, variant: 'panel', cta, ctaLocation: 'x' }));
+    expect(markup).toMatch(
+      /<dt[^>]*>Financing<\/dt><dd[^>]*><span class="block"><a [^>]*href="\/solutions\/ci-solar-storage#financing"[^>]*>Outright Purchase<\/a><\/span><span class="block"><a [^>]*>Power Purchase Agreement \(PPA\)<\/a><\/span><\/dd>/,
+    );
+    expect(markup).toMatch(/<dt[^>]*>Approvals<\/dt><dd[^>]*><span class="block">Municipal SSEG approval<\/span><span class="block">Certificate of Compliance<\/span><\/dd>/);
+    expect(markup.match(/<h3\b/g)).toHaveLength(2);
   });
 });
 

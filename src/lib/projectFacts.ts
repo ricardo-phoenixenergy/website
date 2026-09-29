@@ -1,21 +1,31 @@
 // src/lib/projectFacts.ts
-// The facts panel's rows: the Project group (location, service, status), then the
-// System group (the CMS's "Stats strip metrics" rows, in their order). A row shows
-// only when it's set, and a group only when it has a row. Step 2 adds the site,
-// client, financing and project value rows and the Equipment and Delivery groups.
+// The facts panel's groups and rows, in order, each row only when it's set and
+// each group only when it has a row:
+// - Project: Site, Client (the name is in the data only with consent),
+//   Location, Service, Status, Financing and Project value (in the data only
+//   while "Show rand amounts" is on);
+// - System: the CMS's System rows, in their order;
+// - Equipment: one row per component, "[brand] [model], 3 units";
+// - Delivery: the weeks on site and the approvals.
+// A row holds one line or more: Financing and Approvals put each on its own.
 import { SOLUTION_META, type SolutionMeta, type SolutionVertical } from '@/types/solutions';
-import type { ProjectMetric, ProjectStatus } from '@/types/sanity';
+import type { ProjectEquipment, ProjectMetric, ProjectStatus } from '@/types/sanity';
+import { equipmentLabel, financingLabel, type FinancingMethod } from '@/lib/projectOptions';
 import { statusLine } from '@/lib/projectMeta';
+
+export interface FactLine {
+  text: string;
+  /** Set on lines that link somewhere, such as Service and each Financing option. */
+  href?: string;
+}
 
 export interface FactRow {
   key: string;
   label: string;
-  value: string;
-  /** Set on rows that link somewhere, such as Service. */
-  href?: string;
+  lines: FactLine[];
 }
 
-export type FactGroupKey = 'project' | 'system';
+export type FactGroupKey = 'project' | 'system' | 'equipment' | 'delivery';
 
 export interface FactGroup {
   key: FactGroupKey;
@@ -25,49 +35,122 @@ export interface FactGroup {
 
 export interface FactsSource {
   vertical: SolutionVertical;
+  siteType?: string | null;
+  clientName?: string | null;
   location?: string | null;
   status?: ProjectStatus | null;
   completionDate?: string | null;
+  commissionedOn?: string | null;
+  financing?: FinancingMethod[] | null;
+  projectValue?: string | null;
   metrics?: ProjectMetric[] | null;
+  equipment?: ProjectEquipment[] | null;
+  installationWeeks?: number | null;
+  approvals?: string[] | null;
+}
+
+/** The services whose page has a financing section (FinancingBand, id="financing"). */
+const FINANCING_SECTIONS: ReadonlySet<SolutionVertical> = new Set(['ci-solar-storage', 'energy-optimisation', 'ev-fleets']);
+
+/** Where a Financing line links: the service page's financing section, or the service page when it has none. */
+export function financingHref(vertical: SolutionVertical): string | undefined {
+  const meta: SolutionMeta | undefined = SOLUTION_META[vertical];
+  if (!meta) return undefined;
+  return FINANCING_SECTIONS.has(vertical) ? `${meta.slug}#financing` : meta.slug;
+}
+
+/** A count in words, so it reads well aloud: "1 unit", "3 units", "1 week", "6 weeks". */
+export function countWords(count: number, one: string, many: string): string {
+  return `${count} ${count === 1 ? one : many}`;
+}
+
+const isWhole = (n: unknown, min: number, max = Number.MAX_SAFE_INTEGER): n is number =>
+  typeof n === 'number' && Number.isInteger(n) && n >= min && n <= max;
+
+function row(key: string, label: string, text: string | null | undefined, href?: string): FactRow[] {
+  const value = text?.trim();
+  if (!value) return [];
+  return [{ key, label, lines: [href ? { text: value, href } : { text: value }] }];
+}
+
+function equipmentRows(equipment: readonly ProjectEquipment[] | null | undefined): FactRow[] {
+  return (equipment ?? []).flatMap((item, i) => {
+    const label = equipmentLabel(item?.component);
+    const brand = item?.brand?.trim();
+    if (!label || !brand) return [];
+    const name = [brand, item.model?.trim()].filter(Boolean).join(' ');
+    const text = isWhole(item.quantity, 1) ? `${name}, ${countWords(item.quantity, 'unit', 'units')}` : name;
+    return [{ key: `equipment-${i}`, label, lines: [{ text }] }];
+  });
 }
 
 export function projectFacts(project: FactsSource): FactGroup[] {
   const meta: SolutionMeta | undefined = SOLUTION_META[project.vertical];
-  const location = project.location?.trim();
-  const status = statusLine(project);
 
-  const projectRows: FactRow[] = [];
-  if (location) projectRows.push({ key: 'location', label: 'Location', value: location });
-  if (meta) projectRows.push({ key: 'service', label: 'Service', value: meta.label, href: meta.slug });
-  if (status) projectRows.push({ key: 'status', label: 'Status', value: status });
+  const financing = [...new Set(project.financing ?? [])].flatMap((method) => {
+    const text = financingLabel(method);
+    const href = financingHref(project.vertical);
+    return text ? [href ? { text, href } : { text }] : [];
+  });
+
+  const projectRows: FactRow[] = [
+    ...row('site', 'Site', project.siteType),
+    ...row('client', 'Client', project.clientName),
+    ...row('location', 'Location', project.location),
+    ...(meta ? row('service', 'Service', meta.label, meta.slug) : []),
+    ...row('status', 'Status', statusLine(project)),
+    ...(financing.length > 0 ? [{ key: 'financing', label: 'Financing', lines: financing }] : []),
+    ...row('project-value', 'Project value', project.projectValue),
+  ];
 
   const systemRows: FactRow[] = (project.metrics ?? []).flatMap((metric, i) => {
     const label = metric?.label?.trim();
-    const value = metric?.value?.trim();
-    return label && value ? [{ key: `system-${i}`, label, value }] : [];
+    return label ? row(`system-${i}`, label, metric.value) : [];
   });
+
+  const approvals = (project.approvals ?? []).flatMap((text) => (typeof text === 'string' && text.trim() ? [{ text: text.trim() }] : []));
+  const deliveryRows: FactRow[] = [
+    ...(isWhole(project.installationWeeks, 1, 104) ? row('on-site', 'On site', countWords(project.installationWeeks, 'week', 'weeks')) : []),
+    ...(approvals.length > 0 ? [{ key: 'approvals', label: 'Approvals', lines: approvals }] : []),
+  ];
 
   const groups: FactGroup[] = [
     { key: 'project', title: 'Project', rows: projectRows },
     { key: 'system', title: 'System', rows: systemRows },
+    { key: 'equipment', title: 'Equipment', rows: equipmentRows(project.equipment) },
+    { key: 'delivery', title: 'Delivery', rows: deliveryRows },
   ];
   return groups.filter((group) => group.rows.length > 0);
 }
 
 /**
- * The compact panel below 1024px: Location and the first two System rows show
- * open, and every other row stays in its group under "All project facts".
+ * The compact panel below 1024px. These rows show open, in this order: Client
+ * when the client is named, else Site; Location; the first two System rows;
+ * Financing. Every other row stays in its group under "All project facts".
  */
 export function splitMainRows(groups: readonly FactGroup[]): { main: FactRow[]; rest: FactGroup[] } {
-  const main: FactRow[] = [];
-  const rest: FactGroup[] = [];
-  for (const group of groups) {
-    const leftover: FactRow[] = [];
-    group.rows.forEach((row, i) => {
-      const isMain = (group.key === 'project' && row.key === 'location') || (group.key === 'system' && i < 2);
-      (isMain ? main : leftover).push(row);
-    });
-    if (leftover.length > 0) rest.push({ ...group, rows: leftover });
-  }
+  const projectRows = groups.find((group) => group.key === 'project')?.rows ?? [];
+  const systemRows = groups.find((group) => group.key === 'system')?.rows ?? [];
+  const byKey = (key: string) => projectRows.find((r) => r.key === key);
+  const main = [byKey('client') ?? byKey('site'), byKey('location'), ...systemRows.slice(0, 2), byKey('financing')].filter(
+    (r): r is FactRow => Boolean(r),
+  );
+  const open = new Set(main);
+  const rest = groups.flatMap((group) => {
+    const rows = group.rows.filter((r) => !open.has(r));
+    return rows.length > 0 ? [{ ...group, rows }] : [];
+  });
   return { main, rest };
+}
+
+/**
+ * The full-width facts' grid from 1024px, for the number of groups: a column
+ * each, so one or two groups don't stretch across the page. Four 240px columns
+ * first fit beside each other at 1280px, so four sit two by two until then.
+ */
+export function factColumnsClass(groupCount: number): string {
+  if (groupCount >= 4) return 'grid-cols-2 xl:grid-cols-4';
+  if (groupCount === 3) return 'grid-cols-3';
+  if (groupCount === 2) return 'grid-cols-2';
+  return 'grid-cols-1 max-w-md';
 }
