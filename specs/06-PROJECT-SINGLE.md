@@ -60,7 +60,7 @@ The page file only reads the project and composes the parts in `src/components/p
 
 **From 768px**
 - The photo is full-bleed: 400px tall, and 470px from 1024px. `object-position` follows the Studio hotspot, and there's no hover zoom.
-- A Night Teal scrim runs from 5% at 20% of the height to 92% at the foot.
+- A Night Teal scrim runs from 5% at 20% of the height, through 66% at 58%, to 92% at the foot.
 - The text is aligned to the page container: the service badge (a link to the solution page), the H1 and the line under the headline.
 - The H1 is Plus Jakarta Sans 800: 36px, and 44px from 1024px, with a line height of 1.08, `max-width: 25ch`, balanced wrapping, `break-words`, in white.
 - The line under the headline is 16px `on-dark-muted`, with its items joined by a middle dot.

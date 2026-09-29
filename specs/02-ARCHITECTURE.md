@@ -39,7 +39,7 @@ phoenix-energy/
 │   │   ├── about/page.tsx
 │   │   ├── projects/
 │   │   │   ├── page.tsx             ← Projects portfolio
-│   │   │   └── [slug]/page.tsx      ← Single project case study
+│   │   │   └── [slug]/page.tsx      ← Single project page
 │   │   ├── solutions/
 │   │   │   ├── page.tsx             ← Solutions overview
 │   │   │   ├── ci-solar-storage/page.tsx

@@ -119,7 +119,7 @@ const inter = Inter({
 
 Every text element on the site must use one of these roles. **Never use arbitrary `text-[Xpx]` values.**
 
-**Size floor: 12px.** Nothing on the site renders smaller than `text-xs` (12px), including badges, stat labels, form hints, step labels, chart axes and legal notes. Reading copy is larger still: 16px for primary body copy and 18px for blog prose. Keep prose to about 75 characters a line: `max-w-[56ch]` for 16px copy (Inter's `ch` is its wide zero, so 56ch holds about 75 characters; case studies measure a median of 69 to 72), `max-w-[42rem]` for 18px blog prose. The legal pages still use `max-w-[60ch]`, roughly 79 characters.
+**Size floor: 12px.** Nothing on the site renders smaller than `text-xs` (12px), including badges, stat labels, form hints, step labels, chart axes and legal notes. Reading copy is larger still: 16px for primary body copy and 18px for blog prose. Keep prose to about 75 characters a line: `max-w-[56ch]` for 16px copy (Inter's `ch` is its wide zero, so 56ch holds about 75 characters), `max-w-[42rem]` for 18px blog prose. The legal pages still use `max-w-[60ch]`, roughly 79 characters. The project page's chapters are 17px in a `max-w-[38rem]` column, about 70 characters a line.
 
 | Role | Tailwind classes | Rendered | Usage |
 |---|---|---|---|
@@ -127,7 +127,7 @@ Every text element on the site must use one of these roles. **Never use arbitrar
 | **section-h2** | `font-display font-extrabold text-3xl leading-[1.2]` | 30px | All section headings site-wide |
 | **card-h3** | `font-display font-bold text-xl leading-[1.3]` | 20px | Card titles, subsection titles |
 | **subheading** | `font-display font-bold text-lg leading-tight` | 18px | Smaller inline headings, form section titles |
-| **body** | `font-body font-normal text-base leading-[1.75]` | 16px | Main paragraph copy, case-study sections (56ch column), legal pages (60ch column) |
+| **body** | `font-body font-normal text-base leading-[1.75]` | 16px | Main paragraph copy, legal pages (60ch column) |
 | **prose** | `font-body font-normal text-lg leading-[1.75] text-pe-text-soft` | 18px | Blog post body, in a 42rem column |
 | **body-sm** | `font-body font-normal text-sm leading-[1.6]` | 14px | Secondary descriptions, card copy, step text |
 | **eyebrow** | `font-body font-bold text-xs uppercase tracking-[0.14em]` | 12px | Section labels above every heading |
@@ -154,14 +154,14 @@ font-size: clamp(2rem, 6.4vw, 3.25rem);   /* about 32px to 52px */
 ```
 
 ### Other titles outside the scale
-- Larger: About `text-4xl md:text-5xl lg:text-6xl`, /solutions `text-4xl md:text-5xl`, solution heroes `text-[1.875rem] md:text-[2.625rem]` (30px rising to 42px), the 404 page `clamp(2rem, 5vw, 3.5rem)` and the error page `clamp(1.75rem, 4vw, 3rem)`.
-- Smaller, on dark or photo heroes: case studies `text-2xl` (`text-lg` below 768px), blog posts `text-2xl md:text-3xl` and author pages `text-3xl`.
+- Larger: About `text-4xl md:text-5xl lg:text-6xl`, /solutions `text-4xl md:text-5xl`, solution heroes `text-[1.875rem] md:text-[2.625rem]` (30px rising to 42px), project pages `text-[28px] md:text-4xl lg:text-[44px]` (28px, 36px from 768px and 44px from 1024px), the 404 page `clamp(2rem, 5vw, 3.5rem)` and the error page `clamp(1.75rem, 4vw, 3rem)`.
+- Smaller, on dark or photo heroes: blog posts `text-2xl md:text-3xl` and author pages `text-3xl`.
 
 ### Eyebrow colour rules
 - On light backgrounds: `text-pe-muted` (Cool Grey ink)
 - On dark backgrounds (`#0d1f22`, `#39575C`): `var(--color-on-dark-subtle)`
 - On solution pages: the vertical's ink on light surfaces, the accent itself on dark surfaces
-- On a dark gradient or a photo, measure the lightest part behind the text (axe can't): where `on-dark-subtle` or an accent falls under 4.5:1, step up to `on-dark-muted`. A card of text over a photo gets its own fill rather than relying on the photo: the solution-hero tool cards use 55% Night Teal (`bg-pe-nav-dark/55`). Since September 2026 this covers the case study hero's "Case study" label, the tool cards' eyebrows, hints and labels that still measured low, and the home accordion's collapsed labels, all `on-dark-muted`. Dusty Blue `#709DA9` passes as a label only on solid `#0d1f22` (5.7:1), not on the `#1a3a3e` end of the gradients (4.2:1).
+- On a dark gradient or a photo, measure the lightest part behind the text (axe can't): where `on-dark-subtle` or an accent falls under 4.5:1, step up to `on-dark-muted`. A card of text over a photo gets its own fill rather than relying on the photo: the solution-hero tool cards use 55% Night Teal (`bg-pe-nav-dark/55`). Since September 2026 this covers the project hero's line under the headline, the tool cards' eyebrows, hints and labels that still measured low, and the home accordion's collapsed labels, all `on-dark-muted`. Dusty Blue `#709DA9` passes as a label only on solid `#0d1f22` (5.7:1), not on the `#1a3a3e` end of the gradients (4.2:1).
 
 ### Button and CTA labels (added September 2026)
 - **Sentence case** for every button and link label: "Book a discovery meeting", not "Book a Discovery Meeting". Product and proper names keep their capitals (WeBuySolar, C&I).
@@ -184,7 +184,7 @@ font-size: clamp(2rem, 6.4vw, 3.25rem);   /* about 32px to 52px */
 - **Section vertical padding:** `py-16 md:py-24` (64px / 96px).
 - **Card padding:** `16px` inner body (`CardBody padding="sm"`), `24px` for content-heavy cards (`padding="lg"`).
 - **Grid gap:** `16px` cards, `24px` sections.
-- **Border radius:** `16px` cards (`rounded-2xl`, the featured project card included) and `9999px` for buttons, chips, pills, badges and the navbar (`rounded-full`). The `rounded-card`, `rounded-featured` and `rounded-nav` tokens in `globals.css` are unused.
+- **Border radius:** `16px` cards (`rounded-2xl`, the featured project card included) and `9999px` for buttons, chips, pills, badges and the navbar (`rounded-full`). The project page uses the `rounded-card` token (16px) for its results card, its facts panel and its hero photo on phones; the `rounded-featured` and `rounded-nav` tokens in `globals.css` are unused.
 
 ---
 
@@ -205,6 +205,7 @@ src/components/
 │   ├── buttonStyles.ts         // the button scale as class builders; no 'use client'
 │   ├── Card.tsx                // Card, CardImage, CardBody, CardFooter, CardArrow
 │   ├── Chip.tsx                // 36px pill: a toggle <button> or a link
+│   ├── CopyLinkButton.tsx      // "Copy link", with a field to copy from when copying fails
 │   ├── FeaturedArticleCard.tsx
 │   ├── FilterPills.tsx         // a scrolling strip of Chip toggles
 │   ├── FloatingOrbs.tsx
@@ -214,12 +215,12 @@ src/components/
 │   ├── MountWhenVisible.tsx    // mounts charts only as they near the viewport
 │   ├── NextSteps.tsx
 │   ├── ProgressDots.tsx
-│   ├── ProjectStatsTiles.tsx
 │   ├── RecaptchaNotice.tsx
 │   ├── RecaptchaScript.tsx
 │   ├── SectionCarousel.tsx     // section header plus a scroll row or a static grid
 │   ├── SendFailureNotice.tsx
-│   └── TextButton.tsx          // quiet text action with a 44px target ("Start over")
+│   ├── TextButton.tsx          // quiet text action with a 44px target ("Start over")
+│   └── TrackedButton.tsx       // a Button link that sends cta_click when clicked
 ├── layout/
 │   ├── Navbar.tsx              // solid white pill nav (see specs/03-NAVIGATION.md)
 │   ├── SiteShell.tsx           // skip link, Navbar, <main>, SiteFooter, MotionConfig
@@ -233,7 +234,6 @@ src/components/
 │   ├── FeaturedProjectCard.tsx
 │   ├── ProjectCard.tsx
 │   ├── ProjectsGrid.tsx
-│   ├── ProjectGallery.tsx
 │   ├── LatestPosts.tsx
 │   ├── RelatedArticles.tsx
 │   ├── SolutionHero.tsx
@@ -260,6 +260,16 @@ src/components/
 │   └── calculators/
 │       ├── CarbonRevenueEstimator.tsx
 │       └── FleetSavingsEstimator.tsx
+├── project/
+│   ├── ProjectBreadcrumb.tsx   // the breadcrumb row and Copy link
+│   ├── ProjectHero.tsx         // one photo and one H1 at every width
+│   ├── ProjectResults.tsx      // the results card: up to four figures
+│   ├── ProjectPhotos.tsx       // "The site in photos": the mosaic and the photo viewer
+│   ├── ProjectStory.tsx        // the lead paragraph and the chapters
+│   ├── ProjectFacts.tsx        // "Project facts": beside the story, compact, or full width
+│   ├── StickyWhenFits.tsx      // sticky only when its child fits in the window
+│   ├── ProjectNext.tsx         // the next project section, from selectRelated()
+│   └── ProjectBand.tsx         // the closing band
 ├── blog/
 │   ├── AuthorCard.tsx
 │   ├── BlogFilterPills.tsx
@@ -481,13 +491,13 @@ One rule in `src/app/globals.css` draws every focus ring: a 2px halo hugging the
 ## Shared Component Interfaces (Engineering Review April 2026)
 
 ### `StatsStrip.tsx`
-Removed in September 2026. Stats render through `CompanyStats` (home), `ProjectStatsTiles` (case studies), the `PageFooter` stats band and the blog `StatStrip` block.
+Removed in September 2026. Stats render through `CompanyStats` (home), the project page's results card and facts panel (`ProjectResults`, `ProjectFacts`), the `PageFooter` stats band and the blog `StatStrip` block.
 
 ### `CTABanner.tsx`
 Removed in September 2026. The dark CTA band is `PageFooter` (`ctaVariant?: 'stats' | 'centered' | 'deliverables'`), which defaults to the company-level "Book a discovery meeting" CTA from `src/config/ctas.ts`.
 
 ### `VerticalBadge.tsx`
-Removed in September 2026. Vertical badges are inline pills filled with `SOLUTION_META[vertical].accent` and lettered in `.accentText` (project cards, the case study hero, article cards).
+Removed in September 2026. Vertical badges are inline pills filled with `SOLUTION_META[vertical].accent` and lettered in `.accentText` (project cards, the project hero, article cards).
 
 ### `ProjectCard.tsx`
 ```typescript
@@ -498,12 +508,12 @@ interface ProjectCardProps {
   size?: 'default' | 'large';   // Roomier padding and type when only a few projects show
   headingLevel?: 2 | 3;         // 2 on /projects, straight under the H1; 3 under a section h2. Default: 3
 }
-// The card is always a link to its case study (/projects/{slug}). There is no drawer.
+// The card is always a link to its project page (/projects/{slug}). There is no drawer.
 ```
 
 ### `Testimonials.tsx`
 Removed in September 2026. The site has no testimonials section.
 
 ### Updated component map (authoritative)
-The component map under Component Rules above is the current one, checked against `src/components` on 2026-09-24; the `ui/` button primitives were added on 2026-09-25.
+The component map under Component Rules above is the current one, checked against `src/components` on 2026-09-24; the `ui/` button primitives were added on 2026-09-25, and the project page's parts (`project/`, `CopyLinkButton` and `TrackedButton`) on 2026-09-29.
 

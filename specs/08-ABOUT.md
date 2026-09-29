@@ -415,7 +415,7 @@ export const revalidate = 3600; // hourly safety net in case the Sanity webhook 
 | Section | Component |
 |---|---|
 | Hero | `src/app/about/page.tsx` (inline, not reused), with `src/components/ui/FloatingOrbs.tsx` |
-| ~~Stats strip~~ | ~~removed April 2026~~; `StatsStrip` was later deleted, and the case study uses `src/components/ui/ProjectStatsTiles.tsx` |
+| ~~Stats strip~~ | ~~removed April 2026~~; `StatsStrip` was later deleted, and the project page shows its figures in `src/components/project/ProjectResults.tsx` and `ProjectFacts.tsx` |
 | Story | `src/components/sections/AboutStory.tsx` |
 | Mission | `src/components/sections/AboutMission.tsx` |
 | Values | `src/components/sections/AboutValues.tsx` |
