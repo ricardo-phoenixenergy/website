@@ -272,6 +272,11 @@ describe('every query', () => {
     },
     { _id: 'energyPrices', _type: 'energyPrices', dieselPricePerL: 21.5 },
     project('a', { featured: true, showRandAmounts: false }),
+    // Shares project('a')'s vertical, and the same ASSET (via the default
+    // heroImage and gallery the project() helper gives every fixture), so
+    // PROJECT_BY_SLUG_QUERY's "related" is fed and a leak living only in that
+    // nested projection would show up in the check below.
+    project('c', { vertical: 'ci-solar-storage' }),
     project('b', { vertical: 'wheeling' }),
   ];
   const params = { slug: 'a', vertical: 'ci-solar-storage', tag: 'Wheeling', category: '', q: '', offset: 0, id: 'howItWorks.home' };
@@ -315,6 +320,15 @@ describe('every query', () => {
     for (const key of ['ci-solar-storage', 'wheeling', 'energy-optimisation', 'carbon-credits', 'webuysolar', 'ev-fleets']) {
       expect(heroes[key], key).not.toBeNull();
     }
+  });
+
+  it('feeds both the related and otherProjects lists so the leak check can see them', async () => {
+    // The generic null-or-empty guard below only looks at each query's
+    // top-level result, so a nested list such as this one can still go empty,
+    // unnoticed, even while PROJECT_BY_SLUG_QUERY itself returns an object.
+    const page = (await run(queries.PROJECT_BY_SLUG_QUERY, dataset, params)) as Row;
+    expect((page.related as Row[]).length, 'related').toBeGreaterThan(0);
+    expect((page.otherProjects as Row[]).length, 'otherProjects').toBeGreaterThan(0);
   });
 
   it.each(ALL_QUERIES)('%s returns no asset file name or metadata, and no withheld project field', async (_name, query) => {
