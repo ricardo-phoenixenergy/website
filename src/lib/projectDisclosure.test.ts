@@ -72,6 +72,36 @@ describe('isRandAmount', () => {
     expect(isRandAmount(null)).toBe(false);
     expect(isRandAmount(undefined)).toBe(false);
   });
+
+  it('spots a price in cents, however it is written: what the client pays, hidden the same as a rand amount', () => {
+    for (const text of [
+      '180c/kWh',
+      '180 c/kWh',
+      '95c per kWh',
+      '1.5c/kWh',
+      'Tariff (c/kWh)',
+      'Energy charge (c/kWh)',
+      '95 cents a unit',
+      '12 cents',
+    ]) {
+      expect(isRandAmount(text), text).toBe(true);
+    }
+  });
+
+  it('leaves temperatures, ratings, classes and other things spelled with "c" alone', () => {
+    for (const text of [
+      '25°C',
+      '5C rating',
+      'Class 3c',
+      'c-Si panels',
+      'CO2 saved',
+      '3 circuits',
+      'IEC 61215',
+      '80 kWh',
+    ]) {
+      expect(isRandAmount(text), text).toBe(false);
+    }
+  });
 });
 
 describe('withoutRandAmounts', () => {

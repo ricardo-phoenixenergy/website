@@ -1,12 +1,12 @@
 // src/lib/projectDisclosure.ts
 // What a project may show wherever it appears
 // (docs/superpowers/specs/2026-09-29-project-page-design.md, "Consent and rand amounts").
-// Clients may not want their costs published, so no rand amount shows until the
-// CMS records that the client agreed. That switch ("Show rand amounts") comes
-// with the step 2 CMS fields; until then it counts as off. The project queries
-// already leave out the client's name and the project value (src/lib/queries.ts).
-// This drops any results figure or System row that looks like a rand amount,
-// label and value together.
+// Clients may not want their costs published, so no rand amount, or price in
+// cents, shows until the CMS records that the client agreed. That switch
+// ("Show rand amounts") comes with the step 2 CMS fields; until then it counts
+// as off. The project queries already leave out the client's name and the
+// project value (src/lib/queries.ts). This drops any results figure or System
+// row that looks like a rand amount or a price in cents, label and value together.
 import type { ProjectMetric } from '@/types/sanity';
 
 // An R straight before a number, with or without spaces ("R1.5M", "R 450 000",
@@ -29,10 +29,23 @@ const R_AFTER_NUMBER = /\d\s*(?:[kKmM]|[bB][nN])?\s*R(?![A-Za-z&])/;
 const ZAR = /\bZAR(?![A-Za-z])/i;
 // The currency's name: "1.5 million rand", "2 million Rands".
 const RAND_WORD = /\brands?\b/i;
+// Cents per kWh, straight after a number, with or without a space, written as
+// a slash or "per": "180c/kWh", "180 c/kWh", "95c per kWh", "1.5c/kWh". A
+// capital "C" is Celsius or a battery C-rating ("25°C", "5C rating"), not
+// cents, and "Class 3c" and "c-Si" have no "/kWh" or "per kWh" to follow, so
+// the lower-case "c" alone never counts.
+const CENTS_PER_UNIT = /\d\s*c\s*(?:\/\s*kWh|per\s+kWh)/;
+// Cents as a label's unit, no number attached: "Tariff (c/kWh)", "Energy charge (c/kWh)".
+const CENTS_UNIT_IN_BRACKETS = /\(c\s*\/\s*kWh\)/;
+// The word "cents" spelled out, after a number: "95 cents a unit", "12 cents".
+const CENTS_WORD = /\d\s*cents\b/i;
 
-const RAND_PATTERNS = [R_BEFORE_NUMBER, R_UNIT_IN_BRACKETS, R_PER_UNIT, R_THOUSANDS, R_AFTER_NUMBER, ZAR, RAND_WORD];
+const RAND_PATTERNS = [
+  R_BEFORE_NUMBER, R_UNIT_IN_BRACKETS, R_PER_UNIT, R_THOUSANDS, R_AFTER_NUMBER, ZAR, RAND_WORD,
+  CENTS_PER_UNIT, CENTS_UNIT_IN_BRACKETS, CENTS_WORD,
+];
 
-/** True when the text looks like a rand amount, or names rands as its unit. */
+/** True when the text looks like a rand amount, names rands as its unit, or is a price in cents (what the client pays, such as a tariff in c/kWh). */
 export function isRandAmount(text: string | null | undefined): boolean {
   if (!text) return false;
   return RAND_PATTERNS.some((pattern) => pattern.test(text));
