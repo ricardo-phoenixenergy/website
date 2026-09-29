@@ -9,6 +9,7 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
-    include: ['src/**/*.test.ts'],
+    // sanity/schemaTypes holds the Studio's schema and the rules behind its warnings, tested too.
+    include: ['src/**/*.test.ts', 'sanity/**/*.test.ts'],
   },
 });
