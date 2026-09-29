@@ -7,20 +7,41 @@ const IMAGE_ASSET_FIELDS = `"asset": asset->{ _id, url, "metadata": metadata { l
 
 const IMAGE_FIELDS = `{ ${IMAGE_ASSET_FIELDS}, alt, hotspot, crop }`;
 
-// Every project query also leaves out the client's name and the project value.
-// They may show only with the client's consent, which the CMS can't record yet
-// (docs/superpowers/specs/2026-09-29-project-page-design.md). Read projects
-// through src/lib/projectData.ts, which also drops rand amounts.
+// Gallery photos also carry their caption, which the photo viewer shows.
+const GALLERY_IMAGE_FIELDS = `{ ${IMAGE_ASSET_FIELDS}, alt, caption, hotspot, crop }`;
+
+// The consent switches apply here, so nothing withheld leaves the CMS
+// (docs/superpowers/specs/2026-09-29-project-page-design.md, "Consent and rand
+// amounts"). The client's name comes only with "Show client name" on and the
+// date of the client's written consent set, and the project value only with
+// "Show rand amounts" on. A switch that is off leaves its field out entirely,
+// with a conditional projection rather than a null, so not even the field's
+// name reaches the page data. showRandAmounts itself comes with every project,
+// because discloseProject() needs it to decide whether figures in rands may
+// show. Read projects through src/lib/projectData.ts, which applies that rule.
+const CLIENT_NAME_WITH_CONSENT = `showClientName == true && defined(clientConsentOn) => { clientName }`;
+const PROJECT_VALUE_WITH_CONSENT = `showRandAmounts == true => { projectValue }`;
+
+// "Newest" is the commissioning date, falling back to the date a project was
+// added to the CMS. commissionedOn is a date ("2026-06-12") and _createdAt a
+// datetime ("2026-01-10T08:00:00Z"): dateTime() of a bare date is null, and a
+// string never compares with a datetime, so the date gets midnight UTC and both
+// are compared as datetimes. A date that can't be read falls back to _createdAt.
+// The free-text completion date is never sorted on: "Q3 2024" sorts above "Q2 2026".
+const NEWEST_FIRST = `coalesce(dateTime(commissionedOn + "T00:00:00Z"), dateTime(_createdAt)) desc`;
+
 const PROJECT_CARD_FIELDS = `
   _id,
   title,
   "slug": { "current": slug.current },
   vertical,
   location,
+  ${CLIENT_NAME_WITH_CONSENT},
+  "showRandAmounts": showRandAmounts == true,
   "heroImage": heroImage ${IMAGE_FIELDS},
   status,
   "metrics": metrics[]{ label, value },
-  "results": results[]{ label, value },
+  "results": results[]{ label, value, note },
   resultsBasis
 `;
 
@@ -39,11 +60,9 @@ const BLOG_CARD_FIELDS = `
 `;
 
 /* ─── Projects ────────────────────────────────────────────────────────────── */
-// "Newest" is the date a project was added to the CMS until projects carry a
-// commissioning date (step 2): the free-text completion date can't be sorted.
 
 export const ALL_PROJECTS_QUERY = `
-  *[_type == "project" && defined(slug.current)] | order(_createdAt desc) {
+  *[_type == "project" && defined(slug.current)] | order(${NEWEST_FIRST}) {
     ${PROJECT_CARD_FIELDS},
     featured,
     featuredOrder,
@@ -51,15 +70,19 @@ export const ALL_PROJECTS_QUERY = `
   }
 `;
 
+// The featured order, as /projects has it (src/lib/projectOrder.ts): numbered
+// projects first, lowest number first, then those without a number, newest
+// first. coalesce(featuredOrder, 99) would put an unnumbered project before one
+// numbered 100 on home but after it on /projects.
 export const FEATURED_PROJECTS_QUERY = `
   *[_type == "project" && featured == true && defined(slug.current)]
-  | order(coalesce(featuredOrder, 99) asc, _createdAt desc) {
+  | order(defined(featuredOrder) desc, featuredOrder asc, ${NEWEST_FIRST}) {
     ${PROJECT_CARD_FIELDS}
   }
 `;
 
 export const PROJECTS_BY_VERTICAL_QUERY = `
-  *[_type == "project" && vertical == $vertical && defined(slug.current)] | order(_createdAt desc) [0..5] {
+  *[_type == "project" && vertical == $vertical && defined(slug.current)] | order(${NEWEST_FIRST}) [0..5] {
     ${PROJECT_CARD_FIELDS}
   }
 `;
@@ -69,20 +92,33 @@ export const PROJECT_BY_SLUG_QUERY = `
     ${PROJECT_CARD_FIELDS},
     _createdAt,
     _updatedAt,
+    headline,
+    siteType,
     completionDate,
-    "gallery": gallery[] ${IMAGE_FIELDS},
+    commissionedOn,
+    financing,
+    ${PROJECT_VALUE_WITH_CONSENT},
+    "gallery": gallery[] ${GALLERY_IMAGE_FIELDS},
     summary,
     challenge[] { ... },
+    challengeHeadline,
     solution[] { ... },
+    solutionHeadline,
     outcome[] { ... },
+    outcomeHeadline,
     resultsAsOf,
     resultsAssumptions,
+    "resultsInputs": resultsInputs[]{ label, value },
+    "equipment": equipment[]{ component, brand, model, quantity },
+    installationWeeks,
+    approvals,
+    seoDescription,
     "related": *[
       _type == "project" &&
       vertical == ^.vertical &&
       slug.current != $slug &&
       defined(slug.current)
-    ] | order(_createdAt desc) [0..2] {
+    ] | order(${NEWEST_FIRST}) [0..2] {
       ${PROJECT_CARD_FIELDS}
     },
     "otherProjects": *[
@@ -90,7 +126,7 @@ export const PROJECT_BY_SLUG_QUERY = `
       vertical != ^.vertical &&
       slug.current != $slug &&
       defined(slug.current)
-    ] | order(_createdAt desc) [0..1] {
+    ] | order(${NEWEST_FIRST}) [0..1] {
       ${PROJECT_CARD_FIELDS}
     }
   }
