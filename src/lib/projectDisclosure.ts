@@ -12,17 +12,30 @@ import type { ProjectMetric } from '@/types/sanity';
 // An R straight before a number, with or without spaces ("R1.5M", "R 450 000",
 // "R7/kWh"). A letter before the R means it ends a word ("PR2"), so that doesn't count.
 const R_BEFORE_NUMBER = /(^|[^A-Za-z])R\s*\d/;
-// "(R)" as a unit, as in "Annual savings (R)".
-const R_UNIT = /\(R\)/;
+// R as the unit in brackets: "(R)", "(R/kWh)", "(R'000)", "(R m)", "(R, excl. VAT)",
+// and the short forms "(Rm)", "(Rbn)" and "(Rk)". Only a space, "/", an apostrophe,
+// a comma or the closing bracket may follow, so "(R&D)" doesn't count.
+const R_UNIT_IN_BRACKETS = /\(R(?:k|m|bn)?[\s/'\u2019,)]/;
+// R per unit: "R/kWh", "2.10 R/kWh", "R / year". A letter before the R means it ends
+// a word, so that doesn't count.
+const R_PER_UNIT = /(^|[^A-Za-z])R\s*\/\s*[A-Za-z]/;
+// Thousands of rands, "R'000", with a straight or a curly apostrophe.
+const R_THOUSANDS = /(^|[^A-Za-z])R['\u2019]\d/;
+// An R straight after a number, or after k, m or bn: "450 000 R", "1.2m R", "1.5 bn R".
+// A letter or "&" after the R means it starts a word ("3 Rooftops", "12 R&D projects"),
+// so that doesn't count.
+const R_AFTER_NUMBER = /\d\s*(?:[kKmM]|[bB][nN])?\s*R(?![A-Za-z&])/;
 // "ZAR" on its own or straight before a number ("ZAR1.5m").
 const ZAR = /\bZAR(?![A-Za-z])/i;
 // The currency's name: "1.5 million rand", "2 million Rands".
 const RAND_WORD = /\brands?\b/i;
 
+const RAND_PATTERNS = [R_BEFORE_NUMBER, R_UNIT_IN_BRACKETS, R_PER_UNIT, R_THOUSANDS, R_AFTER_NUMBER, ZAR, RAND_WORD];
+
 /** True when the text looks like a rand amount, or names rands as its unit. */
 export function isRandAmount(text: string | null | undefined): boolean {
   if (!text) return false;
-  return R_BEFORE_NUMBER.test(text) || R_UNIT.test(text) || ZAR.test(text) || RAND_WORD.test(text);
+  return RAND_PATTERNS.some((pattern) => pattern.test(text));
 }
 
 /** The rows that may show: none empty, and none whose label or value looks like a rand amount. */

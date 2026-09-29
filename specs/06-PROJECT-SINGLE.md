@@ -39,7 +39,7 @@ The page file only reads the project and composes the parts in `src/components/p
   - `getProjectBySlug`, cached per request with React `cache`, so the page and its metadata share one read;
   - `getAllProjects`, `getFeaturedProjects`, `getProjectsByVertical`, `getProjectSlugs` and `getProjectSitemapEntries`.
 - **What the queries leave out:** the project queries in `src/lib/queries.ts` leave out the client's name and the project value, which may show only with the client's consent. The CMS can't record that consent until step 2. Project images select only the URL, the LQIP, the dimensions, the asset id, the alt text, and the hotspot and crop, never the whole asset document, whose file name can name the client.
-- **Rand amounts:** `discloseProject()` (`src/lib/projectDisclosure.ts`) drops any results figure or System row that looks like a rand amount, label and value together: an R before a number, "(R)", "ZAR" or the word "rand".
+- **Rand amounts:** `discloseProject()` (`src/lib/projectDisclosure.ts`) drops any results figure or System row that looks like a rand amount, label and value together: an R before a number, R written as a unit ("(R)", "(R/kWh)", "(R'000)", "2.10 R/kWh", "450 000 R"), "ZAR" or the word "rand".
 - **Prose:** the summary and the story are prose, and aren't filtered.
 - **Order:** newest first, meaning the date a project was added to the CMS (`_createdAt`) until step 2 adds a commissioning date. `/projects` puts featured projects first, in their featured order.
 
