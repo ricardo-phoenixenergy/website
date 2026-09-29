@@ -1,4 +1,5 @@
 import type { SolutionVertical } from './solutions';
+import type { EquipmentComponent, FinancingMethod } from '@/lib/projectOptions';
 
 /* ─── Shared primitives ─────────────────────────────────────────────────────── */
 
@@ -19,6 +20,8 @@ export interface SanityImage {
   _type: 'image';
   asset: SanityImageAsset;
   alt?: string;
+  /** A gallery photo's caption, shown under it in the photo viewer. */
+  caption?: string;
   hotspot?: { x: number; y: number; height: number; width: number };
   crop?: { top: number; bottom: number; left: number; right: number };
 }
@@ -39,9 +42,9 @@ export type ResultsBasis = 'projected' | 'measured';
 export type ProjectStatus = 'completed' | 'in-progress' | 'planned';
 
 /**
- * A project as the cards show it. There's no client name or project value: the
- * queries leave them out until the CMS can record the client's consent
- * (src/lib/projectDisclosure.ts).
+ * A project as the cards show it. The queries (src/lib/queries.ts) include the
+ * client's name only while "Show client name" is on with a consent date set,
+ * and never the project value, so whatever a card holds may show.
  */
 export interface ProjectCard {
   _id: string;
@@ -49,12 +52,16 @@ export interface ProjectCard {
   slug: SanitySlug;
   vertical: SolutionVertical;
   location?: string;
+  /** Present only with the client's recorded consent. */
+  clientName?: string;
+  /** "Show rand amounts": with it off, discloseProject() drops every rand amount (src/lib/projectDisclosure.ts). */
+  showRandAmounts?: boolean;
   heroImage?: SanityImage;
   status?: ProjectStatus;
-  /** System facts (kWp, kWh, inverter), without rand amounts. */
+  /** System facts (kWp, kWh, inverter), without rand amounts unless the switch is on. */
   metrics?: ProjectMetric[];
-  /** Outcomes (payback, bill reduction), without rand amounts; the first two lead the card. */
-  results?: ProjectMetric[];
+  /** Outcomes (payback, bill reduction), without rand amounts unless the switch is on; the first two lead the card. */
+  results?: ProjectResult[];
   /** Projected (financial model) unless an editor marks the results measured. */
   resultsBasis?: ResultsBasis;
 }
@@ -62,6 +69,20 @@ export interface ProjectCard {
 export interface ProjectMetric {
   label: string;
   value: string;
+}
+
+/** A results figure, with an optional note on its period and baseline. */
+export interface ProjectResult extends ProjectMetric {
+  note?: string;
+}
+
+/** One main component, as installed. */
+export interface ProjectEquipment {
+  component: EquipmentComponent;
+  brand: string;
+  model?: string;
+  /** A whole number, at least 1. */
+  quantity?: number;
 }
 
 /** A project on /projects. */
@@ -77,17 +98,38 @@ export interface Project extends ProjectCard {
   _createdAt: string;
   /** Its last change; the Article's dateModified and the sitemap's lastModified. */
   _updatedAt: string;
-  /** Free text, for example "Q2 2026": the completion date, or the target of a planned or in-progress project. */
+  /** The page heading (the H1, page title and sharing title); the title when empty. */
+  headline?: string;
+  /** What the site is, for example "Logistics warehouse". */
+  siteType?: string;
+  /** Free text, for example "Q3 2027": the target of a planned or in-progress project, or a completed one's date until commissionedOn is set. */
   completionDate?: string;
+  /** ISO date (YYYY-MM-DD) of commissioning: shown as the month and year, and the order newest first. */
+  commissionedOn?: string;
+  financing?: FinancingMethod[];
+  /** Present only while "Show rand amounts" is on. */
+  projectValue?: string;
   gallery?: SanityImage[];
   summary?: string;
   challenge?: PortableTextBlock[];
+  challengeHeadline?: string;
   solution?: PortableTextBlock[];
+  solutionHeadline?: string;
   outcome?: PortableTextBlock[];
+  outcomeHeadline?: string;
   /** ISO date (YYYY-MM-DD) of the model or the end of the measured period. */
   resultsAsOf?: string;
   /** Replaces the default note under the results. */
   resultsAssumptions?: string;
+  /** "How we calculated this": the inputs behind the figures, without rand amounts unless the switch is on. */
+  resultsInputs?: ProjectMetric[];
+  equipment?: ProjectEquipment[];
+  /** Weeks from starting on site to commissioning: a whole number, 1 to 104. */
+  installationWeeks?: number;
+  /** Each approval or certificate, one per line. */
+  approvals?: string[];
+  /** The meta description; the summary when empty. */
+  seoDescription?: string;
   /** Other projects in the same service, newest first. */
   related?: ProjectCard[];
   /** Up to two from other services, shown only when `related` is empty. */

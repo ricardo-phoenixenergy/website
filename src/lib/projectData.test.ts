@@ -87,3 +87,28 @@ describe('slugs and sitemap entries', () => {
     expect(await getProjectSitemapEntries()).toEqual([{ slug: 'a', updatedAt: '2026-09-20T10:00:00Z' }]);
   });
 });
+
+describe('the "Show rand amounts" switch', () => {
+  it('lets a project with the switch on show its rand amounts, and its inputs too', async () => {
+    const inputs = [{ label: 'Tariff', value: '180c/kWh' }];
+    fetchMock.mockResolvedValueOnce({ ...card('a', { showRandAmounts: true }), resultsInputs: inputs, related: [card('b')], otherProjects: [] });
+    const project = await getProjectBySlug('a');
+    expect(project?.results).toEqual([RAND, KEEP]);
+    expect(project?.resultsInputs).toEqual(inputs);
+    // Each project follows its own switch: the related card's is off.
+    expect(project?.related?.[0].results).toEqual([KEEP]);
+  });
+
+  it('drops rand amounts from the calculation inputs while the switch is off', async () => {
+    fetchMock.mockResolvedValueOnce({ ...card('a'), resultsInputs: [{ label: 'Tariff', value: '180c/kWh' }, { label: 'Tariff escalation', value: '8% a year' }] });
+    expect((await getProjectBySlug('a'))?.resultsInputs).toEqual([{ label: 'Tariff escalation', value: '8% a year' }]);
+  });
+
+  it("applies each card's own switch on /projects, on home and on the solution pages", async () => {
+    const cards = [card('on', { showRandAmounts: true }), card('off')];
+    fetchMock.mockResolvedValueOnce(cards).mockResolvedValueOnce(cards).mockResolvedValueOnce(cards);
+    for (const list of [await getAllProjects(), await getFeaturedProjects(), await getProjectsByVertical('ci-solar-storage')]) {
+      expect(list.map((p) => [p._id, p.results?.length])).toEqual([['on', 2], ['off', 1]]);
+    }
+  });
+});

@@ -2,12 +2,14 @@
 // What a project may show wherever it appears
 // (docs/superpowers/specs/2026-09-29-project-page-design.md, "Consent and rand amounts").
 // Clients may not want their costs published, so no rand amount, or price in
-// cents, shows until the CMS records that the client agreed. That switch
-// ("Show rand amounts") comes with the step 2 CMS fields; until then it counts
-// as off. The project queries already leave out the client's name and the
-// project value (src/lib/queries.ts). This drops any results figure or System
-// row that looks like a rand amount or a price in cents, label and value together.
-import type { ProjectMetric } from '@/types/sanity';
+// cents, shows unless "Show rand amounts" records that the client agreed. The
+// project queries leave out the client's name and the project value while
+// their switches are off (src/lib/queries.ts). While "Show rand amounts" is
+// off, discloseProject() drops any results figure, System row or calculation
+// input that looks like a rand amount or a price in cents, whole. The Studio's
+// warnings use isRandAmount() too (sanity/schemaTypes/projectRules.ts), so this
+// module keeps to type-only imports.
+import type { ProjectMetric, ProjectResult } from '@/types/sanity';
 
 // An R straight before a number, with or without spaces ("R1.5M", "R 450 000",
 // "R7/kWh"). A letter before the R means it ends a word ("PR2"), so that doesn't count.
@@ -43,10 +45,14 @@ const CENTS_UNIT_IN_BRACKETS = /\(c\s*\/\s*kWh\)/;
 const CENTS_PER_UNIT_LABEL = /(^|[^A-Za-z])c\s*\/\s*kWh/;
 // The word "cents" spelled out, after a number: "95 cents a unit", "12 cents".
 const CENTS_WORD = /\d\s*cents\b/i;
+// R or cents written out as "per" a unit, with no number and no slash:
+// "R per kWh", "Rate: c per kWh". A letter before the R or the c means it ends
+// a word ("Solar per kWh"), and a capital C is never cents, so neither counts.
+const PER_UNIT_WORDS = /(^|[^A-Za-z])[Rc]\s+per\s+kWh/;
 
 const RAND_PATTERNS = [
   R_BEFORE_NUMBER, R_UNIT_IN_BRACKETS, R_PER_UNIT, R_THOUSANDS, R_AFTER_NUMBER, ZAR, RAND_WORD,
-  CENTS_PER_UNIT, CENTS_UNIT_IN_BRACKETS, CENTS_PER_UNIT_LABEL, CENTS_WORD,
+  CENTS_PER_UNIT, CENTS_UNIT_IN_BRACKETS, CENTS_PER_UNIT_LABEL, CENTS_WORD, PER_UNIT_WORDS,
 ];
 
 /** True when the text looks like a rand amount, names rands as its unit, or is a price in cents (what the client pays, such as a tariff in c/kWh). */
@@ -55,18 +61,43 @@ export function isRandAmount(text: string | null | undefined): boolean {
   return RAND_PATTERNS.some((pattern) => pattern.test(text));
 }
 
-/** The rows that may show: none empty, and none whose label or value looks like a rand amount. */
-export function withoutRandAmounts(rows: readonly ProjectMetric[] | null | undefined): ProjectMetric[] {
-  return (rows ?? []).filter(
-    (row) =>
-      Boolean(row?.label?.trim() && row?.value?.trim()) && !isRandAmount(row.label) && !isRandAmount(row.value),
-  );
+type Row = ProjectMetric & { note?: string | null };
+
+/** The rows with both a label and a value. GROQ gives null for a field that isn't set. */
+export function completeRows<R extends Row>(rows: readonly R[] | null | undefined): R[] {
+  return (rows ?? []).filter((row) => Boolean(row?.label?.trim() && row?.value?.trim()));
 }
 
-type WithFigures = { results?: ProjectMetric[] | null; metrics?: ProjectMetric[] | null };
+/**
+ * The rows that may show while "Show rand amounts" is off: complete ones whose
+ * label, value and note (a results figure's) don't look like a rand amount. A
+ * row is dropped whole, so a label never shows without its value.
+ */
+export function withoutRandAmounts<R extends Row>(rows: readonly R[] | null | undefined): R[] {
+  return completeRows(rows).filter((row) => !isRandAmount(row.label) && !isRandAmount(row.value) && !isRandAmount(row.note));
+}
 
-/** A project, or a card, with rand amounts cleared from its results and System rows. */
+type WithFigures = {
+  showRandAmounts?: boolean | null;
+  results?: ProjectResult[] | null;
+  metrics?: ProjectMetric[] | null;
+  resultsInputs?: ProjectMetric[] | null;
+};
+
+/**
+ * A project, or a card, as it may show. With "Show rand amounts" on, its figures
+ * show as written, empty rows aside. With it off, or unset, any results figure,
+ * System row or calculation input that looks like a rand amount is dropped. A
+ * card has no calculation inputs and gets none.
+ */
 export function discloseProject<T extends WithFigures>(item: T): T {
-  // Only the two lists change, and they keep their element type, so this is still a T.
-  return { ...item, results: withoutRandAmounts(item.results), metrics: withoutRandAmounts(item.metrics) } as T;
+  const randsAllowed = item.showRandAmounts === true;
+  const keep = <R extends Row>(rows: readonly R[] | null | undefined): R[] => (randsAllowed ? completeRows(rows) : withoutRandAmounts(rows));
+  // Only the lists change, and they keep their element types, so this is still a T.
+  return {
+    ...item,
+    results: keep(item.results),
+    metrics: keep(item.metrics),
+    ...('resultsInputs' in item ? { resultsInputs: keep(item.resultsInputs) } : {}),
+  } as T;
 }
