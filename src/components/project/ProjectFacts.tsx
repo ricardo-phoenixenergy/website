@@ -33,7 +33,7 @@ function Rows({ rows }: { rows: FactRow[] }) {
       {rows.map((row) => (
         <div key={row.key} className="flex items-baseline justify-between gap-3.5 border-b border-pe-border py-2 last:border-b-0">
           <dt className="font-body text-sm text-pe-muted">{row.label}</dt>
-          <dd className="text-right font-body text-sm text-pe-text">
+          <dd className="min-w-0 break-words text-right font-body text-sm text-pe-text">
             {row.href ? (
               <Link href={row.href} className="font-semibold text-pe-primary underline-offset-2 hover:underline">
                 {row.value}
