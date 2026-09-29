@@ -10,14 +10,17 @@ const PROJECT_QUERIES = {
   PROJECT_SITEMAP_QUERY: queries.PROJECT_SITEMAP_QUERY,
 };
 
+// Every export in queries.ts is a GROQ string, so this also catches a future
+// query that forgets to trim its asset fields. (Each export's inferred type is
+// its own string literal, not `string`, so a type predicate can't narrow to
+// [string, string]; the cast below just widens it back.)
+const ALL_QUERIES = Object.entries(queries).filter(
+  (entry) => typeof entry[1] === 'string',
+) as [string, string][];
+
 describe('project queries', () => {
   it.each(Object.entries(PROJECT_QUERIES))('%s leaves out the client, the project value and retired fields', (_name, query) => {
     expect(query).not.toMatch(/clientName|projectValue|systemSize|caseStudyReady/);
-  });
-
-  it.each(Object.entries(PROJECT_QUERIES))('%s never expands a whole asset document', (_name, query) => {
-    // Each `asset->` is followed by a projection, so file names and other asset metadata stay out.
-    expect(query).not.toMatch(/asset->(?!\s*\{)/);
   });
 
   it('lists the newest first, and never sorts on the free-text completion date', () => {
@@ -31,5 +34,15 @@ describe('project queries', () => {
   it('keeps no case-study rule or unused project query', () => {
     expect('CASE_STUDY_READY' in queries).toBe(false);
     expect('FLAGSHIP_BY_VERTICAL_QUERY' in queries).toBe(false);
+  });
+});
+
+describe('every query', () => {
+  it.each(ALL_QUERIES)('%s never expands a whole asset document', (_name, query) => {
+    // Safe: `asset->{ ... }` (a projection) and `asset->field` (one field, as
+    // HERO_IMAGES_QUERY reads `asset->url`). Unsafe: a bare `asset->` used as
+    // the whole value, which dereferences the entire asset document, file name
+    // and all.
+    expect(query).not.toMatch(/asset->(?!\s*[{\w])/);
   });
 });

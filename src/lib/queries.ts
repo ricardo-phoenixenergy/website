@@ -1,13 +1,14 @@
 /* ─── Shared field fragments ──────────────────────────────────────────────── */
 
-const IMAGE_FIELDS = `{ asset->, alt, hotspot, crop }`;
+// The asset fields every image needs to draw and to blur up while it loads:
+// never the whole asset document, whose file name can name a client or a
+// partner ("WEG-logo.png", "Standard_Bank_Logo.svg").
+const IMAGE_ASSET_FIELDS = `"asset": asset->{ _id, url, "metadata": metadata { lqip, dimensions } }`;
 
-// Project images carry only what the pages use, never the whole asset document,
-// whose file name can name the client.
-const PROJECT_IMAGE_FIELDS = `{ "asset": asset->{ _id, url, "metadata": metadata { lqip, dimensions } }, alt, hotspot, crop }`;
+const IMAGE_FIELDS = `{ ${IMAGE_ASSET_FIELDS}, alt, hotspot, crop }`;
 
-// Every project query leaves out the client's name and the project value. They
-// may show only with the client's consent, which the CMS can't record yet
+// Every project query also leaves out the client's name and the project value.
+// They may show only with the client's consent, which the CMS can't record yet
 // (docs/superpowers/specs/2026-09-29-project-page-design.md). Read projects
 // through src/lib/projectData.ts, which also drops rand amounts.
 const PROJECT_CARD_FIELDS = `
@@ -16,7 +17,7 @@ const PROJECT_CARD_FIELDS = `
   "slug": { "current": slug.current },
   vertical,
   location,
-  "heroImage": heroImage ${PROJECT_IMAGE_FIELDS},
+  "heroImage": heroImage ${IMAGE_FIELDS},
   status,
   "metrics": metrics[]{ label, value },
   "results": results[]{ label, value },
@@ -69,7 +70,7 @@ export const PROJECT_BY_SLUG_QUERY = `
     _createdAt,
     _updatedAt,
     completionDate,
-    "gallery": gallery[] ${PROJECT_IMAGE_FIELDS},
+    "gallery": gallery[] ${IMAGE_FIELDS},
     summary,
     challenge[] { ... },
     solution[] { ... },
@@ -147,7 +148,7 @@ export const POST_BY_SLUG_QUERY = `
     "heroImage": heroImage ${IMAGE_FIELDS},
     body[] {
       ...,
-      _type == "image" => { ..., asset-> }
+      _type == "image" => { ..., ${IMAGE_ASSET_FIELDS} }
     },
     seoTitle,
     seoDescription,
@@ -192,7 +193,7 @@ export const AUTHOR_BY_SLUG_QUERY = `
     role,
     bio,
     linkedin,
-    "photo": photo { asset->, alt, hotspot, crop }
+    "photo": photo ${IMAGE_FIELDS}
   }
 `;
 
@@ -208,8 +209,8 @@ export const POSTS_BY_AUTHOR_QUERY = `
     readTime,
     publishedAt,
     featured,
-    "heroImage": heroImage { asset->, alt, hotspot, crop },
-    "author": author->{ name, "slug": { "current": slug.current }, "photo": photo { asset->, alt, hotspot, crop } }
+    "heroImage": heroImage ${IMAGE_FIELDS},
+    "author": author->{ name, "slug": { "current": slug.current }, "photo": photo ${IMAGE_FIELDS} }
   }
 `;
 
@@ -228,7 +229,7 @@ export const TEAM_MEMBERS_QUERY = `
     _id,
     name,
     "slug": { "current": slug.current },
-    "photo": photo { asset->, alt, hotspot, crop },
+    "photo": photo ${IMAGE_FIELDS},
     role,
     category,
     archetype,
@@ -272,7 +273,7 @@ export const PARTNERS_QUERY = `
     website,
     order,
     active,
-    "logo": logo { asset->, alt }
+    "logo": logo { ${IMAGE_ASSET_FIELDS}, alt }
   }
 `;
 
