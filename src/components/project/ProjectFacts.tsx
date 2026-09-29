@@ -109,7 +109,7 @@ export function ProjectFacts({ groups, variant, cta, ctaLocation, className }: P
         <h2 id={headingId} className="font-display text-lg font-extrabold text-pe-text">
           Project facts
         </h2>
-        <div className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-x-8 gap-y-4">
+        <div className="mt-3 grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-x-8 gap-y-4">
           {groups.map((group) => (
             <Group key={group.key} group={group} />
           ))}

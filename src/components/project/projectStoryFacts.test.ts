@@ -46,10 +46,11 @@ describe('ProjectFacts', () => {
     expect(closed).toContain('Service');
   });
 
-  it('columns: the groups side by side, with the booking row and its sentence', () => {
+  it('columns: the groups side by side across the full width, with the booking row and its sentence', () => {
     const markup = facts('columns');
     expect(markup).toMatch(/<h2 id="project-facts-columns"/);
-    expect(markup).toContain('grid-cols-[repeat(auto-fill,minmax(240px,1fr))]');
+    // auto-fit, not auto-fill: two groups share the width instead of leaving empty tracks beside them.
+    expect(markup).toContain('grid-cols-[repeat(auto-fit,minmax(240px,1fr))]');
     expect(markup).toContain(`Planning something similar? ${REPLY_PROMISE.sentence}`);
   });
 });

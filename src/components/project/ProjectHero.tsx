@@ -24,9 +24,10 @@ interface ProjectHeroProps {
 
 const FALLBACK_BLUR = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
-// Clear at the top to Night Teal at 92% at the foot, so white text passes 4.5:1 over any photo.
+// Clear at the top to Night Teal at 92% at the foot. The 66% middle stop keeps the line under
+// the headline (on-dark-muted) at 4.5:1 or more over both live projects' photos from 768px.
 const SCRIM =
-  'linear-gradient(180deg, color-mix(in srgb, var(--color-pe-nav-dark) 5%, transparent) 20%, color-mix(in srgb, var(--color-pe-nav-dark) 55%, transparent) 58%, color-mix(in srgb, var(--color-pe-nav-dark) 92%, transparent) 100%)';
+  'linear-gradient(180deg, color-mix(in srgb, var(--color-pe-nav-dark) 5%, transparent) 20%, color-mix(in srgb, var(--color-pe-nav-dark) 66%, transparent) 58%, color-mix(in srgb, var(--color-pe-nav-dark) 92%, transparent) 100%)';
 
 const HERO_SIZES = '(max-width: 639px) calc(100vw - 32px), (max-width: 767px) calc(100vw - 48px), 100vw';
 
