@@ -9,7 +9,7 @@ vi.mock('next/image', async () => {
   return { default: ({ alt, src }: { alt?: string; src?: string }) => h('img', { alt, src }) };
 });
 
-import { ProjectPhotos } from './ProjectPhotos';
+import { ProjectPhotos, SWIPE_AREA_CLASS } from './ProjectPhotos';
 
 const html = (el: Parameters<typeof renderToStaticMarkup>[0]) => renderToStaticMarkup(el);
 const photo = (n: number, alt?: string): SanityImage => ({
@@ -42,5 +42,13 @@ describe('ProjectPhotos', () => {
 
   it('renders nothing without photos', () => {
     expect(html(createElement(ProjectPhotos, { photos: [] }))).toBe('');
+  });
+
+  it("lets the viewer's swipe area pan up and down and pinch-zoom", () => {
+    // The static markup has no viewer until a tile is clicked, so the swipe area takes
+    // its classes from SWIPE_AREA_CLASS. touch-pan-y alone would turn pinch-zoom off.
+    const classes = SWIPE_AREA_CLASS.split(/\s+/);
+    expect(classes).toContain('touch-pan-y');
+    expect(classes).toContain('touch-pinch-zoom');
   });
 });

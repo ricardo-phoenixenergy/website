@@ -7,6 +7,7 @@
 // - The viewer shows each photo whole, with "2 of 8".
 // - Its arrow buttons, the arrow keys and a sideways swipe page through the
 //   photos, wrapping at the ends.
+// - Pinch-zoom works on the photo, and a swipe doesn't page while zoomed in.
 // - useModalDialog handles Escape, the focus trap and returning focus to the tile.
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
@@ -15,7 +16,14 @@ import { IconArrowLeft, IconArrowRight, IconX } from '@/components/ui/Icons';
 import { IconButton } from '@/components/ui/IconButton';
 import { arrowLinkClasses } from '@/components/ui/buttonStyles';
 import { useModalDialog } from '@/hooks/useModalDialog';
-import { mosaicGridClass, mosaicLayout, mosaicTile, moreBadges, objectPositionFor, photoAlt, swipeDirection } from '@/lib/projectPhotos';
+import { isPinchZoomed, mosaicGridClass, mosaicLayout, mosaicTile, moreBadges, objectPositionFor, photoAlt, swipeDirection } from '@/lib/projectPhotos';
+
+/**
+ * The viewer's swipe area. touch-pan-y leaves up-and-down drags to the browser and
+ * sideways ones to the swipe; touch-pinch-zoom keeps pinch-zoom, which touch-pan-y
+ * alone turns off, so visitors can still zoom in to read a label.
+ */
+export const SWIPE_AREA_CLASS = 'relative touch-pan-y touch-pinch-zoom';
 
 interface ProjectPhotosProps {
   /** The gallery without the hero (galleryWithoutHero). */
@@ -114,7 +122,7 @@ export function ProjectPhotos({ photos }: ProjectPhotosProps) {
           <div className="relative w-full" style={{ maxWidth: 'min(900px, 95vw)', maxHeight: '90vh' }} onClick={(e) => e.stopPropagation()}>
             <div
               data-swipe-area
-              className="relative touch-pan-y"
+              className={SWIPE_AREA_CLASS}
               style={{ height: 'min(600px, 80vh)' }}
               onPointerDown={(e) => {
                 if (e.pointerType !== 'mouse') swipeStart.current = { x: e.clientX, y: e.clientY };
@@ -122,7 +130,8 @@ export function ProjectPhotos({ photos }: ProjectPhotosProps) {
               onPointerUp={(e) => {
                 const start = swipeStart.current;
                 swipeStart.current = null;
-                if (!start || total < 2) return;
+                // Zoomed in, a sideways drag means to move around the photo, so it doesn't page.
+                if (!start || total < 2 || isPinchZoomed(window.visualViewport)) return;
                 const direction = swipeDirection(e.clientX - start.x, e.clientY - start.y);
                 if (direction === 'next') next();
                 if (direction === 'prev') prev();

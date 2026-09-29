@@ -87,6 +87,15 @@ export function swipeDirection(dx: number, dy: number, threshold = 50): 'next' |
   return dx < 0 ? 'next' : 'prev';
 }
 
+/**
+ * True while the visitor has pinched the page in (window.visualViewport's scale is above 1).
+ * The viewer then doesn't page on a sideways drag, which is meant to move around the zoomed
+ * photo. A scale within 1% of 1 counts as not zoomed, in case a browser rounds.
+ */
+export function isPinchZoomed(viewport: Pick<VisualViewport, 'scale'> | null | undefined): boolean {
+  return (viewport?.scale ?? 1) > 1.01;
+}
+
 /** The photo's Studio hotspot as a CSS object-position, so a crop keeps what the editor marked. */
 export function objectPositionFor(image: Pick<SanityImage, 'hotspot'> | null | undefined): string {
   const spot = image?.hotspot;

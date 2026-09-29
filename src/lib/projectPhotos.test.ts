@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { galleryWithoutHero, moreBadges, mosaicLayout, mosaicTile, objectPositionFor, photoAlt, swipeDirection } from './projectPhotos';
+import { galleryWithoutHero, isPinchZoomed, moreBadges, mosaicLayout, mosaicTile, objectPositionFor, photoAlt, swipeDirection } from './projectPhotos';
 import type { SanityImage } from '@/types/sanity';
 
 const img = (id: string, alt?: string): SanityImage => ({ _type: 'image', asset: { _id: id, url: `https://cdn.sanity.io/images/p/production/${id}.jpg` }, alt });
@@ -74,6 +74,21 @@ describe('swipeDirection', () => {
   it('ignores short swipes and mostly vertical ones', () => {
     expect(swipeDirection(-30, 0)).toBeNull();
     expect(swipeDirection(-80, 100)).toBeNull();
+  });
+});
+
+describe('isPinchZoomed', () => {
+  it('is true while the visitor has pinched the page in', () => {
+    expect(isPinchZoomed({ scale: 1.5 })).toBe(true);
+    expect(isPinchZoomed({ scale: 3 })).toBe(true);
+  });
+
+  it('is false at normal size, zoomed out, a rounding hair above 1, or without the Visual Viewport API', () => {
+    expect(isPinchZoomed({ scale: 1 })).toBe(false);
+    expect(isPinchZoomed({ scale: 0.8 })).toBe(false);
+    expect(isPinchZoomed({ scale: 1.005 })).toBe(false);
+    expect(isPinchZoomed(null)).toBe(false);
+    expect(isPinchZoomed(undefined)).toBe(false);
   });
 });
 

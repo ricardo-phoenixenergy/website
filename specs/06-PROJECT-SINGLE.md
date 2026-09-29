@@ -113,6 +113,7 @@ The page file only reads the project and composes the parts in `src/components/p
   - a full-screen dialog, "Photo i of N";
   - each photo is shown whole, with "i of N" visible in a polite live region;
   - the arrow buttons, the arrow keys and a sideways swipe of at least 50px page through the photos, wrapping at the ends;
+  - pinch-zoom works on the photo (`touch-action: pan-y pinch-zoom`), and a swipe doesn't page while the visitor is zoomed in (`isPinchZoomed()`);
   - `useModalDialog` handles Escape, the focus trap and returning focus to the tile.
 
 ---
