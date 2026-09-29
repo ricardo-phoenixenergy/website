@@ -224,12 +224,6 @@ label[for] {
   }
 }
 
-/* ─── Stat tile shimmer animation ─────────────────────────────────────────── */
-@keyframes tile-shimmer {
-  0%        { transform: translateX(-101%); }
-  40%, 100% { transform: translateX(101%);  }
-}
-
 /* ─── Custom layout utilities ──────────────────────────────────────────────── */
 @layer utilities {
   .max-w-content { max-width: var(--max-content); }
@@ -251,17 +245,6 @@ label[for] {
   }
   .scroll-snap-x > * {
     scroll-snap-align: start;
-  }
-
-  /* Stat tile shimmer — ::after pseudo sweeps a 1px gradient line across the top */
-  .shimmer-tile::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(112,157,169,0.5), transparent);
-    animation: tile-shimmer 2.5s ease-in-out 3; /* three passes, then still */
-    animation-delay: var(--shimmer-delay, 0s);
   }
 }
 
@@ -375,7 +358,6 @@ label[for] {
   .animate-pulse,
   .animate-ping,
   .animate-spin,
-  .shimmer-tile::after,
   .btn-shimmer::before {
     animation: none;
   }

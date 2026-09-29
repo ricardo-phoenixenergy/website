@@ -450,7 +450,7 @@ export function prefersReducedMotion(): boolean {
 // Framer Motion follows <MotionConfig reducedMotion="user"> in SiteShell: transform
 // and layout animation drop out, opacity and colour changes stay.
 // @media (prefers-reduced-motion: reduce) in globals.css stops the CSS loops
-// (skeleton shimmers, the pulse, ping and spin utilities, tile and button shimmers)
+// (skeleton shimmers, the pulse, ping and spin utilities, and the button shimmer)
 // and turns smooth scrolling into a jump.
 // How It Works does not play, and the home hero has no auto-cycle.
 ```
