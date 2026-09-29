@@ -5,16 +5,27 @@
 //   over it: 92px above its foot when the results card overlaps it, 40px when not.
 // - Below 768px the photo is 4:3 inside the page margins, with the text under it
 //   on the page background.
-// - Without a photo, phones show no photo block and wider screens show the
-//   service's colour gradient.
-import Image from 'next/image';
+// - The photo is one <picture> holding one <img>: a 5:2 crop from 768px and a
+//   4:3 crop below, both centred on the Studio hotspot (src/lib/projectHeroImage.ts),
+//   so no width fetches far more photo than it shows. next/image's
+//   getImageProps() gives each crop its srcset. It can't take a blur
+//   placeholder, so the LQIP sits blurred behind the photo instead, and
+//   preload() adds one preload link per crop, each for its own widths.
+// - Without a photo, or one whose size can't be read, phones show no photo
+//   block and wider screens show the service's colour gradient.
+import { getImageProps } from 'next/image';
 import Link from 'next/link';
+import { preload } from 'react-dom';
 import { SOLUTION_META, type SolutionMeta } from '@/types/solutions';
 import type { Project } from '@/types/sanity';
 import { metaLine } from '@/lib/projectMeta';
-import { objectPositionFor } from '@/lib/projectPhotos';
+import { projectTitle } from '@/lib/projectSeo';
+import { HERO_PHONE_MEDIA, HERO_PHONE_SIZES, HERO_WIDE_MEDIA, HERO_WIDE_SIZES, heroCrops, type HeroCrops } from '@/lib/projectHeroImage';
 
-type HeroProject = Pick<Project, 'title' | 'vertical' | 'heroImage' | 'location' | 'status' | 'completionDate'>;
+type HeroProject = Pick<
+  Project,
+  'title' | 'headline' | 'vertical' | 'heroImage' | 'siteType' | 'clientName' | 'location' | 'status' | 'completionDate' | 'commissionedOn'
+>;
 
 interface ProjectHeroProps {
   project: HeroProject;
@@ -22,37 +33,55 @@ interface ProjectHeroProps {
   overlapped: boolean;
 }
 
-const FALLBACK_BLUR = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-
 // Clear at the top to Night Teal at 92% at the foot. The 66% middle stop keeps the line under
 // the headline (on-dark-muted) at 4.5:1 or more over both live projects' photos from 768px.
 const SCRIM =
   'linear-gradient(180deg, color-mix(in srgb, var(--color-pe-nav-dark) 5%, transparent) 20%, color-mix(in srgb, var(--color-pe-nav-dark) 66%, transparent) 58%, color-mix(in srgb, var(--color-pe-nav-dark) 92%, transparent) 100%)';
 
-const HERO_SIZES = '(max-width: 639px) calc(100vw - 32px), (max-width: 767px) calc(100vw - 48px), 100vw';
+function HeroPicture({ crops, alt }: { crops: HeroCrops; alt: string }) {
+  const shared = { alt, loading: 'eager', fetchPriority: 'high' } as const;
+  const { props: wide } = getImageProps({ ...shared, src: crops.wide.src, width: crops.wide.width, height: crops.wide.height, sizes: HERO_WIDE_SIZES });
+  const { props: phone } = getImageProps({ ...shared, src: crops.phone.src, width: crops.phone.width, height: crops.phone.height, sizes: HERO_PHONE_SIZES });
+  // The photo is the page's LCP element: each preload fetches only at its own widths.
+  preload(wide.src, { as: 'image', imageSrcSet: wide.srcSet, imageSizes: wide.sizes, media: HERO_WIDE_MEDIA, fetchPriority: 'high' });
+  preload(phone.src, { as: 'image', imageSrcSet: phone.srcSet, imageSizes: phone.sizes, media: HERO_PHONE_MEDIA, fetchPriority: 'high' });
+
+  return (
+    <>
+      {crops.lqip && (
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 scale-110 blur-xl"
+          style={{ backgroundImage: `url("${crops.lqip}")`, backgroundSize: 'cover', backgroundPosition: crops.wide.objectPosition }}
+        />
+      )}
+      <picture>
+        <source media={HERO_WIDE_MEDIA} srcSet={wide.srcSet} sizes={wide.sizes} />
+        {/* Art direction needs a <picture>, so next/image's props go on a plain <img>
+            (node_modules/next/dist/docs/01-app/03-api-reference/02-components/image.md, "Art direction"). */}
+        <img
+          {...phone}
+          alt={alt}
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ ...phone.style, objectPosition: crops.wide.objectPosition }}
+        />
+      </picture>
+    </>
+  );
+}
 
 export function ProjectHero({ project, overlapped }: ProjectHeroProps) {
   const meta: SolutionMeta | undefined = SOLUTION_META[project.vertical];
   const line = metaLine(project);
-  const photo = project.heroImage?.asset?.url ? project.heroImage : null;
+  const crops = heroCrops(project.heroImage);
 
   return (
     <section aria-labelledby="project-title" className="relative mt-3 md:mt-4">
       <div
-        className={`relative mx-4 aspect-[4/3] overflow-hidden rounded-card sm:mx-6 md:mx-0 md:aspect-auto md:h-[400px] md:rounded-none lg:h-[470px] ${photo ? '' : 'hidden md:block'}`}
+        className={`relative mx-4 aspect-[4/3] overflow-hidden rounded-card sm:mx-6 md:mx-0 md:aspect-auto md:h-[400px] md:rounded-none lg:h-[470px] ${crops ? '' : 'hidden md:block'}`}
       >
-        {photo ? (
-          <Image
-            src={photo.asset.url}
-            alt={photo.alt?.trim() || project.title}
-            fill
-            preload
-            sizes={HERO_SIZES}
-            className="object-cover"
-            style={{ objectPosition: objectPositionFor(photo) }}
-            placeholder="blur"
-            blurDataURL={photo.asset.metadata?.lqip ?? FALLBACK_BLUR}
-          />
+        {crops ? (
+          <HeroPicture crops={crops} alt={project.heroImage?.alt?.trim() || project.title} />
         ) : (
           <div
             className="absolute inset-0"
@@ -84,7 +113,7 @@ export function ProjectHero({ project, overlapped }: ProjectHeroProps) {
             id="project-title"
             className="mt-3 max-w-[25ch] break-words text-balance font-display text-[28px] font-extrabold leading-[1.15] text-pe-text md:mt-3.5 md:text-4xl md:leading-[1.08] md:text-white lg:text-[44px]"
           >
-            {project.title}
+            {projectTitle(project)}
           </h1>
           {(line.place.length > 0 || line.when) && (
             <p className="mt-2 font-body text-sm text-pe-muted md:mt-3 md:text-base md:text-on-dark-muted">

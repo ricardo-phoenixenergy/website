@@ -1,13 +1,9 @@
+// The hero takes its image attributes from next/image's getImageProps(), which
+// runs here as it does in the page: under vitest (NODE_ENV "test") the default
+// loader skips its remotePatterns check, so no mock is needed.
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it, vi } from 'vitest';
-
-// next/image needs Next's runtime; a plain <img> is enough to check the hero photo's alt text.
-vi.mock('next/image', async () => {
-  const { createElement: h } = await import('react');
-  return { default: ({ alt, src }: { alt?: string; src?: string }) => h('img', { alt, src }) };
-});
-
+import { describe, expect, it } from 'vitest';
 import { ProjectBreadcrumb } from './ProjectBreadcrumb';
 import { ProjectHero } from './ProjectHero';
 import { ProjectResults } from './ProjectResults';
@@ -57,16 +53,50 @@ describe('ProjectHero', () => {
     expect(html(createElement(ProjectHero, { project, overlapped: false }))).toMatch(/class="[^"]*aspect-\[4\/3\][^"]*hidden md:block/);
   });
 
+  const heroImage = (alt: string, url = 'https://cdn.sanity.io/images/p/production/hero-4000x2250.jpg'): SanityImage => ({
+    _type: 'image',
+    asset: { _id: 'image-hero-4000x2250-jpg', url, metadata: { lqip: 'data:image/jpeg;base64,blur' } },
+    alt,
+  });
+
   it('names the hero photo by its alt text, or by the title when the alt text is blank', () => {
-    const heroImage = (alt: string): SanityImage => ({
-      _type: 'image',
-      asset: { _id: 'image-hero', url: 'https://cdn.sanity.io/images/p/production/hero.jpg' },
-      alt,
-    });
     const blank = html(createElement(ProjectHero, { project: { ...project, heroImage: heroImage('  ') }, overlapped: true }));
-    expect(blank).toContain('<img alt="31 Sacks Circle"');
+    expect(blank).toMatch(/<img alt="31 Sacks Circle"/);
     const written = html(createElement(ProjectHero, { project: { ...project, heroImage: heroImage('Rooftop solar on the warehouse') }, overlapped: true }));
-    expect(written).toContain('<img alt="Rooftop solar on the warehouse"');
+    expect(written).toMatch(/<img alt="Rooftop solar on the warehouse"/);
+  });
+
+  it('heads the page with the headline, else the title', () => {
+    const headed = html(createElement(ProjectHero, { project: { ...project, headline: 'Rooftop solar for a Cape Town warehouse' }, overlapped: true }));
+    expect(headed).toMatch(/<h1 id="project-title"[^>]*>Rooftop solar for a Cape Town warehouse<\/h1>/);
+    const blank = html(createElement(ProjectHero, { project: { ...project, headline: '  ' }, overlapped: true }));
+    expect(blank).toMatch(/<h1 id="project-title"[^>]*>31 Sacks Circle<\/h1>/);
+  });
+
+  it('starts the line under the headline with the site type, or the client when the data carries the name', () => {
+    const site = html(createElement(ProjectHero, { project: { ...project, siteType: 'Logistics warehouse', commissionedOn: '2026-06-12' }, overlapped: true }));
+    expect(site).toContain('Logistics warehouse · Cape Town');
+    expect(site).toContain('Completed June 2026');
+    const named = html(createElement(ProjectHero, { project: { ...project, siteType: 'Logistics warehouse', clientName: 'Example Client' }, overlapped: true }));
+    expect(named).toContain('Example Client · Cape Town');
+    expect(named).not.toContain('Logistics warehouse');
+  });
+
+  it('serves one image in a <picture>: a 5:2 crop from 768px and a 4:3 crop below, each preloaded for its own widths', () => {
+    const markup = html(createElement(ProjectHero, { project: { ...project, heroImage: heroImage('A roof') }, overlapped: true }));
+    expect(markup.match(/<img\b/g)).toHaveLength(1);
+    // The crops' Sanity URLs, encoded inside next/image's srcset: rect=0,325,4000,1600 and rect=500,0,3000,2250.
+    expect(markup).toMatch(/<picture><source media="\(min-width: 768px\)" srcSet="[^"]*rect%3D0%2C325%2C4000%2C1600[^"]*" sizes="\(min-width: 1175px\) 100vw, [^"]*"\/><img /);
+    expect(markup).toMatch(/<img [^>]*loading="eager" fetchPriority="high"[^>]*srcSet="[^"]*rect%3D500%2C0%2C3000%2C2250/);
+    expect(markup).toMatch(/<link rel="preload" as="image" fetchPriority="high" imageSrcSet="[^"]*rect%3D0%2C325[^"]*" imageSizes="[^"]*" media="\(min-width: 768px\)"\/>/);
+    expect(markup).toMatch(/<link rel="preload" as="image" fetchPriority="high" imageSrcSet="[^"]*rect%3D500%2C0[^"]*" imageSizes="[^"]*" media="\(max-width: 767px\)"\/>/);
+    expect(markup).toContain('data:image/jpeg;base64,blur');
+  });
+
+  it('shows the service gradient, not a broken photo, when the photo has no readable size', () => {
+    const markup = html(createElement(ProjectHero, { project: { ...project, heroImage: heroImage('A roof', 'https://example.com/photo.jpg') }, overlapped: true }));
+    expect(markup).not.toContain('<img');
+    expect(markup).toMatch(/class="[^"]*aspect-\[4\/3\][^"]*hidden md:block/);
   });
 });
 
