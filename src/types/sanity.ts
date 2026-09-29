@@ -74,6 +74,10 @@ export interface ProjectPreview extends ProjectCard {
 }
 
 export interface Project extends ProjectCard {
+  /** When the project was added to the CMS; the Article's datePublished. */
+  _createdAt: string;
+  /** Its last change; the Article's dateModified and the sitemap's lastModified. */
+  _updatedAt: string;
   featured: boolean;
   clientName: string;
   completionDate: string;
