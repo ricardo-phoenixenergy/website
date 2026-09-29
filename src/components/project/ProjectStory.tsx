@@ -27,7 +27,7 @@ interface ProjectStoryProps {
 }
 
 function Lead({ summary }: { summary: string }) {
-  return <p className="max-w-[34em] font-body text-lg leading-[1.6] text-pe-text md:text-xl">{summary}</p>;
+  return <p className="max-w-[34em] font-body text-xl leading-[1.6] text-pe-text">{summary}</p>;
 }
 
 function Chapters({ chapters }: { chapters: ProjectChapter[] }) {

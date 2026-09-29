@@ -1,13 +1,13 @@
 // src/lib/projectTextComponents.tsx
-// Portable Text for a project's story chapters. Paragraphs are 17px (16px on
-// phones). Every heading style becomes a subheading (h3), because the chapter
-// itself is the h2. Lists and marks follow the shared blog set. Images inside
-// the text aren't shown: site photos belong in the gallery.
+// Portable Text for a project's story chapters. Paragraphs are 17px. Every
+// heading style becomes a subheading (h3), because the chapter itself is the h2.
+// Lists and marks follow the shared blog set. Images inside the text aren't
+// shown: site photos belong in the gallery.
 import type { ReactNode } from 'react';
 import type { PortableTextComponents } from '@portabletext/react';
 import { portableTextComponents } from '@/lib/portableTextComponents';
 
-const TEXT = 'font-body text-base leading-[1.75] text-pe-text-soft md:text-[17px]';
+const TEXT = 'font-body text-[17px] leading-[1.75] text-pe-text-soft';
 
 function Paragraph({ children }: { children?: ReactNode }) {
   return <p className={`${TEXT} mb-4 last:mb-0`}>{children}</p>;
