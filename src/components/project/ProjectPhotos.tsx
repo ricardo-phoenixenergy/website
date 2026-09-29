@@ -151,16 +151,16 @@ export function ProjectPhotos({ photos }: ProjectPhotosProps) {
               />
             </div>
 
-            <IconButton variant="ghost" label="Close photo viewer" data-autofocus onClick={close} className="absolute -top-12 right-0">
+            <IconButton variant="overlay" label="Close photo viewer" data-autofocus onClick={close} className="absolute -top-12 right-0">
               <IconX />
             </IconButton>
             {total > 1 && (
-              <IconButton variant="ghost" label="Previous photo" onClick={prev} className="absolute left-2 top-1/2 -translate-y-1/2">
+              <IconButton variant="overlay" label="Previous photo" onClick={prev} className="absolute left-2 top-1/2 -translate-y-1/2">
                 <IconArrowLeft />
               </IconButton>
             )}
             {total > 1 && (
-              <IconButton variant="ghost" label="Next photo" onClick={next} className="absolute right-2 top-1/2 -translate-y-1/2">
+              <IconButton variant="overlay" label="Next photo" onClick={next} className="absolute right-2 top-1/2 -translate-y-1/2">
                 <IconArrowRight />
               </IconButton>
             )}

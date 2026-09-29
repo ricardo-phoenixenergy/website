@@ -142,7 +142,7 @@ export function buttonClasses(style: ButtonClassOptions = {}): string {
 
 // ─── Icon button ──────────────────────────────────────────────────────────────
 
-export type IconButtonVariant = 'ghost' | 'outline' | 'plain';
+export type IconButtonVariant = 'ghost' | 'outline' | 'plain' | 'overlay';
 
 const ICON_BUTTON_BASE = [
   'relative inline-flex size-11 shrink-0 items-center justify-center rounded-full border',
@@ -151,12 +151,15 @@ const ICON_BUTTON_BASE = [
 ].join(' ');
 
 const ICON_BUTTON_VARIANTS: Record<IconButtonVariant, string> = {
-  // Dark surfaces and photos: a translucent disc, as Button ghost
+  // Dark surfaces: a translucent disc, as Button ghost
   ghost: 'border-white/20 bg-white/[0.08] text-white hover:bg-white/[0.14]',
   // Light surfaces: a white disc whose hairline edge turns Deep Teal on hover
   outline: 'border-pe-border bg-white text-pe-primary hover:border-pe-primary hover:bg-pe-bg',
   // Inside another control's light surface (the navbar pill): no disc until hover
   plain: 'border-transparent bg-transparent text-pe-primary hover:bg-pe-primary/[0.07]',
+  // Over a photo: a Night Teal disc dark enough to hold its white glyph over a
+  // bright part of the photo, with a white hairline edge, darker still on hover
+  overlay: 'border-white/25 bg-pe-nav-dark/60 text-white hover:bg-pe-nav-dark/80',
 };
 
 export function iconButtonClasses({ variant, className }: { variant: IconButtonVariant; className?: string }): string {

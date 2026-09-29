@@ -88,9 +88,16 @@ describe('buttonClasses', () => {
 
 describe('the other controls', () => {
   it('draws every icon button at 44 x 44px', () => {
-    for (const variant of ['ghost', 'outline', 'plain'] as IconButtonVariant[]) {
+    for (const variant of ['ghost', 'outline', 'plain', 'overlay'] as IconButtonVariant[]) {
       expect(box(iconButtonClasses({ variant }))).toEqual(['border', 'rounded-full', 'size-11']);
     }
+  });
+
+  it('gives the photo viewer a dark disc (overlay) with a white hairline edge, darker on hover', () => {
+    const cls = classes(iconButtonClasses({ variant: 'overlay' }));
+    expect(cls).toEqual(
+      expect.arrayContaining(['border-white/25', 'bg-pe-nav-dark/60', 'text-white', 'hover:bg-pe-nav-dark/80']),
+    );
   });
 
   it('keeps a chip 36px with one weight, selected or not', () => {
