@@ -71,23 +71,30 @@ export function imageDimensions(image: Pick<SanityImage, 'asset'>): { width: num
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 const finite = (value: unknown, fallback: number) => (typeof value === 'number' && Number.isFinite(value) ? value : fallback);
+/** A crop edge's share of the photo, held to 0 to 1: an import or an API write can store any number. */
+const edge = (value: unknown) => clamp(finite(value, 0), 0, 1);
 
-/** The largest `ratio` rectangle inside the editor's crop, centred on the hotspot, in the photo's own pixels. */
+/**
+ * The largest `ratio` rectangle inside the editor's crop, centred on the hotspot, in the photo's own pixels.
+ * Null when the photo's size is unknown or the crop leaves too little of it for the shape.
+ */
 export function hotspotCropRect(image: Pick<SanityImage, 'asset' | 'crop' | 'hotspot'>, ratio: number): CropRect | null {
   const size = imageDimensions(image);
   if (!size || !(ratio > 0)) return null;
-  const left0 = Math.round(finite(image.crop?.left, 0) * size.width);
-  const top0 = Math.round(finite(image.crop?.top, 0) * size.height);
-  const cropWidth = Math.round(size.width - finite(image.crop?.right, 0) * size.width - left0);
-  const cropHeight = Math.round(size.height - finite(image.crop?.bottom, 0) * size.height - top0);
+  const left0 = Math.round(edge(image.crop?.left) * size.width);
+  const top0 = Math.round(edge(image.crop?.top) * size.height);
+  const cropWidth = Math.round(size.width - edge(image.crop?.right) * size.width - left0);
+  const cropHeight = Math.round(size.height - edge(image.crop?.bottom) * size.height - top0);
   if (cropWidth <= 0 || cropHeight <= 0) return null;
   const centreX = finite(image.hotspot?.x, 0.5) * size.width;
   const centreY = finite(image.hotspot?.y, 0.5) * size.height;
   if (cropWidth / cropHeight > ratio) {
     const width = Math.round(cropHeight * ratio);
+    if (width < 1) return null;
     return { left: clamp(Math.round(centreX - width / 2), left0, left0 + cropWidth - width), top: top0, width, height: cropHeight };
   }
   const height = Math.round(cropWidth / ratio);
+  if (height < 1) return null;
   return { left: left0, top: clamp(Math.round(centreY - height / 2), top0, top0 + cropHeight - height), width: cropWidth, height };
 }
 

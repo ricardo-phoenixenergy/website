@@ -52,6 +52,22 @@ describe('hotspotCropRect', () => {
   it('gives nothing for a photo whose size is unknown', () => {
     expect(hotspotCropRect(unsized, HERO_WIDE_RATIO)).toBeNull();
   });
+
+  it('gives nothing for a crop that leaves too little of the photo for the shape', () => {
+    // The editor's crop leaves a 1px sliver, too thin for a 5:2 shape, so the hero shows its gradient.
+    const sliver = photo(1024, 768, { crop: { left: 0.5, right: 0.5 - 1 / 1024, top: 0, bottom: 0 } });
+    expect(hotspotCropRect(sliver, HERO_WIDE_RATIO)).toBeNull();
+    expect(heroCrops(sliver)).toBeNull();
+    // A crop with nothing left.
+    expect(hotspotCropRect(photo(4000, 2250, { crop: { left: 0.5, right: 0.5, top: 0, bottom: 0 } }), HERO_WIDE_RATIO)).toBeNull();
+  });
+
+  it('holds crop edges written outside the Studio to the photo', () => {
+    const negative = photo(4000, 2250, { crop: { left: -0.1, right: 0, top: -0.2, bottom: 0 } });
+    expect(hotspotCropRect(negative, HERO_WIDE_RATIO)).toEqual({ left: 0, top: 325, width: 4000, height: 1600 });
+    const overhang = photo(4000, 2250, { crop: { left: 0, right: 1.5, top: 0, bottom: 0 } });
+    expect(hotspotCropRect(overhang, HERO_WIDE_RATIO)).toBeNull();
+  });
 });
 
 describe('heroCrop', () => {
