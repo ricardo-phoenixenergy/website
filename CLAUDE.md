@@ -26,7 +26,7 @@ This is the single entry point for all Claude Code tasks on the Phoenix Energy m
 | 🧭 Navigation | `specs/03-NAVIGATION.md` | Pill nav, glass scroll effect, mega-menu, mobile nav |
 | 🏠 Home Page | `specs/04-HOME.md` | Hero accordion, partners, how it works, projects carousel, blog, CTA, footer ✅ Approved |
 | 📁 Projects Page | `specs/05-PROJECTS.md` | Cinematic featured card, filter pills, project grid, load more |
-| 🔍 Single Project Page | `specs/06-PROJECT-SINGLE.md` | Case study layout, split hero, stats strip, numbered sections, gallery, related projects ✅ Approved |
+| 🔍 Single Project Page | `specs/06-PROJECT-SINGLE.md` | One template for every project: breadcrumb and Copy link, full-bleed hero, results card, photo mosaic and viewer, story beside the facts panel, next project, closing band ✅ Rebuilt |
 | 💡 Solutions Pages | `specs/07-SOLUTIONS.md` | All 6 verticals — hero, calc, tabs/accordion, How It Works, testimonials, projects, CTA ✅ Approved |
 | 👥 About Page | `specs/08-ABOUT.md` | Hero, stats strip, story, mission, values, timeline, team grid, trust tabs, careers, CTA ✅ Approved |
 | 📬 Contact Page | `specs/09-CONTACT.md` | Two-step intent form (Client/Partner/Investor), reCAPTCHA v3, right column info + trust ✅ Approved |
@@ -45,7 +45,7 @@ phoenixenergy.solutions/
 ├── /                              → Home
 ├── /about                         → About
 ├── /projects                      → Projects portfolio
-│   └── /projects/[slug]           → Single project / case study
+│   └── /projects/[slug]           → Single project
 ├── /solutions                     → Solutions overview
 │   ├── /solutions/ci-solar-storage
 │   ├── /solutions/wheeling
