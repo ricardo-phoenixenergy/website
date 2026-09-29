@@ -34,6 +34,8 @@ export type PortableTextBlock = {
 /** What a project's results rest on. Unset is treated as projected. */
 export type ResultsBasis = 'projected' | 'measured';
 
+export type ProjectStatus = 'completed' | 'in-progress' | 'planned';
+
 export interface ProjectCard {
   _id: string;
   title: string;
@@ -44,7 +46,7 @@ export interface ProjectCard {
   heroImage?: SanityImage;
   featured?: boolean;
   clientName?: string;
-  status?: 'completed' | 'in-progress' | 'planned';
+  status?: ProjectStatus;
   /** System facts (kWp, kWh, inverter, deal structure). */
   metrics?: ProjectMetric[];
   /** Outcomes (payback, bill reduction); the first two lead the card. */
