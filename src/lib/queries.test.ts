@@ -57,6 +57,13 @@ describe('project queries: the consent switches', () => {
     project('named', { showClientName: true, clientConsentOn: '2026-09-01' }),
     project('switch-only', { showClientName: true }),
     project('date-only', { clientConsentOn: '2026-09-01' }),
+    // A document written through the API or import can set the switch with a
+    // consent date that isn't a real date: blank, or free text such as "TBC".
+    // Neither reads as a date, so neither may name the client. A different
+    // vertical keeps them out of PROJECTS_BY_VERTICAL_QUERY's six-item window
+    // below, which the original five already fill to the edge of.
+    project('blank-consent', { showClientName: true, clientConsentOn: '', vertical: 'wheeling' }),
+    project('unreadable-consent', { showClientName: true, clientConsentOn: 'TBC', vertical: 'wheeling' }),
     project('rands', { showRandAmounts: true }),
   ];
   const byId = (rows: unknown, id: string) => (rows as Row[]).find((row) => row._id === id);
@@ -72,6 +79,13 @@ describe('project queries: the consent switches', () => {
       }
     },
   );
+
+  it('never names the client when the consent date is blank or unreadable', async () => {
+    const blank = (await run(queries.PROJECT_BY_SLUG_QUERY, dataset, { slug: 'blank-consent' })) as Row;
+    const unreadable = (await run(queries.PROJECT_BY_SLUG_QUERY, dataset, { slug: 'unreadable-consent' })) as Row;
+    expect(blank).not.toHaveProperty('clientName');
+    expect(unreadable).not.toHaveProperty('clientName');
+  });
 
   it('never returns the project value, the consent date or a retired field to a card', async () => {
     const json = JSON.stringify(await run(queries.ALL_PROJECTS_QUERY, dataset));
@@ -202,10 +216,15 @@ describe('slugs and sitemap entries', () => {
 });
 
 describe('every query', () => {
-  // One of each document the queries read, every image pointing at ASSET.
+  // One of each document the queries read, every image pointing at ASSET, and
+  // enough of each to feed every nested list: the author's slug matches $slug
+  // so AUTHOR_BY_SLUG_QUERY and POSTS_BY_AUTHOR_QUERY return something; a
+  // second post feeds POST_BY_SLUG_QUERY's "related"; a second project (a
+  // different service) feeds PROJECT_BY_SLUG_QUERY's "otherProjects"; and
+  // every hero image key is set, so a leak in any of them would show up below.
   const dataset: Doc[] = [
     ASSET,
-    { _id: 'author-a', _type: 'author', name: 'An Author', slug: { current: 'an-author' }, photo: image() },
+    { _id: 'author-a', _type: 'author', name: 'An Author', slug: { current: 'a' }, photo: image() },
     {
       _id: 'post-a',
       _type: 'blogPost',
@@ -221,14 +240,39 @@ describe('every query', () => {
       ogImage: image(),
       body: [{ _type: 'image', _key: 'b', asset: { _type: 'reference', _ref: ASSET._id } }],
     },
+    {
+      _id: 'post-b',
+      _type: 'blogPost',
+      title: 'Another post',
+      slug: { current: 'b' },
+      category: 'Company News',
+      tags: ['Wheeling'],
+      excerpt: 'Another excerpt',
+      publishedAt: '2026-02-01T08:00:00Z',
+      featured: false,
+      author: { _type: 'reference', _ref: 'author-a' },
+      heroImage: image(),
+      ogImage: image(),
+      body: [{ _type: 'image', _key: 'b', asset: { _type: 'reference', _ref: ASSET._id } }],
+    },
     { _id: 'member-a', _type: 'teamMember', name: 'A Member', slug: { current: 'a-member' }, photo: image(), role: 'Engineer', category: 'founders', order: 1, active: true },
     { _id: 'milestone-a', _type: 'milestoneTimeline', date: '2020', title: 'Founded', isFuture: false, order: 1, active: true },
     { _id: 'companyStats', _type: 'companyStats', stats: [{ value: '40+', label: 'Projects' }] },
     { _id: 'partner-a', _type: 'partner', name: 'A Partner', category: 'partners', order: 1, active: true, logo: image() },
     { _id: 'howItWorks.home', _type: 'howItWorks', title: 'How', steps: [{ label: 'One', description: 'First' }], showCta: true },
-    { _id: 'heroImages', _type: 'heroImages', ciSolarStorage: image(), wheeling: image() },
+    {
+      _id: 'heroImages',
+      _type: 'heroImages',
+      ciSolarStorage: image(),
+      wheeling: image(),
+      energyOptimisation: image(),
+      carbonCredits: image(),
+      webuysolar: image(),
+      evFleets: image(),
+    },
     { _id: 'energyPrices', _type: 'energyPrices', dieselPricePerL: 21.5 },
     project('a', { featured: true, showRandAmounts: false }),
+    project('b', { vertical: 'wheeling' }),
   ];
   const params = { slug: 'a', vertical: 'ci-solar-storage', tag: 'Wheeling', category: '', q: '', offset: 0, id: 'howItWorks.home' };
 
@@ -241,8 +285,47 @@ describe('every query', () => {
     expect(ALL_QUERIES).toHaveLength(25);
   });
 
+  // From the base file (git show 57a7bed:src/lib/queries.test.ts): a static
+  // check over each query's own text, so it doesn't depend on the fixture
+  // feeding every branch. Safe: `asset->{ ... }` (a projection) or one of the
+  // two fields the site reads directly, `asset->url` and `asset->metadata`
+  // (HERO_IMAGES_QUERY). Unsafe: anything else after `asset->`, such as
+  // `asset->originalFilename` or `asset->path`, which would still leak part
+  // of the asset document even where the fixture below returns nothing.
+  const UNSAFE_ASSET_DEREF = /asset->(?!\s*\{|\s*(?:url|metadata)\b)/;
+
+  it('treats a field other than url or metadata after asset-> as unsafe', () => {
+    expect('"heroImage": heroImage { asset->originalFilename }').toMatch(UNSAFE_ASSET_DEREF);
+    expect('"heroImage": heroImage { asset->path }').toMatch(UNSAFE_ASSET_DEREF);
+    expect('"asset": asset->{ _id, url }').not.toMatch(UNSAFE_ASSET_DEREF);
+    expect('"url": asset->url').not.toMatch(UNSAFE_ASSET_DEREF);
+    expect('"lqip": asset->metadata.lqip').not.toMatch(UNSAFE_ASSET_DEREF);
+  });
+
+  it.each(ALL_QUERIES)('%s never expands a whole asset document', (_name, query) => {
+    expect(query).not.toMatch(UNSAFE_ASSET_DEREF);
+  });
+
+  it.each(ALL_QUERIES)('%s never mentions originalFilename', (_name, query) => {
+    expect(query).not.toContain('originalFilename');
+  });
+
+  it('feeds every hero image slot so the leak check can see it', async () => {
+    const heroes = (await run(queries.HERO_IMAGES_QUERY, dataset, params)) as Row;
+    for (const key of ['ci-solar-storage', 'wheeling', 'energy-optimisation', 'carbon-credits', 'webuysolar', 'ev-fleets']) {
+      expect(heroes[key], key).not.toBeNull();
+    }
+  });
+
   it.each(ALL_QUERIES)('%s returns no asset file name or metadata, and no withheld project field', async (_name, query) => {
-    const json = JSON.stringify(await run(query, dataset, params));
+    // A query that returns null or an empty array feeds nothing to the text
+    // check below, so a leak inside it would pass here silently.
+    const value = await run(query, dataset, params);
+    expect(value, `${_name} returned nothing for this check to see`).not.toBeNull();
+    if (Array.isArray(value)) {
+      expect(value.length, `${_name} returned no rows for this check to see`).toBeGreaterThan(0);
+    }
+    const json = JSON.stringify(value);
     for (const text of ['originalFilename', 'HIDDEN-CLIENT', 'sha1hash', 'deadbeef', 'exif', '"path"', 'Hidden Client Ltd', 'R42M']) {
       expect(json).not.toContain(text);
     }

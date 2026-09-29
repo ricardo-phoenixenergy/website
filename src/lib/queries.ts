@@ -19,7 +19,12 @@ const GALLERY_IMAGE_FIELDS = `{ ${IMAGE_ASSET_FIELDS}, alt, caption, hotspot, cr
 // name reaches the page data. showRandAmounts itself comes with every project,
 // because discloseProject() needs it to decide whether figures in rands may
 // show. Read projects through src/lib/projectData.ts, which applies that rule.
-const CLIENT_NAME_WITH_CONSENT = `showClientName == true && defined(clientConsentOn) => { clientName }`;
+// defined(clientConsentOn) alone would accept "" or free text such as "TBC"
+// (a document written through the API or import, not the Studio, which
+// requires a real date): dateTime() of an unreadable string is null, and
+// defined(null) is false, so only a date that actually parses names the
+// client, the same test NEWEST_FIRST already applies to commissionedOn.
+const CLIENT_NAME_WITH_CONSENT = `showClientName == true && defined(dateTime(clientConsentOn + "T00:00:00Z")) => { clientName }`;
 const PROJECT_VALUE_WITH_CONSENT = `showRandAmounts == true => { projectValue }`;
 
 // "Newest" is the commissioning date, falling back to the date a project was
