@@ -38,11 +38,25 @@ describe('project queries', () => {
 });
 
 describe('every query', () => {
+  // Safe: `asset->{ ... }` (a projection) or one of the two fields the site
+  // reads directly, `asset->url` and `asset->metadata` (HERO_IMAGES_QUERY).
+  // Unsafe: anything else after `asset->`, such as `asset->originalFilename`
+  // or `asset->path`, which would still leak part of the asset document.
+  const UNSAFE_ASSET_DEREF = /asset->(?!\s*\{|\s*(?:url|metadata)\b)/;
+
+  it('treats a field other than url or metadata after asset-> as unsafe', () => {
+    expect('"heroImage": heroImage { asset->originalFilename }').toMatch(UNSAFE_ASSET_DEREF);
+    expect('"heroImage": heroImage { asset->path }').toMatch(UNSAFE_ASSET_DEREF);
+    expect('"asset": asset->{ _id, url }').not.toMatch(UNSAFE_ASSET_DEREF);
+    expect('"url": asset->url').not.toMatch(UNSAFE_ASSET_DEREF);
+    expect('"lqip": asset->metadata.lqip').not.toMatch(UNSAFE_ASSET_DEREF);
+  });
+
   it.each(ALL_QUERIES)('%s never expands a whole asset document', (_name, query) => {
-    // Safe: `asset->{ ... }` (a projection) and `asset->field` (one field, as
-    // HERO_IMAGES_QUERY reads `asset->url`). Unsafe: a bare `asset->` used as
-    // the whole value, which dereferences the entire asset document, file name
-    // and all.
-    expect(query).not.toMatch(/asset->(?!\s*[{\w])/);
+    expect(query).not.toMatch(UNSAFE_ASSET_DEREF);
+  });
+
+  it.each(ALL_QUERIES)('%s never mentions originalFilename', (_name, query) => {
+    expect(query).not.toContain('originalFilename');
   });
 });
