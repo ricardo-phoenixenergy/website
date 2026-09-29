@@ -83,6 +83,9 @@ describe('isRandAmount', () => {
       'Energy charge (c/kWh)',
       '95 cents a unit',
       '12 cents',
+      'Tariff c/kWh',
+      'Rate c/kWh',
+      'c/kWh',
     ]) {
       expect(isRandAmount(text), text).toBe(true);
     }
@@ -98,6 +101,7 @@ describe('isRandAmount', () => {
       '3 circuits',
       'IEC 61215',
       '80 kWh',
+      'kWh/c',
     ]) {
       expect(isRandAmount(text), text).toBe(false);
     }

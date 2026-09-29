@@ -37,12 +37,16 @@ const RAND_WORD = /\brands?\b/i;
 const CENTS_PER_UNIT = /\d\s*c\s*(?:\/\s*kWh|per\s+kWh)/;
 // Cents as a label's unit, no number attached: "Tariff (c/kWh)", "Energy charge (c/kWh)".
 const CENTS_UNIT_IN_BRACKETS = /\(c\s*\/\s*kWh\)/;
+// Cents per unit without brackets, as a label with no number attached:
+// "Tariff c/kWh", "Rate c/kWh", "c/kWh". A letter before the "c" means it
+// ends a word, so that doesn't count, matching R_PER_UNIT's rule for "R".
+const CENTS_PER_UNIT_LABEL = /(^|[^A-Za-z])c\s*\/\s*kWh/;
 // The word "cents" spelled out, after a number: "95 cents a unit", "12 cents".
 const CENTS_WORD = /\d\s*cents\b/i;
 
 const RAND_PATTERNS = [
   R_BEFORE_NUMBER, R_UNIT_IN_BRACKETS, R_PER_UNIT, R_THOUSANDS, R_AFTER_NUMBER, ZAR, RAND_WORD,
-  CENTS_PER_UNIT, CENTS_UNIT_IN_BRACKETS, CENTS_WORD,
+  CENTS_PER_UNIT, CENTS_UNIT_IN_BRACKETS, CENTS_PER_UNIT_LABEL, CENTS_WORD,
 ];
 
 /** True when the text looks like a rand amount, names rands as its unit, or is a price in cents (what the client pays, such as a tariff in c/kWh). */
