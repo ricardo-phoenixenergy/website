@@ -1,10 +1,17 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+// next/image needs Next's runtime; a plain <img> is enough to check the hero photo's alt text.
+vi.mock('next/image', async () => {
+  const { createElement: h } = await import('react');
+  return { default: ({ alt, src }: { alt?: string; src?: string }) => h('img', { alt, src }) };
+});
+
 import { ProjectBreadcrumb } from './ProjectBreadcrumb';
 import { ProjectHero } from './ProjectHero';
 import { ProjectResults } from './ProjectResults';
-import type { ProjectMetric } from '@/types/sanity';
+import type { ProjectMetric, SanityImage } from '@/types/sanity';
 import type { ResultsLabelling } from '@/lib/projectResults';
 
 const html = (el: Parameters<typeof renderToStaticMarkup>[0]) => renderToStaticMarkup(el);
@@ -48,6 +55,18 @@ describe('ProjectHero', () => {
 
   it('shows no photo block on phones when there is no hero photo', () => {
     expect(html(createElement(ProjectHero, { project, overlapped: false }))).toMatch(/class="[^"]*aspect-\[4\/3\][^"]*hidden md:block/);
+  });
+
+  it('names the hero photo by its alt text, or by the title when the alt text is blank', () => {
+    const heroImage = (alt: string): SanityImage => ({
+      _type: 'image',
+      asset: { _id: 'image-hero', url: 'https://cdn.sanity.io/images/p/production/hero.jpg' },
+      alt,
+    });
+    const blank = html(createElement(ProjectHero, { project: { ...project, heroImage: heroImage('  ') }, overlapped: true }));
+    expect(blank).toContain('<img alt="31 Sacks Circle"');
+    const written = html(createElement(ProjectHero, { project: { ...project, heroImage: heroImage('Rooftop solar on the warehouse') }, overlapped: true }));
+    expect(written).toContain('<img alt="Rooftop solar on the warehouse"');
   });
 });
 

@@ -44,7 +44,7 @@ export function ProjectHero({ project, overlapped }: ProjectHeroProps) {
         {photo ? (
           <Image
             src={photo.asset.url}
-            alt={photo.alt ?? project.title}
+            alt={photo.alt?.trim() || project.title}
             fill
             preload
             sizes={HERO_SIZES}
