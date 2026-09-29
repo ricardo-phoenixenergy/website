@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { projectArticleJsonLd, projectBreadcrumbJsonLd, projectDescription, serializeJsonLd, snippet, type ArticleSource } from './projectSeo';
+import { projectArticleJsonLd, projectBreadcrumbJsonLd, projectDescription, snippet, type ArticleSource } from './projectSeo';
 
 const project: ArticleSource = {
   title: '31 Sacks Circle',
@@ -76,14 +76,5 @@ describe('projectBreadcrumbJsonLd', () => {
       { '@type': 'ListItem', position: 2, name: 'Projects', item: 'https://phoenixenergy.solutions/projects' },
       { '@type': 'ListItem', position: 3, name: '31 Sacks Circle', item: url },
     ]);
-  });
-});
-
-describe('serializeJsonLd', () => {
-  it('escapes "<" so text from the CMS cannot close the script tag, and stays valid JSON', () => {
-    const data = { name: '</script><script>alert(1)</script>' };
-    const out = serializeJsonLd(data);
-    expect(out).not.toContain('</script>');
-    expect(JSON.parse(out)).toEqual(data);
   });
 });

@@ -6,6 +6,7 @@ import { FinancingBand } from '@/components/sections/FinancingBand';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
+import { JsonLd } from '@/components/layout/JsonLd';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { getHowItWorks } from '@/lib/getHowItWorks';
 import { getHeroImages } from '@/lib/getHeroImages';
@@ -139,7 +140,7 @@ export default async function EnergyOptimisationPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <JsonLd data={jsonLd} />
       <SolutionHero
         title="Reduce energy. <em>Increase performance.</em>"
         subtitle={"Reduce your facility’s energy consumption without impacting productivity.\nWe deliver efficiency upgrades and smart energy optimisation that lower costs from day one, with zero-capex funding options available."}

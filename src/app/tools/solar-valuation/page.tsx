@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SolarValuationTool } from '@/components/tools/SolarValuationTool';
 import { ArrowLink } from '@/components/ui/ArrowLink';
+import { JsonLd } from '@/components/layout/JsonLd';
 import { WEBUYSOLAR_OFFER } from '@/config/webuysolarOffer';
 import { SOLUTION_META } from '@/types/solutions';
 
@@ -46,10 +47,7 @@ const howToJsonLd = {
 export default function SolarValuationPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
-      />
+      <JsonLd data={howToJsonLd} />
 
       <div className="bg-pe-bg min-h-screen">
         <div className="page-container pt-24 pb-6">

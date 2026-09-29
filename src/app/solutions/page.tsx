@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { FloatingOrbs } from '@/components/ui/FloatingOrbs';
+import { JsonLd } from '@/components/layout/JsonLd';
 import { SOLUTION_META, SOLUTION_VERTICALS } from '@/types/solutions';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { DISCOVERY_CTA } from '@/config/ctas';
@@ -45,7 +46,7 @@ export default async function SolutionsPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <JsonLd data={jsonLd} />
 
       {/* Hero — full-bleed FloatingOrbs behind left-aligned headline */}
       <section className="focus-on-dark relative overflow-hidden" style={{ background: '#0d1f22', minHeight: 480 }}>

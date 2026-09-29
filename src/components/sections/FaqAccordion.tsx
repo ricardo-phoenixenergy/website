@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { IconArrowRight } from '@/components/ui/Icons';
+import { JsonLd } from '@/components/layout/JsonLd';
 import { inkFor } from '@/types/solutions';
 
 export interface FaqItem {
@@ -42,10 +43,7 @@ export function FaqAccordion({
 
   return (
     <section id={id} className={`bg-white pb-16 md:pb-24 ${flushTop ? '' : 'pt-16 md:pt-24'}`}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
+      <JsonLd data={faqJsonLd} />
       <div className="page-container max-w-3xl">
         {(eyebrow || heading) && (
           <AnimatedSection className="mb-8">

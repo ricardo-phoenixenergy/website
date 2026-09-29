@@ -9,6 +9,7 @@ import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { FaqAccordion } from '@/components/sections/FaqAccordion';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
+import { JsonLd } from '@/components/layout/JsonLd';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { FleetSavingsEstimator } from '@/components/sections/calculators/FleetSavingsEstimator';
 import { getHowItWorks } from '@/lib/getHowItWorks';
@@ -64,7 +65,7 @@ export default async function EvFleetsPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <JsonLd data={jsonLd} />
 
       {/* §1 — Hero + fleet savings estimator */}
       <SolutionHero

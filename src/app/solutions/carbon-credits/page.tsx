@@ -6,6 +6,7 @@ import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FaqAccordion } from '@/components/sections/FaqAccordion';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
+import { JsonLd } from '@/components/layout/JsonLd';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { CarbonRevenueEstimator } from '@/components/sections/calculators/CarbonRevenueEstimator';
 import { getHowItWorks } from '@/lib/getHowItWorks';
@@ -45,7 +46,7 @@ export default async function CarbonCreditsPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <JsonLd data={jsonLd} />
 
       {/* §1 — Hero + revenue estimator */}
       <SolutionHero

@@ -8,6 +8,7 @@ import { FaqAccordion } from '@/components/sections/FaqAccordion';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
+import { JsonLd } from '@/components/layout/JsonLd';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { getHeroImages } from '@/lib/getHeroImages';
 import { VERTICAL_CONFIG } from '@/config/verticals';
@@ -72,7 +73,7 @@ export default async function WeBuySolarPage() {
   return (
     <>
       {jsonLd.map((block, i) => (
-        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(block) }} />
+        <JsonLd key={i} data={block} />
       ))}
 
       {/* §1 — Hero */}

@@ -68,8 +68,3 @@ export function projectBreadcrumbJsonLd(title: string, url: string) {
     ],
   };
 }
-
-/** JSON for a <script type="application/ld+json">, with "<" escaped so text from the CMS can't close the tag. */
-export function serializeJsonLd(data: unknown): string {
-  return JSON.stringify(data).replace(/</g, '\\u003c');
-}

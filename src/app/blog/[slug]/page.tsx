@@ -14,6 +14,7 @@ import { ShareButtons } from '@/components/blog/ShareButtons';
 import { Chip } from '@/components/ui/Chip';
 import { AuthorCard } from '@/components/blog/AuthorCard';
 import { RelatedPosts } from '@/components/blog/RelatedPosts';
+import { JsonLd } from '@/components/layout/JsonLd';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { BlogReadDepth } from '@/components/analytics/BlogReadDepth';
 import { cache } from 'react';
@@ -161,14 +162,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   return (
     <>
       <BlogReadDepth slug={post.slug.current} category={post.category} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
+      <JsonLd data={articleJsonLd} />
+      <JsonLd data={breadcrumbJsonLd} />
 
       {/* Post hero */}
       <section className="relative overflow-hidden" style={{ height: 360, background: '#0d1f22' }}>

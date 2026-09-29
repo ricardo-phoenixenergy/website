@@ -5,6 +5,7 @@ import { SolutionTabs } from '@/components/sections/SolutionTabs';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
+import { JsonLd } from '@/components/layout/JsonLd';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { StrategyFinder } from '@/components/sections/StrategyFinder';
 import { FinancingBand } from '@/components/sections/FinancingBand';
@@ -46,7 +47,7 @@ export default async function CiSolarStoragePage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <JsonLd data={jsonLd} />
       <SolutionHero
         title="Go solar with <em>zero upfront cost</em>"
         subtitle="We fund, install and maintain your commercial solar and battery system. You simply buy cleaner power at a lower rate from day one."

@@ -9,9 +9,10 @@ import { describeResults } from '@/lib/projectResults';
 import { galleryWithoutHero } from '@/lib/projectPhotos';
 import { projectChapters } from '@/lib/projectStory';
 import { projectFacts } from '@/lib/projectFacts';
-import { projectArticleJsonLd, projectBreadcrumbJsonLd, projectDescription, serializeJsonLd, SITE_URL } from '@/lib/projectSeo';
+import { projectArticleJsonLd, projectBreadcrumbJsonLd, projectDescription, SITE_URL } from '@/lib/projectSeo';
 import { selectRelated } from '@/lib/relatedProjects';
 import { projectCta } from '@/config/ctas';
+import { JsonLd } from '@/components/layout/JsonLd';
 import { ProjectBreadcrumb } from '@/components/project/ProjectBreadcrumb';
 import { ProjectHero } from '@/components/project/ProjectHero';
 import { ProjectResults } from '@/components/project/ProjectResults';
@@ -66,8 +67,8 @@ export default async function ProjectPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-pe-bg">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(projectArticleJsonLd(project, { url, imageUrl: shareImage })) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(projectBreadcrumbJsonLd(project.title, url)) }} />
+      <JsonLd data={projectArticleJsonLd(project, { url, imageUrl: shareImage })} />
+      <JsonLd data={projectBreadcrumbJsonLd(project.title, url)} />
 
       <ProjectBreadcrumb title={project.title} url={url} />
       <ProjectHero project={project} overlapped={results.length > 0} />

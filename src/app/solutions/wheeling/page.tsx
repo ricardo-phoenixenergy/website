@@ -5,6 +5,7 @@ import { SolutionTabs } from '@/components/sections/SolutionTabs';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { RelatedArticles } from '@/components/sections/RelatedArticles';
+import { JsonLd } from '@/components/layout/JsonLd';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { WheelingEligibility } from '@/components/sections/WheelingEligibility';
 import { WheelingFlowDiagram } from '@/components/sections/WheelingFlowDiagram';
@@ -124,7 +125,7 @@ export default async function WheelingPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <JsonLd data={jsonLd} />
       <SolutionHero
         title="Access lower-cost <em>renewable electricity</em> through the grid."
         subtitle="From flexible Power Purchase Agreements to dedicated generation ownership, our wheeling solutions help businesses purchase renewable electricity beyond their premises through a fully managed commercial framework."

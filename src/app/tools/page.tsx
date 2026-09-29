@@ -2,6 +2,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
+import { JsonLd } from '@/components/layout/JsonLd';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { IconArrowRight } from '@/components/ui/Icons';
 import { arrowLinkClasses } from '@/components/ui/buttonStyles';
@@ -53,7 +54,7 @@ export default function ToolsPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <JsonLd data={jsonLd} />
 
       <div className="bg-pe-bg min-h-screen">
         <div className="page-container pt-24 pb-16">

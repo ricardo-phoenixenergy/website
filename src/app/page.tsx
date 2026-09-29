@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { JsonLd } from '@/components/layout/JsonLd';
 import { HeroAccordion } from '@/components/sections/HeroAccordion';
 import { AboutTrust } from '@/components/sections/AboutTrust';
 import { CompanyStats } from '@/components/sections/CompanyStats';
@@ -85,10 +86,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd(hasPosts)) }}
-      />
+      <JsonLd data={websiteJsonLd(hasPosts)} />
       <div>
         <HeroAccordion heroImages={heroImages} />
         <CompanyStats stats={companyStats} />

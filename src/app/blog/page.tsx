@@ -13,6 +13,7 @@ import type { BlogPostCard } from '@/types/sanity';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { FeaturedArticleCard } from '@/components/ui/FeaturedArticleCard';
 import { ArticleCard } from '@/components/ui/ArticleCard';
+import { JsonLd } from '@/components/layout/JsonLd';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { BlogSearchInput } from '@/components/blog/BlogSearchInput';
 import { BlogFilterPills } from '@/components/blog/BlogFilterPills';
@@ -111,10 +112,7 @@ export default async function BlogPage({
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
 
       <div className="bg-pe-bg min-h-screen flex flex-col">
 

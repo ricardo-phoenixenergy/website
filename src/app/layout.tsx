@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans, Inter } from 'next/font/google';
 import Script from 'next/script';
+import { JsonLd } from '@/components/layout/JsonLd';
 import { SiteShell } from '@/components/layout/SiteShell';
 import { ScrollDepth } from '@/components/analytics/ScrollDepth';
 import { WebVitals } from './_components/WebVitals';
@@ -84,10 +85,7 @@ export default async function RootLayout({
       className={`${jakarta.variable} ${inter.variable}`}
     >
       <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
-        />
+        <JsonLd data={orgJsonLd} />
       </head>
       <body className="font-body antialiased" style={{ background: '#F5F5F5', color: '#1A1A1A' }}>
         <WebVitals />
