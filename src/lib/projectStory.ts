@@ -8,10 +8,16 @@ export type ChapterKey = 'challenge' | 'solution' | 'outcome';
 
 export interface ProjectChapter {
   key: ChapterKey;
-  /** The label above the chapter, which is also its h2 until chapters get headlines (step 2). */
+  /** The label above the chapter: "The challenge", "Our solution" or "The outcome". */
   label: string;
+  /** The editor's one-line headline, the chapter's h2; null without one, when the label is the h2. */
+  headline: string | null;
   content: PortableTextBlock[];
 }
+
+/** A project's story fields: each chapter's text and its headline. */
+export type ChapterSource = Partial<Record<ChapterKey, PortableTextBlock[] | null>> &
+  Partial<Record<`${ChapterKey}Headline`, string | null>>;
 
 const CHAPTERS: ReadonlyArray<{ key: ChapterKey; label: string }> = [
   { key: 'challenge', label: 'The challenge' },
@@ -34,9 +40,12 @@ export function hasText(blocks: readonly PortableTextBlock[] | null | undefined)
   return (blocks ?? []).some((block) => blockText(block).trim() !== '');
 }
 
-export function projectChapters(project: Partial<Record<ChapterKey, PortableTextBlock[] | null>>): ProjectChapter[] {
+/** The chapters with text, in order. A headline without text shows no chapter. */
+export function projectChapters(project: ChapterSource): ProjectChapter[] {
   return CHAPTERS.flatMap(({ key, label }) => {
     const content = project[key];
-    return content && hasText(content) ? [{ key, label, content }] : [];
+    if (!content || !hasText(content)) return [];
+    const headline = project[`${key}Headline`]?.trim() || null;
+    return [{ key, label, headline, content }];
   });
 }

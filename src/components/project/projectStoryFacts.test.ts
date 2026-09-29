@@ -106,4 +106,18 @@ describe('ProjectStory', () => {
     expect(markup).toMatch(/<p class="[^"]*">A battery twice a day\.<\/p>/);
     expect(markup).not.toContain('<img');
   });
+
+  it("makes a chapter's headline its h2, under the label, and keeps the label as the h2 without one", () => {
+    const headlined = projectChapters({
+      challenge: [block('Peak tariffs.')],
+      challengeHeadline: 'Peak tariffs landed on the busiest hours',
+      outcome: [block('Lower costs.')],
+    });
+    const markup = html(createElement(ProjectStory, { summary: null, chapters: headlined, facts: groups, cta, ctaLocation: 'x' }));
+    expect(markup).toMatch(
+      /<p class="[^"]*uppercase[^"]*">The challenge<\/p><h2 id="chapter-challenge" class="[^"]*text-\[26px\][^"]*">Peak tariffs landed on the busiest hours<\/h2>/,
+    );
+    expect(markup).toMatch(/<h2 id="chapter-outcome" class="[^"]*uppercase[^"]*">The outcome<\/h2>/);
+    expect(markup.match(/<h2 id="chapter-/g)).toHaveLength(2);
+  });
 });

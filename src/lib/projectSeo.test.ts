@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { projectArticleJsonLd, projectBreadcrumbJsonLd, projectDescription, snippet, type ArticleSource } from './projectSeo';
+import { projectArticleJsonLd, projectBreadcrumbJsonLd, projectDescription, projectTitle, snippet, type ArticleSource } from './projectSeo';
 
 const project: ArticleSource = {
   title: '31 Sacks Circle',
@@ -76,5 +76,28 @@ describe('projectBreadcrumbJsonLd', () => {
       { '@type': 'ListItem', position: 2, name: 'Projects', item: 'https://phoenixenergy.solutions/projects' },
       { '@type': 'ListItem', position: 3, name: '31 Sacks Circle', item: url },
     ]);
+  });
+});
+
+describe('the headline and the search description', () => {
+  it('titles the page with the headline, else the project title', () => {
+    expect(projectTitle({ title: '31 Sacks Circle', headline: ' Rooftop solar for a Cape Town warehouse ' })).toBe('Rooftop solar for a Cape Town warehouse');
+    expect(projectTitle({ title: '31 Sacks Circle', headline: '  ' })).toBe('31 Sacks Circle');
+    expect(projectTitle({ title: '31 Sacks Circle', headline: null })).toBe('31 Sacks Circle');
+  });
+
+  it('describes the page with the search description, else the summary, else nothing', () => {
+    expect(projectDescription({ summary: project.summary, seoDescription: 'Solar and a battery carry a warehouse through its peak.' })).toBe(
+      'Solar and a battery carry a warehouse through its peak.',
+    );
+    expect(projectDescription({ summary: project.summary, seoDescription: '   ' })).toBe(project.summary);
+    expect(projectDescription({ summary: null, seoDescription: null })).toBeUndefined();
+  });
+
+  it('gives the Article the headline and the search description, and never the client name', () => {
+    const withClient = { ...project, headline: 'Rooftop solar for a Cape Town warehouse', seoDescription: 'A search description.', clientName: 'Hidden Client Ltd' };
+    const data = projectArticleJsonLd(withClient, { url });
+    expect(data).toMatchObject({ headline: 'Rooftop solar for a Cape Town warehouse', description: 'A search description.' });
+    expect(JSON.stringify(data)).not.toContain('Hidden Client Ltd');
   });
 });

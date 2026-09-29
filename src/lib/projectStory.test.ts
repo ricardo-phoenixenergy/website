@@ -27,3 +27,22 @@ describe('hasText', () => {
     expect(hasText(null)).toBe(false);
   });
 });
+
+describe('chapter headlines', () => {
+  it("carries each chapter's headline, trimmed, and null without one", () => {
+    const chapters = projectChapters({
+      challenge: [block('Peak tariffs.')],
+      challengeHeadline: '  Peak tariffs landed on the busiest hours ',
+      solution: [block('A battery.')],
+      solutionHeadline: '   ',
+    });
+    expect(chapters.map((c) => [c.key, c.headline])).toEqual([
+      ['challenge', 'Peak tariffs landed on the busiest hours'],
+      ['solution', null],
+    ]);
+  });
+
+  it('shows no chapter for a headline without text', () => {
+    expect(projectChapters({ outcomeHeadline: 'Lower bills from month one', outcome: [block('  ')] })).toEqual([]);
+  });
+});

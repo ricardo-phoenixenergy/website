@@ -30,14 +30,27 @@ function Lead({ summary }: { summary: string }) {
   return <p className="max-w-[34em] font-body text-xl leading-[1.6] text-pe-text">{summary}</p>;
 }
 
+const CHAPTER_LABEL = 'font-body text-xs font-bold uppercase tracking-[0.1em] text-pe-muted';
+
+// A chapter with a headline: the label, then the headline as its h2. Without
+// one, the label is the h2 and keeps the label style.
 function Chapters({ chapters }: { chapters: ProjectChapter[] }) {
   return (
     <div className="flex flex-col gap-10">
       {chapters.map((chapter) => (
         <section key={chapter.key} aria-labelledby={`chapter-${chapter.key}`} className="max-w-[38rem]">
-          <h2 id={`chapter-${chapter.key}`} className="font-body text-xs font-bold uppercase tracking-[0.1em] text-pe-muted">
-            {chapter.label}
-          </h2>
+          {chapter.headline ? (
+            <>
+              <p className={CHAPTER_LABEL}>{chapter.label}</p>
+              <h2 id={`chapter-${chapter.key}`} className="mt-2 font-display text-[26px] font-extrabold leading-[1.2] text-pe-text">
+                {chapter.headline}
+              </h2>
+            </>
+          ) : (
+            <h2 id={`chapter-${chapter.key}`} className={CHAPTER_LABEL}>
+              {chapter.label}
+            </h2>
+          )}
           <div className="mt-3">
             <PortableText value={chapter.content} components={projectTextComponents} />
           </div>
