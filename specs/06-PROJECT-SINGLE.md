@@ -197,7 +197,7 @@ With no next project above it, it keeps the gap between parts itself.
 | `src/app/projects/[slug]/page.tsx` | Reads the project; metadata, structured data and composition |
 | `src/components/project/*` | `ProjectBreadcrumb`, `ProjectHero`, `ProjectResults`, `ProjectPhotos`, `ProjectStory`, `ProjectFacts`, `StickyWhenFits`, `ProjectNext`, `ProjectBand` |
 | `src/lib/projectData.ts` | Every project read, with the disclosure rules |
-| `src/lib/projectDisclosure.ts`, `projectMeta.ts`, `projectStory.ts`, `projectFacts.ts`, `projectPhotos.ts`, `stickyFit.ts`, `projectSeo.ts`, `projectOrder.ts` | Pure logic, each with vitest tests |
+| `src/lib/projectDisclosure.ts`, `projectMeta.ts`, `projectStory.ts`, `projectFacts.ts`, `projectPhotos.ts`, `stickyFit.ts`, `projectSeo.ts`, `projectOrder.ts`, `projectResults.ts` | Pure logic, each with vitest tests |
 | `src/components/ui/CopyLinkButton.tsx` and `TrackedButton.tsx` | Page actions |
 
 ---
