@@ -79,7 +79,7 @@ export function ProjectCard({ project, className, fluid, size = 'default', headi
 
           {outcomes.length > 0 && (
             <div className="mt-4">
-              {!isMeasured(project.resultsBasis) && (
+              {!isMeasured(project.resultsBasis, project.status) && (
                 <p className="font-body text-xs text-pe-muted mb-2">Projected results</p>
               )}
               {/* Two columns while each outcome has 8rem; a narrower card stacks them

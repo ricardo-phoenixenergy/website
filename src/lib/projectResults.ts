@@ -1,8 +1,10 @@
 // src/lib/projectResults.ts
 // How a project's results are labelled. Figures count as measured only when an
-// editor marks them so in Sanity; anything else is a projection, because the
-// numbers on today's case studies come from the financial model.
-import type { ResultsBasis } from '@/types/sanity';
+// editor marks them so in Sanity and the project is completed: a project still
+// being built or planned has nothing to measure yet. Anything else is a
+// projection, because the numbers on today's project pages come from the
+// financial model.
+import type { ProjectStatus, ResultsBasis } from '@/types/sanity';
 
 /** The note under projected results when the editor hasn't written their own. */
 export const PROJECTED_RESULTS_NOTE =
@@ -13,8 +15,8 @@ const MONTHS = [
   'July', 'August', 'September', 'October', 'November', 'December',
 ];
 
-export function isMeasured(basis: ResultsBasis | null | undefined): boolean {
-  return basis === 'measured';
+export function isMeasured(basis: ResultsBasis | null | undefined, status: ProjectStatus | null | undefined): boolean {
+  return basis === 'measured' && status === 'completed';
 }
 
 /** "30 June 2026" from a Sanity date (YYYY-MM-DD); null for anything else. No locale data needed. */
@@ -39,8 +41,9 @@ export function describeResults(project: {
   resultsBasis?: ResultsBasis | null;
   resultsAsOf?: string | null;
   resultsAssumptions?: string | null;
+  status?: ProjectStatus | null;
 }): ResultsLabelling {
-  const measured = isMeasured(project.resultsBasis);
+  const measured = isMeasured(project.resultsBasis, project.status);
   const own = project.resultsAssumptions?.trim();
   return {
     heading: measured ? 'Measured results' : 'Projected results',

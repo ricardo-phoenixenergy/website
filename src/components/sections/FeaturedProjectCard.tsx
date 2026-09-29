@@ -110,7 +110,7 @@ export function FeaturedProjectCard({
           {/* Right: outcomes panel, on the card's own white (a tinted panel reads as a card inside the card) */}
           <div className="flex flex-col p-6 justify-between border-t border-pe-border sm:border-t-0 sm:border-l relative z-10">
             <div>
-              {outcomes.length > 0 && !isMeasured(project.resultsBasis) && (
+              {outcomes.length > 0 && !isMeasured(project.resultsBasis, project.status) && (
                 <p className="font-body text-xs text-pe-muted mb-2">Projected results</p>
               )}
               {/* Plain value and label pairs, as on ProjectCard: boxed tiles would be cards inside the card */}
