@@ -1,6 +1,11 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+// The click's dataLayer push, recorded instead of sent.
+vi.mock('@/lib/analytics', () => ({ dlPush: vi.fn() }));
+
+import { dlPush } from '@/lib/analytics';
 import { TrackedButton } from './TrackedButton';
 import { CopyLinkButton } from './CopyLinkButton';
 import { IconChevronDown } from './Icons';
@@ -16,6 +21,21 @@ describe('TrackedButton', () => {
     expect(markup).toContain('min-h-12');
     expect(markup).toContain('w-full');
     expect(markup).toContain('>Book a discovery meeting</a>');
+  });
+
+  it('sends cta_click with its label and location when clicked', () => {
+    vi.mocked(dlPush).mockClear();
+    // TrackedButton holds no state, so calling it gives the Button element it draws.
+    const element = TrackedButton({
+      href: '/contact?x=1',
+      ctaLabel: 'Book a discovery meeting',
+      ctaLocation: 'project_facts:31-sacks-circle',
+      children: 'Book a discovery meeting',
+    });
+    const { onClick } = element.props as { onClick: () => void };
+    onClick();
+    expect(dlPush).toHaveBeenCalledTimes(1);
+    expect(dlPush).toHaveBeenCalledWith({ event: 'cta_click', cta_label: 'Book a discovery meeting', cta_location: 'project_facts:31-sacks-circle' });
   });
 });
 
