@@ -83,6 +83,11 @@ describe('objectPositionFor', () => {
     expect(objectPositionFor({})).toBe('50% 50%');
     expect(objectPositionFor(null)).toBe('50% 50%');
   });
+
+  it('centres when the hotspot has non-finite values', () => {
+    expect(objectPositionFor({ hotspot: { x: Number.NaN, y: 0.5, width: 1, height: 1 } })).toBe('50% 50%');
+    expect(objectPositionFor({ hotspot: { x: 0.5, y: Number.POSITIVE_INFINITY, width: 1, height: 1 } })).toBe('50% 50%');
+  });
 });
 
 describe('photoAlt', () => {
