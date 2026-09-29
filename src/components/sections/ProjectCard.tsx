@@ -4,6 +4,7 @@ import { SOLUTION_META } from '@/types/solutions';
 import type { ProjectCard as ProjectCardType } from '@/types/sanity';
 import { Card, CardImage, CardBody, CardFooter, CardArrow } from '@/components/ui/Card';
 import { isMeasured } from '@/lib/projectResults';
+import { cardPlace } from '@/lib/projectMeta';
 
 interface ProjectCardProps {
   project: ProjectCardType;
@@ -33,7 +34,8 @@ export function ProjectCard({ project, className, fluid, size = 'default', headi
   const Title = headingLevel === 2 ? 'h2' : 'h3';
   const outcomes = (project.results ?? []).filter((r) => r.value).slice(0, 2);
   const specs = (project.metrics ?? []).map((m) => m.value).filter(Boolean).slice(0, 4);
-  const place = project.location?.trim();
+  // The city, then the client when the data carries the name: it does only with the client's consent.
+  const place = cardPlace(project);
   const status = project.status ? STATUS_LABEL[project.status] : null;
 
   return (

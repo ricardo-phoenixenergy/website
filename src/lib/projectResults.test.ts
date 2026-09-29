@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { describeResults, formatAsOf, isMeasured, PROJECTED_RESULTS_NOTE } from './projectResults';
+import { describeResults, formatAsOf, formatMonthYear, isMeasured, PROJECTED_RESULTS_NOTE } from './projectResults';
 
 describe('describeResults', () => {
   it('treats results with no basis as projected, with the default note', () => {
@@ -55,5 +55,18 @@ describe('isMeasured', () => {
     expect(isMeasured('measured', undefined)).toBe(false);
     expect(isMeasured('projected', 'completed')).toBe(false);
     expect(isMeasured(null, 'completed')).toBe(false);
+  });
+});
+
+describe('formatMonthYear', () => {
+  it('gives the month and year of a Sanity date', () => {
+    expect(formatMonthYear('2026-06-12')).toBe('June 2026');
+    expect(formatMonthYear('2027-01-31')).toBe('January 2027');
+  });
+
+  it('returns null for anything that is not a YYYY-MM-DD date', () => {
+    for (const bad of [undefined, null, '', '12 June 2026', '2026-06', '2026-00-10', '2026-06-12T08:00:00Z']) {
+      expect(formatMonthYear(bad)).toBeNull();
+    }
   });
 });

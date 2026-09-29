@@ -34,7 +34,7 @@ export interface FactsSource {
 export function projectFacts(project: FactsSource): FactGroup[] {
   const meta: SolutionMeta | undefined = SOLUTION_META[project.vertical];
   const location = project.location?.trim();
-  const status = statusLine(project.status, project.completionDate);
+  const status = statusLine(project);
 
   const projectRows: FactRow[] = [];
   if (location) projectRows.push({ key: 'location', label: 'Location', value: location });

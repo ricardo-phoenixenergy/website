@@ -7,6 +7,7 @@ import { IconArrowRight } from '@/components/ui/Icons';
 import { buttonClasses } from '@/components/ui/buttonStyles';
 import { Card } from '@/components/ui/Card';
 import { isMeasured } from '@/lib/projectResults';
+import { cardPlace } from '@/lib/projectMeta';
 
 const DEFAULT_LQIP =
   'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
@@ -45,7 +46,8 @@ export function FeaturedProjectCard({
   // No results yet: the specs (up to four, as on ProjectCard) take the outcomes' place.
   const tiles = outcomes.length > 0 ? outcomes : metrics.slice(0, 4);
   const specs = outcomes.length > 0 ? metrics.map((m) => m.value).slice(0, 4) : [];
-  const place = project.location?.trim();
+  // The city, then the client when the data carries the name: it does only with the client's consent.
+  const place = cardPlace(project);
   const status = project.status ? STATUS_LABEL[project.status] : null;
 
   return (

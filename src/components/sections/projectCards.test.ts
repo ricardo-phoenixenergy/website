@@ -21,13 +21,16 @@ const project = (id: string, extra: Partial<ProjectPreview> = {}): ProjectPrevie
 });
 
 describe('ProjectCard', () => {
-  it('says "View project" and shows the place without a client name, even if one reached it', () => {
-    const withClient = { ...project('a'), clientName: 'Hidden Client Ltd' } as ProjectCardData;
-    const markup = html(createElement(ProjectCard, { project: withClient, fluid: true }));
+  it('says "View project" and shows the place', () => {
+    const markup = html(createElement(ProjectCard, { project: project('a'), fluid: true }));
     expect(markup).toContain('View project');
     expect(markup).not.toContain('case study');
-    expect(markup).toContain('Cape Town');
-    expect(markup).not.toContain('Hidden Client Ltd');
+    expect(markup).toMatch(/<p [^>]*>Cape Town<\/p>/);
+  });
+
+  it("names the client after the place when the data carries the name, which the queries allow only with the client's consent", () => {
+    const named: ProjectCardData = { ...project('a'), clientName: 'Example Client' };
+    expect(html(createElement(ProjectCard, { project: named, fluid: true }))).toMatch(/<p [^>]*>Cape Town · Example Client<\/p>/);
   });
 });
 
@@ -37,6 +40,11 @@ describe('FeaturedProjectCard', () => {
     expect(markup).toContain('Featured project');
     expect(markup).toContain('View project');
     expect(markup).not.toContain('case study');
+  });
+
+  it('names the client after the place when the data carries the name', () => {
+    const markup = html(createElement(FeaturedProjectCard, { project: { ...project('a'), clientName: 'Example Client' } }));
+    expect(markup).toMatch(/<p [^>]*>Cape Town · Example Client<\/p>/);
   });
 });
 
