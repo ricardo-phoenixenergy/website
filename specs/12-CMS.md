@@ -12,13 +12,13 @@
   title:           string
   slug:            slug (unique)
   vertical:        string (enum: SolutionVertical)
-  featured:        boolean  // home "Projects" carousel; on /projects (once filters show) the first featured complete case study gets the large card
-  featuredOrder:   number   // optional; lower first in the home carousel and on /projects (complete case studies still lead)
+  featured:        boolean  // home "Projects" carousel; on /projects (once filters show) the first featured project gets the large card
+  featuredOrder:   number   // optional; lower first in the home carousel and among the featured projects that lead /projects
   location:        string
-  clientName:      string
-  systemSize:      string   // e.g. "4.8 MW"
+  clientName:      string   // not shown on the site until the CMS can record the client's consent (step 2)
+  systemSize:      string   // never shown on the site
   completionDate:  string
-  projectValue:    string   // e.g. "R42M"
+  projectValue:    string   // e.g. "R42M"; a rand amount, not shown on the site until the client agrees (step 2)
   status:          'completed' | 'in-progress' | 'planned'
   heroImage:       image (with alt)
   gallery:         image[]
@@ -300,28 +300,28 @@ Home shows every active partner in one centred grid, with no tabs.
 ```typescript
 // src/lib/queries.ts (field projections shortened to { ... })
 
-// Fragment, not a query: a project is a case study once challenge, solution and outcome all have content.
-// Cards receive it as caseStudyReady; src/app/sitemap.ts lists only these projects.
-export const CASE_STUDY_READY = `defined(challenge[0]) && defined(solution[0]) && defined(outcome[0])`;
+// Project queries leave out clientName and projectValue, and project images carry only
+// { asset->{ _id, url, metadata { lqip, dimensions } }, alt, hotspot, crop }. Read them through
+// src/lib/projectData.ts, which also drops rand amounts from results and System rows.
 
-// All projects (/projects)
-export const ALL_PROJECTS_QUERY = `*[_type == "project"] | order(completionDate desc) { ... }`;
+// All projects (/projects), newest first; getAllProjects() then puts featured projects first
+export const ALL_PROJECTS_QUERY = `*[_type == "project" && defined(slug.current)] | order(_createdAt desc) { ... }`;
 
 // Featured projects (home "Projects" carousel), no limit
-export const FEATURED_PROJECTS_QUERY = `*[_type == "project" && featured == true] | order(coalesce(featuredOrder, 99) asc, completionDate desc) { ... }`;
+export const FEATURED_PROJECTS_QUERY = `*[_type == "project" && featured == true && defined(slug.current)] | order(coalesce(featuredOrder, 99) asc, _createdAt desc) { ... }`;
 
-// Projects by vertical (the "Projects" section on each solution page), up to six
-export const PROJECTS_BY_VERTICAL_QUERY = `*[_type == "project" && vertical == $vertical] | order(completionDate desc) [0..5] { ... }`;
+// Projects by vertical (the "Projects" section on each solution page), the newest six
+export const PROJECTS_BY_VERTICAL_QUERY = `*[_type == "project" && vertical == $vertical && defined(slug.current)] | order(_createdAt desc) [0..5] { ... }`;
 
-// One featured project per vertical. Exported, but no page uses it.
-export const FLAGSHIP_BY_VERTICAL_QUERY = `*[_type == "project" && vertical == $vertical && featured == true] | order(coalesce(featuredOrder, 99) asc, completionDate desc) [0] { ... }`;
+// Single project, with up to three from the same vertical and, for when it has none,
+// up to two from other verticals, both newest first (/projects/[slug])
+export const PROJECT_BY_SLUG_QUERY = `*[_type == "project" && slug.current == $slug][0] { ..., _createdAt, _updatedAt, "related": *[...same vertical...] | order(_createdAt desc) [0..2] { ... }, "otherProjects": *[...other verticals...] | order(_createdAt desc) [0..1] { ... } }`;
 
-// Single project, with up to three related projects from the same vertical and, for when it has none,
-// up to two from other verticals; both put complete case studies first, then the newest (/projects/[slug])
-export const PROJECT_BY_SLUG_QUERY = `*[_type == "project" && slug.current == $slug][0] { ..., "related": *[_type == "project" && vertical == ^.vertical && slug.current != $slug] | order((${CASE_STUDY_READY}) desc, _createdAt desc) [0..2] { ... }, "otherProjects": *[_type == "project" && vertical != ^.vertical && slug.current != $slug] | order((${CASE_STUDY_READY}) desc, _createdAt desc) [0..1] { ... } }`;
+// Project slugs (generateStaticParams), as strings
+export const ALL_PROJECT_SLUGS_QUERY = `*[_type == "project" && defined(slug.current)].slug.current`;
 
-// Project slugs (generateStaticParams)
-export const ALL_PROJECT_SLUGS_QUERY = `*[_type == "project"]{ "slug": slug.current }`;
+// Sitemap entries
+export const PROJECT_SITEMAP_QUERY = `*[_type == "project" && defined(slug.current)]{ "slug": slug.current, _updatedAt }`;
 
 // Blog index: category, tag and search filters, featured first, six per page (/blog)
 export const BLOG_INDEX_QUERY = `*[_type == "blogPost" && ($category == "" || category == $category) && ($tag == "" || $tag in tags) && ($q == "" || title match $q || excerpt match $q)] | order(featured desc, publishedAt desc) [$offset...$offset+6] { ... }`;

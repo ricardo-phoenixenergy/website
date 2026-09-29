@@ -250,7 +250,7 @@ Only the About timeline snaps, and only on phones (`[scroll-snap-type:x_mandator
 Revalidates hourly. Entries (priority, change frequency):
 - Static: `/` (1.0, weekly); `/about` and `/contact` (0.8, monthly); `/solutions` (0.9, monthly); the six solution pages (0.8, monthly); `/projects` (0.8, weekly); `/tools` and `/tools/solar-valuation` (0.7, monthly); `/privacy-policy`, `/terms-of-use` and `/disclaimer` (0.3, yearly).
 - Blog: `/blog` (0.8, weekly) only once a post is published (updated September 2026; until then it is `noindex`), then every `blogPost` (0.7, weekly), with `lastModified` taken from `publishedAt`.
-- Projects: case studies only (0.7, monthly), meaning `CASE_STUDY_READY` from `src/lib/queries.ts` (challenge, solution and outcome all written). Any other project page is `noindex`, so it is left out.
+- Projects: every project (0.7, monthly), with `lastModified` from `_updatedAt` (`getProjectSitemapEntries()`, `src/lib/projectData.ts`). Every project page is indexed.
 
 ### `src/app/robots.ts`
 ```typescript
@@ -318,7 +318,7 @@ Default page size: 6 posts. First page has no `?page=` param.
 ### `alt` text policy
 Every `next/image` and `<img>` sets `alt`; decorative images use `alt=""`. As built:
 - Project cards (`ProjectCard`), the home hero accordion, gallery thumbnails, the footer watermark, the logo mark beside the wordmark and the author avatar beside the name in a post header: `alt=""`.
-- Case study heroes and the featured project card: the image's `alt` from Sanity, or the project title. Gallery lightbox images: the image's `alt`, or "Project photo N".
+- Project heroes and the featured project card: the image's `alt` from Sanity, or the project title. Photo viewer images: the image's `alt`, or "Project photo N".
 - Blog heroes and article cards: the image's `alt`, or the post title.
 - Solution page heroes and the `/solutions` cards: the vertical's name.
 - Team photos: the member's name. Other author photos: the author's name. Partner logos: the logo's `alt`, or the partner name. Industry proof photos: the given alt, or the client name.

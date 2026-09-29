@@ -21,7 +21,7 @@ or one service only:  [Equal large cards, 2 columns]
 4 or more projects
 across 2+ services:   [Filter pills, with counts]
                       [Result count]
-                      [Featured case study card, only if one qualifies]
+                      [Featured project card, when one is featured]
                       [Project grid, 3 columns]
                       [Load more projects]
                       [Our other services]
@@ -60,16 +60,16 @@ Shown only when there are **4 or more projects in 2 or more services** (`FILTER_
 
 ---
 
-## Featured Case Study Card
+## Featured Project Card
 
-Only in the layout with filters, and only when the filtered set has a project that is both **featured** and a **complete case study** (`featured && caseStudyReady`). Otherwise no featured card is shown. The featured project is left out of the grid below it.
+Only in the layout with filters, and only when the filtered set has a **featured** project: the first in the list, which puts featured projects first in their featured order (`getAllProjects()`, `src/lib/projectData.ts`). Otherwise no featured card is shown. The featured project is left out of the grid below it.
 
 `FeaturedProjectCard` is a two-column card (one column below `sm`), outcomes first like `ProjectCard` (updated September 2026):
-- Left: the hero photo (`next/image`, blur placeholder, decorative `alt=""`, `priority` here as the first image) under a dark gradient, the kicker badge ("Featured case study"), a status badge when in progress or planned, the project title (H2 here) and location · client.
+- Left: the hero photo (`next/image`, blur placeholder, decorative `alt=""`, `priority` here as the first image) under a dark gradient, the kicker badge ("Featured project"), a status badge when in progress or planned, the project title (H2 here) and the location. The client's name never shows until the CMS can record the client's consent (`specs/06-PROJECT-SINGLE.md`).
 - Right: the "Projected results" caption unless an editor marks the results measured (`isMeasured()`), the first two results as value and label pairs (Plus Jakarta Sans 800, 24px, `pe-primary`, over a 12px label; no boxes, so no card sits inside the card), the specs on one line, then the summary (clamped to 3 lines). A project with no results shows its specs (up to four) as the pairs instead.
-- Footer: "Read case study" for a complete case study, otherwise "View project", with an arrow: a compact primary pill (40px) drawn on a `<span>` with `buttonClasses({ size: 'compact', inCard: true })`, since the whole card is the link. It darkens and presses with the card (hover or press anywhere on it), as well as the card's own lift.
+- Footer: "View project", with an arrow: a compact primary pill (40px) drawn on a `<span>` with `buttonClasses({ size: 'compact', inCard: true })`, since the whole card is the link. It darkens and presses with the card (hover or press anywhere on it), as well as the card's own lift.
 
-It links straight to `/projects/[slug]`. The same card, with an h3, the kicker "Next project" and no `priority` image, is the wide card in a case study's related projects (`specs/06-PROJECT-SINGLE.md`).
+It links straight to `/projects/[slug]`. The same card, with an h3, its pill naming the project's service and no `priority` image, is the wide card in a project page's next project section (`specs/06-PROJECT-SINGLE.md`).
 
 The April mockup's per-filter featured data (Shoprite DC, Cape Town Industrial, Mpumalanga Solar Carbon Offset, Tiger Brands, Transnet Fleet, Pretoria Estate Buyback) was placeholder content, not Phoenix projects. It has been removed from this spec, and none of it may appear on the site.
 
@@ -91,17 +91,17 @@ In the filter layout only: *"Showing X of Y projects"* in a `role="status"` line
   ↳ status badge, top right: "In progress" or "Planned" (none when completed)
 [Body]
   ↳ title: H2 on /projects, H3 under a section heading elsewhere
-  ↳ location · client
+  ↳ location
   ↳ "Projected results" caption, unless an editor marks the results measured
   ↳ the first two results: value (Plus Jakarta Sans 800, pe-primary) over its label; side by side
     when there's room, with the values top-aligned so a label that wraps never pushes its neighbour down
   ↳ up to four specs on one line, joined with " · "
 [Footer]
-  ↳ "Read case study" (or "View project" when the case study isn't written yet) + arrow
+  ↳ "View project" + arrow
 ```
 
 - Few projects (the 1 to 3 layout): `size="large"`, with roomier padding and larger type.
-- The same card is used on home and the solution pages (`FeaturedProjects`) and in a case study's related projects when there are two or more.
+- The same card is used on home and the solution pages (`FeaturedProjects`) and in a project page's next project section when there are two or more.
 
 ---
 
@@ -116,20 +116,20 @@ In the filter layout only: *"Showing X of Y projects"* in a `role="status"` line
 ## Our Other Services
 
 Under the grid in both layouts with projects. It lists every service with no published project yet:
-- H2 "Our other services", then *"No case study is published for these yet. See how each one works."*
+- H2 "Our other services", then *"No project is published for these yet. See how each one works."*
 - One `Chip` link per service (36px, white with a `#E5E7EB` border and muted text), with its 8px accent dot, to that solution page. The chips sit 8px apart and wrap onto rows 10px apart, so their 44px touch targets stay 2px clear of the next row's.
 
 ---
 
 ## Empty State
 
-When no project is published: a dashed card with the H2 "No projects published yet", *"In the meantime, tell us about your site."* and the "Book a discovery meeting" button (`DISCOVERY_CTA`, `src/config/ctas.ts`; `Button`, primary, default size). It makes no promise about case studies being written.
+When no project is published: a dashed card with the H2 "No projects published yet", *"In the meantime, tell us about your site."* and the "Book a discovery meeting" button (`DISCOVERY_CTA`, `src/config/ctas.ts`; `Button`, primary, default size). It makes no promise about projects to come.
 
 ---
 
 ## Card Click Behaviour
 
-Updated 2026-09-24: **one step.** Every card, and the featured card, is a link straight to the case study at `/projects/[slug]` (`specs/06-PROJECT-SINGLE.md`). The April two-step design (a card opened a slide-in `ProjectDrawer`, whose button opened the case study) was removed in September 2026, together with `src/components/ui/ProjectDrawer.tsx`.
+Updated 2026-09-24: **one step.** Every card, and the featured card, is a link straight to the project page at `/projects/[slug]` (`specs/06-PROJECT-SINGLE.md`). The April two-step design (a card opened a slide-in `ProjectDrawer`, whose button opened the project page) was removed in September 2026, together with `src/components/ui/ProjectDrawer.tsx`.
 
 ---
 
@@ -147,7 +147,7 @@ interface ProjectsGridProps {
 // FILTER_THRESHOLD = 4   below this many projects, equal cards and no filters
 // PAGE_SIZE = 6          first page, and each Load more
 
-// Order: complete case studies first (caseStudyReady), then featuredOrder (missing = 99).
+// Order: as given by getAllProjects() (src/lib/projectData.ts): featured projects first in their featured order, then the rest newest first.
 
 // State
 // activeFilter: SolutionVertical | 'all'
@@ -157,13 +157,13 @@ interface ProjectsGridProps {
 // Derived
 // verticalsWithProjects   services with at least one project (pills, counts)
 // filtersShown            projects.length >= 4 && verticalsWithProjects.length > 1
-// featuredProject         filtered.find(p => p.featured && p.caseStudyReady) ?? null
+// featuredProject         filtered.find(p => p.featured) ?? null
 // otherVerticals          services with no project (Our other services)
 ```
 
 ---
 
-*Spoke of [`CLAUDE.md`](/CLAUDE.md) | Updated 2026-09-24*
+*Spoke of [`CLAUDE.md`](/CLAUDE.md) | Updated 2026-09-29*
 
 ---
 
@@ -178,7 +178,7 @@ interface ProjectsGridProps {
 - `< 768px`: 1 column
 - `≥ 768px`: 2 columns
 
-### Featured case study card
+### Featured project card
 - Below `640px` the photo stacks above the outcomes panel (minimum photo height 260px).
 
 ### Filter bar
