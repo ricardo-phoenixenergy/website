@@ -107,3 +107,8 @@ export function objectPositionFor(image: Pick<SanityImage, 'hotspot'> | null | u
 export function photoAlt(image: SanityImage, index: number): string {
   return image.alt?.trim() || `Project photo ${index + 1}`;
 }
+
+/** The caption the viewer shows under the photo, or null when there's none to show. */
+export function photoCaption(image: Pick<SanityImage, 'caption'>): string | null {
+  return image.caption?.trim() || null;
+}

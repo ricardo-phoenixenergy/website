@@ -9,7 +9,7 @@ vi.mock('next/image', async () => {
   return { default: ({ alt, src }: { alt?: string; src?: string }) => h('img', { alt, src }) };
 });
 
-import { ProjectPhotos, SWIPE_AREA_CLASS } from './ProjectPhotos';
+import { PhotoViewer, ProjectPhotos, SWIPE_AREA_CLASS } from './ProjectPhotos';
 
 const html = (el: Parameters<typeof renderToStaticMarkup>[0]) => renderToStaticMarkup(el);
 const photo = (n: number, alt?: string): SanityImage => ({
@@ -50,5 +50,24 @@ describe('ProjectPhotos', () => {
     const classes = SWIPE_AREA_CLASS.split(/\s+/);
     expect(classes).toContain('touch-pan-y');
     expect(classes).toContain('touch-pinch-zoom');
+  });
+});
+
+describe('PhotoViewer', () => {
+  const noop = () => {};
+  const photos = [photo(1), { ...photo(2), caption: 'The inverters, before commissioning' }, photo(3)];
+
+  it('names the dialog by its place in the set, shows the count, and puts the caption under the photo', () => {
+    const markup = html(createElement(PhotoViewer, { photos, index: 1, onClose: noop, onPrev: noop, onNext: noop }));
+    expect(markup).toMatch(/<div [^>]*role="dialog" aria-modal="true" aria-label="Photo 2 of 3"/);
+    expect(markup).toMatch(/<p aria-live="polite"[^>]*>2 of 3<\/p>/);
+    expect(markup).toMatch(/<figcaption[^>]*>The inverters, before commissioning<\/figcaption>/);
+    expect(markup.indexOf('<img')).toBeLessThan(markup.indexOf('<figcaption'));
+  });
+
+  it('shows no caption line for a photo without one', () => {
+    const markup = html(createElement(PhotoViewer, { photos, index: 0, onClose: noop, onPrev: noop, onNext: noop }));
+    expect(markup).not.toContain('<figcaption');
+    expect(markup).toContain('aria-label="Photo 1 of 3"');
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { galleryWithoutHero, isPinchZoomed, moreBadges, mosaicLayout, mosaicTile, objectPositionFor, photoAlt, swipeDirection } from './projectPhotos';
+import { galleryWithoutHero, isPinchZoomed, moreBadges, mosaicLayout, mosaicTile, objectPositionFor, photoAlt, photoCaption, swipeDirection } from './projectPhotos';
 import type { SanityImage } from '@/types/sanity';
 
 const img = (id: string, alt?: string): SanityImage => ({ _type: 'image', asset: { _id: id, url: `https://cdn.sanity.io/images/p/production/${id}.jpg` }, alt });
@@ -109,5 +109,13 @@ describe('photoAlt', () => {
   it('uses the alt text, or names the photo by its number', () => {
     expect(photoAlt(img('image-a', 'Inverters in the plant room'), 0)).toBe('Inverters in the plant room');
     expect(photoAlt(img('image-a', '  '), 2)).toBe('Project photo 3');
+  });
+});
+
+describe('photoCaption', () => {
+  it('gives the caption, trimmed, and nothing for a blank one or none', () => {
+    expect(photoCaption({ ...img('image-a'), caption: ' The plant room, looking north ' })).toBe('The plant room, looking north');
+    expect(photoCaption({ ...img('image-a'), caption: '   ' })).toBeNull();
+    expect(photoCaption(img('image-a'))).toBeNull();
   });
 });

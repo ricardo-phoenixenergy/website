@@ -58,7 +58,8 @@ export function FinancingBand({
   flushTop = false,
 }: FinancingBandProps = {}) {
   return (
-    <section className={`bg-pe-bg pb-16 md:pb-24 ${flushTop ? '' : 'pt-16 md:pt-24'}`}>
+    // id="financing": the Financing row on a project page links here (src/lib/projectFacts.ts).
+    <section id="financing" className={`bg-pe-bg pb-16 md:pb-24 ${flushTop ? '' : 'pt-16 md:pt-24'}`}>
       <div className="page-container">
         <p className="font-body text-xs font-bold uppercase tracking-[0.12em] text-pe-muted mb-2">
           {eyebrow}

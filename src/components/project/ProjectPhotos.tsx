@@ -4,7 +4,8 @@
 // sets from the number of photos, and the photo viewer.
 // - Every tile opens the viewer at its photo, and "View all N photos" opens it
 //   at the first.
-// - The viewer shows each photo whole, with "2 of 8".
+// - The viewer (PhotoViewer) shows each photo whole, with its caption under it
+//   when there is one, and "2 of 8".
 // - Its arrow buttons, the arrow keys and a sideways swipe page through the
 //   photos, wrapping at the ends.
 // - Pinch-zoom works on the photo, and a swipe doesn't page while zoomed in.
@@ -16,7 +17,17 @@ import { IconArrowLeft, IconArrowRight, IconX } from '@/components/ui/Icons';
 import { IconButton } from '@/components/ui/IconButton';
 import { arrowLinkClasses } from '@/components/ui/buttonStyles';
 import { useModalDialog } from '@/hooks/useModalDialog';
-import { isPinchZoomed, mosaicGridClass, mosaicLayout, mosaicTile, moreBadges, objectPositionFor, photoAlt, swipeDirection } from '@/lib/projectPhotos';
+import {
+  isPinchZoomed,
+  mosaicGridClass,
+  mosaicLayout,
+  mosaicTile,
+  moreBadges,
+  objectPositionFor,
+  photoAlt,
+  photoCaption,
+  swipeDirection,
+} from '@/lib/projectPhotos';
 
 /**
  * The viewer's swipe area. touch-pan-y leaves up-and-down drags to the browser and
@@ -25,6 +36,109 @@ import { isPinchZoomed, mosaicGridClass, mosaicLayout, mosaicTile, moreBadges, o
  */
 export const SWIPE_AREA_CLASS = 'relative touch-pan-y touch-pinch-zoom';
 
+interface PhotoViewerProps {
+  photos: SanityImage[];
+  /** The photo on show. */
+  index: number;
+  onClose: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+}
+
+/**
+ * The full-screen viewer, shown while a photo is open. The dialog is named
+ * "Photo 2 of 8"; the caption sits under the photo, inside the dialog. A
+ * caption takes some of the photo's height so both fit on a short screen.
+ */
+export function PhotoViewer({ photos, index, onClose, onPrev, onNext }: PhotoViewerProps) {
+  const dialogRef = useModalDialog<HTMLDivElement>(true, onClose);
+  const swipeStart = useRef<{ x: number; y: number } | null>(null);
+  const total = photos.length;
+  const current = photos[index];
+  const caption = current ? photoCaption(current) : null;
+
+  // The arrow keys page through the photos; Escape, Tab and focus belong to useModalDialog.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') onPrev();
+      if (e.key === 'ArrowRight') onNext();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onPrev, onNext]);
+
+  if (!current) return null;
+
+  // focus-on-dark: the white ring on a Night Teal halo shows over light and dark photos alike.
+  return (
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Photo ${index + 1} of ${total}`}
+      className="focus-on-dark fixed inset-0 z-[90] flex items-center justify-center bg-pe-nav-dark/[0.92]"
+      onClick={onClose}
+    >
+      <figure className="w-full" style={{ maxWidth: 'min(900px, 95vw)' }} onClick={(e) => e.stopPropagation()}>
+        <div className="relative">
+          <div
+            data-swipe-area
+            className={SWIPE_AREA_CLASS}
+            style={{ height: caption ? 'min(560px, 70vh)' : 'min(600px, 80vh)' }}
+            onPointerDown={(e) => {
+              if (e.pointerType !== 'mouse') swipeStart.current = { x: e.clientX, y: e.clientY };
+            }}
+            onPointerUp={(e) => {
+              const start = swipeStart.current;
+              swipeStart.current = null;
+              // Zoomed in, a sideways drag means to move around the photo, so it doesn't page.
+              if (!start || total < 2 || isPinchZoomed(window.visualViewport)) return;
+              const direction = swipeDirection(e.clientX - start.x, e.clientY - start.y);
+              if (direction === 'next') onNext();
+              if (direction === 'prev') onPrev();
+            }}
+            onPointerCancel={() => {
+              swipeStart.current = null;
+            }}
+          >
+            <Image
+              src={current.asset.url}
+              alt={photoAlt(current, index)}
+              fill
+              className="object-contain"
+              sizes="(max-width: 960px) 95vw, 900px"
+              placeholder={current.asset.metadata?.lqip ? 'blur' : 'empty'}
+              blurDataURL={current.asset.metadata?.lqip}
+            />
+          </div>
+
+          <IconButton variant="overlay" label="Close photo viewer" data-autofocus onClick={onClose} className="absolute -top-12 right-0">
+            <IconX />
+          </IconButton>
+          {total > 1 && (
+            <IconButton variant="overlay" label="Previous photo" onClick={onPrev} className="absolute left-2 top-1/2 -translate-y-1/2">
+              <IconArrowLeft />
+            </IconButton>
+          )}
+          {total > 1 && (
+            <IconButton variant="overlay" label="Next photo" onClick={onNext} className="absolute right-2 top-1/2 -translate-y-1/2">
+              <IconArrowRight />
+            </IconButton>
+          )}
+          <p aria-live="polite" className="absolute bottom-3 left-1/2 -translate-x-1/2 font-body text-sm text-on-dark-muted">
+            {index + 1} of {total}
+          </p>
+        </div>
+        {caption && (
+          <figcaption className="mx-auto mt-3 max-w-[70ch] px-4 text-center font-body text-sm leading-relaxed text-on-dark">
+            {caption}
+          </figcaption>
+        )}
+      </figure>
+    </div>
+  );
+}
+
 interface ProjectPhotosProps {
   /** The gallery without the hero (galleryWithoutHero). */
   photos: SanityImage[];
@@ -32,30 +146,15 @@ interface ProjectPhotosProps {
 
 export function ProjectPhotos({ photos }: ProjectPhotosProps) {
   const [index, setIndex] = useState<number | null>(null);
-  const open = index !== null;
   const total = photos.length;
-  const swipeStart = useRef<{ x: number; y: number } | null>(null);
 
   const close = useCallback(() => setIndex(null), []);
-  const dialogRef = useModalDialog<HTMLDivElement>(open, close);
   const prev = useCallback(() => setIndex((i) => (i === null ? null : (i - 1 + total) % total)), [total]);
   const next = useCallback(() => setIndex((i) => (i === null ? null : (i + 1) % total)), [total]);
-
-  // The arrow keys page through the photos; Escape, Tab and focus belong to useModalDialog.
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') prev();
-      if (e.key === 'ArrowRight') next();
-    };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [open, prev, next]);
 
   const layout = mosaicLayout(total);
   if (!layout) return null;
   const tiles = photos.slice(0, layout.wide.shown);
-  const current = index !== null ? photos[index] : null;
 
   return (
     <section aria-labelledby="project-photos" className="page-container mt-10 md:mt-12 lg:mt-16">
@@ -109,67 +208,7 @@ export function ProjectPhotos({ photos }: ProjectPhotosProps) {
         })}
       </ul>
 
-      {/* The viewer. focus-on-dark: the white ring on a Night Teal halo shows over light and dark photos alike. */}
-      {current && index !== null && (
-        <div
-          ref={dialogRef}
-          role="dialog"
-          aria-modal="true"
-          aria-label={`Photo ${index + 1} of ${total}`}
-          className="focus-on-dark fixed inset-0 z-[90] flex items-center justify-center bg-pe-nav-dark/[0.92]"
-          onClick={close}
-        >
-          <div className="relative w-full" style={{ maxWidth: 'min(900px, 95vw)', maxHeight: '90vh' }} onClick={(e) => e.stopPropagation()}>
-            <div
-              data-swipe-area
-              className={SWIPE_AREA_CLASS}
-              style={{ height: 'min(600px, 80vh)' }}
-              onPointerDown={(e) => {
-                if (e.pointerType !== 'mouse') swipeStart.current = { x: e.clientX, y: e.clientY };
-              }}
-              onPointerUp={(e) => {
-                const start = swipeStart.current;
-                swipeStart.current = null;
-                // Zoomed in, a sideways drag means to move around the photo, so it doesn't page.
-                if (!start || total < 2 || isPinchZoomed(window.visualViewport)) return;
-                const direction = swipeDirection(e.clientX - start.x, e.clientY - start.y);
-                if (direction === 'next') next();
-                if (direction === 'prev') prev();
-              }}
-              onPointerCancel={() => {
-                swipeStart.current = null;
-              }}
-            >
-              <Image
-                src={current.asset.url}
-                alt={photoAlt(current, index)}
-                fill
-                className="object-contain"
-                sizes="(max-width: 960px) 95vw, 900px"
-                placeholder={current.asset.metadata?.lqip ? 'blur' : 'empty'}
-                blurDataURL={current.asset.metadata?.lqip}
-              />
-            </div>
-
-            <IconButton variant="overlay" label="Close photo viewer" data-autofocus onClick={close} className="absolute -top-12 right-0">
-              <IconX />
-            </IconButton>
-            {total > 1 && (
-              <IconButton variant="overlay" label="Previous photo" onClick={prev} className="absolute left-2 top-1/2 -translate-y-1/2">
-                <IconArrowLeft />
-              </IconButton>
-            )}
-            {total > 1 && (
-              <IconButton variant="overlay" label="Next photo" onClick={next} className="absolute right-2 top-1/2 -translate-y-1/2">
-                <IconArrowRight />
-              </IconButton>
-            )}
-            <p aria-live="polite" className="absolute bottom-3 left-1/2 -translate-x-1/2 font-body text-sm text-on-dark-muted">
-              {index + 1} of {total}
-            </p>
-          </div>
-        </div>
-      )}
+      {index !== null && <PhotoViewer photos={photos} index={index} onClose={close} onPrev={prev} onNext={next} />}
     </section>
   );
 }
