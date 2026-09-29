@@ -57,7 +57,7 @@ describe('CTA set', () => {
     expect(CONTACT_CTA.href).toBe('/contact');
   });
 
-  it('names the project and the service on a case study', () => {
+  it('names the project and the service on a project page', () => {
     const cta = projectCta('ci-solar-storage', '31 Sacks Circle');
     expect(cta.label).toBe(SERVICE_CTA['ci-solar-storage'].label);
     const { message } = parse(cta.href);

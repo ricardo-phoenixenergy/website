@@ -119,7 +119,7 @@ export const SERVICE_CTA: Record<SolutionVertical, Cta> = Object.fromEntries(
   ]),
 ) as Record<SolutionVertical, Cta>;
 
-/** A case study's CTA: its service's label, with the project named in the message. */
+/** A project page's CTA: its service's label, with the project named in the message. */
 export function projectCta(vertical: SolutionVertical, projectTitle: string): Cta {
   return {
     label: SERVICE_LABEL[vertical],

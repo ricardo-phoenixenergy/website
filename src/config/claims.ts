@@ -16,7 +16,7 @@
 // client-side modules, which keeps this register out of browser bundles.
 //
 // Company stats (home, About) live in the Sanity "Company Stats" document and
-// case study figures on each Sanity project. docs/content/claims-register.md
+// project figures on each Sanity project. docs/content/claims-register.md
 // covers all three, with the conflicts between them and the evidence needed.
 import { REPLY_PROMISE } from '@/config/contact';
 import { AUDIT_REPORT_TIME } from '@/config/webuysolarOffer';

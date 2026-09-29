@@ -1,8 +1,7 @@
 // src/lib/relatedProjects.ts
-// Which other projects a case study shows at its foot, and how, so one project
+// Which other projects a project page shows at its foot, and how, so one project
 // never sits alone in a three-column grid (docs/plans/2026-09-24-case-study-and-
-// proof-strip-brief.md, 6A.3). The query orders both lists: complete case
-// studies first, then the newest.
+// proof-strip-brief.md, 6A.3). The query orders both lists newest first.
 
 export type RelatedLayout = 'three' | 'two' | 'wide';
 
