@@ -1,11 +1,14 @@
 // src/lib/projectData.ts
 // Every read of project content goes through here, so the disclosure rules apply
 // before anything renders (docs/superpowers/specs/2026-09-29-project-page-design.md).
-// The queries leave out the client's name and the project value, and trim image
-// fields to what the pages use; discloseProject() drops rand amounts from results
-// figures and System rows. The project page and its metadata share one read per
-// request (React cache). CMS errors are passed on: each caller decides whether
-// to show nothing or to let ISR keep serving the last good page.
+// The queries leave out the client's name and the project value while their
+// consent switches are off, and trim image fields to what the pages use;
+// discloseProject() drops rand amounts from results figures, System rows and
+// calculation inputs while "Show rand amounts" is off. An ESLint rule keeps the
+// project queries out of every other file (eslint.config.mjs). The project page
+// and its metadata share one read per request (React cache). CMS errors are
+// passed on: each caller decides whether to show nothing or to let ISR keep
+// serving the last good page.
 import { cache } from 'react';
 import { sanityServerClient } from '@/lib/sanity.server';
 import {
