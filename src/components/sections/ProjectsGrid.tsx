@@ -20,13 +20,6 @@ const PAGE_SIZE = 6;
 
 type Filter = SolutionVertical | 'all';
 
-/** Complete case studies first, then the editor's featured order. */
-function byReadiness(a: ProjectPreview, b: ProjectPreview) {
-  const ready = Number(b.caseStudyReady ?? false) - Number(a.caseStudyReady ?? false);
-  if (ready !== 0) return ready;
-  return (a.featuredOrder ?? 99) - (b.featuredOrder ?? 99);
-}
-
 /* ── Empty state (no projects published at all) ─────────────────────────────── */
 
 function EmptyState() {
@@ -53,7 +46,7 @@ function OtherServices({ verticals }: { verticals: SolutionVertical[] }) {
         Our other services
       </h2>
       <p className="font-body text-sm text-pe-muted mb-4">
-        No case study is published for these yet. See how each one works.
+        No project is published for these yet. See how each one works.
       </p>
       {/* 10px between wrapped rows, so each chip's 44px touch target stays clear of the next row's */}
       <ul className="flex flex-wrap gap-x-2 gap-y-2.5">
@@ -75,6 +68,7 @@ function OtherServices({ verticals }: { verticals: SolutionVertical[] }) {
 /* ── Main component ─────────────────────────────────────────────────────────── */
 
 interface ProjectsGridProps {
+  /** In display order (getAllProjects in src/lib/projectData.ts): featured first, then the newest. */
   projects: ProjectPreview[];
   /** Page header (breadcrumb, H1, intro), rendered above the projects. */
   header: React.ReactNode;
@@ -112,8 +106,6 @@ export function ProjectsGrid({ projects, header }: ProjectsGridProps) {
     })),
   ], [projects, verticalsWithProjects]);
 
-  const sorted = useMemo(() => [...projects].sort(byReadiness), [projects]);
-
   if (projects.length === 0) {
     return (
       <div className="bg-pe-bg">
@@ -125,14 +117,14 @@ export function ProjectsGrid({ projects, header }: ProjectsGridProps) {
     );
   }
 
-  // ── A few projects: equal cards, complete case studies first ────────────────
+  // ── A few projects: equal cards, in the order given ───────────────────────────
   if (!filtersShown) {
     return (
       <div className="bg-pe-bg">
         <div className="page-container pt-24 pb-16">
           {header}
           <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {sorted.map((project) => (
+            {projects.map((project) => (
               <li key={project._id}>
                 <ProjectCard project={project} fluid size="large" headingLevel={2} />
               </li>
@@ -144,9 +136,9 @@ export function ProjectsGrid({ projects, header }: ProjectsGridProps) {
     );
   }
 
-  // ── Four or more: filters, one complete case study featured, then a grid ────
-  const filtered = activeFilter === 'all' ? sorted : sorted.filter((p) => p.vertical === activeFilter);
-  const featuredProject = filtered.find((p) => p.featured && p.caseStudyReady) ?? null;
+  // ── Four or more: filters, the first featured project as the lead, then a grid
+  const filtered = activeFilter === 'all' ? projects : projects.filter((p) => p.vertical === activeFilter);
+  const featuredProject = filtered.find((p) => p.featured) ?? null;
   const gridProjects = filtered.filter((p) => p._id !== featuredProject?._id);
   const visibleProjects = gridProjects.slice(0, visibleCount);
   const shown = visibleProjects.length + (featuredProject ? 1 : 0);

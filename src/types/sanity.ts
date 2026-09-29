@@ -30,31 +30,33 @@ export type PortableTextBlock = {
 };
 
 /* ─── Project ────────────────────────────────────────────────────────────────── */
+// GROQ returns null, not undefined, for a field that isn't set, so code reads
+// these with ?? and ?. and never compares them with undefined.
 
 /** What a project's results rest on. Unset is treated as projected. */
 export type ResultsBasis = 'projected' | 'measured';
 
 export type ProjectStatus = 'completed' | 'in-progress' | 'planned';
 
+/**
+ * A project as the cards show it. There's no client name or project value: the
+ * queries leave them out until the CMS can record the client's consent
+ * (src/lib/projectDisclosure.ts).
+ */
 export interface ProjectCard {
   _id: string;
   title: string;
   slug: SanitySlug;
   vertical: SolutionVertical;
-  location: string;
-  systemSize?: string;
+  location?: string;
   heroImage?: SanityImage;
-  featured?: boolean;
-  clientName?: string;
   status?: ProjectStatus;
-  /** System facts (kWp, kWh, inverter, deal structure). */
+  /** System facts (kWp, kWh, inverter), without rand amounts. */
   metrics?: ProjectMetric[];
-  /** Outcomes (payback, bill reduction); the first two lead the card. */
+  /** Outcomes (payback, bill reduction), without rand amounts; the first two lead the card. */
   results?: ProjectMetric[];
   /** Projected (financial model) unless an editor marks the results measured. */
   resultsBasis?: ResultsBasis;
-  /** True only when challenge, solution and outcome all have content. */
-  caseStudyReady?: boolean;
 }
 
 export interface ProjectMetric {
@@ -62,40 +64,32 @@ export interface ProjectMetric {
   value: string;
 }
 
+/** A project on /projects. */
 export interface ProjectPreview extends ProjectCard {
-  featured: boolean;
+  featured?: boolean;
   featuredOrder?: number;
-  clientName?: string;
-  completionDate?: string;
-  projectValue?: string;
-  status?: 'completed' | 'in-progress' | 'planned';
-  metrics?: ProjectMetric[];
   summary?: string;
 }
 
+/** A project page's data. */
 export interface Project extends ProjectCard {
   /** When the project was added to the CMS; the Article's datePublished. */
   _createdAt: string;
   /** Its last change; the Article's dateModified and the sitemap's lastModified. */
   _updatedAt: string;
-  featured: boolean;
-  clientName: string;
-  completionDate: string;
-  projectValue: string;
-  status: 'completed' | 'in-progress' | 'planned';
-  gallery: SanityImage[];
-  summary: string;
-  challenge: PortableTextBlock[];
-  solution: PortableTextBlock[];
-  outcome: PortableTextBlock[];
-  metrics: ProjectMetric[];   // 4 items — stats strip
-  results: ProjectMetric[];   // 4 items — results strip
+  /** Free text, for example "Q2 2026": the completion date, or the target of a planned or in-progress project. */
+  completionDate?: string;
+  gallery?: SanityImage[];
+  summary?: string;
+  challenge?: PortableTextBlock[];
+  solution?: PortableTextBlock[];
+  outcome?: PortableTextBlock[];
   /** ISO date (YYYY-MM-DD) of the model or the end of the measured period. */
   resultsAsOf?: string;
-  /** Replaces the default note under the results strip. */
+  /** Replaces the default note under the results. */
   resultsAssumptions?: string;
-  /** Other projects in the same service, case studies first. */
-  related: ProjectCard[];
+  /** Other projects in the same service, newest first. */
+  related?: ProjectCard[];
   /** Up to two from other services, shown only when `related` is empty. */
   otherProjects?: ProjectCard[];
 }

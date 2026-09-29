@@ -4,8 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { PortableText } from '@portabletext/react';
 import { urlFor } from '@/lib/sanity';
-import { sanityServerClient } from '@/lib/sanity.server';
-import { PROJECT_BY_SLUG_QUERY, ALL_PROJECT_SLUGS_QUERY } from '@/lib/queries';
+import { getProjectBySlug, getProjectSlugs } from '@/lib/projectData';
 import { SOLUTION_META } from '@/types/solutions';
 import { ProjectStatsTiles } from '@/components/ui/ProjectStatsTiles';
 import { Button } from '@/components/ui/Button';
@@ -17,7 +16,6 @@ import { describeResults } from '@/lib/projectResults';
 import { selectRelated } from '@/lib/relatedProjects';
 import { PROJECTS_CTA, projectCta } from '@/config/ctas';
 import { REPLY_PROMISE } from '@/config/contact';
-import type { Project } from '@/types/sanity';
 
 export const revalidate = 3600;
 
@@ -42,8 +40,7 @@ const PT_COMPONENTS = {
 
 export async function generateStaticParams() {
   try {
-    const slugs = await sanityServerClient.fetch<Array<{ slug: string }>>(ALL_PROJECT_SLUGS_QUERY);
-    return slugs.map(({ slug }) => ({ slug }));
+    return (await getProjectSlugs()).map((slug) => ({ slug }));
   } catch {
     return [];
   }
@@ -55,16 +52,13 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const project = await sanityServerClient.fetch<Project | null>(PROJECT_BY_SLUG_QUERY, { slug });
+  const project = await getProjectBySlug(slug);
   if (!project) return { title: 'Project not found', robots: { index: false } };
   const description = snippet(project.summary);
-  const ready = [project.challenge, project.solution, project.outcome].every((b) => b && b.length > 0);
   return {
     title: project.title,
     description,
     alternates: { canonical: `/projects/${slug}` },
-    // A project whose story isn't written yet stays out of search until it is.
-    ...(!ready && { robots: { index: false, follow: true } }),
     openGraph: {
       title: project.title,
       description,
@@ -85,7 +79,7 @@ export default async function ProjectPage({
 
   // Only a missing project is a 404. A CMS error throws, so the error page (or,
   // on revalidation, the last good static page) is served instead of a cached 404.
-  const project = await sanityServerClient.fetch<Project | null>(PROJECT_BY_SLUG_QUERY, { slug });
+  const project = await getProjectBySlug(slug);
   if (!project) notFound();
 
   const meta = SOLUTION_META[project.vertical];
@@ -98,8 +92,6 @@ export default async function ProjectPage({
     { key: 'solution', tag: 'Our solution', content: project.solution },
     { key: 'outcome', tag: 'The outcome', content: project.outcome },
   ].filter((section) => section.content && section.content.length > 0);
-  // Matches the card: "Read case study" only once all three parts are written.
-  const isCaseStudy = sections.length === 3;
   // Forecasts are labelled as forecasts: "Measured results" only when the editor says so.
   const resultsLabel = describeResults(project);
   const cta = projectCta(project.vertical, project.title);
@@ -107,10 +99,8 @@ export default async function ProjectPage({
   const related = selectRelated(project.related ?? [], project.otherProjects ?? []);
 
   const metaRows = [
-    { label: 'Client',    value: project.clientName },
     { label: 'Location',  value: project.location },
     { label: 'Completed', value: project.completionDate },
-    { label: 'Value',     value: project.projectValue },
     { label: 'Status',    value: project.status === 'in-progress' ? 'In progress' : project.status === 'planned' ? 'Planned' : 'Operational' },
   ].filter((r) => r.value);
 
@@ -141,7 +131,7 @@ export default async function ProjectPage({
             style={{ background: 'linear-gradient(155deg, #1a3a3e 0%, #0d1f22 100%)' }}
           >
             <p className="font-body font-bold text-xs uppercase tracking-[0.14em] mb-4" style={{ color: 'var(--color-on-dark-muted)' }}>
-              {isCaseStudy ? 'Case study' : 'Project'}
+              Project
             </p>
 
             <div>
@@ -228,7 +218,6 @@ export default async function ProjectPage({
               <p className="font-body text-xs flex gap-2 flex-wrap" style={{ color: 'var(--color-on-dark-subtle)' }}>
                 {project.location && <span>{project.location}</span>}
                 {project.completionDate && <span>· {project.completionDate}</span>}
-                {project.projectValue && <span>· {project.projectValue}</span>}
               </p>
             </div>
           </div>
@@ -274,7 +263,7 @@ export default async function ProjectPage({
 
             {/* Content: a reading column of about 75 characters (56ch of Inter) */}
             <div className="max-w-[56ch]">
-              <PortableText value={section.content} components={PT_COMPONENTS} />
+              <PortableText value={section.content ?? []} components={PT_COMPONENTS} />
             </div>
           </section>
         ))}

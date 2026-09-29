@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { sanityServerClient } from '@/lib/sanity.server';
-import { CASE_STUDY_READY } from '@/lib/queries';
+import { getProjectSitemapEntries, type ProjectSitemapEntry } from '@/lib/projectData';
 
 const SITE = 'https://phoenixenergy.solutions';
 
@@ -27,23 +27,21 @@ const STATIC: MetadataRoute.Sitemap = [
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let blogEntries: { slug: string; publishedAt?: string }[] = [];
-  let projectEntries: { slug: string }[] = [];
+  let projectEntries: ProjectSitemapEntry[] = [];
 
   try {
     blogEntries = await sanityServerClient.fetch<{ slug: string; publishedAt?: string }[]>(
       `*[_type == "blogPost"]{ "slug": slug.current, publishedAt }`,
     );
   } catch {
-    // Sanity not yet configured — skip dynamic blog routes
+    // The CMS isn't reachable: leave out the blog routes.
   }
 
   try {
-    // Case studies only: an unwritten project page is noindex, so it is not listed.
-    projectEntries = await sanityServerClient.fetch<{ slug: string }[]>(
-      `*[_type == "project" && ${CASE_STUDY_READY}]{ "slug": slug.current }`,
-    );
+    // Every project page is indexed, so every project is listed.
+    projectEntries = await getProjectSitemapEntries();
   } catch {
-    // Sanity not yet configured — skip dynamic project routes
+    // The CMS isn't reachable: leave out the project routes.
   }
 
   // The blog index is listed only once it has a post; until then it is noindex.
@@ -57,8 +55,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
-  const projectRoutes: MetadataRoute.Sitemap = projectEntries.map(({ slug }) => ({
+  const projectRoutes: MetadataRoute.Sitemap = projectEntries.map(({ slug, updatedAt }) => ({
     url: `${SITE}/projects/${slug}`,
+    lastModified: new Date(updatedAt),
     changeFrequency: 'monthly',
     priority: 0.7,
   }));

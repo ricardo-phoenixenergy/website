@@ -35,7 +35,7 @@ interface FeaturedProjectCardProps {
 export function FeaturedProjectCard({
   project,
   headingLevel = 2,
-  kicker = 'Featured case study',
+  kicker = 'Featured project',
   priority = false,
 }: FeaturedProjectCardProps) {
   const meta = project.vertical ? SOLUTION_META[project.vertical] : null;
@@ -45,9 +45,8 @@ export function FeaturedProjectCard({
   // No results yet: the specs (up to four, as on ProjectCard) take the outcomes' place.
   const tiles = outcomes.length > 0 ? outcomes : metrics.slice(0, 4);
   const specs = outcomes.length > 0 ? metrics.map((m) => m.value).slice(0, 4) : [];
-  const place = [project.location, project.clientName].filter(Boolean).join(' · ');
+  const place = project.location?.trim();
   const status = project.status ? STATUS_LABEL[project.status] : null;
-  const ready = project.caseStudyReady ?? true;
 
   return (
     <Link href={`/projects/${project.slug.current}`} className="block rounded-2xl">
@@ -137,7 +136,7 @@ export function FeaturedProjectCard({
               {/* The card is the link, so its action is drawn as a button, not built as one,
                   and darkens and presses with the card. */}
               <span className={buttonClasses({ size: 'compact', inCard: true })}>
-                {ready ? 'Read case study' : 'View project'} <IconArrowRight />
+                View project <IconArrowRight />
               </span>
             </div>
           </div>

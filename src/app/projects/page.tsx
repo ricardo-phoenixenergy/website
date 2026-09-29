@@ -1,9 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { sanityServerClient } from '@/lib/sanity.server';
-import { ALL_PROJECTS_QUERY } from '@/lib/queries';
+import { getAllProjects } from '@/lib/projectData';
 import { ProjectsGrid } from '@/components/sections/ProjectsGrid';
-import type { ProjectPreview } from '@/types/sanity';
 import { PageFooter } from '@/components/layout/PageFooter';
 
 export const metadata: Metadata = {
@@ -26,7 +24,7 @@ export const revalidate = 3600;
 export default async function ProjectsPage() {
   // A CMS error throws, so ISR keeps serving the last good page rather than an
   // empty "coming soon" portfolio.
-  const projects = await sanityServerClient.fetch<ProjectPreview[]>(ALL_PROJECTS_QUERY);
+  const projects = await getAllProjects();
 
   const header = (
     <>

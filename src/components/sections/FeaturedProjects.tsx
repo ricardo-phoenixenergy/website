@@ -1,5 +1,4 @@
-import { sanityServerClient } from '@/lib/sanity.server';
-import { FEATURED_PROJECTS_QUERY, PROJECTS_BY_VERTICAL_QUERY } from '@/lib/queries';
+import { getFeaturedProjects, getProjectsByVertical } from '@/lib/projectData';
 import { ProjectCard } from './ProjectCard';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { SectionCarousel } from '@/components/ui/SectionCarousel';
@@ -13,22 +12,17 @@ interface FeaturedProjectsProps {
   flushTop?: boolean;
 }
 
+/** Home: the featured projects in their featured order. A solution page: its service's newest six. */
 async function getProjects(vertical?: SolutionVertical): Promise<ProjectCardType[]> {
   try {
-    if (vertical) {
-      return await sanityServerClient.fetch<ProjectCardType[]>(PROJECTS_BY_VERTICAL_QUERY, { vertical });
-    }
-    return await sanityServerClient.fetch<ProjectCardType[]>(FEATURED_PROJECTS_QUERY);
+    return vertical ? await getProjectsByVertical(vertical) : await getFeaturedProjects();
   } catch {
     return [];
   }
 }
 
 export async function FeaturedProjects({ vertical, flushTop = false }: FeaturedProjectsProps = {}) {
-  // Complete case studies lead; an unwritten one never takes the first slot.
-  const projects = (await getProjects(vertical)).sort(
-    (a, b) => Number(b.caseStudyReady ?? false) - Number(a.caseStudyReady ?? false),
-  );
+  const projects = await getProjects(vertical);
   if (projects.length === 0) return null;
   // Three or fewer: a static grid, so no empty column or hidden card behind a swipe.
   const few = projects.length <= 3;

@@ -23,7 +23,7 @@ const STATUS_LABEL: Record<NonNullable<ProjectCardType['status']>, string | null
 };
 
 /**
- * A project as a link to its case study, outcomes first: the first two results
+ * A project as a link to its page, outcomes first: the first two results
  * (captioned as projected unless an editor marks them measured), then what was
  * installed (one spec line).
  */
@@ -33,9 +33,8 @@ export function ProjectCard({ project, className, fluid, size = 'default', headi
   const Title = headingLevel === 2 ? 'h2' : 'h3';
   const outcomes = (project.results ?? []).filter((r) => r.value).slice(0, 2);
   const specs = (project.metrics ?? []).map((m) => m.value).filter(Boolean).slice(0, 4);
-  const place = [project.location, project.clientName].filter(Boolean).join(' · ');
+  const place = project.location?.trim();
   const status = project.status ? STATUS_LABEL[project.status] : null;
-  const ready = project.caseStudyReady ?? true;
 
   return (
     <Link
@@ -105,7 +104,7 @@ export function ProjectCard({ project, className, fluid, size = 'default', headi
 
         <CardFooter variant="light">
           <span className="font-body text-sm font-semibold text-pe-primary">
-            {ready ? 'Read case study' : 'View project'}
+            View project
           </span>
           <CardArrow variant="light" />
         </CardFooter>

@@ -2,23 +2,25 @@
 
 const IMAGE_FIELDS = `{ asset->, alt, hotspot, crop }`;
 
-/** A project is a case study once its challenge, solution and outcome are all written. */
-export const CASE_STUDY_READY = `defined(challenge[0]) && defined(solution[0]) && defined(outcome[0])`;
+// Project images carry only what the pages use, never the whole asset document,
+// whose file name can name the client.
+const PROJECT_IMAGE_FIELDS = `{ "asset": asset->{ _id, url, "metadata": metadata { lqip, dimensions } }, alt, hotspot, crop }`;
 
+// Every project query leaves out the client's name and the project value. They
+// may show only with the client's consent, which the CMS can't record yet
+// (docs/superpowers/specs/2026-09-29-project-page-design.md). Read projects
+// through src/lib/projectData.ts, which also drops rand amounts.
 const PROJECT_CARD_FIELDS = `
   _id,
   title,
   "slug": { "current": slug.current },
   vertical,
   location,
-  systemSize,
-  "heroImage": heroImage ${IMAGE_FIELDS},
-  clientName,
+  "heroImage": heroImage ${PROJECT_IMAGE_FIELDS},
   status,
-  metrics,
-  results,
-  resultsBasis,
-  "caseStudyReady": ${CASE_STUDY_READY}
+  "metrics": metrics[]{ label, value },
+  "results": results[]{ label, value },
+  resultsBasis
 `;
 
 const BLOG_CARD_FIELDS = `
@@ -36,88 +38,69 @@ const BLOG_CARD_FIELDS = `
 `;
 
 /* ─── Projects ────────────────────────────────────────────────────────────── */
+// "Newest" is the date a project was added to the CMS until projects carry a
+// commissioning date (step 2): the free-text completion date can't be sorted.
 
 export const ALL_PROJECTS_QUERY = `
-  *[_type == "project"] | order(completionDate desc) {
+  *[_type == "project" && defined(slug.current)] | order(_createdAt desc) {
     ${PROJECT_CARD_FIELDS},
     featured,
     featuredOrder,
-    completionDate,
-    projectValue,
     summary
   }
 `;
 
 export const FEATURED_PROJECTS_QUERY = `
-  *[_type == "project" && featured == true]
-  | order(coalesce(featuredOrder, 99) asc, completionDate desc) {
-    ${PROJECT_CARD_FIELDS},
-    featuredOrder,
-    completionDate,
-    projectValue
-  }
-`;
-
-/* One flagship per vertical — used on solution/about pages */
-export const FLAGSHIP_BY_VERTICAL_QUERY = `
-  *[_type == "project" && vertical == $vertical && featured == true]
-  | order(coalesce(featuredOrder, 99) asc, completionDate desc) [0] {
-    ${PROJECT_CARD_FIELDS},
-    completionDate,
-    projectValue,
-    summary
+  *[_type == "project" && featured == true && defined(slug.current)]
+  | order(coalesce(featuredOrder, 99) asc, _createdAt desc) {
+    ${PROJECT_CARD_FIELDS}
   }
 `;
 
 export const PROJECTS_BY_VERTICAL_QUERY = `
-  *[_type == "project" && vertical == $vertical] | order(completionDate desc) [0..5] {
-    ${PROJECT_CARD_FIELDS},
-    completionDate,
-    projectValue
+  *[_type == "project" && vertical == $vertical && defined(slug.current)] | order(_createdAt desc) [0..5] {
+    ${PROJECT_CARD_FIELDS}
   }
 `;
 
 export const PROJECT_BY_SLUG_QUERY = `
   *[_type == "project" && slug.current == $slug][0] {
-    _id,
-    title,
-    "slug": { "current": slug.current },
-    vertical,
-    clientName,
-    location,
+    ${PROJECT_CARD_FIELDS},
+    _createdAt,
+    _updatedAt,
     completionDate,
-    projectValue,
-    status,
-    "heroImage": heroImage ${IMAGE_FIELDS},
-    "gallery": gallery[] ${IMAGE_FIELDS},
+    "gallery": gallery[] ${PROJECT_IMAGE_FIELDS},
     summary,
     challenge[] { ... },
     solution[] { ... },
     outcome[] { ... },
-    metrics,
-    results,
-    resultsBasis,
     resultsAsOf,
     resultsAssumptions,
     "related": *[
       _type == "project" &&
       vertical == ^.vertical &&
-      slug.current != $slug
-    ] | order((${CASE_STUDY_READY}) desc, _createdAt desc) [0..2] {
+      slug.current != $slug &&
+      defined(slug.current)
+    ] | order(_createdAt desc) [0..2] {
       ${PROJECT_CARD_FIELDS}
     },
     "otherProjects": *[
       _type == "project" &&
       vertical != ^.vertical &&
-      slug.current != $slug
-    ] | order((${CASE_STUDY_READY}) desc, _createdAt desc) [0..1] {
+      slug.current != $slug &&
+      defined(slug.current)
+    ] | order(_createdAt desc) [0..1] {
       ${PROJECT_CARD_FIELDS}
     }
   }
 `;
 
 export const ALL_PROJECT_SLUGS_QUERY = `
-  *[_type == "project"]{ "slug": slug.current }
+  *[_type == "project" && defined(slug.current)].slug.current
+`;
+
+export const PROJECT_SITEMAP_QUERY = `
+  *[_type == "project" && defined(slug.current)]{ "slug": slug.current, _updatedAt }
 `;
 
 /* ─── Blog ───────────────────────────────────────────────────────────────── */
