@@ -49,6 +49,28 @@ describe('ProjectHero', () => {
     expect(html(createElement(ProjectHero, { project, overlapped: false }))).toContain('md:pb-10');
   });
 
+  it("darkens behind a headline of more than one line, from where a one-line title's text ends", () => {
+    // The text block's own layer runs from its top to where its bottom padding starts, fading in
+    // over the badge row. Its mask leaves out a one-line block's height (115px, 124px from lg),
+    // so a one-line title keeps today's scrim and each line above it gets the extra darkness.
+    const layer = (markup: string) => markup.match(/<div aria-hidden="true" class="[^"]*--scrim-from[^"]*" style="[^"]*"><\/div>/)?.[0] ?? '';
+    const overlapped = html(createElement(ProjectHero, { project, overlapped: true }));
+    const clear = html(createElement(ProjectHero, { project, overlapped: false }));
+    expect(layer(overlapped)).toMatch(/\bmd:bottom-\[92px\]/);
+    expect(layer(clear)).toMatch(/\bmd:bottom-10\b/);
+    for (const markup of [overlapped, clear]) {
+      const tag = layer(markup);
+      expect(tag).toMatch(/\bhidden md:block\b/);
+      expect(tag).toContain('md:[--scrim-from:115px] lg:[--scrim-from:124px]');
+      expect(tag).toContain('mask-image:linear-gradient(0deg, transparent var(--scrim-from), black calc(var(--scrim-from) + 24px))');
+      expect(tag).toContain('color-mix(in srgb, var(--color-pe-nav-dark) 50%, transparent) 40px');
+      expect(tag).not.toMatch(/#[0-9a-f]{3,8}\b/i);
+      // The text follows the layer in a positioned container, so it paints over the layer.
+      expect(markup.indexOf('--scrim-from')).toBeLessThan(markup.indexOf('<h1'));
+      expect(markup).toMatch(/<div class="page-container relative\b/);
+    }
+  });
+
   it('shows no photo block on phones when there is no hero photo', () => {
     expect(html(createElement(ProjectHero, { project, overlapped: false }))).toMatch(/class="[^"]*aspect-\[4\/3\][^"]*hidden md:block/);
   });

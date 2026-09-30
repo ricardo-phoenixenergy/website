@@ -3,6 +3,8 @@
 // - From 768px the photo runs edge to edge (400px tall, 470px from 1024px)
 //   under a Night Teal scrim. The badge, H1 and the line under the headline sit
 //   over it: 92px above its foot when the results card overlaps it, 40px when not.
+//   A headline of two lines or more lifts the text higher, where the scrim is
+//   lighter, so the text block darkens behind whatever rises above a one-line title.
 // - Below 768px the photo is 4:3 inside the page margins, with the text under it
 //   on the page background.
 // - The photo is one <picture> holding one <img>: a 5:2 crop from 768px and a
@@ -37,6 +39,16 @@ interface ProjectHeroProps {
 // the headline (on-dark-muted) at 4.5:1 or more over both live projects' photos from 768px.
 const SCRIM =
   'linear-gradient(180deg, color-mix(in srgb, var(--color-pe-nav-dark) 5%, transparent) 20%, color-mix(in srgb, var(--color-pe-nav-dark) 66%, transparent) 58%, color-mix(in srgb, var(--color-pe-nav-dark) 92%, transparent) 100%)';
+
+// The scrim grows with a long headline. A layer on the text block covers the badge, the H1 and
+// the line under the headline (the block less its bottom padding), fading in over the badge row
+// to Night Teal at 50%. Its mask hides the layer's lowest --scrim-from (a mask reads only alpha,
+// so its black means shown): the height of that text with a one-line title. That is 76px (the
+// badge's 26px line, the 14px and 12px gaps and the 24px line under the headline) plus one H1
+// line, 36px x 1.08 or, from lg, 44px x 1.08, rounded up. So a one-line title keeps SCRIM alone,
+// exactly as before, and each line above it gets the extra darkness.
+const TEXT_SCRIM = 'linear-gradient(180deg, transparent 0, color-mix(in srgb, var(--color-pe-nav-dark) 50%, transparent) 40px)';
+const TEXT_SCRIM_MASK = 'linear-gradient(0deg, transparent var(--scrim-from), black calc(var(--scrim-from) + 24px))';
 
 function HeroPicture({ crops, alt }: { crops: HeroCrops; alt: string }) {
   const shared = { alt, loading: 'eager', fetchPriority: 'high' } as const;
@@ -99,7 +111,13 @@ export function ProjectHero({ project, overlapped }: ProjectHeroProps) {
       <div
         className={`md:absolute md:inset-x-0 md:bottom-0 md:[--ring-color:#FFFFFF] md:[--ring-halo:var(--color-pe-nav-dark)] ${overlapped ? 'md:pb-[92px]' : 'md:pb-10'}`}
       >
-        <div className="page-container pt-4 md:pt-0">
+        {/* It ends where the padding starts; the text's container is positioned and comes after it, so it paints over it. */}
+        <div
+          aria-hidden="true"
+          className={`pointer-events-none absolute inset-x-0 top-0 hidden md:block md:[--scrim-from:115px] lg:[--scrim-from:124px] ${overlapped ? 'md:bottom-[92px]' : 'md:bottom-10'}`}
+          style={{ background: TEXT_SCRIM, maskImage: TEXT_SCRIM_MASK, WebkitMaskImage: TEXT_SCRIM_MASK }}
+        />
+        <div className="page-container relative pt-4 md:pt-0">
           {meta && (
             <Link
               href={meta.slug}
