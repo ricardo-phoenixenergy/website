@@ -7,6 +7,10 @@ import { urlFor } from '@/lib/sanity';
 import { sanityServerClient } from '@/lib/sanity.server';
 import { AUTHOR_BY_SLUG_QUERY, POSTS_BY_AUTHOR_QUERY, ALL_AUTHOR_SLUGS_QUERY } from '@/lib/queries';
 import type { Author, BlogPostCard } from '@/types/sanity';
+import { pageMetadata } from '@/lib/seo';
+import { authorProfileJsonLd } from '@/lib/blogSeo';
+import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
+import { JsonLd } from '@/components/layout/JsonLd';
 import { ArticleCard } from '@/components/ui/ArticleCard';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
@@ -18,9 +22,11 @@ const getAuthor = cache((slug: string) =>
   sanityServerClient.fetch<Author | null>(AUTHOR_BY_SLUG_QUERY, { slug }),
 );
 
-export const revalidate = 3600;
+const getAuthorPosts = cache((slug: string) =>
+  sanityServerClient.fetch<BlogPostCard[]>(POSTS_BY_AUTHOR_QUERY, { slug }),
+);
 
-const SITE = 'https://phoenixenergy.solutions';
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const slugs = await sanityServerClient.fetch<{ slug: string }[]>(ALL_AUTHOR_SLUGS_QUERY);
@@ -33,13 +39,15 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const author = await getAuthor(slug);
+  const [author, posts] = await Promise.all([getAuthor(slug), getAuthorPosts(slug)]);
   if (!author) return {};
-  return {
+  return pageMetadata({
     title: `${author.name}, News & Insights`,
-    description: author.bio ?? `Articles by ${author.name}, ${author.role}`,
-    alternates: { canonical: `${SITE}/blog/authors/${slug}` },
-  };
+    description: author.bio ?? (author.role ? `Articles by ${author.name}, ${author.role}.` : `Articles by ${author.name}.`),
+    path: `/blog/authors/${slug}`,
+    // An author with nothing published yet has a page with nothing on it for search.
+    noindex: posts.length === 0,
+  });
 }
 
 function initials(name: string) {
@@ -48,10 +56,7 @@ function initials(name: string) {
 
 export default async function AuthorPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [author, posts] = await Promise.all([
-    getAuthor(slug),
-    sanityServerClient.fetch<BlogPostCard[]>(POSTS_BY_AUTHOR_QUERY, { slug }),
-  ]);
+  const [author, posts] = await Promise.all([getAuthor(slug), getAuthorPosts(slug)]);
 
   if (!author) notFound();
 
@@ -62,6 +67,24 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
 
   return (
     <>
+      <JsonLd
+        data={authorProfileJsonLd({
+          name: author.name,
+          slug: author.slug.current,
+          role: author.role,
+          bio: author.bio,
+          linkedin: author.linkedin,
+          photoUrl: author.photo?.asset ? urlFor(author.photo).width(400).height(400).url() : null,
+        })}
+      />
+      <JsonLd
+        data={breadcrumbJsonLd([
+          HOME_CRUMB,
+          { name: 'News & Insights', path: '/blog' },
+          { name: author.name, path: `/blog/authors/${author.slug.current}` },
+        ])}
+      />
+
       {/* Hero */}
       <section className="focus-on-dark bg-pe-nav-dark px-6 py-14 text-center">
         <AnimatedSection>

@@ -8,6 +8,10 @@ import { urlFor } from '@/lib/sanity';
 import { sanityServerClient } from '@/lib/sanity.server';
 import { POST_BY_SLUG_QUERY, ALL_BLOG_SLUGS_QUERY } from '@/lib/queries';
 import type { BlogPost, PortableTextBlock } from '@/types/sanity';
+import { pageMetadata, SITE_URL } from '@/lib/seo';
+import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
+import { authorUrl, blogArticleJsonLd } from '@/lib/blogSeo';
+import { sanityArticleImages, sanityShareImage } from '@/lib/sanityShareImage';
 import { portableTextComponents } from '@/lib/portableTextComponents';
 import { TableOfContents, type TocItem } from '@/components/blog/TableOfContents';
 import { ShareButtons } from '@/components/blog/ShareButtons';
@@ -25,8 +29,6 @@ const getPost = cache((slug: string) =>
 
 export const revalidate = 3600;
 
-const SITE = 'https://phoenixenergy.solutions';
-
 export async function generateStaticParams() {
   const slugs = await sanityServerClient.fetch<{ slug: string }[]>(ALL_BLOG_SLUGS_QUERY);
   return slugs.map(({ slug }) => ({ slug }));
@@ -40,38 +42,24 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = await getPost(slug);
   if (!post) return {};
-  const canonical =
-    post.canonicalUrl ?? `${SITE}/blog/${post.slug.current}`;
-  const ogImageUrl =
-    (post.ogImage ?? post.heroImage)?.asset
-      ? urlFor(post.ogImage ?? post.heroImage).width(1200).height(630).url()
-      : undefined;
-
-  return {
-    // An editor's seoTitle is used verbatim; otherwise the template adds the brand.
-    title: post.seoTitle ? { absolute: post.seoTitle } : post.title,
+  // The social share image when the post has one, else its hero. The share image has no alt text of its own.
+  const image = sanityShareImage(post.ogImage, post.title) ?? sanityShareImage(post.heroImage, post.title);
+  return pageMetadata({
+    // An editor's SEO title is used as written; otherwise the template adds the brand.
+    title: post.seoTitle ?? post.title,
+    absoluteTitle: Boolean(post.seoTitle),
     description: post.seoDescription ?? post.excerpt,
-    alternates: { canonical },
-    openGraph: {
-      title: post.seoTitle ?? post.title,
-      description: post.seoDescription ?? post.excerpt,
-      url: `${SITE}/blog/${post.slug.current}`,
-      type: 'article',
+    path: `/blog/${post.slug.current}`,
+    canonical: post.canonicalUrl,
+    shareTitle: post.seoTitle ?? post.title,
+    image,
+    article: {
       publishedTime: post.publishedAt,
-      modifiedTime: post.updatedAt,
-      authors: [post.author.name],
+      modifiedTime: post.updatedAt ?? post.publishedAt,
+      authors: [authorUrl(post.author.slug.current)],
       tags: post.tags,
-      ...(ogImageUrl && {
-        images: [{ url: ogImageUrl, width: 1200, height: 630, alt: post.title }],
-      }),
     },
-    twitter: {
-      card: 'summary_large_image',
-      title: post.seoTitle ?? post.title,
-      description: post.seoDescription ?? post.excerpt,
-      ...(ogImageUrl && { images: [ogImageUrl] }),
-    },
-  };
+  });
 }
 
 function slugify(text: string) {
@@ -116,7 +104,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   if (!post) notFound();
 
   const tocItems = extractTocItems(post.body);
-  const canonicalUrl = post.canonicalUrl ?? `${SITE}/blog/${post.slug.current}`;
+  const canonicalUrl = post.canonicalUrl ?? `${SITE_URL}/blog/${post.slug.current}`;
   const heroSrc = post.heroImage?.asset
     ? urlFor(post.heroImage).width(1400).height(560).auto('format').url()
     : null;
@@ -125,45 +113,36 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     ? urlFor(post.author.photo).width(52).height(52).url()
     : null;
 
-  const articleJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: post.seoTitle ?? post.title,
-    description: post.seoDescription ?? post.excerpt,
-    ...(heroSrc && { image: heroSrc }),
-    datePublished: post.publishedAt,
-    dateModified: post.updatedAt ?? post.publishedAt,
-    author: {
-      '@type': 'Person',
-      name: post.author.name,
-      url: `${SITE}/blog/authors/${post.author.slug.current}`,
-      jobTitle: post.author.role,
-      worksFor: { '@type': 'Organization', name: 'Phoenix Energy' },
+  const articleJsonLd = blogArticleJsonLd(
+    {
+      title: post.title,
+      category: post.category,
+      tags: post.tags,
+      excerpt: post.excerpt,
+      seoDescription: post.seoDescription,
+      publishedAt: post.publishedAt,
+      updatedAt: post.updatedAt,
+      author: {
+        name: post.author.name,
+        slug: post.author.slug.current,
+        role: post.author.role,
+        linkedin: post.author.linkedin,
+        photoUrl: post.author.photo?.asset ? urlFor(post.author.photo).width(400).height(400).url() : null,
+      },
     },
-    publisher: {
-      '@type': 'Organization',
-      name: 'Phoenix Energy',
-      url: SITE,
-      logo: { '@type': 'ImageObject', url: `${SITE}/logo.png` },
-    },
-    mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
-  };
-
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE },
-      { '@type': 'ListItem', position: 2, name: 'News & Insights', item: `${SITE}/blog` },
-      { '@type': 'ListItem', position: 3, name: post.title, item: canonicalUrl },
-    ],
-  };
+    { url: canonicalUrl, images: sanityArticleImages(post.heroImage) },
+  );
+  const breadcrumb = breadcrumbJsonLd([
+    HOME_CRUMB,
+    { name: 'News & Insights', path: '/blog' },
+    { name: post.title, path: `/blog/${post.slug.current}` },
+  ]);
 
   return (
     <>
       <BlogReadDepth slug={post.slug.current} category={post.category} />
       <JsonLd data={articleJsonLd} />
-      <JsonLd data={breadcrumbJsonLd} />
+      <JsonLd data={breadcrumb} />
 
       {/* Post hero */}
       <section className="relative overflow-hidden" style={{ height: 360, background: '#0d1f22' }}>

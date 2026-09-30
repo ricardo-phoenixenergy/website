@@ -10,6 +10,9 @@ import {
   ALL_BLOG_TAGS_QUERY,
 } from '@/lib/queries';
 import type { BlogPostCard } from '@/types/sanity';
+import { pageMetadata } from '@/lib/seo';
+import { blogIndexPath } from '@/lib/blogSeo';
+import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { FeaturedArticleCard } from '@/components/ui/FeaturedArticleCard';
 import { ArticleCard } from '@/components/ui/ArticleCard';
@@ -22,7 +25,6 @@ import Link from 'next/link';
 
 export const revalidate = 3600;
 
-const SITE = 'https://phoenixenergy.solutions';
 const PAGE_SIZE = 6;
 
 function buildBlogHref(p: number, cat: string, t: string): string {
@@ -40,11 +42,11 @@ export async function generateMetadata({
   searchParams: Promise<{ page?: string; category?: string; tag?: string; q?: string }>;
 }): Promise<Metadata> {
   const { page: pageParam, category: catParam, tag: tagParam, q: qParam } = await searchParams;
-  const page = Number(pageParam) || 1;
+  const page = Math.max(1, Number(pageParam) || 1);
   const category = catParam ?? '';
   const tag = tagParam ?? '';
-  const q = qParam ? `${qParam.trim()}*` : '';
-  const canonical = page > 1 ? `${SITE}/blog?page=${page}` : `${SITE}/blog`;
+  const search = qParam?.trim() ?? '';
+  const q = search ? `${search}*` : '';
 
   const [total, published] = await Promise.all([
     sanityServerClient.fetch<number>(BLOG_COUNT_QUERY, { category, tag, q } as Record<string, string>),
@@ -52,29 +54,18 @@ export async function generateMetadata({
   ]);
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
-  return {
+  return pageMetadata({
     title: 'News & Insights',
-    // An index with no posts has nothing for search engines. It is left out of
-    // the sitemap too (src/app/sitemap.ts) until the first post is published.
-    ...(published === 0 && { robots: { index: false, follow: true } }),
-    description:
-      'Expert perspectives on clean energy, SA market trends, project spotlights and company news.',
-    alternates: {
-      canonical,
-      ...(page > 1 && {
-        prev: `${SITE}${buildBlogHref(page - 1, category, tag)}`,
-      }),
-      ...(page < totalPages && {
-        next: `${SITE}${buildBlogHref(page + 1, category, tag)}`,
-      }),
+    description: 'Expert perspectives on clean energy, SA market trends, project spotlights and company news.',
+    path: blogIndexPath({ page, category, tag, q: search }),
+    // An index with no posts has nothing for search engines, and search results
+    // shouldn't be indexed. The sitemap (src/app/sitemap.ts) leaves out both.
+    noindex: published === 0 || search !== '',
+    pagination: {
+      previous: page > 1 ? buildBlogHref(page - 1, category, tag) : undefined,
+      next: page < totalPages ? buildBlogHref(page + 1, category, tag) : undefined,
     },
-    openGraph: {
-      title: 'News & Insights | Phoenix Energy',
-      description: 'Expert perspectives on clean energy, SA market trends, project spotlights and company news.',
-      url: canonical,
-      images: [{ url: 'https://phoenixenergy.solutions/og-default.png', width: 1200, height: 630 }],
-    },
-  };
+  });
 }
 
 export default async function BlogPage({
@@ -101,14 +92,7 @@ export default async function BlogPage({
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE },
-      { '@type': 'ListItem', position: 2, name: 'News & Insights', item: `${SITE}/blog` },
-    ],
-  };
+  const jsonLd = breadcrumbJsonLd([HOME_CRUMB, { name: 'News & Insights', path: '/blog' }]);
 
   return (
     <>
