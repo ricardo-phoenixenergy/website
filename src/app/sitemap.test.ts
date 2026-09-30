@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { AUTHOR_SITEMAP_QUERY, BLOG_SITEMAP_QUERY } from '@/lib/queries';
 
 const { fetchMock, entriesMock } = vi.hoisted(() => ({ fetchMock: vi.fn(), entriesMock: vi.fn() }));
 vi.mock('@/lib/sanity.server', () => ({ sanityServerClient: { fetch: fetchMock } }));
@@ -29,5 +30,25 @@ describe('sitemap', () => {
     const entries = await sitemap();
     expect(entries.some((e) => e.url === 'https://phoenixenergy.solutions/projects')).toBe(true);
     expect(entries.some((e) => e.url.includes('/projects/'))).toBe(false);
+  });
+
+  it('lists the blog, each live post by its last change, and each author with a post', async () => {
+    fetchMock.mockImplementation(async (query: string) => {
+      if (query === BLOG_SITEMAP_QUERY) return [{ slug: 'a-post', lastModified: '2026-09-25T08:00:00Z' }];
+      if (query === AUTHOR_SITEMAP_QUERY) return [{ slug: 'an-author', lastModified: '2026-09-20T08:00:00Z' }];
+      return null;
+    });
+    entriesMock.mockResolvedValue([]);
+    const entries = await sitemap();
+    expect(entries).toContainEqual({ url: 'https://phoenixenergy.solutions/blog', priority: 0.8, changeFrequency: 'weekly' });
+    expect(entries).toContainEqual({ url: 'https://phoenixenergy.solutions/blog/a-post', lastModified: new Date('2026-09-25T08:00:00Z'), changeFrequency: 'weekly', priority: 0.7 });
+    expect(entries).toContainEqual({ url: 'https://phoenixenergy.solutions/blog/authors/an-author', lastModified: new Date('2026-09-20T08:00:00Z'), changeFrequency: 'monthly', priority: 0.5 });
+  });
+
+  it('leaves the blog and its authors out until a post is live', async () => {
+    fetchMock.mockResolvedValue([]);
+    entriesMock.mockResolvedValue([]);
+    const entries = await sitemap();
+    expect(entries.some((e) => e.url.includes('/blog'))).toBe(false);
   });
 });

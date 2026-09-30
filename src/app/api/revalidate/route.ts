@@ -35,13 +35,23 @@ export async function POST(req: NextRequest) {
   const id = typeof raw._id === 'string' ? raw._id : undefined;
 
   if (type === 'blogPost') {
-    if (slug) revalidatePath(`/blog/${slug}`);
+    // A post shows on its own page and beside related posts, on /blog, on home,
+    // on its author's page and in its services' related articles, and the
+    // sitemap lists it.
+    revalidatePath('/blog/[slug]', 'page');
     revalidatePath('/blog');
     revalidatePath('/');         // homepage shows latest posts
+    revalidatePath('/blog/authors/[slug]', 'page');
+    for (const vertical of SOLUTION_VERTICALS) revalidatePath(`/solutions/${vertical}`);
+    revalidatePath('/sitemap.xml');
   }
 
-  if (type === 'author' && slug) {
-    revalidatePath(`/blog/authors/${slug}`);
+  if (type === 'author') {
+    // An author's name, role and photo show on their page and on each of their
+    // posts, and the sitemap lists their page once they have a post.
+    revalidatePath('/blog/authors/[slug]', 'page');
+    revalidatePath('/blog/[slug]', 'page');
+    revalidatePath('/sitemap.xml');
   }
 
   if (type === 'project') {
@@ -50,10 +60,12 @@ export async function POST(req: NextRequest) {
     // and a change can move it to another service. Refreshing them all makes a
     // consent switch turned off take effect everywhere at once
     // (docs/superpowers/specs/2026-09-29-project-page-design.md, "Revalidation").
+    // The sitemap is refreshed too.
     revalidatePath('/projects/[slug]', 'page');
     revalidatePath('/projects');
     revalidatePath('/');         // homepage shows featured projects
     for (const vertical of SOLUTION_VERTICALS) revalidatePath(`/solutions/${vertical}`);
+    revalidatePath('/sitemap.xml');
   }
 
   if (type === 'teamMember') {

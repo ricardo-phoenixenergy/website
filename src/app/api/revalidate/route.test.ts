@@ -16,10 +16,7 @@ const webhook = (body: unknown, authorization = `Bearer ${SECRET}`) =>
   }) as unknown as NextRequest;
 const revalidated = () => revalidatePathMock.mock.calls.map((args: unknown[]) => args.join(' '));
 
-const EVERY_PAGE_A_PROJECT_SHOWS_ON = [
-  '/projects/[slug] page',
-  '/projects',
-  '/',
+const SOLUTION_PAGES = [
   '/solutions/ci-solar-storage',
   '/solutions/wheeling',
   '/solutions/energy-optimisation',
@@ -27,6 +24,8 @@ const EVERY_PAGE_A_PROJECT_SHOWS_ON = [
   '/solutions/webuysolar',
   '/solutions/ev-fleets',
 ];
+
+const EVERY_PAGE_A_PROJECT_SHOWS_ON = ['/projects/[slug] page', '/projects', '/', ...SOLUTION_PAGES, '/sitemap.xml'];
 
 beforeEach(() => {
   vi.stubEnv('REVALIDATE_SECRET', SECRET);
@@ -55,13 +54,18 @@ describe('POST /api/revalidate', () => {
     expect(revalidated()).toEqual(EVERY_PAGE_A_PROJECT_SHOWS_ON);
   });
 
-  it('leaves the project and solution pages alone when a blog post changes', async () => {
+  it('refreshes every page a post shows on, and the sitemap, when a blog post changes', async () => {
     await POST(webhook({ _type: 'blogPost', slug: { current: 'a-post' } }));
-    expect(revalidated()).toEqual(['/blog/a-post', '/blog', '/']);
+    expect(revalidated()).toEqual(['/blog/[slug] page', '/blog', '/', '/blog/authors/[slug] page', ...SOLUTION_PAGES, '/sitemap.xml']);
+  });
+
+  it("refreshes the author pages, their posts and the sitemap when an author changes", async () => {
+    await POST(webhook({ _type: 'author', slug: { current: 'an-author' } }));
+    expect(revalidated()).toEqual(['/blog/authors/[slug] page', '/blog/[slug] page', '/sitemap.xml']);
   });
 
   it('still refreshes every solution page when the hero images change', async () => {
     await POST(webhook({ _type: 'heroImages', _id: 'heroImages' }));
-    expect(revalidated()).toEqual(['/', '/solutions', ...EVERY_PAGE_A_PROJECT_SHOWS_ON.slice(3)]);
+    expect(revalidated()).toEqual(['/', '/solutions', ...SOLUTION_PAGES]);
   });
 });
