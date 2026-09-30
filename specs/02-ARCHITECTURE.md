@@ -359,9 +359,9 @@ Default page size: 6 posts. First page has no `?page=` param.
 ```typescript
 // src/app/api/revalidate/route.ts (POST from the Sanity webhook)
 // Needs the header Authorization: Bearer ${REVALIDATE_SECRET}; anything else gets 401.
-// Handles: blogPost     → /blog/[slug], /blog, /
-//          author       → /blog/authors/[slug]
-//          project      → /projects/[slug], /projects, /
+// Handles: blogPost     → /blog/[slug], /blog, /, the author's page, each solution page and /sitemap.xml
+//          author       → /blog/authors/[slug], /blog/[slug] and /sitemap.xml
+//          project      → /projects/[slug], /projects, /, each solution page and /sitemap.xml
 //          teamMember   → /about
 //          partner      → /about, /
 //          companyStats → /, /about
