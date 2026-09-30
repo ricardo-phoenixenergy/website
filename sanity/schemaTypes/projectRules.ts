@@ -24,6 +24,7 @@ export const AS_OF_WARNING = 'Add the date of the model, or the end of the measu
 export const INPUTS_WARNING = "Add the inputs behind the figures. Without them the page has no 'How we calculated this'.";
 export const COMMISSIONED_WARNING =
   'Add the commissioning date. Without it the page shows the completion date text, and the project is listed by the date it was added here.';
+export const COMMISSIONED_EARLY_WARNING = "Only a completed project has a commissioning date. Clear it for now: the project lists are ordered by this date, so it would move this project ahead of completed ones.";
 export const CONSENT_DATE_ERROR = "Add the date of the client's written consent.";
 
 /** Photos narrower than this look soft across a large screen. */
@@ -162,9 +163,17 @@ export function inputsWarning(value: unknown, document: ProjectDocument): true |
   return count(document?.results) > 0 && count(value) === 0 ? INPUTS_WARNING : true;
 }
 
-/** A warning for a completed project without a commissioning date. */
+/**
+ * A warning for a completed project without a commissioning date, and for a
+ * commissioning date on a project that isn't completed: the lists order
+ * projects by it whatever the status (src/lib/queries.ts, NEWEST_FIRST), so a
+ * planned project's stray date would put it ahead of completed ones.
+ */
 export function commissionedWarning(value: unknown, document: ProjectDocument): true | string {
-  return document?.status === 'completed' && !value ? COMMISSIONED_WARNING : true;
+  const completed = document?.status === 'completed';
+  if (completed && !value) return COMMISSIONED_WARNING;
+  if (!completed && value) return COMMISSIONED_EARLY_WARNING;
+  return true;
 }
 
 /**

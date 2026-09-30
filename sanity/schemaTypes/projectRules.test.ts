@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   AS_OF_WARNING,
   CLIENT_NAME_WARNING,
+  COMMISSIONED_EARLY_WARNING,
   COMMISSIONED_WARNING,
   CONSENT_DATE_ERROR,
   HERO_WIDTH_WARNING,
@@ -197,6 +198,15 @@ describe('the dates', () => {
     expect(commissionedWarning(undefined, { status: 'completed' })).toBe(COMMISSIONED_WARNING);
     expect(commissionedWarning('2026-06-12', { status: 'completed' })).toBe(true);
     expect(commissionedWarning(undefined, { status: 'planned' })).toBe(true);
+  });
+
+  it('warns about a commissioning date on a project that is not completed, since the lists are ordered by it', () => {
+    expect(commissionedWarning('2027-09-01', { status: 'planned' })).toBe(COMMISSIONED_EARLY_WARNING);
+    expect(commissionedWarning('2027-09-01', { status: 'in-progress' })).toBe(COMMISSIONED_EARLY_WARNING);
+    expect(commissionedWarning('2027-09-01', {})).toBe(COMMISSIONED_EARLY_WARNING);
+    expect(commissionedWarning('2026-06-12', { status: 'completed' })).toBe(true);
+    expect(commissionedWarning(undefined, { status: 'completed' })).toBe(COMMISSIONED_WARNING);
+    expect(commissionedWarning(undefined, { status: 'in-progress' })).toBe(true);
   });
 
   it('requires the consent date once "Show client name" is on', () => {
