@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
   HERO_PHONE_MAX_WIDTH,
+  HERO_PHONE_MEDIA,
   HERO_PHONE_RATIO,
+  HERO_PHONE_SIZES,
   HERO_WIDE_MAX_WIDTH,
+  HERO_WIDE_MEDIA,
   HERO_WIDE_RATIO,
   HERO_WIDE_SIZES,
   heroCrop,
@@ -108,6 +111,18 @@ describe('heroCrops', () => {
 
 describe('HERO_WIDE_SIZES', () => {
   it('asks for the width a cover fit needs: the window, or the height times 2.5 where that is wider', () => {
-    expect(HERO_WIDE_SIZES).toBe('(min-width: 1175px) 100vw, (min-width: 1024px) 1175px, (min-width: 1000px) 100vw, 1000px');
+    // The height changes at Tailwind's lg (64rem); 1175px and 1000px are the px heights times 2.5.
+    expect(HERO_WIDE_SIZES).toBe('(min-width: 1175px) 100vw, (min-width: 64rem) 1175px, (min-width: 1000px) 100vw, 1000px');
+  });
+});
+
+describe("the hero's breakpoints", () => {
+  it('switches crops where the layout does, at Tailwind\'s md (48rem), whatever the browser\'s default font size', () => {
+    expect(HERO_WIDE_MEDIA).toBe('(min-width: 48rem)');
+    expect(HERO_PHONE_MEDIA).toBe('not all and (min-width: 48rem)');
+  });
+
+  it('sizes the phone crop to the page margins, which change at Tailwind\'s sm (40rem)', () => {
+    expect(HERO_PHONE_SIZES).toBe('(min-width: 40rem) calc(100vw - 48px), calc(100vw - 32px)');
   });
 });

@@ -82,14 +82,14 @@ describe('ProjectHero', () => {
     expect(named).not.toContain('Logistics warehouse');
   });
 
-  it('serves one image in a <picture>: a 5:2 crop from 768px and a 4:3 crop below, each preloaded for its own widths', () => {
+  it('serves one image in a <picture>: a 5:2 crop from md (48rem, 768px by default) and a 4:3 crop below, each preloaded for its own widths', () => {
     const markup = html(createElement(ProjectHero, { project: { ...project, heroImage: heroImage('A roof') }, overlapped: true }));
     expect(markup.match(/<img\b/g)).toHaveLength(1);
     // The crops' Sanity URLs, encoded inside next/image's srcset: rect=0,325,4000,1600 and rect=500,0,3000,2250.
-    expect(markup).toMatch(/<picture><source media="\(min-width: 768px\)" srcSet="[^"]*rect%3D0%2C325%2C4000%2C1600[^"]*" sizes="\(min-width: 1175px\) 100vw, [^"]*"\/><img /);
+    expect(markup).toMatch(/<picture><source media="\(min-width: 48rem\)" srcSet="[^"]*rect%3D0%2C325%2C4000%2C1600[^"]*" sizes="\(min-width: 1175px\) 100vw, [^"]*"\/><img /);
     expect(markup).toMatch(/<img [^>]*loading="eager" fetchPriority="high"[^>]*srcSet="[^"]*rect%3D500%2C0%2C3000%2C2250/);
-    expect(markup).toMatch(/<link rel="preload" as="image" fetchPriority="high" imageSrcSet="[^"]*rect%3D0%2C325[^"]*" imageSizes="[^"]*" media="\(min-width: 768px\)"\/>/);
-    expect(markup).toMatch(/<link rel="preload" as="image" fetchPriority="high" imageSrcSet="[^"]*rect%3D500%2C0[^"]*" imageSizes="[^"]*" media="\(max-width: 767px\)"\/>/);
+    expect(markup).toMatch(/<link rel="preload" as="image" fetchPriority="high" imageSrcSet="[^"]*rect%3D0%2C325[^"]*" imageSizes="[^"]*" media="\(min-width: 48rem\)"\/>/);
+    expect(markup).toMatch(/<link rel="preload" as="image" fetchPriority="high" imageSrcSet="[^"]*rect%3D500%2C0[^"]*" imageSizes="[^"]*" media="not all and \(min-width: 48rem\)"\/>/);
     expect(markup).toContain('data:image/jpeg;base64,blur');
   });
 

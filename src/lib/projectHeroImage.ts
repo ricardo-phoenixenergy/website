@@ -1,42 +1,51 @@
 // src/lib/projectHeroImage.ts
 // The hero photo, cut near the shape each width shows it
-// (docs/superpowers/specs/2026-09-29-project-page-design.md, "Decided after step 1"):
-// - From 768px, a 5:2 crop. The full-bleed hero is 400px tall from 768px and
-//   470px from 1024px, across the whole window, so it runs from about 1.9:1 (a
-//   768px window) to 4:1 (1920px). 5:2 is its shape at 1175px (470px tall) and
-//   at 1000px (400px tall), in the middle of that range. HERO_WIDE_SIZES tells
-//   the browser the width a cover fit needs, the window or the height times
-//   2.5, whichever is wider, so it never fetches a file too short for the box.
+// (docs/superpowers/specs/2026-09-29-project-page-design.md, "Decided after step 1").
+// The crops switch where the hero's layout does, at Tailwind's md: 48rem, which
+// is 768px at the default 16px font size. The media queries are in rem too, so
+// a browser set to a larger default font still gets the crop its layout shows
+// (at 20px, md is 960px).
+// - From md, a 5:2 crop. The full-bleed hero is 400px tall from md and 470px
+//   from lg (64rem, 1024px at 16px), across the whole window, so it runs from
+//   about 1.9:1 (a 768px window) to 4:1 (1920px). 5:2 is its shape at 1175px
+//   (470px tall) and at 1000px (400px tall), in the middle of that range.
+//   HERO_WIDE_SIZES tells the browser the width a cover fit needs, the window
+//   or the height times 2.5, whichever is wider, so it never fetches a file
+//   too short for the box.
 //   A 3:1 crop saves more on a 1440px laptop at 1x, but needs a 1410px-wide
 //   file for every window from 1024px, which jumps to the 3840px file at 1.5x
 //   and 2x; 2:1 saves little on desktops.
-// - Below 768px, a 4:3 crop, the phone box's own shape.
+// - Below md, a 4:3 crop, the phone box's own shape, inside the page margins,
+//   which widen at sm (40rem, 640px at 16px).
 // Both crops centre on the Studio hotspot and stay inside the editor's crop,
 // the way @sanity/image-url fits a crop. Sanity cuts them (rect=), and
 // next/image's optimiser (ProjectHero, getImageProps()) sizes them for each
 // srcset width. Neither is ever asked for more pixels than the photo has.
 import type { SanityImage } from '@/types/sanity';
 
-/** The wide crop's width to height, from 768px. */
+/** The wide crop's width to height, from md (48rem). */
 export const HERO_WIDE_RATIO = 2.5;
 /** The widest wide crop: sharp at 2x up to a 1536px window, the widest common laptop. */
 export const HERO_WIDE_MAX_WIDTH = 3072;
 /** The phone crop's width to height: the phone hero's 4:3 box. */
 export const HERO_PHONE_RATIO = 4 / 3;
-/** The widest phone crop: a 767px window at 2x, and any phone at 3x. */
+/** The widest phone crop: a window just under md (767px at 16px) at 2x, and any phone at 3x. */
 export const HERO_PHONE_MAX_WIDTH = 1600;
 
-export const HERO_WIDE_MEDIA = '(min-width: 768px)';
-export const HERO_PHONE_MEDIA = '(max-width: 767px)';
+/** From Tailwind's md, 48rem (768px at the default 16px font size), where the hero's layout changes. */
+export const HERO_WIDE_MEDIA = '(min-width: 48rem)';
+/** Below md: the exact opposite of HERO_WIDE_MEDIA, so no width matches both or neither. */
+export const HERO_PHONE_MEDIA = 'not all and (min-width: 48rem)';
 
 /**
  * The CSS width the wide crop needs under a cover fit: the window, or its
- * height (400px, and 470px from 1024px) times 2.5 where that's wider.
- * 470 x 2.5 = 1175 and 400 x 2.5 = 1000.
+ * height (400px, and 470px from lg, 64rem) times 2.5 where that's wider.
+ * 470 x 2.5 = 1175 and 400 x 2.5 = 1000. The heights are in px, so those two
+ * thresholds stay in px; the height changes at lg, so that one is in rem.
  */
-export const HERO_WIDE_SIZES = '(min-width: 1175px) 100vw, (min-width: 1024px) 1175px, (min-width: 1000px) 100vw, 1000px';
-/** The phone crop fills the page margins: 16px a side below 640px, 24px from 640px. */
-export const HERO_PHONE_SIZES = '(max-width: 639px) calc(100vw - 32px), calc(100vw - 48px)';
+export const HERO_WIDE_SIZES = '(min-width: 1175px) 100vw, (min-width: 64rem) 1175px, (min-width: 1000px) 100vw, 1000px';
+/** The phone crop fills the page margins: 16px a side, and 24px from sm (40rem, 640px at 16px). */
+export const HERO_PHONE_SIZES = '(min-width: 40rem) calc(100vw - 48px), calc(100vw - 32px)';
 
 export interface CropRect {
   left: number;
