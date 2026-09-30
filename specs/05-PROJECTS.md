@@ -65,7 +65,7 @@ Shown only when there are **4 or more projects in 2 or more services** (`FILTER_
 Only in the layout with filters, and only when the filtered set has a **featured** project: the first in the list, which puts featured projects first in their featured order (`getAllProjects()`, `src/lib/projectData.ts`). Otherwise no featured card is shown. The featured project is left out of the grid below it.
 
 `FeaturedProjectCard` is a two-column card (one column below `sm`), outcomes first like `ProjectCard` (updated September 2026):
-- Left: the hero photo (`next/image`, blur placeholder, decorative `alt=""`, `priority` here as the first image) under a dark gradient, the kicker badge ("Featured project"), a status badge when in progress or planned, the project title (H2 here) and the location. The client's name never shows until the CMS can record the client's consent (`specs/06-PROJECT-SINGLE.md`).
+- Left: the hero photo (`next/image`, blur placeholder, decorative `alt=""`, `priority` here as the first image) under a dark gradient, the kicker badge ("Featured project"), a status badge when in progress or planned, the project title (H2 here) and the place line: the location, then the client's name when it may show, which takes the client's recorded consent (`cardPlace()`, `specs/06-PROJECT-SINGLE.md`).
 - Right: the "Projected results" caption unless an editor marks the results measured (`isMeasured()`), the first two results as value and label pairs (Plus Jakarta Sans 800, 24px, `pe-primary`, over a 12px label; no boxes, so no card sits inside the card), the specs on one line, then the summary (clamped to 3 lines). A project with no results shows its specs (up to four) as the pairs instead.
 - Footer: "View project", with an arrow: a compact primary pill (40px) drawn on a `<span>` with `buttonClasses({ size: 'compact', inCard: true })`, since the whole card is the link. It darkens and presses with the card (hover or press anywhere on it), as well as the card's own lift.
 
@@ -91,7 +91,7 @@ In the filter layout only: *"Showing X of Y projects"* in a `role="status"` line
   ↳ status badge, top right: "In progress" or "Planned" (none when completed)
 [Body]
   ↳ title: H2 on /projects, H3 under a section heading elsewhere
-  ↳ location
+  ↳ location · client (only with the client's recorded consent)
   ↳ "Projected results" caption, unless an editor marks the results measured
   ↳ the first two results: value (Plus Jakarta Sans 800, pe-primary) over its label; side by side
     when there's room, with the values top-aligned so a label that wraps never pushes its neighbour down

@@ -1,46 +1,85 @@
 # 12 — CMS Schemas (Sanity)
 > Spoke | Hub: [`/CLAUDE.md`](/CLAUDE.md) | Version 3.0
-> **Updated 2026-09-24:** corrected to match the build. All ten schemas in `sanity/schemaTypes/` are now described here.
+> **Updated 2026-09-29:** the project schema's step 2 fields, consent switches and Studio warnings. All ten schemas in `sanity/schemaTypes/` are described here.
 
 ---
 
 ## Project Schema
 
 ```typescript
-// sanity/schemaTypes/project.ts
+// sanity/schemaTypes/project.ts: six groups, Overview first (the default)
 {
-  title:           string
-  slug:            slug (unique)
-  vertical:        string (enum: SolutionVertical)
-  featured:        boolean  // home "Projects" carousel; on /projects (once filters show) the first featured project gets the large card
-  featuredOrder:   number   // optional; lower first in the home carousel and among the featured projects that lead /projects
-  location:        string
-  clientName:      string   // not shown on the site until the CMS can record the client's consent (step 2)
-  systemSize:      string   // never shown on the site
-  completionDate:  string
-  projectValue:    string   // e.g. "R42M"; a rand amount, not shown on the site until the client agrees (step 2)
-  status:          'completed' | 'in-progress' | 'planned'
-  heroImage:       image (with alt)
-  gallery:         image[]
-  summary:         text (short)
-  challenge:       portable text
-  solution:        portable text
-  outcome:         portable text
-  metrics: [{
+  // Overview
+  title:             string    // required
+  slug:              slug      // required, from the title
+  headline:          string    // max 90; the H1, page title and sharing title; empty uses the title
+  vertical:          string    // required (enum: SolutionVertical)
+  siteType:          string    // max 40; the line under the headline (when the client isn't named) and the Site row
+  location:          string
+  status:            'completed' | 'in-progress' | 'planned'
+  commissionedOn:    date      // shown as "June 2026" and used for the order; a warning when completed and empty
+  completionDate:    string    // free text: a planned or in-progress project's target, e.g. "Q3 2027"
+  financing:         string[]  // up to 3: outright-purchase, ppa, pla, energy-efficiency-lease, other (src/lib/projectOptions.ts)
+  clientName:        string    // shown only with "Show client name" on and a consent date set
+  showClientName:    boolean   // off by default
+  clientConsentOn:   date      // required when showClientName is on, hidden when it's off; never shown or queried
+  showRandAmounts:   boolean   // off by default; off drops every rand amount from the figures and withholds projectValue
+  projectValue:      string    // e.g. "R[x]M excl. VAT"; shown only with "Show rand amounts" on
+  featured:          boolean   // home "Projects" carousel; featured projects lead /projects
+  featuredOrder:     number    // optional; lower first on home and /projects, unnumbered ones after numbered ones
+  systemSize:        string    // hidden in the Studio and never shown; the data stays
+  // Results
+  results: [{                  // "Results (up to 4)": a warning above four; the first two lead the project card
+    label: string
+    value: string
+    note:  string              // max 70; the period and baseline, shown under the figure
+  }]
+  resultsBasis:       'projected' | 'measured'  // empty means projected; a warning when measured and not completed
+  resultsAsOf:        date                      // a warning when results exist and it's empty
+  resultsAssumptions: text                      // the Results note: max 300 characters (warning)
+  resultsInputs: [{            // "Calculation inputs": up to 8; a warning when results exist without them
+    label: string              // required, max 40
+    value: string              // required, max 80
+  }]
+  // Story
+  summary:           text      // the lead paragraph, and the search description's fallback
+  challengeHeadline: string    // max 90; the chapter's h2
+  challenge:         portable text   // Normal and Subheading styles, bullet and numbered lists, bold, italic, links
+  solutionHeadline:  string    // max 90
+  solution:          portable text   // the same; the inline image option is gone (the site never showed it)
+  outcomeHeadline:   string    // max 90
+  outcome:           portable text   // the same
+  // Facts
+  metrics: [{                  // "System (2 to 4 rows)": a warning outside 2 to 4
     label: string
     value: string
   }]
-  results: [{                // results strip, up to 4; the first two lead the project card
-    label: string
-    value: string
+  equipment: [{                // up to 12
+    component: string          // required: Solar panels, Inverter, Battery, Mounting, Monitoring, EV charger, Motor, Variable speed drive or Other
+    brand:     string          // required
+    model:     string
+    quantity:  number          // a whole number, at least 1
   }]
-  resultsBasis:       'projected' | 'measured'  // optional; empty means projected
-  resultsAsOf:        date                      // optional; model date or end of the measured period
-  resultsAssumptions: text                      // optional; one or two sentences, max 300 characters (warning)
+  installationWeeks: number    // a whole number, 1 to 104: weeks from starting on site to commissioning
+  approvals:         string[]  // up to 6, max 100 each
+  // Photos
+  heroImage:         image     // hotspot; alt required; a warning under 2400px wide
+  gallery:           image[]   // hotspot; alt required; caption max 120
+  // Search
+  seoDescription:    string    // max 155; empty uses the summary
   // No related field: PROJECT_BY_SLUG_QUERY returns up to three other projects from the same vertical,
   // and up to two from other verticals for when the vertical has none (specs/06-PROJECT-SINGLE.md).
 }
 ```
+
+### Consent, warnings and help text (step 2, September 2026)
+
+The fields, their groups, validation and Studio help text follow the table in `docs/superpowers/specs/2026-09-29-project-page-design.md` ("CMS fields (step 2)"), and every one is optional with a fallback on the site, so a project that doesn't set them keeps working.
+
+- **Consent:** "Show client name" and "Show rand amounts" are off by default. The queries in `src/lib/queries.ts` return `clientName` only while "Show client name" is on and `clientConsentOn` is set, and `projectValue` only while "Show rand amounts" is on; a switch that is off leaves the field out of the data. The Studio stops a document being published with "Show client name" on and no consent date.
+- **Prose warnings:** the summary, the story, the headline and chapter headlines, the figure notes, the Results note, alt text, captions and the search description show on the site as written. Each warns while it holds what looks like a rand amount and "Show rand amounts" is off, or the client's name before the name may show (`sanity/schemaTypes/projectRules.ts`, which uses the site's own `isRandAmount()`).
+- **Other warnings:** a hero photo under 2400px wide ("Photos under 2400px wide look soft on large screens."), more than four results, System rows outside 2 to 4, Measured results on a project that isn't completed, results without an as-of date or calculation inputs, and a completed project without a commissioning date.
+- **Tests:** `sanity/schemaTypes/project.test.ts` checks the groups, the help text, the limits and the warnings; `projectRules.test.ts` checks the rules.
 
 ### Results basis fields (added September 2026)
 
@@ -300,22 +339,28 @@ Home shows every active partner in one centred grid, with no tabs.
 ```typescript
 // src/lib/queries.ts (field projections shortened to { ... })
 
-// Project queries leave out clientName and projectValue, and project images carry only
-// { asset->{ _id, url, metadata { lqip, dimensions } }, alt, hotspot, crop }. Read them through
-// src/lib/projectData.ts, which also drops rand amounts from results and System rows.
+// Project queries return clientName only with showClientName on and clientConsentOn set, and
+// projectValue only with showRandAmounts on, as conditional projections, so a switch that is off
+// leaves the field out. Every project carries "showRandAmounts": showRandAmounts == true. Project
+// images carry only { asset->{ _id, url, metadata { lqip, dimensions } }, alt, hotspot, crop }, and
+// gallery photos their caption too. Read them through src/lib/projectData.ts, which drops rand
+// amounts from results, System rows and calculation inputs while "Show rand amounts" is off; an
+// ESLint rule stops any other file importing them. NEWEST_FIRST, below, is
+// coalesce(dateTime(commissionedOn + "T00:00:00Z"), dateTime(_createdAt)) desc: the commissioning
+// date, else the date added, both compared as datetimes (dateTime() of a bare date is null).
 
 // All projects (/projects), newest first; getAllProjects() then puts featured projects first
-export const ALL_PROJECTS_QUERY = `*[_type == "project" && defined(slug.current)] | order(_createdAt desc) { ... }`;
+export const ALL_PROJECTS_QUERY = `*[_type == "project" && defined(slug.current)] | order(NEWEST_FIRST) { ... }`;
 
-// Featured projects (home "Projects" carousel), no limit
-export const FEATURED_PROJECTS_QUERY = `*[_type == "project" && featured == true && defined(slug.current)] | order(coalesce(featuredOrder, 99) asc, _createdAt desc) { ... }`;
+// Featured projects (home "Projects" carousel), no limit: numbered first, lowest first, then the rest newest first
+export const FEATURED_PROJECTS_QUERY = `*[_type == "project" && featured == true && defined(slug.current)] | order(defined(featuredOrder) desc, featuredOrder asc, NEWEST_FIRST) { ... }`;
 
 // Projects by vertical (the "Projects" section on each solution page), the newest six
-export const PROJECTS_BY_VERTICAL_QUERY = `*[_type == "project" && vertical == $vertical && defined(slug.current)] | order(_createdAt desc) [0..5] { ... }`;
+export const PROJECTS_BY_VERTICAL_QUERY = `*[_type == "project" && vertical == $vertical && defined(slug.current)] | order(NEWEST_FIRST) [0..5] { ... }`;
 
 // Single project, with up to three from the same vertical and, for when it has none,
 // up to two from other verticals, both newest first (/projects/[slug])
-export const PROJECT_BY_SLUG_QUERY = `*[_type == "project" && slug.current == $slug][0] { ..., _createdAt, _updatedAt, "related": *[...same vertical...] | order(_createdAt desc) [0..2] { ... }, "otherProjects": *[...other verticals...] | order(_createdAt desc) [0..1] { ... } }`;
+export const PROJECT_BY_SLUG_QUERY = `*[_type == "project" && slug.current == $slug][0] { ..., _createdAt, _updatedAt, "related": *[...same vertical...] | order(NEWEST_FIRST) [0..2] { ... }, "otherProjects": *[...other verticals...] | order(NEWEST_FIRST) [0..1] { ... } }`;
 
 // Project slugs (generateStaticParams), as strings
 export const ALL_PROJECT_SLUGS_QUERY = `*[_type == "project" && defined(slug.current)].slug.current`;

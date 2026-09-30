@@ -1,7 +1,7 @@
 # 06: Single Project Page
-> Spoke | Hub: [`/CLAUDE.md`](/CLAUDE.md) | Version 4.0
+> Spoke | Hub: [`/CLAUDE.md`](/CLAUDE.md) | Version 4.1
 > Route: `/projects/[slug]`
-> **Rebuilt 2026-09-29 (step 1):** one template for every project, from the design spec `docs/superpowers/specs/2026-09-29-project-page-design.md`. Step 2 adds CMS fields: headline, site type, consent switches, commissioning date, financing, notes, calculation inputs, chapter headlines, equipment, delivery, captions and a search description. Until then, each part shows today's fields.
+> **Rebuilt 2026-09-29 (steps 1 and 2):** one template for every project, from the design spec `docs/superpowers/specs/2026-09-29-project-page-design.md`. Step 2 added the CMS fields: headline, site type, the consent switches, commissioning date, financing, figure notes, calculation inputs, chapter headlines, equipment, delivery, captions and a search description. Each part shows a new field only when it's set, and falls back to the older fields otherwise.
 
 ---
 
@@ -38,10 +38,13 @@ The page file only reads the project and composes the parts in `src/components/p
 - **One module for every read:** every read of project content goes through `src/lib/projectData.ts`:
   - `getProjectBySlug`, cached per request with React `cache`, so the page and its metadata share one read;
   - `getAllProjects`, `getFeaturedProjects`, `getProjectsByVertical`, `getProjectSlugs` and `getProjectSitemapEntries`.
-- **What the queries leave out:** the project queries in `src/lib/queries.ts` leave out the client's name and the project value, which may show only with the client's consent. The CMS can't record that consent until step 2. Project images select only the URL, the LQIP, the dimensions, the asset id, the alt text, and the hotspot and crop, never the whole asset document, whose file name can name the client.
-- **Rand amounts:** `discloseProject()` (`src/lib/projectDisclosure.ts`) drops any results figure or System row that looks like a rand amount, label and value together: an R before a number, R written as a unit ("(R)", "(R/kWh)", "(R'000)", "2.10 R/kWh", "450 000 R"), "ZAR", the word "rand", or a price in cents ("180c/kWh", "(c/kWh)", "95 cents").
-- **Prose:** the summary and the story are prose, and aren't filtered.
-- **Order:** newest first, meaning the date a project was added to the CMS (`_createdAt`) until step 2 adds a commissioning date. `/projects` puts featured projects first, in their featured order.
+
+  An ESLint rule (`eslint.config.mjs`) stops any other file importing the project queries.
+- **The consent switches, in the queries:** `src/lib/queries.ts` returns the client's name only when "Show client name" is on and the date of the client's written consent is set, and the project value only when "Show rand amounts" is on. A switch that is off leaves its field out of the data entirely, so the field never reaches the browser. The consent date itself is never queried.
+- **Rand amounts:** with "Show rand amounts" off, `discloseProject()` (`src/lib/projectDisclosure.ts`) drops every results figure, System row and calculation input that looks like a rand amount, label, value and note together: an R before a number, R written as a unit ("(R)", "(R/kWh)", "(R'000)", "2.10 R/kWh", "450 000 R"), "ZAR", the word "rand", or a price in cents ("180c/kWh", "c/kWh", "95 cents"). With it on, they show as written.
+- **Images:** project images select only the URL, the LQIP, the dimensions, the asset id, the alt text, the caption, and the hotspot and crop, never the whole asset document, whose file name can name the client.
+- **Prose isn't filtered:** the summary, the story, the headlines, the figure notes, the results note, alt text, captions and the search description show as written. The Studio warns when any of them holds a rand amount while "Show rand amounts" is off, or the client's name before it may show (`specs/12-CMS.md`).
+- **Order:** newest first, meaning the commissioning date, falling back to the date the project was added to the CMS (`_createdAt`). `/projects` puts featured projects first, in their featured order: numbered ones lowest first, then unnumbered ones. The home carousel uses the same featured order.
 
 ---
 
@@ -58,8 +61,10 @@ The page file only reads the project and composes the parts in `src/components/p
 
 `ProjectHero`: one image and one H1 (`#project-title`) at every width.
 
+**The H1** is the headline, else the project title (`projectTitle()` in `src/lib/projectSeo.ts`).
+
 **From 768px**
-- The photo is full-bleed: 400px tall, and 470px from 1024px. `object-position` follows the Studio hotspot, and there's no hover zoom.
+- The photo is full-bleed: 400px tall, and 470px from 1024px. There's no hover zoom.
 - A Night Teal scrim runs from 5% at 20% of the height, through 66% at 58%, to 92% at the foot.
 - The text is aligned to the page container: the service badge (a link to the solution page), the H1 and the line under the headline.
 - The H1 is Plus Jakarta Sans 800: 36px, and 44px from 1024px, with a line height of 1.08, `max-width: 25ch`, balanced wrapping, `break-words`, in white.
@@ -69,17 +74,20 @@ The page file only reads the project and composes the parts in `src/components/p
 
 **Below 768px**
 - The photo is 4:3 inside the page margins, with a 16px radius.
-- Under it: the badge, the H1 at 28px in `pe-text`, and the line under the headline at 14px in `pe-muted` on two lines (the city, then the status and date).
+- Under it: the badge, the H1 at 28px in `pe-text`, and the line under the headline at 14px in `pe-muted` on two lines (who or what and where, then the status and date).
 
-**The line under the headline** (`metaLine()` in `src/lib/projectMeta.ts`): the city, then the status and date:
-- "Completed Q2 2026";
-- "In progress, due Q3 2027";
-- "Planned for Q3 2027";
-- the status alone without a date, and nothing without a status.
+**The line under the headline** (`metaLine()` in `src/lib/projectMeta.ts`):
+1. the client's name when the data carries it, which it does only with consent, otherwise the site type;
+2. the city;
+3. the status and date: "Completed June 2026" from the commissioning date, else "Completed Q2 2026" from the free-text completion date, else "Completed"; "In progress, due Q3 2027"; "Planned for Q3 2027"; the status alone without a date, and nothing without a status.
 
-**No hero photo:** phones show no photo block, and wider screens show the service's colour gradient.
+**The photo** (`src/lib/projectHeroImage.ts`): one `<picture>` with one `<img>`, both crops centred on the Studio hotspot and kept inside the editor's crop.
+- From 768px, a 5:2 crop (`<source media="(min-width: 768px)">`), at most 3072px wide. Its `sizes` is the width a cover fit needs: the window, or 1175px from 1024px and 1000px below it where that's wider (the height times 2.5).
+- Below 768px, a 4:3 crop, at most 1600px wide, with `sizes` of the window less the page margins.
+- Sanity cuts each crop (`rect=`) and never enlarges it; next/image's `getImageProps()` gives each its srcset, and its `object-position` keeps the hotspot in view.
+- Loading: the photo is the LCP element. The `<img>` is `loading="eager"` with `fetchPriority="high"`, and `preload()` adds one preload link per crop, each with its own `media`. `getImageProps()` can't take a blur placeholder, so the LQIP sits blurred behind the photo instead.
 
-**Loading:** the photo is the LCP element: `preload`, a blur placeholder from its LQIP, and `sizes` of `100vw` from 768px.
+**No hero photo, or one whose size can't be read:** phones show no photo block, and wider screens show the service's colour gradient.
 
 ---
 
@@ -91,8 +99,10 @@ The page file only reads the project and composes the parts in `src/components/p
   - On phones it sits 24px under the hero text, with a border.
 - **Heading:** the h2 `#results-heading`, "Projected results" or "Measured results" (`describeResults()`), in 12px uppercase `pe-muted`, then "as of [date]" when set.
 - **Measured or projected:** figures are measured only when an editor marks them so and the project is completed.
-- **Figures:** up to four, as a `<dl>`. Each value is Plus Jakarta Sans 800, 28px, and 36px from 1024px, over its 14px label. Four sit across from 1024px, and two by two below.
-- **Foot row:** the editor's "Results note" (else the default sentence for projections), then "Read the disclaimer" (`ArrowLink` to `/disclaimer`).
+- **Figures:** up to four, as a `<dl>`. Each value is Plus Jakarta Sans 800, 28px, and 36px from 1024px, over its 14px label, then its note (the period and baseline) at 12px in `pe-muted` when set. Four sit across from 1024px, and two by two below.
+- **Foot:** the editor's "Results note" (else the default sentence for projections).
+  - With calculation inputs: "How we calculated this", a native `<details>` under the sentence. Opened, it lists the inputs as label and value rows, three columns from 1024px and one below, and ends with "Read the disclaimer" (`ArrowLink` to `/disclaimer`).
+  - Without them: no disclosure, and "Read the disclaimer" follows the sentence.
 
 ---
 
@@ -109,9 +119,9 @@ The page file only reads the project and composes the parts in `src/components/p
 - **Phones:** at most three tiles: the lead full width with two below.
 - **"+N":** the last tile shown at each width carries "+N" for the photos not shown.
 - **Tile names:** each tile is a button named "Open photo i of N: alt", or "Project photo N" without alt text.
-- **The viewer:**
+- **The viewer** (`PhotoViewer`):
   - a full-screen dialog, "Photo i of N";
-  - each photo is shown whole, with "i of N" visible in a polite live region;
+  - each photo is shown whole, with "i of N" visible in a polite live region, and its caption under it when set (`photoCaption()`), inside the dialog;
   - the arrow buttons, the arrow keys and a sideways swipe of at least 50px page through the photos, wrapping at the ends;
   - pinch-zoom works on the photo (`touch-action: pan-y pinch-zoom`), and a swipe doesn't page while the visitor is zoomed in (`isPinchZoomed()`);
   - `useModalDialog` handles Escape, the focus trap and returning focus to the tile.
@@ -120,7 +130,7 @@ The page file only reads the project and composes the parts in `src/components/p
 
 ## Story and Facts
 
-`ProjectStory`, with the chapters from `projectChapters()` (`src/lib/projectStory.ts`). A chapter shows only when a text block has words in it, so image-only or empty chapters don't count.
+`ProjectStory`, with the chapters from `projectChapters()` (`src/lib/projectStory.ts`). A chapter shows only when a text block has words in it, so image-only or empty chapters, or a headline without text, don't count.
 
 **With a story, from 1024px**
 - **Columns:** the story column, and the 340px facts panel beside it, 56px apart.
@@ -130,19 +140,19 @@ The page file only reads the project and composes the parts in `src/components/p
 
 **The story**
 - **Lead paragraph:** the summary, at 20px, with a line height of 1.6, up to 34em wide.
-- **Chapters:** "The challenge", "Our solution" and "The outcome", 40px apart and up to 38rem wide. Each label is the chapter's h2 (`#chapter-{key}`), in 12px uppercase `pe-muted`, until chapters get headlines in step 2.
-- **Chapter text:** `projectTextComponents`: 17px paragraphs, headings as h3, lists and links. Images inside the text aren't shown.
+- **Chapters:** "The challenge", "Our solution" and "The outcome", 40px apart and up to 38rem wide. Each starts with its label in 12px uppercase `pe-muted`. With a headline, the headline is the chapter's h2 (`#chapter-{key}`), in Plus Jakarta Sans 800 at 26px with a line height of 1.2. Without one, the label is the h2.
+- **Chapter text:** `projectTextComponents`: 17px paragraphs, subheadings as h3, lists and links. Images inside the text aren't shown, and the Studio no longer offers them.
 
 **Facts** (`ProjectFacts`, with rows from `projectFacts()` in `src/lib/projectFacts.ts`)
-- **Groups:**
-  - Project: Location; Service, linked to the solution page; Status.
-  - System: the "Stats strip metrics" rows, in order.
-
-  A row shows only when it's set, and a group only when it has a row.
+- **Groups,** each row only when it's set and each group only when it has a row:
+  - Project: Site; Client (only with consent); Location; Service, linked to the solution page; Status, worded as in the line under the headline; Financing, each option on its own line, linked to the financing section (`#financing`) of the C&I Solar & Storage, Energy Optimisation or EV Fleets page, and to the solution page for the other services; Project value (only with "Show rand amounts" on).
+  - System: the System rows, in order.
+  - Equipment: one row per component, for example "Inverter" with "[Brand] [model], 3 units"; one is "1 unit".
+  - Delivery: On site ("6 weeks", or "1 week"), and the approvals, one per line.
 - **The three versions:**
-  - `panel`: every group;
-  - `compact`: below 1024px, Location and the first two System rows open, and the rest under "All project facts", a native `<details>`;
-  - `columns`: full width from 1024px when there's no story, with the groups in columns of at least 240px.
+  - `panel`: every group, with an 18px h2 and 24px padding;
+  - `compact`: below 1024px, the same 18px h2, with 20px padding on phones and 24px from 640px. The main rows show open: Client when the client is named, else Site; Location; the first two System rows; Financing. The rest sit under "All project facts", a native `<details>`, in their groups;
+  - `columns`: full width from 1024px when there's no story: a column per group (`factColumnsClass()`), so one group sits in a column up to 28rem wide, two or three share the width, and four sit two by two until 1280px, then four across.
 
   Both versions for a width range are rendered and each is hidden at the other widths, so only one is ever in the accessibility tree.
 - **Booking:** each version ends with the service's booking button (`projectCta(vertical, title)`, `TrackedButton`, `cta_location: project_facts:{slug}`) and "We reply within 1 business day." The `columns` version shows "Planning something similar? We reply within 1 business day." beside the button.
@@ -163,6 +173,7 @@ The page file only reads the project and composes the parts in `src/components/p
 
 - **Styling:** a white section, keeping the id `similar-projects`.
 - **The wide card** is `FeaturedProjectCard`, with an h3 title and its pill naming the service.
+- **Cards:** the place line is the city, then the client's name when it may show (`cardPlace()`).
 - **Order:** newest first.
 
 ---
@@ -181,13 +192,20 @@ With no next project above it, it keeps the gap between parts itself.
 
 ## SEO and Structured Data
 
-- **Title and description:** the title is the project title, and the root template adds "| Phoenix Energy". The description is the summary cut to 155 characters at a word boundary (`projectDescription()`).
+- **Title:** the headline, else the project title (`projectTitle()`); the root template adds "| Phoenix Energy". The Open Graph title is the same.
+- **Description:** the search description, else the summary cut to 155 characters at a word boundary (`projectDescription()`).
 - **Canonical and sharing:** the canonical URL is `/projects/{slug}`. Open Graph holds the title, the description and the hero at 1200 by 630.
 - **Indexing:** every project is indexed.
-- **Structured data:** `projectArticleJsonLd()` and `projectBreadcrumbJsonLd()` in `src/lib/projectSeo.ts`, written with `serializeJsonLd()`, which escapes "<".
-  - **Article:** the headline, the description, the image, `datePublished` (`_createdAt`), `dateModified` (`_updatedAt`), Phoenix Energy as author and publisher, `about` (the service) and `contentLocation` (the city).
+- **Structured data:** `projectArticleJsonLd()` and `projectBreadcrumbJsonLd()` in `src/lib/projectSeo.ts`, rendered through `JsonLd` (`src/components/layout/JsonLd.tsx`), which escapes "<".
+  - **Article:** the headline (the page title), the description (the meta description), the image, `datePublished` (`_createdAt`), `dateModified` (`_updatedAt`), Phoenix Energy as author and publisher, `about` (the service) and `contentLocation` (the city).
   - It never holds the client's name field, an `address` property, or a results figure or System value.
 - **Errors:** only a missing project is a 404. A CMS error throws, so ISR keeps serving the last good page.
+
+---
+
+## Revalidation
+
+When a project changes, the Sanity webhook (`src/app/api/revalidate/route.ts`) refreshes every project page (`revalidatePath('/projects/[slug]', 'page')`), `/projects`, home and the six solution pages, because a project's card appears on other projects' pages and on solution pages. A consent switch turned off takes effect everywhere at once.
 
 ---
 
@@ -196,11 +214,12 @@ With no next project above it, it keeps the gap between parts itself.
 | File | Role |
 |---|---|
 | `src/app/projects/[slug]/page.tsx` | Reads the project; metadata, structured data and composition |
-| `src/components/project/*` | `ProjectBreadcrumb`, `ProjectHero`, `ProjectResults`, `ProjectPhotos`, `ProjectStory`, `ProjectFacts`, `StickyWhenFits`, `ProjectNext`, `ProjectBand` |
+| `src/components/project/*` | `ProjectBreadcrumb`, `ProjectHero`, `ProjectResults`, `ProjectPhotos` (with `PhotoViewer`), `ProjectStory`, `ProjectFacts`, `StickyWhenFits`, `ProjectNext`, `ProjectBand` |
 | `src/lib/projectData.ts` | Every project read, with the disclosure rules |
-| `src/lib/projectDisclosure.ts`, `projectMeta.ts`, `projectStory.ts`, `projectFacts.ts`, `projectPhotos.ts`, `stickyFit.ts`, `projectSeo.ts`, `projectOrder.ts`, `projectResults.ts` | Pure logic, each with vitest tests |
+| `src/lib/projectDisclosure.ts`, `projectMeta.ts`, `projectStory.ts`, `projectFacts.ts`, `projectPhotos.ts`, `projectHeroImage.ts`, `projectOptions.ts`, `stickyFit.ts`, `projectSeo.ts`, `projectOrder.ts`, `projectResults.ts` | Pure logic, each with vitest tests |
 | `src/components/ui/CopyLinkButton.tsx` and `TrackedButton.tsx` | Page actions |
+| `sanity/schemaTypes/project.ts` and `projectRules.ts` | The Studio's project form and the checks behind its warnings (`specs/12-CMS.md`) |
 
 ---
 
-*Spoke of [`CLAUDE.md`](/CLAUDE.md) | Version 4.0 | Rebuilt September 2026*
+*Spoke of [`CLAUDE.md`](/CLAUDE.md) | Version 4.1 | Rebuilt September 2026*
