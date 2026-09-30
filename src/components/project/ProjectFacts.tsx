@@ -38,12 +38,16 @@ function Line({ line }: { line: FactLine }) {
   );
 }
 
+// The label takes the row's free space and wraps first, so a short value such as
+// "80 kWh" keeps its own width on a 320px phone rather than splitting over two lines.
+// A long unbroken value (a model number or a URL) still wraps inside the panel: the
+// value has min-w-0 and break-words, and the label keeps at least its longest word.
 function Rows({ rows }: { rows: FactRow[] }) {
   return (
     <dl>
       {rows.map((row) => (
         <div key={row.key} className="flex items-baseline justify-between gap-3.5 border-b border-pe-border py-2 last:border-b-0">
-          <dt className="font-body text-sm text-pe-muted">{row.label}</dt>
+          <dt className="flex-1 font-body text-sm text-pe-muted">{row.label}</dt>
           <dd className="min-w-0 break-words text-right font-body text-sm text-pe-text">
             {row.lines.length === 1 ? (
               <Line line={row.lines[0]} />

@@ -52,6 +52,21 @@ describe('ProjectFacts', () => {
     expect(markup).toMatch(/<h2 id="project-facts-compact" class="[^"]*\btext-lg\b/);
   });
 
+  it('keeps a short value whole on a 320px phone: the label takes the free space, and only a long value wraps', () => {
+    // The label grows into the row's free space and wraps first, so "80 kWh" keeps its own
+    // width instead of splitting over two lines; the value keeps min-w-0 and break-words, so
+    // a long unbroken one (a model number or a URL) still wraps inside the panel.
+    for (const variant of ['panel', 'compact', 'columns'] as const) {
+      const markup = facts(variant);
+      const labels = markup.match(/<dt class="[^"]*"/g) ?? [];
+      const values = markup.match(/<dd class="[^"]*"/g) ?? [];
+      expect(labels.length).toBeGreaterThan(0);
+      expect(labels.every((tag) => /\bflex-1\b/.test(tag))).toBe(true);
+      expect(values.every((tag) => /\bmin-w-0 break-words\b/.test(tag))).toBe(true);
+    }
+    expect(facts('compact')).toMatch(/<dt class="[^"]*\bflex-1\b[^"]*">Battery Energy Storage Capacity<\/dt><dd class="[^"]*">80 kWh<\/dd>/);
+  });
+
   it('columns: one column per group, with the booking row and its sentence', () => {
     const markup = facts('columns');
     expect(markup).toMatch(/<h2 id="project-facts-columns"/);
