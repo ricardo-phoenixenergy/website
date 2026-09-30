@@ -15,6 +15,8 @@ import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import { CARBON_CREDITS } from '@/config/carbonCreditsContent';
 import { SERVICE_CTA } from '@/config/ctas';
+import { pageMetadata } from '@/lib/seo';
+import { serviceJsonLd, breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 
 const vertical = 'carbon-credits' as const;
 const cfg = VERTICAL_CONFIG[vertical];
@@ -22,12 +24,13 @@ const meta = SOLUTION_META[vertical];
 // "Check my eligibility": nothing is registered until we've checked the system.
 const cta = SERVICE_CTA[vertical];
 
-export const metadata: Metadata = {
-  title: { absolute: cfg.seoTitle },
+export const metadata: Metadata = pageMetadata({
+  title: cfg.seoTitle,
+  absoluteTitle: true,
   description: cfg.seoDescription,
-  alternates: { canonical: `https://phoenixenergy.solutions/solutions/${vertical}` },
-  openGraph: { title: cfg.seoTitle, description: cfg.seoDescription, url: `https://phoenixenergy.solutions/solutions/${vertical}`, images: [{ url: 'https://phoenixenergy.solutions/og-solutions-carbon-credits.png', width: 1200, height: 630 }] },
-};
+  path: meta.slug,
+  image: cfg.shareImage,
+});
 
 export const revalidate = 3600;
 
@@ -35,18 +38,10 @@ export default async function CarbonCreditsPage() {
   const howItWorks = await getHowItWorks(vertical);
   const hero = (await getHeroImages())[vertical];
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Service',
-    name: meta.label,
-    provider: { '@type': 'Organization', name: 'Phoenix Energy' },
-    description: cfg.seoDescription,
-    url: `https://phoenixenergy.solutions/solutions/${vertical}`,
-  };
-
   return (
     <>
-      <JsonLd data={jsonLd} />
+      <JsonLd data={serviceJsonLd({ name: meta.label, description: cfg.seoDescription, path: meta.slug })} />
+      <JsonLd data={breadcrumbJsonLd([HOME_CRUMB, { name: 'Solutions', path: '/solutions' }, { name: meta.label, path: meta.slug }])} />
 
       {/* §1 — Hero + revenue estimator */}
       <SolutionHero

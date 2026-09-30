@@ -16,6 +16,8 @@ import { SOLUTION_META } from '@/types/solutions';
 import { WEBUYSOLAR } from '@/config/webuysolarContent';
 import { WEBUYSOLAR_OFFER } from '@/config/webuysolarOffer';
 import { SERVICE_CTA, VALUATION_CTA } from '@/config/ctas';
+import { pageMetadata } from '@/lib/seo';
+import { serviceJsonLd, breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 
 const vertical = 'webuysolar' as const;
 const cfg = VERTICAL_CONFIG[vertical];
@@ -23,58 +25,23 @@ const meta = SOLUTION_META[vertical];
 // "Book a free WeBuySolar audit", prefilled; the valuation request is the tool (VALUATION_CTA).
 const AUDIT_CTA = SERVICE_CTA[vertical];
 
-export const metadata: Metadata = {
-  title: { absolute: cfg.seoTitle },
+export const metadata: Metadata = pageMetadata({
+  title: cfg.seoTitle,
+  absoluteTitle: true,
   description: cfg.seoDescription,
-  alternates: { canonical: `https://phoenixenergy.solutions/solutions/${vertical}` },
-  openGraph: {
-    title: cfg.seoTitle,
-    description: cfg.seoDescription,
-    url: `https://phoenixenergy.solutions/solutions/${vertical}`,
-    images: [{ url: 'https://phoenixenergy.solutions/og-solutions-webuysolar.png', width: 1200, height: 630 }],
-  },
-};
+  path: meta.slug,
+  image: cfg.shareImage,
+});
 
 export const revalidate = 3600;
 
 export default async function WeBuySolarPage() {
   const hero = (await getHeroImages())[vertical];
-  const base = `https://phoenixenergy.solutions/solutions/${vertical}`;
-
-  const jsonLd = [
-    {
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://phoenixenergy.solutions/' },
-        { '@type': 'ListItem', position: 2, name: 'Solutions', item: 'https://phoenixenergy.solutions/solutions' },
-        { '@type': 'ListItem', position: 3, name: meta.label, item: base },
-      ],
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'Service',
-      name: 'Solar Asset Acquisition & Energy-as-a-Service',
-      provider: { '@type': 'Organization', name: 'Phoenix Energy' },
-      description: cfg.seoDescription,
-      areaServed: 'ZA',
-      url: base,
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'Organization',
-      name: 'Phoenix Energy',
-      url: 'https://phoenixenergy.solutions',
-      logo: 'https://phoenixenergy.solutions/logo.png',
-      contactPoint: { '@type': 'ContactPoint', contactType: 'sales', email: 'info@phoenixenergy.solutions' },
-    },
-  ];
 
   return (
     <>
-      {jsonLd.map((block, i) => (
-        <JsonLd key={i} data={block} />
-      ))}
+      <JsonLd data={serviceJsonLd({ name: 'Solar Asset Acquisition & Energy-as-a-Service', description: cfg.seoDescription, path: meta.slug })} />
+      <JsonLd data={breadcrumbJsonLd([HOME_CRUMB, { name: 'Solutions', path: '/solutions' }, { name: meta.label, path: meta.slug }])} />
 
       {/* §1 — Hero */}
       <SolutionHero

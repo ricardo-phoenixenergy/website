@@ -15,6 +15,8 @@ import { SOLUTION_META } from '@/types/solutions';
 import { SERVICE_CTA } from '@/config/ctas';
 import type { TabItem } from '@/components/sections/SolutionTabs';
 import type { FinancingOption } from '@/components/sections/FinancingCards';
+import { pageMetadata } from '@/lib/seo';
+import { serviceJsonLd, breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 
 const vertical = 'energy-optimisation' as const;
 const cfg = VERTICAL_CONFIG[vertical];
@@ -22,12 +24,13 @@ const meta = SOLUTION_META[vertical];
 // "Book a free energy audit", prefilled (src/config/ctas.ts): hero, every lever tab, How It Works and the footer.
 const AUDIT_CTA = SERVICE_CTA[vertical];
 
-export const metadata: Metadata = {
-  title: { absolute: cfg.seoTitle },
+export const metadata: Metadata = pageMetadata({
+  title: cfg.seoTitle,
+  absoluteTitle: true,
   description: cfg.seoDescription,
-  alternates: { canonical: `https://phoenixenergy.solutions/solutions/${vertical}` },
-  openGraph: { title: cfg.seoTitle, description: cfg.seoDescription, url: `https://phoenixenergy.solutions/solutions/${vertical}`, images: [{ url: 'https://phoenixenergy.solutions/og-solutions-energy-optimisation.png', width: 1200, height: 630 }] },
-};
+  path: meta.slug,
+  image: cfg.shareImage,
+});
 
 export const revalidate = 3600;
 
@@ -129,18 +132,10 @@ export default async function EnergyOptimisationPage() {
   const howItWorks = await getHowItWorks(vertical);
   const hero = (await getHeroImages())[vertical];
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Service',
-    name: meta.label,
-    provider: { '@type': 'Organization', name: 'Phoenix Energy' },
-    description: cfg.seoDescription,
-    url: `https://phoenixenergy.solutions/solutions/${vertical}`,
-  };
-
   return (
     <>
-      <JsonLd data={jsonLd} />
+      <JsonLd data={serviceJsonLd({ name: meta.label, description: cfg.seoDescription, path: meta.slug })} />
+      <JsonLd data={breadcrumbJsonLd([HOME_CRUMB, { name: 'Solutions', path: '/solutions' }, { name: meta.label, path: meta.slug }])} />
       <SolutionHero
         title="Reduce energy. <em>Increase performance.</em>"
         subtitle={"Reduce your facility’s energy consumption without impacting productivity.\nWe deliver efficiency upgrades and smart energy optimisation that lower costs from day one, with zero-capex funding options available."}
