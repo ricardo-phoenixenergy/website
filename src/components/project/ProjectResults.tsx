@@ -60,10 +60,12 @@ export function ProjectResults({ results, labelling, inputs = [] }: ProjectResul
                 How we calculated this
                 <IconChevronDown className="size-4 transition-transform duration-200 group-open:rotate-180 motion-reduce:transition-none" />
               </summary>
+              {/* The label takes the row's free space and wraps first, as in the facts rows, so a
+                  short value such as "0.5% a year" stays whole in a 280px column. */}
               <dl className="mt-1 grid grid-cols-1 gap-x-8 lg:grid-cols-3">
                 {inputs.map((input, i) => (
                   <div key={`${input.label}-${i}`} className="flex items-baseline justify-between gap-3.5 border-b border-pe-border py-2">
-                    <dt className="font-body text-sm text-pe-muted">{input.label}</dt>
+                    <dt className="flex-1 font-body text-sm text-pe-muted">{input.label}</dt>
                     <dd className="min-w-0 break-words text-right font-body text-sm text-pe-text">{input.value}</dd>
                   </div>
                 ))}

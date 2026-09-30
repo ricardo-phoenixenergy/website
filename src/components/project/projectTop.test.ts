@@ -156,4 +156,23 @@ describe('ProjectResults', () => {
     expect(disclosure).toMatch(/<dt[^>]*>Tariff escalation<\/dt><dd[^>]*>8% a year<\/dd>/);
     expect(disclosure.indexOf('Panel degradation')).toBeLessThan(disclosure.indexOf('Read the disclaimer'));
   });
+
+  it('keeps a short input value whole on one line: the label takes the free space, and only a long value wraps', () => {
+    // As in the facts rows (ProjectFacts' Rows): the label grows into the row's free space and
+    // wraps first, so a short value such as "0.5% a year" keeps its own width instead of
+    // splitting at its space; the value keeps min-w-0 and break-words, so a long unbroken one
+    // still wraps inside the card.
+    const inputs = [
+      { label: 'Tariff escalation', value: '8% a year' },
+      { label: 'Panel degradation', value: '0.5% a year' },
+    ];
+    const [, disclosure] = html(createElement(ProjectResults, { results, labelling, inputs })).split('<details');
+    const labels = disclosure.match(/<dt class="[^"]*"/g) ?? [];
+    const values = disclosure.match(/<dd class="[^"]*"/g) ?? [];
+    expect(labels).toHaveLength(inputs.length);
+    expect(values).toHaveLength(inputs.length);
+    expect(labels.every((tag) => /^<dt class="flex-1\b/.test(tag))).toBe(true);
+    expect(values.every((tag) => /\bmin-w-0 break-words\b/.test(tag))).toBe(true);
+    expect(disclosure).toMatch(/<dt class="flex-1 [^"]*">Panel degradation<\/dt><dd class="[^"]*">0\.5% a year<\/dd>/);
+  });
 });
