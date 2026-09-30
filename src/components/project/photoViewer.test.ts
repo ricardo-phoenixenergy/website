@@ -23,7 +23,8 @@ describe('ProjectPhotos', () => {
     const markup = html(createElement(ProjectPhotos, { photos: Array.from({ length: 8 }, (_, i) => photo(i + 1)) }));
     expect(markup).toMatch(/<h2 id="project-photos"[^>]*>The site in photos<\/h2>/);
     expect(markup).toContain('View all 8 photos');
-    expect(markup.match(/aria-label="Open photo \d of 8: Photo \d"/g)).toHaveLength(5);
+    expect(markup.match(/<span class="sr-only">Open photo \d of 8: <\/span><img alt="Photo \d"/g)).toHaveLength(5);
+    expect(markup).not.toContain('aria-label="Open photo');
     expect(markup).toContain('>+5</span>');
     expect(markup).toContain('>+3</span>');
     expect(markup).not.toContain('role="dialog"');
@@ -32,12 +33,12 @@ describe('ProjectPhotos', () => {
   it('shows one tile and no "View all" for a single photo', () => {
     const markup = html(createElement(ProjectPhotos, { photos: [photo(1)] }));
     expect(markup).not.toContain('View all');
-    expect(markup.match(/aria-label="Open photo/g)).toHaveLength(1);
+    expect(markup.match(/>Open photo \d of 1: </g)).toHaveLength(1);
   });
 
   it('names a photo without alt text by its number', () => {
     const markup = html(createElement(ProjectPhotos, { photos: [photo(1), photo(2, '  ')] }));
-    expect(markup).toContain('aria-label="Open photo 2 of 2: Project photo 2"');
+    expect(markup).toContain('<span class="sr-only">Open photo 2 of 2: </span><img alt="Project photo 2"');
   });
 
   it('renders nothing without photos', () => {

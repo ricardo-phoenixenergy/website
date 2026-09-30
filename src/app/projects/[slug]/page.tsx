@@ -4,13 +4,14 @@
 // The headline, when set, heads the page and titles it in search and sharing.
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { urlFor } from '@/lib/sanity';
 import { getProjectBySlug, getProjectSlugs } from '@/lib/projectData';
 import { describeResults } from '@/lib/projectResults';
 import { galleryWithoutHero } from '@/lib/projectPhotos';
 import { projectChapters } from '@/lib/projectStory';
 import { projectFacts } from '@/lib/projectFacts';
 import { projectArticleJsonLd, projectBreadcrumbJsonLd, projectDescription, projectTitle, SITE_URL } from '@/lib/projectSeo';
+import { pageMetadata } from '@/lib/seo';
+import { sanityShareImage } from '@/lib/sanityShareImage';
 import { selectRelated } from '@/lib/relatedProjects';
 import { projectCta } from '@/config/ctas';
 import { JsonLd } from '@/components/layout/JsonLd';
@@ -39,18 +40,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const project = await getProjectBySlug(slug);
   if (!project) return { title: 'Project not found', robots: { index: false } };
   const title = projectTitle(project);
-  const description = projectDescription(project);
-  return {
+  return pageMetadata({
     title,
-    description,
-    alternates: { canonical: `/projects/${slug}` },
-    openGraph: {
-      title,
-      description,
-      url: `/projects/${slug}`,
-      ...(project.heroImage?.asset ? { images: [{ url: urlFor(project.heroImage).width(1200).height(630).url() }] } : {}),
-    },
-  };
+    description: projectDescription(project),
+    path: `/projects/${slug}`,
+    // Shared under its own title; link previews show the site's name beside it.
+    shareTitle: title,
+    // The hero's alt text goes with it: the Studio warns on it as on all shown text.
+    image: sanityShareImage(project.heroImage, title),
+    article: { publishedTime: project._createdAt, modifiedTime: project._updatedAt },
+  });
 }
 
 export default async function ProjectPage({ params }: PageProps) {
@@ -61,7 +60,7 @@ export default async function ProjectPage({ params }: PageProps) {
   if (!project) notFound();
 
   const url = `${SITE_URL}/projects/${slug}`;
-  const shareImage = project.heroImage?.asset ? urlFor(project.heroImage).width(1200).height(630).url() : undefined;
+  const shareImage = sanityShareImage(project.heroImage, projectTitle(project))?.url;
   const results = project.results ?? [];
   const photos = galleryWithoutHero(project.gallery, project.heroImage);
   const related = selectRelated(project.related ?? [], project.otherProjects ?? []);

@@ -188,12 +188,14 @@ export function ProjectPhotos({ photos }: ProjectPhotosProps) {
               <button
                 type="button"
                 onClick={() => setIndex(i)}
-                aria-label={`Open photo ${i + 1} of ${total}: ${photoAlt(photo, i)}`}
                 className="group relative block h-full w-full overflow-hidden rounded-xl"
               >
+                {/* The button is named by this line and the photo's alt text, as it
+                    was; the alt text sits on the image, where image search reads it. */}
+                <span className="sr-only">{`Open photo ${i + 1} of ${total}: `}</span>
                 <Image
                   src={photo.asset.url}
-                  alt=""
+                  alt={photoAlt(photo, i)}
                   fill
                   sizes={tile.sizes}
                   className="object-cover transition-transform duration-[400ms] group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"

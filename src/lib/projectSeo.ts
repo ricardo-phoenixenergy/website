@@ -4,10 +4,13 @@
 // summary) and the structured data (an Article and its BreadcrumbList),
 // mirroring the blog post's. The Article never carries the client's name, an
 // `address` property, or any results figure or System value; its headline is
-// the page title and its description the meta description.
+// the page title, its description the meta description, and its author and
+// publisher the organisation by its @id.
 import { SOLUTION_META, type SolutionMeta, type SolutionVertical } from '@/types/solutions';
+import { SITE_URL } from '@/lib/seo';
+import { ORGANIZATION_REF, breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 
-export const SITE_URL = 'https://phoenixenergy.solutions';
+export { SITE_URL };
 
 /** A search-snippet length description: whole words, at most `max` characters. */
 export function snippet(text: string | null | undefined, max = 155): string | undefined {
@@ -40,13 +43,6 @@ export interface ArticleSource {
   _updatedAt: string;
 }
 
-const ORGANISATION = {
-  '@type': 'Organization',
-  name: 'Phoenix Energy',
-  url: SITE_URL,
-  logo: { '@type': 'ImageObject', url: `${SITE_URL}/logo.png` },
-} as const;
-
 export function projectArticleJsonLd(project: ArticleSource, page: { url: string; imageUrl?: string }) {
   const meta: SolutionMeta | undefined = SOLUTION_META[project.vertical];
   const description = projectDescription(project);
@@ -59,8 +55,9 @@ export function projectArticleJsonLd(project: ArticleSource, page: { url: string
     ...(page.imageUrl ? { image: page.imageUrl } : {}),
     datePublished: project._createdAt,
     dateModified: project._updatedAt,
-    author: ORGANISATION,
-    publisher: ORGANISATION,
+    inLanguage: 'en-ZA',
+    author: ORGANIZATION_REF,
+    publisher: ORGANIZATION_REF,
     mainEntityOfPage: { '@type': 'WebPage', '@id': page.url },
     ...(meta ? { about: { '@type': 'Service', name: meta.label, url: `${SITE_URL}${meta.slug}` } } : {}),
     ...(city ? { contentLocation: { '@type': 'Place', name: city } } : {}),
@@ -68,13 +65,5 @@ export function projectArticleJsonLd(project: ArticleSource, page: { url: string
 }
 
 export function projectBreadcrumbJsonLd(title: string, url: string) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-      { '@type': 'ListItem', position: 2, name: 'Projects', item: `${SITE_URL}/projects` },
-      { '@type': 'ListItem', position: 3, name: title, item: url },
-    ],
-  };
+  return breadcrumbJsonLd([HOME_CRUMB, { name: 'Projects', path: '/projects' }, { name: title, path: url }]);
 }
