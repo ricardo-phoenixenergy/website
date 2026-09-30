@@ -70,4 +70,13 @@ describe('PhotoViewer', () => {
     expect(markup).not.toContain('<figcaption');
     expect(markup).toContain('aria-label="Photo 1 of 3"');
   });
+
+  it("keeps the close button on screen on a short screen, inside the photo's top corner", () => {
+    const markup = html(createElement(PhotoViewer, { photos, index: 1, onClose: noop, onPrev: noop, onNext: noop }));
+    const close = markup.match(/<button [^>]*aria-label="Close photo viewer"[^>]*>/)?.[0] ?? '';
+    // Above the photo on taller screens; inside its top-right corner up to 640px tall, where there's no room above.
+    expect(close).toContain('-top-12');
+    expect(close).toContain('[@media(max-height:640px)]:top-2');
+    expect(close).toContain('[@media(max-height:640px)]:right-2');
+  });
 });

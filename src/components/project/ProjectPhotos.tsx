@@ -112,7 +112,15 @@ export function PhotoViewer({ photos, index, onClose, onPrev, onNext }: PhotoVie
             />
           </div>
 
-          <IconButton variant="overlay" label="Close photo viewer" data-autofocus onClick={onClose} className="absolute -top-12 right-0">
+          {/* Above the photo's top-right corner. A screen up to 640px tall (a landscape phone) has no room above a
+              centred photo, so there it sits inside the corner, like the arrows. */}
+          <IconButton
+            variant="overlay"
+            label="Close photo viewer"
+            data-autofocus
+            onClick={onClose}
+            className="absolute -top-12 right-0 [@media(max-height:640px)]:right-2 [@media(max-height:640px)]:top-2"
+          >
             <IconX />
           </IconButton>
           {total > 1 && (
