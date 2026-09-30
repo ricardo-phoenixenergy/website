@@ -1,6 +1,7 @@
 // src/app/api/revalidate/route.ts
 import { revalidatePath } from 'next/cache';
 import { NextRequest } from 'next/server';
+import { SOLUTION_VERTICALS } from '@/types/solutions';
 
 function extractSlug(raw: unknown): string | undefined {
   if (typeof raw === 'string') return raw;
@@ -44,9 +45,15 @@ export async function POST(req: NextRequest) {
   }
 
   if (type === 'project') {
-    if (slug) revalidatePath(`/projects/${slug}`);
+    // A project shows on its own page, on other projects' pages (the next
+    // project cards), on /projects, on home and on its service's solution page,
+    // and a change can move it to another service. Refreshing them all makes a
+    // consent switch turned off take effect everywhere at once
+    // (docs/superpowers/specs/2026-09-29-project-page-design.md, "Revalidation").
+    revalidatePath('/projects/[slug]', 'page');
     revalidatePath('/projects');
     revalidatePath('/');         // homepage shows featured projects
+    for (const vertical of SOLUTION_VERTICALS) revalidatePath(`/solutions/${vertical}`);
   }
 
   if (type === 'teamMember') {
@@ -75,7 +82,7 @@ export async function POST(req: NextRequest) {
   if (type === 'heroImages') {
     revalidatePath('/');
     revalidatePath('/solutions');   // overview page cards also use the hero images
-    for (const v of ['ci-solar-storage', 'wheeling', 'energy-optimisation', 'carbon-credits', 'webuysolar', 'ev-fleets']) {
+    for (const v of SOLUTION_VERTICALS) {
       revalidatePath(`/solutions/${v}`);
     }
   }

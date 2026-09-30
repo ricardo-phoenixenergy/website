@@ -1,6 +1,7 @@
 // src/app/projects/[slug]/page.tsx
 // One template for every project: each part shows only when it has content
-// (docs/superpowers/specs/2026-09-29-project-page-design.md, build step 1).
+// (docs/superpowers/specs/2026-09-29-project-page-design.md, build steps 1 and 2).
+// The headline, when set, heads the page and titles it in search and sharing.
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { urlFor } from '@/lib/sanity';
@@ -9,7 +10,7 @@ import { describeResults } from '@/lib/projectResults';
 import { galleryWithoutHero } from '@/lib/projectPhotos';
 import { projectChapters } from '@/lib/projectStory';
 import { projectFacts } from '@/lib/projectFacts';
-import { projectArticleJsonLd, projectBreadcrumbJsonLd, projectDescription, SITE_URL } from '@/lib/projectSeo';
+import { projectArticleJsonLd, projectBreadcrumbJsonLd, projectDescription, projectTitle, SITE_URL } from '@/lib/projectSeo';
 import { selectRelated } from '@/lib/relatedProjects';
 import { projectCta } from '@/config/ctas';
 import { JsonLd } from '@/components/layout/JsonLd';
@@ -37,13 +38,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   if (!project) return { title: 'Project not found', robots: { index: false } };
+  const title = projectTitle(project);
   const description = projectDescription(project);
   return {
-    title: project.title,
+    title,
     description,
     alternates: { canonical: `/projects/${slug}` },
     openGraph: {
-      title: project.title,
+      title,
       description,
       url: `/projects/${slug}`,
       ...(project.heroImage?.asset ? { images: [{ url: urlFor(project.heroImage).width(1200).height(630).url() }] } : {}),
@@ -72,7 +74,7 @@ export default async function ProjectPage({ params }: PageProps) {
 
       <ProjectBreadcrumb title={project.title} url={url} />
       <ProjectHero project={project} overlapped={results.length > 0} />
-      {results.length > 0 && <ProjectResults results={results} labelling={describeResults(project)} />}
+      {results.length > 0 && <ProjectResults results={results} labelling={describeResults(project)} inputs={project.resultsInputs ?? []} />}
       {photos.length > 0 && <ProjectPhotos photos={photos} />}
       <ProjectStory
         summary={project.summary}
