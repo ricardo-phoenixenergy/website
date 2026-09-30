@@ -1,6 +1,11 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  // Metadata always goes in the <head>, never streamed into the body after it.
+  // /blog is the only page built per request, and AI crawlers (GPTBot, ClaudeBot,
+  // PerplexityBot) read only the HTML they are sent, without running scripts.
+  // The cost is a slightly later first byte on /blog.
+  htmlLimitedBots: /.*/,
   images: {
     // Serve AVIF where supported (smaller than WebP), falling back to WebP.
     formats: ['image/avif', 'image/webp'],
@@ -13,9 +18,9 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // The Chepstow Properties warehouse case study was renamed to its street
-      // address (31 Sacks Circle, confirmed by the business on 25 September
-      // 2026); keep the old address (linked and indexed) working.
+      // The warehouse project was renamed to its street address (31 Sacks
+      // Circle, confirmed by the business on 25 September 2026); keep the old
+      // address (linked and indexed) working.
       {
         source: '/projects/logistics-warehouse-chepstow-properties',
         destination: '/projects/31-sacks-circle',
