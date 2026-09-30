@@ -44,14 +44,15 @@ export async function generateMetadata({
   if (!post) return {};
   // The social share image when the post has one, else its hero. The share image has no alt text of its own.
   const image = sanityShareImage(post.ogImage, post.title) ?? sanityShareImage(post.heroImage, post.title);
+  const seoTitle = post.seoTitle?.trim();
   return pageMetadata({
     // An editor's SEO title is used as written; otherwise the template adds the brand.
-    title: post.seoTitle ?? post.title,
-    absoluteTitle: Boolean(post.seoTitle),
+    title: seoTitle || post.title,
+    absoluteTitle: Boolean(seoTitle),
     description: post.seoDescription ?? post.excerpt,
     path: `/blog/${post.slug.current}`,
     canonical: post.canonicalUrl,
-    shareTitle: post.seoTitle ?? post.title,
+    shareTitle: seoTitle || post.title,
     image,
     article: {
       publishedTime: post.publishedAt,
@@ -231,7 +232,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             {post.title}
           </span>
         </nav>
-        <ShareButtons url={canonicalUrl} title={post.seoTitle ?? post.title} />
+        <ShareButtons url={canonicalUrl} title={post.seoTitle?.trim() || post.title} />
       </div>
 
       {/* Body — single col on mobile, sidebar on lg+ */}

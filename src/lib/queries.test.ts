@@ -258,8 +258,27 @@ describe('blog queries: live posts only', () => {
   });
 
   it('dates each live post in the sitemap by its last update, and lists only authors with a live post', async () => {
-    expect(await run(queries.BLOG_SITEMAP_QUERY, dataset)).toEqual([{ slug: 'live', lastModified: '2026-03-01T08:00:00.000Z' }]);
+    expect(new Date((await run(queries.BLOG_SITEMAP_QUERY, dataset) as Row[])[0].lastModified as string).toISOString()).toBe('2026-03-01T08:00:00.000Z');
     expect(await run(queries.AUTHOR_SITEMAP_QUERY, dataset)).toEqual([{ slug: 'a', lastModified: '2026-01-01T08:00:00.000Z' }]);
+  });
+
+  it('reads a publish date written as a bare date or without a time zone, keeps a future one off the site, and treats an unreadable one as unpublished', async () => {
+    const forms: Doc[] = [
+      author,
+      post('bare-date-past', { publishedAt: '2026-01-02' }),
+      post('no-zone-past', { publishedAt: '2026-01-03T08:00:00' }),
+      post('bare-date-future', { publishedAt: '2999-01-02' }),
+      post('unreadable-published', { publishedAt: 'TBC' }),
+    ];
+    expect(await run(queries.PUBLISHED_POSTS_COUNT_QUERY, forms)).toBe(2);
+    expect(ids(await run(queries.LATEST_POSTS_QUERY, forms)).sort()).toEqual(['bare-date-past', 'no-zone-past']);
+    expect(await run(queries.POST_BY_SLUG_QUERY, forms, { slug: 'bare-date-future' })).toBeNull();
+  });
+
+  it("falls the sitemap's last-updated date back to the publish date when the update date can't be read", async () => {
+    const forms: Doc[] = [author, post('unreadable-update', { updatedAt: 'TBC' })];
+    const rows = (await run(queries.BLOG_SITEMAP_QUERY, forms)) as Row[];
+    expect(new Date(rows[0].lastModified as string).toISOString()).toBe('2026-01-01T08:00:00.000Z');
   });
 });
 

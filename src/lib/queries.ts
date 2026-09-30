@@ -147,11 +147,18 @@ export const PROJECT_SITEMAP_QUERY = `
 
 /* ─── Blog ───────────────────────────────────────────────────────────────── */
 
+// A post's publish date as a time GROQ can compare. The Studio writes a full
+// date-time with its zone ("2026-10-01T08:00:00.000Z"). A date written through
+// the API or an import may lack the zone ("2026-10-01T08:00:00", read as UTC)
+// or the time ("2026-10-01", read as midnight UTC). dateTime() reads only the
+// first form, so the other two are tried in turn. A date in any other form
+// isn't read, and the post stays off the site.
+const PUBLISHED_AT = `coalesce(dateTime(publishedAt), dateTime(publishedAt + "Z"), dateTime(publishedAt + "T00:00:00Z"))`;
+
 // A post is live once it has a slug and its publish date has come. A post given
 // a future date in the Studio stays off the site until then, and appears at the
-// first hourly refresh after it. Every blog query reads posts through this
-// filter. dateTime() compares the two as times, whatever their written form.
-const LIVE_POST = `_type == "blogPost" && defined(slug.current) && dateTime(publishedAt) <= dateTime(now())`;
+// first hourly refresh after it. Every blog query reads posts through this filter.
+const LIVE_POST = `_type == "blogPost" && defined(slug.current) && ${PUBLISHED_AT} <= dateTime(now())`;
 
 export const POSTS_BY_VERTICAL_QUERY = `
   *[${LIVE_POST} && $tag in tags] | order(publishedAt desc) [0..2] {
@@ -219,7 +226,7 @@ export const ALL_BLOG_SLUGS_QUERY = `
 
 /** Each live post's address and last change: its "Last updated" date, else its publish date. */
 export const BLOG_SITEMAP_QUERY = `
-  *[${LIVE_POST}]{ "slug": slug.current, "lastModified": coalesce(updatedAt, publishedAt) }
+  *[${LIVE_POST}]{ "slug": slug.current, "lastModified": coalesce(dateTime(updatedAt), ${PUBLISHED_AT}) }
 `;
 
 /** Each author with a live post, dated by their latest one. */

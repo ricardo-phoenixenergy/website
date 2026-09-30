@@ -59,9 +59,10 @@ describe('the blog post schema', () => {
     expect(seen[1]).toMatch(/^warning\(/);
   });
 
-  it('warns, without blocking, when a post has no hero image', () => {
+  it('warns, without blocking, when a post has no hero image, or an image with no photo', () => {
     const seen = calls(field('heroImage'));
     expect(seen[0]).toBe('required');
-    expect(seen[1]).toMatch(/^warning\(/);
+    expect(seen[1]).toBe('assetRequired');
+    expect(seen[2]).toMatch(/^warning\(/);
   });
 });

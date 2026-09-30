@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   // /blog is the only page built per request, and AI crawlers (GPTBot, ClaudeBot,
   // PerplexityBot) read only the HTML they are sent, without running scripts.
   // The cost is a slightly later first byte on /blog.
+  // Revisit before turning on cacheComponents: with it, every request this pattern matches skips the prerendered shell.
   htmlLimitedBots: /.*/,
   images: {
     // Serve AVIF where supported (smaller than WebP), falling back to WebP.

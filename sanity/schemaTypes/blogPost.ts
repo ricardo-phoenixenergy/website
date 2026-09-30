@@ -42,7 +42,7 @@ export const blogPost = defineType({
       type: 'image',
       options: { hotspot: true },
       fields: [defineField({ name: 'alt', type: 'string', title: 'Alt text', validation: (r) => r.required() })],
-      validation: (r) => r.required().warning("Without a hero image, the post is shared with the site's default image and its search data has no image."),
+      validation: (r) => r.required().assetRequired().warning("Without a hero image, the post is shared with the site's default image and its search data has no image."),
     }),
     defineField({
       name: 'excerpt',
