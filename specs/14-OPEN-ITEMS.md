@@ -79,7 +79,7 @@
 | # | Item | Owner |
 |---|---|---|
 | 7 | Google Search Console property registered + verification token | Client/Dev |
-| 8 | OG images. **As built:** each solution page has its own `og-solutions-*.png` in `public/`. Home, About, Contact, `/projects`, `/blog`, `/tools` and the valuation tool share `og-default.png`. Blog posts and projects use their Sanity image. `/solutions`, the author pages and the legal pages set none. | Design |
+| 8 | OG images. **As built:** the six solution pages share `public/og-solutions-*.jpg` (1200 by 630, under 100KB). Every other page shares `og-default.png` through `pageMetadata()`, including `/solutions`, the legal pages and the author pages. Projects and posts share their photo as a 1200 by 630 JPEG. | Design |
 | 9 | Real client testimonials (3 per solution vertical + 3 for about page). **Not needed:** the site has no testimonials section. | Client |
 | 10 | Real hero photography per solution vertical and about page. **As built:** the home and solution heroes take their photos from the Sanity "Hero Images" document, one per vertical. The About hero uses no photo. | Client |
 | 11 | Confirm WeBuySolar page excludes Financing tab (it's a buyback, not an install service). **Not needed:** no solution page has a Financing tab. C&I, Energy Optimisation and EV Fleets show a separate financing section; WeBuySolar has none. | Client |

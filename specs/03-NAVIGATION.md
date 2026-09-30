@@ -42,7 +42,7 @@ The current page is marked on its link (see Nav links).
 
 ### Nav links
 - In order: **Solutions** (see below), **Projects**, **About**, **Tools**, then **News & Insights** once the blog has 3 posts, then **Contact**.
-- The blog link is added by the root layout: `BLOG_NAV_MIN_POSTS = 3` in `src/app/layout.tsx` counts the blog posts that have a slug and passes `showBlog` to the navbar. Until then the navbar has no blog link. The "Latest insights" and "Industry insights" sections link to `/blog`, but they only render once there are posts to show.
+- The blog link is added by the root layout: `BLOG_NAV_MIN_POSTS = 3` in `src/app/layout.tsx` counts the live blog posts (a slug and a publish date that has come) and passes `showBlog` to the navbar. Until then the navbar has no blog link. The "Latest insights" and "Industry insights" sections link to `/blog`, but they only render once there are posts to show.
 - Inter 500, 14px, muted (`pe-muted`), `padding: 6px 12px`, pill-shaped hover with a 7% Deep Teal tint and Deep Teal text.
 - Current page: `aria-current="page"`, Inter 600, Deep Teal text on the 7% tint. A link counts as current on its own path and every path under it (Projects stays current on a project page).
 

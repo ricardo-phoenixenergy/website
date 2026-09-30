@@ -468,7 +468,7 @@ serviceJsonLd({ name: meta.label, description: cfg.seoDescription, path: meta.sl
 // }
 ```
 
-Every page also publishes a BreadcrumbList (`breadcrumbJsonLd()`): Home, Solutions, then the vertical. Carbon Credits and EV Fleets also get FAQPage JSON-LD from `FaqAccordion`. WeBuySolar's Service is named "Solar Asset Acquisition & Energy-as-a-Service"; it publishes no separate Organization block of its own, since the root layout's `organizationJsonLd()` already covers the site.
+Every page also publishes a BreadcrumbList (`breadcrumbJsonLd()`): Home, Solutions, then the vertical. Carbon Credits, WeBuySolar and EV Fleets also get FAQPage JSON-LD from `FaqAccordion`. WeBuySolar's Service is named "Solar Asset Acquisition & Energy-as-a-Service"; it publishes no separate Organization block of its own, since the root layout's `organizationJsonLd()` already covers the site.
 
 ### SEO titles and descriptions per vertical
 

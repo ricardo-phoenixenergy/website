@@ -374,12 +374,16 @@ export const ALL_PROJECT_SLUGS_QUERY = `*[_type == "project" && defined(slug.cur
 export const PROJECT_SITEMAP_QUERY = `*[_type == "project" && defined(slug.current)]{ "slug": slug.current, _updatedAt }`;
 
 // Every blog query below reads only live posts, through LIVE_POST:
-// _type == "blogPost" && defined(slug.current) && dateTime(publishedAt) <= dateTime(now())
-// A post without a slug, or dated in the future, is left out of every list, count, sitemap
-// entry and lookup below, until its date comes.
+// _type == "blogPost" && defined(slug.current) && PUBLISHED_AT <= dateTime(now())
+// PUBLISHED_AT reads a publish date written as a full date-time, one without a
+// zone (read as UTC), or a bare date (read as midnight UTC); any other form
+// keeps the post off the site. A post without a slug, or dated in the future,
+// is left out of every list, count, sitemap entry and lookup below, until its
+// date comes.
 
-// Every live post, dated by "Last updated" else the publish date
-export const BLOG_SITEMAP_QUERY = `*[LIVE_POST]{ "slug": slug.current, "lastModified": coalesce(updatedAt, publishedAt) }`;
+// Every live post, dated by "Last updated" else the publish date (also the
+// fallback when "Last updated" is set but can't be read as a date)
+export const BLOG_SITEMAP_QUERY = `*[LIVE_POST]{ "slug": slug.current, "lastModified": coalesce(dateTime(updatedAt), PUBLISHED_AT) }`;
 
 // Every author with a live post, dated by their latest one
 export const AUTHOR_SITEMAP_QUERY = `*[_type == "author" && defined(slug.current) && count(*[LIVE_POST && references(^._id)]) > 0]{ "slug": slug.current, "lastModified": *[LIVE_POST && references(^._id)] | order(publishedAt desc) [0].publishedAt }`;
@@ -427,7 +431,7 @@ export const HERO_IMAGES_QUERY = `*[_id == "heroImages"][0]{ ... }`; // getHeroI
 export const ENERGY_PRICES_QUERY = `*[_id == "energyPrices"][0]{ ... }`; // getEnergyPrices()
 ```
 
-Three queries sit outside this file: the navbar's post count in `src/app/layout.tsx` (the blog link appears once three posts exist) and the blog and project lists in `src/app/sitemap.ts`.
+No blog or author query sits outside this file. The navbar's post count in `src/app/layout.tsx` reads `PUBLISHED_POSTS_COUNT_QUERY` (the blog link appears once three live posts exist), and `src/app/sitemap.ts` reads `BLOG_SITEMAP_QUERY` and `AUTHOR_SITEMAP_QUERY`.
 
 ---
 

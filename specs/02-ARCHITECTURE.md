@@ -257,11 +257,11 @@ A page without its own image falls back to `DEFAULT_SHARE_IMAGE`: `og-default.pn
 
 `src/app/pageMetadata.test.ts` is a guard test: it reads every `page.tsx` under `src/app` and fails if one builds its own `openGraph` or `twitter` block instead of calling `pageMetadata()`. The Studio's page is exempt, since its metadata lives in `src/app/studio/layout.tsx`.
 
-`next.config.ts` sets `htmlLimitedBots: /.*/`. By default Next.js streams a page's metadata into the body after the initial render, and blocks on it, in the head, only for requests it recognises as bots that can't run scripts; `htmlLimitedBots` widens that recognition to every request, so metadata never streams and always sits in the head, for AI crawlers such as GPTBot, ClaudeBot and PerplexityBot as much as for a browser. `/blog` is the only page built per request, so it is the one page with a slightly later first byte as a result.
+`next.config.ts` sets `htmlLimitedBots: /.*/`. By default Next.js streams a page's metadata into the body after the initial render, and blocks on it, in the head, only for requests it recognises as bots that can't run scripts; `htmlLimitedBots` widens that recognition to every request, so metadata never streams and always sits in the head, for AI crawlers such as GPTBot, ClaudeBot and PerplexityBot as much as for a browser. `/blog` is the only page built per request, so it is the one page with a slightly later first byte as a result. Revisit before turning on Cache Components: with it on, every request this pattern matches skips the prerendered shell, and `/.*/` matches every visitor.
 
 The Studio's own layout (`src/app/studio/layout.tsx`) sets `robots: { index: false, follow: false }`, because its page is a client component and can't export `metadata` itself. The root layout's `robots` block covers every other page by default: `index: true, follow: true`, with a `googleBot` entry adding `max-image-preview: large` (Google Discover requires it) and unlimited snippet and video preview lengths.
 
-`src/app/icon.png` and `src/app/apple-icon.png` are Next.js file-based icons: Next serves them as the favicon and the Apple touch icon without extra markup, sharper than the icons they replaced. The Apple touch icon has a white background, since iOS fills any transparency with black.
+`src/app/icon.png` and `src/app/apple-icon.png` are Next.js file-based icons, added alongside `src/app/favicon.ico`, which stays and is still linked first: Next serves all three as the favicon and the Apple touch icon without extra markup. The Apple touch icon has a white background, since iOS fills any transparency with black.
 
 ### `src/app/sitemap.ts`
 Revalidates hourly, and at once when the webhook (`src/app/api/revalidate/route.ts`) reports a blog post, author or project change. Entries (priority, change frequency):
@@ -359,7 +359,7 @@ Default page size: 6 posts. First page has no `?page=` param.
 ```typescript
 // src/app/api/revalidate/route.ts (POST from the Sanity webhook)
 // Needs the header Authorization: Bearer ${REVALIDATE_SECRET}; anything else gets 401.
-// Handles: blogPost     → /blog/[slug], /blog, /, the author's page, each solution page and /sitemap.xml
+// Handles: blogPost     → /blog/[slug], /blog, /, every author page (/blog/authors/[slug] as a page), each solution page and /sitemap.xml
 //          author       → /blog/authors/[slug], /blog/[slug] and /sitemap.xml
 //          project      → /projects/[slug], /projects, /, each solution page and /sitemap.xml
 //          teamMember   → /about
@@ -373,8 +373,8 @@ Default page size: 6 posts. First page has no `?page=` param.
 
 ### `alt` text policy
 Every `next/image` and `<img>` sets `alt`; decorative images use `alt=""`. As built:
-- Project cards (`ProjectCard`), the home hero accordion, gallery thumbnails, the footer watermark, the logo mark beside the wordmark and the author avatar beside the name in a post header: `alt=""`.
-- Project heroes and the featured project card: the image's `alt` from Sanity, or the project title. Photo viewer images: the image's `alt`, or "Project photo N".
+- Project cards (`ProjectCard`), the home hero accordion, the footer watermark, the logo mark beside the wordmark and the author avatar beside the name in a post header: `alt=""`.
+- Project heroes and the featured project card: the image's `alt` from Sanity, or the project title. Gallery tiles and photo viewer images: the image's `alt`, or "Project photo N"; each gallery tile's button is named by a visually hidden "Open photo N of M:" before its image (`specs/06-PROJECT-SINGLE.md`).
 - Blog heroes and article cards: the image's `alt`, or the post title.
 - Solution page heroes and the `/solutions` cards: the vertical's name.
 - Team photos: the member's name. Other author photos: the author's name. Partner logos: the logo's `alt`, or the partner name. Industry proof photos: the given alt, or the client name.

@@ -38,7 +38,7 @@
 
 ### Navbar & Breadcrumb
 - The section is named "News & Insights" everywhere: the navbar link, the breadcrumbs, the eyebrow, the page title and the BreadcrumbList JSON-LD.
-- Active link: "News & Insights". The root layout adds it to the navbar only once 3 or more posts with a slug exist (`BLOG_NAV_MIN_POSTS` in `src/app/layout.tsx`; see `specs/03-NAVIGATION.md`).
+- Active link: "News & Insights". The root layout adds it to the navbar only once 3 or more live posts exist, meaning a slug and a publish date that has come (`BLOG_NAV_MIN_POSTS` in `src/app/layout.tsx`; see `specs/03-NAVIGATION.md`).
 - Breadcrumb: `Home / News & Insights`.
 
 ---
@@ -505,7 +505,7 @@ export const revalidate = 3600; // Background ISR every hour
 //              related articles, and /sitemap.xml
 //   author   → /blog/authors/[slug], /blog/[slug] and /sitemap.xml
 ```
-A post that goes live only because its scheduled date has passed, with nothing edited in Sanity, fires no webhook: it appears on `/blog` at once, since that page renders per request, and everywhere else, including the sitemap, at the next hourly refresh.
+A post that goes live only because its scheduled date has passed, with nothing edited in Sanity, fires no webhook: it appears on `/blog` at once, since that page renders per request, and everywhere else, including the sitemap, at the next hourly refresh. Documented, not fixed: if someone opened that post's own address before its date, the not-found render is cached with its 404 status for up to that same hour, so `/blog` can list the post while its own address still 404s, until `/blog/[slug]`'s revalidate catches up.
 
 ### `generateStaticParams` (pre-render every live post at build time)
 
@@ -626,7 +626,7 @@ Every warning above (`heroImage`, `excerpt`, `seoTitle`, `seoDescription`) lets 
 
 ## GROQ Queries
 
-Every query below filters on `LIVE_POST` (`_type == "blogPost" && defined(slug.current) && dateTime(publishedAt) <= dateTime(now())`, `src/lib/queries.ts`): a post needs a slug and a publish date that has come, or it is left out of every list, count, sitemap entry and lookup, whatever else is filled in. A post scheduled for later appears once its date comes: at once on `/blog`, which renders per request, and at the next hourly refresh everywhere else, since nothing edits the post in Sanity to fire the webhook.
+Every query below filters on `LIVE_POST` (`_type == "blogPost" && defined(slug.current) && PUBLISHED_AT <= dateTime(now())`, `src/lib/queries.ts`): a post needs a slug and a publish date that has come, or it is left out of every list, count, sitemap entry and lookup, whatever else is filled in. `PUBLISHED_AT` reads a publish date written as a full date-time, one without a zone (read as UTC), or a bare date (read as midnight UTC); any other form keeps the post off the site. A post scheduled for later appears once its date comes: at once on `/blog`, which renders per request, and at the next hourly refresh everywhere else, since nothing edits the post in Sanity to fire the webhook. `BLOG_SITEMAP_QUERY` dates each post by its "Last updated" field, falling back to the publish date when that field is missing or can't be read as a date.
 
 ```groq
 // Blog index, paginated and filterable (BLOG_INDEX_QUERY in src/lib/queries.ts)
@@ -800,8 +800,9 @@ export async function generateMetadata({ searchParams }: { searchParams: BlogSea
   const { page: pageParam, category, tag, q: qParam } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);
   const search = qParam?.trim() ?? '';
+  const q = search ? `${search}*` : ''; // BLOG_COUNT_QUERY's match wants the trailing wildcard
   const [total, published] = await Promise.all([
-    sanityServerClient.fetch<number>(BLOG_COUNT_QUERY, { category: category ?? '', tag: tag ?? '', q: search }),
+    sanityServerClient.fetch<number>(BLOG_COUNT_QUERY, { category: category ?? '', tag: tag ?? '', q }),
     sanityServerClient.fetch<number>(PUBLISHED_POSTS_COUNT_QUERY),
   ]);
   const totalPages = Math.ceil(total / PAGE_SIZE);
@@ -820,6 +821,6 @@ export async function generateMetadata({ searchParams }: { searchParams: BlogSea
 ```
 `pagination` is a `Metadata` field in its own right, not nested inside `alternates`; Next.js renders `<link rel="prev">` and `<link rel="next">` from it.
 
-**With no live posts:** `/blog` is `noindex, follow`, the sitemap leaves out `/blog` until the first post is live (`src/app/sitemap.ts`), and the home page's `WebSite` JSON-LD carries its `SearchAction` (which targets `/blog?q=`) only when a live post exists. A search result page (`q` set) is `noindex, follow` too, whatever it finds, with its canonical pointing at plain `/blog`. Publishing a post fires the webhook, which refreshes `/`, `/blog` and the sitemap at once; a post that only goes live because its scheduled date has passed refreshes them within the hour instead.
+**With no live posts:** `/blog` is `noindex, follow`, the sitemap leaves out `/blog` until the first post is live (`src/app/sitemap.ts`), and the home page's `WebSite` JSON-LD carries its `SearchAction` (which targets `/blog?q=`) only when a live post exists. A search result page (`q` set) is `noindex, follow` too, whatever it finds, with its canonical pointing at plain `/blog`. Publishing a post fires the webhook, which refreshes `/`, the post's own page and the sitemap at once; `/blog` needs none of that, since it renders per request and always shows the current live posts. A post that only goes live because its scheduled date has passed reaches `/`, its own page and the sitemap at the next hourly refresh instead, though `/blog` already lists it. Documented, not fixed: if that post's own address was opened before its date, the cached 404 from then can outlast the date by up to the same hour, so a card `/blog` already shows can still lead to a 404 until the page's own revalidate catches up (see "ISR + Sanity webhook" above).
 UI as built: page number chips with Prev and Next at the bottom of the grid, at every width, all `Chip` links, wrapping on a phone, with a window of numbers past 7 pages (`BlogPagination`; see Pagination above). There is no Load more, on mobile or anywhere else.
 
