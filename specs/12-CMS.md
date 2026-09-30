@@ -20,9 +20,9 @@
   commissionedOn:    date      // shown as "June 2026" and used for the order; a warning when completed and empty
   completionDate:    string    // free text: a planned or in-progress project's target, e.g. "Q3 2027"
   financing:         string[]  // up to 3: outright-purchase, ppa, pla, energy-efficiency-lease, other (src/lib/projectOptions.ts)
-  clientName:        string    // shown only with "Show client name" on and a consent date set
+  clientName:        string    // shown only with "Show client name" on and a readable consent date (YYYY-MM-DD)
   showClientName:    boolean   // off by default
-  clientConsentOn:   date      // required when showClientName is on, hidden when it's off; never shown or queried
+  clientConsentOn:   date      // required when showClientName is on, hidden when it's off; never shown or returned (the queries only read it to check it's a readable date)
   showRandAmounts:   boolean   // off by default; off drops every rand amount from the figures and withholds projectValue
   projectValue:      string    // e.g. "R[x]M excl. VAT"; shown only with "Show rand amounts" on
   featured:          boolean   // home "Projects" carousel; featured projects lead /projects
@@ -76,9 +76,11 @@
 
 The fields, their groups, validation and Studio help text follow the table in `docs/superpowers/specs/2026-09-29-project-page-design.md` ("CMS fields (step 2)"), and every one is optional with a fallback on the site, so a project that doesn't set them keeps working.
 
-- **Consent:** "Show client name" and "Show rand amounts" are off by default. The queries in `src/lib/queries.ts` return `clientName` only while "Show client name" is on and `clientConsentOn` is set, and `projectValue` only while "Show rand amounts" is on; a switch that is off leaves the field out of the data. The Studio stops a document being published with "Show client name" on and no consent date.
-- **Prose warnings:** the summary, the story, the headline and chapter headlines, the figure notes, the Results note, alt text, captions and the search description show on the site as written. Each warns while it holds what looks like a rand amount and "Show rand amounts" is off, or the client's name before the name may show (`sanity/schemaTypes/projectRules.ts`, which uses the site's own `isRandAmount()`).
-- **Other warnings:** a hero photo under 2400px wide ("Photos under 2400px wide look soft on large screens."), more than four results, System rows outside 2 to 4, Measured results on a project that isn't completed, results without an as-of date or calculation inputs, and a completed project without a commissioning date.
+- **Consent:** "Show client name" and "Show rand amounts" are off by default. The queries in `src/lib/queries.ts` return `clientName` only while "Show client name" is on and `clientConsentOn` is a readable date (YYYY-MM-DD, the form the Studio's date field writes), and `projectValue` only while "Show rand amounts" is on; a switch that is off leaves the field out of the data. The queries read the consent date in that condition and never return it.
+- **One consent test:** the Studio decides whether the name may show by the queries' test (`nameMayShow()` in `sanity/schemaTypes/projectRules.ts`): the switch on and a consent date in YYYY-MM-DD form. It stops a document being published with "Show client name" on and no consent date in that form, so an imported "TBC" or "12 June 2026" blocks publishing as an empty date does, and the name warnings stay on until the name may show.
+- **Warnings on text shown as written:** the title, the site type, the location, the completion date, the summary, the story, the headline and chapter headlines, the figure notes, the Results note, each approval, each equipment brand and model, alt text, captions and the search description show on the site as written. Each warns while it holds what looks like a rand amount and "Show rand amounts" is off, or the client's name before the name may show (`sanity/schemaTypes/projectRules.ts`, which uses the site's own `isRandAmount()`). The slug warns when it names the client before the name may show, its hyphens read as spaces; a slug can't hold a rand amount.
+- **Row warnings:** the site drops a results figure, System row or calculation input whose label, value or note looks like a rand amount while "Show rand amounts" is off. Such a row warns that it won't show, and asks for it to be reworded or the switch turned on once the client agrees; the Studio uses the site's own test (`isRandRow()` in `src/lib/projectDisclosure.ts`). Otherwise a row warns when it names the client before the name may show.
+- **Other warnings:** a hero photo under 2400px wide ("Photos under 2400px wide look soft on large screens."), more than four results, System rows outside 2 to 4, Measured results on a project that isn't completed, results without an as-of date or calculation inputs, a completed project without a commissioning date, and a commissioning date on a project that isn't completed: the project lists are ordered by that date, so it would move the project ahead of completed ones.
 - **Tests:** `sanity/schemaTypes/project.test.ts` checks the groups, the help text, the limits and the warnings; `projectRules.test.ts` checks the rules.
 
 ### Results basis fields (added September 2026)
@@ -339,9 +341,10 @@ Home shows every active partner in one centred grid, with no tabs.
 ```typescript
 // src/lib/queries.ts (field projections shortened to { ... })
 
-// Project queries return clientName only with showClientName on and clientConsentOn set, and
-// projectValue only with showRandAmounts on, as conditional projections, so a switch that is off
-// leaves the field out. Every project carries "showRandAmounts": showRandAmounts == true. Project
+// Project queries return clientName only with showClientName on and clientConsentOn a readable date
+// (YYYY-MM-DD, read in the condition and never returned), and projectValue only with showRandAmounts
+// on, as conditional projections, so a switch that is off leaves the field out. Every project
+// carries "showRandAmounts": showRandAmounts == true. Project
 // images carry only { asset->{ _id, url, metadata { lqip, dimensions } }, alt, hotspot, crop }, and
 // gallery photos their caption too. Read them through src/lib/projectData.ts, which drops rand
 // amounts from results, System rows and calculation inputs while "Show rand amounts" is off; an

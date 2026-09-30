@@ -40,10 +40,10 @@ The page file only reads the project and composes the parts in `src/components/p
   - `getAllProjects`, `getFeaturedProjects`, `getProjectsByVertical`, `getProjectSlugs` and `getProjectSitemapEntries`.
 
   An ESLint rule (`eslint.config.mjs`) stops any other file importing the project queries.
-- **The consent switches, in the queries:** `src/lib/queries.ts` returns the client's name only when "Show client name" is on and the date of the client's written consent is set, and the project value only when "Show rand amounts" is on. A switch that is off leaves its field out of the data entirely, so the field never reaches the browser. The consent date itself is never queried.
+- **The consent switches, in the queries:** `src/lib/queries.ts` returns the client's name only when "Show client name" is on and the date of the client's written consent is a readable date (YYYY-MM-DD, the form the Studio's date field writes), and the project value only when "Show rand amounts" is on. A switch that is off leaves its field out of the data entirely, so the field never reaches the browser. The query reads the consent date in that condition but never returns it, so "TBC" or an empty date written through the API or an import keeps the name hidden.
 - **Rand amounts:** with "Show rand amounts" off, `discloseProject()` (`src/lib/projectDisclosure.ts`) drops every results figure, System row and calculation input that looks like a rand amount, label, value and note together: an R before a number, R written as a unit ("(R)", "(R/kWh)", "(R'000)", "2.10 R/kWh", "450 000 R"), "ZAR", the word "rand", or a price in cents ("180c/kWh", "c/kWh", "95 cents"). With it on, they show as written.
 - **Images:** project images select only the URL, the LQIP, the dimensions, the asset id, the alt text, the caption, and the hotspot and crop, never the whole asset document, whose file name can name the client.
-- **Prose isn't filtered:** the summary, the story, the headlines, the figure notes, the results note, alt text, captions and the search description show as written. The Studio warns when any of them holds a rand amount while "Show rand amounts" is off, or the client's name before it may show (`specs/12-CMS.md`).
+- **Text shown as written isn't filtered:** the summary, the story, the headlines, the figure notes, the results note, alt text, captions and the search description show as written, and so do the title, the slug, the site type, the location, the completion date, each approval and each equipment brand and model. The Studio warns when any of them holds a rand amount while "Show rand amounts" is off, or the client's name before it may show (the slug is checked for the name only). A results figure, System row or calculation input that the page would drop for a rand amount warns that it won't show (`specs/12-CMS.md`).
 - **Order:** newest first, meaning the commissioning date, falling back to the date the project was added to the CMS (`_createdAt`). `/projects` puts featured projects first, in their featured order: numbered ones lowest first, then unnumbered ones. The home carousel uses the same featured order.
 
 ---
@@ -66,6 +66,7 @@ The page file only reads the project and composes the parts in `src/components/p
 **From 768px**
 - The photo is full-bleed: 400px tall, and 470px from 1024px. There's no hover zoom.
 - A Night Teal scrim runs from 5% at 20% of the height, through 66% at 58%, to 92% at the foot.
+- A headline of two lines or more lifts the text higher, where that scrim is lighter, so a second layer on the text block darkens behind whatever rises above a one-line title's text. It is Night Teal at 50%, fades in over the badge row, and is masked off the text's lowest 115px (124px from 1024px), the height of that text with a one-line title. So a one-line title keeps the first scrim alone, exactly as before.
 - The text is aligned to the page container: the service badge (a link to the solution page), the H1 and the line under the headline.
 - The H1 is Plus Jakarta Sans 800: 36px, and 44px from 1024px, with a line height of 1.08, `max-width: 25ch`, balanced wrapping, `break-words`, in white.
 - The line under the headline is 16px `on-dark-muted`, with its items joined by a middle dot.
@@ -82,8 +83,8 @@ The page file only reads the project and composes the parts in `src/components/p
 3. the status and date: "Completed June 2026" from the commissioning date, else "Completed Q2 2026" from the free-text completion date, else "Completed"; "In progress, due Q3 2027"; "Planned for Q3 2027"; the status alone without a date, and nothing without a status.
 
 **The photo** (`src/lib/projectHeroImage.ts`): one `<picture>` with one `<img>`, both crops centred on the Studio hotspot and kept inside the editor's crop.
-- From 768px, a 5:2 crop (`<source media="(min-width: 768px)">`), at most 3072px wide. Its `sizes` is the width a cover fit needs: the window, or 1175px from 1024px and 1000px below it where that's wider (the height times 2.5).
-- Below 768px, a 4:3 crop, at most 1600px wide, with `sizes` of the window less the page margins.
+- From Tailwind's md, 48rem (768px at the default 16px font size), a 5:2 crop (`<source media="(min-width: 48rem)">`), at most 3072px wide. Its `sizes` is the width a cover fit needs: the window, or 1175px from lg (64rem) and 1000px below it where that's wider (the height times 2.5; the heights are in px, so those two widths are too).
+- Below md (`not all and (min-width: 48rem)`), a 4:3 crop, at most 1600px wide, with `sizes` of the window less the page margins, which widen at sm (40rem). The media queries are in rem, as the layout's breakpoints are, so with a larger default font size each width still gets the crop its layout shows.
 - Sanity cuts each crop (`rect=`) and never enlarges it; next/image's `getImageProps()` gives each its srcset, and its `object-position` keeps the hotspot in view.
 - Loading: the photo is the LCP element. The `<img>` is `loading="eager"` with `fetchPriority="high"`, and `preload()` adds one preload link per crop, each with its own `media`. `getImageProps()` can't take a blur placeholder, so the LQIP sits blurred behind the photo instead.
 
