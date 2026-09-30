@@ -215,6 +215,54 @@ describe('slugs and sitemap entries', () => {
   });
 });
 
+describe('blog queries: live posts only', () => {
+  // A post goes live on its publish date: one dated in the future, or without a
+  // slug, is left out of every list, count, lookup and the sitemap.
+  const author: Doc = { _id: 'author-a', _type: 'author', name: 'An Author', slug: { current: 'a' } };
+  const quiet: Doc = { _id: 'author-b', _type: 'author', name: 'Another Author', slug: { current: 'b' } };
+  const post = (id: string, extra: Doc = {}): Doc => ({
+    _id: id,
+    _type: 'blogPost',
+    title: `Post ${id}`,
+    slug: { current: id },
+    category: 'Company News',
+    tags: ['Wheeling'],
+    excerpt: 'An excerpt',
+    publishedAt: '2026-01-01T08:00:00.000Z',
+    featured: false,
+    author: { _type: 'reference', _ref: 'author-a' },
+    ...extra,
+  });
+  const dataset: Doc[] = [
+    author,
+    quiet,
+    post('live', { updatedAt: '2026-03-01T08:00:00.000Z' }),
+    post('future', { publishedAt: '2999-01-01T08:00:00.000Z', author: { _type: 'reference', _ref: 'author-b' } }),
+    post('no-slug', { slug: undefined }),
+  ];
+  const listParams = { category: '', tag: '', q: '', offset: 0 };
+
+  it('lists, counts and finds only the live post', async () => {
+    expect(await run(queries.PUBLISHED_POSTS_COUNT_QUERY, dataset)).toBe(1);
+    expect(await run(queries.BLOG_COUNT_QUERY, dataset, listParams)).toBe(1);
+    expect(ids(await run(queries.BLOG_INDEX_QUERY, dataset, listParams))).toEqual(['live']);
+    expect(ids(await run(queries.LATEST_POSTS_QUERY, dataset))).toEqual(['live']);
+    expect(ids(await run(queries.POSTS_BY_VERTICAL_QUERY, dataset, { tag: 'Wheeling' }))).toEqual(['live']);
+    expect(ids(await run(queries.POSTS_BY_AUTHOR_QUERY, dataset, { slug: 'a' }))).toEqual(['live']);
+    expect(ids(await run(queries.POSTS_BY_AUTHOR_QUERY, dataset, { slug: 'b' }))).toEqual([]);
+    expect((await run(queries.FEATURED_POST_QUERY, dataset)) as Row).toMatchObject({ _id: 'live' });
+    expect(await run(queries.ALL_BLOG_SLUGS_QUERY, dataset)).toEqual([{ slug: 'live' }]);
+    expect(await run(queries.ALL_BLOG_TAGS_QUERY, dataset)).toEqual(['Wheeling']);
+    expect(await run(queries.POST_BY_SLUG_QUERY, dataset, { slug: 'future' })).toBeNull();
+    expect((await run(queries.POST_BY_SLUG_QUERY, dataset, { slug: 'live' })) as Row).toMatchObject({ _id: 'live' });
+  });
+
+  it('dates each live post in the sitemap by its last update, and lists only authors with a live post', async () => {
+    expect(await run(queries.BLOG_SITEMAP_QUERY, dataset)).toEqual([{ slug: 'live', lastModified: '2026-03-01T08:00:00.000Z' }]);
+    expect(await run(queries.AUTHOR_SITEMAP_QUERY, dataset)).toEqual([{ slug: 'a', lastModified: '2026-01-01T08:00:00.000Z' }]);
+  });
+});
+
 describe('every query', () => {
   // One of each document the queries read, every image pointing at ASSET, and
   // enough of each to feed every nested list: the author's slug matches $slug
@@ -286,8 +334,8 @@ describe('every query', () => {
   // [string, string]; the cast below just widens it back.)
   const ALL_QUERIES = Object.entries(queries).filter((entry) => typeof entry[1] === 'string') as [string, string][];
 
-  it('covers all 25 queries', () => {
-    expect(ALL_QUERIES).toHaveLength(25);
+  it('covers all 27 queries', () => {
+    expect(ALL_QUERIES).toHaveLength(27);
   });
 
   // From the base file (git show 57a7bed:src/lib/queries.test.ts): a static

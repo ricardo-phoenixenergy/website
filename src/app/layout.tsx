@@ -6,6 +6,7 @@ import { SiteShell } from '@/components/layout/SiteShell';
 import { ScrollDepth } from '@/components/analytics/ScrollDepth';
 import { WebVitals } from './_components/WebVitals';
 import { sanityServerClient } from '@/lib/sanity.server';
+import { PUBLISHED_POSTS_COUNT_QUERY } from '@/lib/queries';
 import { organizationJsonLd } from '@/lib/structuredData';
 import { DEFAULT_SHARE_IMAGE, SITE_DESCRIPTION, SITE_LOCALE, SITE_NAME, SITE_TITLE, SITE_URL } from '@/lib/seo';
 import './globals.css';
@@ -50,9 +51,7 @@ const BLOG_NAV_MIN_POSTS = 3;
 
 async function hasEnoughPosts(): Promise<boolean> {
   try {
-    const count = await sanityServerClient.fetch<number>(
-      'count(*[_type == "blogPost" && defined(slug.current)])',
-    );
+    const count = await sanityServerClient.fetch<number>(PUBLISHED_POSTS_COUNT_QUERY);
     return count >= BLOG_NAV_MIN_POSTS;
   } catch {
     return false;

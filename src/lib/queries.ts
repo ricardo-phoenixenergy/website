@@ -147,14 +147,20 @@ export const PROJECT_SITEMAP_QUERY = `
 
 /* ─── Blog ───────────────────────────────────────────────────────────────── */
 
+// A post is live once it has a slug and its publish date has come. A post given
+// a future date in the Studio stays off the site until then, and appears at the
+// first hourly refresh after it. Every blog query reads posts through this
+// filter. dateTime() compares the two as times, whatever their written form.
+const LIVE_POST = `_type == "blogPost" && defined(slug.current) && dateTime(publishedAt) <= dateTime(now())`;
+
 export const POSTS_BY_VERTICAL_QUERY = `
-  *[_type == "blogPost" && $tag in tags] | order(publishedAt desc) [0..2] {
+  *[${LIVE_POST} && $tag in tags] | order(publishedAt desc) [0..2] {
     ${BLOG_CARD_FIELDS}
   }
 `;
 
 export const BLOG_INDEX_QUERY = `
-  *[_type == "blogPost"
+  *[${LIVE_POST}
     && ($category == "" || category == $category)
     && ($tag == "" || $tag in tags)
     && ($q == "" || title match $q || excerpt match $q)
@@ -164,19 +170,19 @@ export const BLOG_INDEX_QUERY = `
 `;
 
 export const FEATURED_POST_QUERY = `
-  *[_type == "blogPost"] | order(featured desc, publishedAt desc) [0] {
+  *[${LIVE_POST}] | order(featured desc, publishedAt desc) [0] {
     ${BLOG_CARD_FIELDS}
   }
 `;
 
 export const LATEST_POSTS_QUERY = `
-  *[_type == "blogPost"] | order(publishedAt desc) [0..2] {
+  *[${LIVE_POST}] | order(publishedAt desc) [0..2] {
     ${BLOG_CARD_FIELDS}
   }
 `;
 
 export const POST_BY_SLUG_QUERY = `
-  *[_type == "blogPost" && slug.current == $slug][0] {
+  *[${LIVE_POST} && slug.current == $slug][0] {
     _id,
     title,
     "slug": { "current": slug.current },
@@ -198,7 +204,7 @@ export const POST_BY_SLUG_QUERY = `
     featured,
     "author": author->{ _id, name, "slug": { "current": slug.current }, role, bio, linkedin, "photo": photo ${IMAGE_FIELDS} },
     "related": *[
-      _type == "blogPost"
+      ${LIVE_POST}
       && slug.current != $slug
       && (category == ^.category || count((tags)[@ in ^.tags]) > 0)
     ] | order(publishedAt desc) [0..2] {
@@ -208,18 +214,31 @@ export const POST_BY_SLUG_QUERY = `
 `;
 
 export const ALL_BLOG_SLUGS_QUERY = `
-  *[_type == "blogPost"]{ "slug": slug.current }
+  *[${LIVE_POST}]{ "slug": slug.current }
+`;
+
+/** Each live post's address and last change: its "Last updated" date, else its publish date. */
+export const BLOG_SITEMAP_QUERY = `
+  *[${LIVE_POST}]{ "slug": slug.current, "lastModified": coalesce(updatedAt, publishedAt) }
+`;
+
+/** Each author with a live post, dated by their latest one. */
+export const AUTHOR_SITEMAP_QUERY = `
+  *[_type == "author" && defined(slug.current) && count(*[${LIVE_POST} && references(^._id)]) > 0]{
+    "slug": slug.current,
+    "lastModified": *[${LIVE_POST} && references(^._id)] | order(publishedAt desc) [0].publishedAt
+  }
 `;
 
 export const ALL_BLOG_TAGS_QUERY = `
-  array::unique(*[_type == "blogPost"].tags[])
+  array::unique(*[${LIVE_POST}].tags[])
 `;
 
-/** Every published post, whatever the filters: while it is 0, the blog index stays out of search. */
-export const PUBLISHED_POSTS_COUNT_QUERY = `count(*[_type == "blogPost"])`;
+/** Every live post, whatever the filters: while it is 0, the blog index stays out of search. */
+export const PUBLISHED_POSTS_COUNT_QUERY = `count(*[${LIVE_POST}])`;
 
 export const BLOG_COUNT_QUERY = `
-  count(*[_type == "blogPost"
+  count(*[${LIVE_POST}
     && ($category == "" || category == $category)
     && ($tag == "" || $tag in tags)
     && ($q == "" || title match $q || excerpt match $q)
@@ -239,7 +258,7 @@ export const AUTHOR_BY_SLUG_QUERY = `
 `;
 
 export const POSTS_BY_AUTHOR_QUERY = `
-  *[_type == "blogPost" && references(*[_type == "author" && slug.current == $slug]._id)]
+  *[${LIVE_POST} && references(*[_type == "author" && slug.current == $slug]._id)]
   | order(publishedAt desc) {
     _id,
     title,

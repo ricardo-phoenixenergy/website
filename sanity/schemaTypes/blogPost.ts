@@ -42,15 +42,32 @@ export const blogPost = defineType({
       type: 'image',
       options: { hotspot: true },
       fields: [defineField({ name: 'alt', type: 'string', title: 'Alt text', validation: (r) => r.required() })],
+      validation: (r) => r.required().warning("Without a hero image, the post is shared with the site's default image and its search data has no image."),
     }),
-    defineField({ name: 'excerpt', title: 'Excerpt', type: 'text', rows: 3, description: '155 chars max. Used in cards and as meta description fallback.' }),
+    defineField({
+      name: 'excerpt',
+      title: 'Excerpt',
+      type: 'text',
+      rows: 3,
+      description: '155 chars max. Used in cards and as meta description fallback.',
+      validation: (r) => r.max(155).warning('Search results show about 155 characters of a description; the rest is cut.'),
+    }),
     defineField({ name: 'readTime', title: 'Read time (minutes)', type: 'number' }),
     defineField({
       name: 'body',
       title: 'Article body',
       type: 'array',
       of: [
-        defineArrayMember({ type: 'block' }),
+        // Normal text, two heading levels and a quote: the post's title is its only H1.
+        defineArrayMember({
+          type: 'block',
+          styles: [
+            { title: 'Normal', value: 'normal' },
+            { title: 'Heading 2', value: 'h2' },
+            { title: 'Heading 3', value: 'h3' },
+            { title: 'Quote', value: 'blockquote' },
+          ],
+        }),
         defineArrayMember({
           type: 'image',
           options: { hotspot: true },
@@ -93,8 +110,21 @@ export const blogPost = defineType({
         }),
       ],
     }),
-    defineField({ name: 'seoTitle', title: 'SEO title', type: 'string', description: '60 chars max. Leave blank to use display title.' }),
-    defineField({ name: 'seoDescription', title: 'Meta description', type: 'text', rows: 2, description: '155 chars max. Leave blank to use excerpt.' }),
+    defineField({
+      name: 'seoTitle',
+      title: 'SEO title',
+      type: 'string',
+      description: '60 chars max. Leave blank to use display title.',
+      validation: (r) => r.max(60).warning('Search results show about 60 characters of a title; the rest is cut.'),
+    }),
+    defineField({
+      name: 'seoDescription',
+      title: 'Meta description',
+      type: 'text',
+      rows: 2,
+      description: '155 chars max. Leave blank to use excerpt.',
+      validation: (r) => r.max(155).warning('Search results show about 155 characters of a description; the rest is cut.'),
+    }),
     defineField({ name: 'ogImage', title: 'Social share image', type: 'image', description: '1200×630px. Leave blank to use hero image.' }),
     defineField({ name: 'canonicalUrl', title: 'Canonical URL', type: 'url', description: 'Only set if content was originally published elsewhere.' }),
   ],
