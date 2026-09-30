@@ -7,8 +7,8 @@
 // their switches are off (src/lib/queries.ts). While "Show rand amounts" is
 // off, discloseProject() drops any results figure, System row or calculation
 // input that looks like a rand amount or a price in cents, whole. The Studio's
-// warnings use isRandAmount() too (sanity/schemaTypes/projectRules.ts), so this
-// module keeps to type-only imports.
+// warnings use isRandAmount() and isRandRow() too
+// (sanity/schemaTypes/projectRules.ts), so this module keeps to type-only imports.
 import type { ProjectMetric, ProjectResult } from '@/types/sanity';
 
 // An R straight before a number, with or without spaces ("R1.5M", "R 450 000",
@@ -63,6 +63,23 @@ export function isRandAmount(text: string | null | undefined): boolean {
 
 type Row = ProjectMetric & { note?: string | null };
 
+/** A row's words: its label, its value and, for a results figure, its note. Any may be missing. */
+export interface RowText {
+  label?: string | null;
+  value?: string | null;
+  note?: string | null;
+}
+
+/**
+ * True when a row's label, value or note looks like a rand amount: the test
+ * withoutRandAmounts() drops rows by, and the Studio's row warning uses. It
+ * says nothing about whether the row is complete, so an incomplete row isn't
+ * a rand amount.
+ */
+export function isRandRow(row: RowText): boolean {
+  return isRandAmount(row.label) || isRandAmount(row.value) || isRandAmount(row.note);
+}
+
 /** The rows with both a label and a value. GROQ gives null for a field that isn't set. */
 export function completeRows<R extends Row>(rows: readonly R[] | null | undefined): R[] {
   return (rows ?? []).filter((row) => Boolean(row?.label?.trim() && row?.value?.trim()));
@@ -74,7 +91,7 @@ export function completeRows<R extends Row>(rows: readonly R[] | null | undefine
  * row is dropped whole, so a label never shows without its value.
  */
 export function withoutRandAmounts<R extends Row>(rows: readonly R[] | null | undefined): R[] {
-  return completeRows(rows).filter((row) => !isRandAmount(row.label) && !isRandAmount(row.value) && !isRandAmount(row.note));
+  return completeRows(rows).filter((row) => !isRandRow(row));
 }
 
 type WithFigures = {

@@ -11,7 +11,7 @@ vi.mock('sanity', () => ({
 }));
 
 import { project } from './project';
-import { CLIENT_NAME_WARNING, CONSENT_DATE_ERROR, HERO_WIDTH_WARNING, RAND_WARNING } from './projectRules';
+import { CLIENT_NAME_WARNING, CONSENT_DATE_ERROR, HERO_WIDTH_WARNING, RAND_WARNING, ROW_DROPPED_WARNING } from './projectRules';
 
 interface Definition {
   name?: string;
@@ -104,7 +104,8 @@ describe('the project schema', () => {
 
   it('sets the limits the spec gives each new field', () => {
     expect(rules(field('headline')).calls).toContain('max(90)');
-    expect(rules(field('siteType')).calls).toEqual(['max(40)']);
+    // Each limit comes first; the prose warning follows it (custom, then warning).
+    expect(rules(field('siteType')).calls).toEqual(['max(40)', 'custom', 'warning']);
     expect(rules(field('challengeHeadline')).calls).toContain('max(90)');
     expect(rules(field('seoDescription')).calls).toContain('max(155)');
     expect(rules(field('financing')).calls).toEqual(['max(3)', 'unique']);
@@ -117,7 +118,7 @@ describe('the project schema', () => {
     ]);
     expect(rules(field('installationWeeks')).calls).toEqual(['integer', 'min(1)', 'max(104)']);
     expect(rules(field('approvals')).calls).toEqual(['max(6)']);
-    expect(rules(member(field('approvals'))).calls).toEqual(['max(100)']);
+    expect(rules(member(field('approvals'))).calls).toEqual(['max(100)', 'custom', 'warning']);
     expect(rules(field('resultsInputs')).calls).toContain('max(8)');
     const input = member(field('resultsInputs'));
     expect(rules(subfield(input, 'label')).calls).toEqual(['required', 'max(40)']);
@@ -125,7 +126,7 @@ describe('the project schema', () => {
     const equipment = member(field('equipment'));
     expect(rules(field('equipment')).calls).toEqual(['max(12)']);
     expect(rules(subfield(equipment, 'component')).calls).toEqual(['required']);
-    expect(rules(subfield(equipment, 'brand')).calls).toEqual(['required']);
+    expect(rules(subfield(equipment, 'brand')).calls).toEqual(['required', 'custom', 'warning']);
     expect(rules(subfield(equipment, 'quantity')).calls).toEqual(['integer', 'min(1)']);
     expect(subfield(equipment, 'component').options?.list?.map((o) => o.title)).toContain('Variable speed drive');
   });
@@ -195,6 +196,50 @@ describe('the project schema', () => {
       const { customs } = rules(definition);
       const results = customs.map((check) => [check('Saved R450 000 a year', { document }), check('Built for Hidden Client Ltd', { document })]);
       expect(results, definition.name).toContainEqual([RAND_WARNING, CLIENT_NAME_WARNING]);
+    }
+  });
+
+  it('warns the same way on every other text the page shows as written, keeping each field\'s own rules', () => {
+    const document = { clientName: 'Hidden Client Ltd', showRandAmounts: false, showClientName: false };
+    const equipment = member(field('equipment'));
+    const texts: Array<[string, Definition]> = [
+      ['title', field('title')],
+      ['siteType', field('siteType')],
+      ['location', field('location')],
+      ['completionDate', field('completionDate')],
+      ['approvals[]', member(field('approvals'))],
+      ['equipment[].brand', subfield(equipment, 'brand')],
+      ['equipment[].model', subfield(equipment, 'model')],
+    ];
+    for (const [name, definition] of texts) {
+      const { customs } = rules(definition);
+      const results = customs.map((check) => [check('Saved R450 000 a year', { document }), check('Built for Hidden Client Ltd', { document })]);
+      expect(results, name).toContainEqual([RAND_WARNING, CLIENT_NAME_WARNING]);
+    }
+    expect(rules(field('title')).calls).toEqual(['required', 'custom', 'warning']);
+    expect(rules(field('location')).calls).toEqual(['custom', 'warning']);
+    expect(rules(field('completionDate')).calls).toEqual(['custom', 'warning']);
+    expect(rules(subfield(equipment, 'model')).calls).toEqual(['custom', 'warning']);
+  });
+
+  it('warns when the slug names the client before the name may show, and keeps it required', () => {
+    const { calls, customs } = rules(field('slug'));
+    expect(calls).toEqual(['required', 'custom', 'warning']);
+    const [check] = customs;
+    const document = { clientName: 'Example Client', showClientName: false };
+    expect(check({ _type: 'slug', current: 'example-client-warehouse' }, { document })).toBe(CLIENT_NAME_WARNING);
+    expect(check({ _type: 'slug', current: 'harbour-road-warehouse' }, { document })).toBe(true);
+  });
+
+  it('warns on a results figure, System row or calculation input the page would drop, or one that names the client', () => {
+    const document = { clientName: 'Hidden Client Ltd', showRandAmounts: false, showClientName: false };
+    for (const name of ['results', 'metrics', 'resultsInputs']) {
+      const { calls, customs } = rules(member(field(name)));
+      expect(calls, name).toEqual(['custom', 'warning']);
+      const [check] = customs;
+      expect(check({ label: 'Capital cost', value: 'R1.5M' }, { document }), name).toBe(ROW_DROPPED_WARNING);
+      expect(check({ label: 'Tenant', value: 'Hidden Client Ltd' }, { document }), name).toBe(CLIENT_NAME_WARNING);
+      expect(check({ label: 'Payback period', value: '51 months' }, { document }), name).toBe(true);
     }
   });
 

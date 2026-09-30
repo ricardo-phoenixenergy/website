@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { completeRows, discloseProject, isRandAmount, withoutRandAmounts } from './projectDisclosure';
+import { completeRows, discloseProject, isRandAmount, isRandRow, withoutRandAmounts } from './projectDisclosure';
 import type { ProjectMetric } from '@/types/sanity';
 
 describe('isRandAmount', () => {
@@ -113,6 +113,21 @@ describe('isRandAmount', () => {
     ]) {
       expect(isRandAmount(text), text).toBe(false);
     }
+  });
+});
+
+describe('isRandRow', () => {
+  it("spots a rand amount in a row's label, value or note: the test the page drops rows by and the Studio warns by", () => {
+    expect(isRandRow({ label: 'Annual savings (R)', value: '1.2 million' })).toBe(true);
+    expect(isRandRow({ label: 'Capital cost', value: 'R1.5M' })).toBe(true);
+    expect(isRandRow({ label: 'Tariff saving', value: '38%', note: 'Against 180c/kWh at peak' })).toBe(true);
+    expect(isRandRow({ label: 'Payback period', value: '51 months', note: 'Year 1, against 2025 municipal bills' })).toBe(false);
+  });
+
+  it('reads an incomplete row as no rand amount, where withoutRandAmounts drops it for being incomplete', () => {
+    expect(isRandRow({ label: 'Payback period', value: null })).toBe(false);
+    expect(isRandRow({})).toBe(false);
+    expect(withoutRandAmounts([{ label: 'Payback period', value: '' }])).toEqual([]);
   });
 });
 

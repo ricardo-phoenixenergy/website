@@ -5,9 +5,10 @@
 // project that doesn't set one keeps working. The consent switches decide what
 // may show: the queries (src/lib/queries.ts) leave out the client's name and
 // the project value while theirs is off, and discloseProject()
-// (src/lib/projectDisclosure.ts) drops rand amounts from the figures. Prose
-// isn't filtered, so the Studio warns when it holds a rand amount or the
-// client's name while a switch is off (projectRules.ts).
+// (src/lib/projectDisclosure.ts) drops rand amounts from the figures. Text the
+// page shows as written isn't filtered, so the Studio warns when it holds a
+// rand amount or the client's name while a switch is off, and a figure or row
+// the page would drop for a rand amount warns that it won't show (projectRules.ts).
 import { defineArrayMember, defineField, defineType } from 'sanity';
 import { EQUIPMENT_COMPONENTS, FINANCING_METHODS } from '../../src/lib/projectOptions';
 import {
@@ -19,6 +20,8 @@ import {
   measuredWarning,
   proseWarning,
   resultsCountWarning,
+  rowWarning,
+  slugWarning,
   systemRowsWarning,
 } from './projectRules';
 
@@ -76,8 +79,21 @@ export const project = defineType({
   ],
   fields: [
     /* ─── Overview ─── */
-    defineField({ name: 'title', title: 'Project title', type: 'string', group: 'overview', validation: (rule) => rule.required() }),
-    defineField({ name: 'slug', title: 'Slug', type: 'slug', group: 'overview', options: { source: 'title' }, validation: (rule) => rule.required() }),
+    defineField({
+      name: 'title',
+      title: 'Project title',
+      type: 'string',
+      group: 'overview',
+      validation: (rule) => [rule.required(), rule.custom((value, context) => proseWarning(value, context.document)).warning()],
+    }),
+    defineField({
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      group: 'overview',
+      options: { source: 'title' },
+      validation: (rule) => [rule.required(), rule.custom((value, context) => slugWarning(value, context.document)).warning()],
+    }),
     defineField({
       name: 'headline',
       title: 'Headline',
@@ -110,9 +126,15 @@ export const project = defineType({
       type: 'string',
       group: 'overview',
       description: "What the site is, in two or three words, for example 'Logistics warehouse' or 'Office park'.",
-      validation: (rule) => rule.max(40),
+      validation: (rule) => [rule.max(40), rule.custom((value, context) => proseWarning(value, context.document)).warning()],
     }),
-    defineField({ name: 'location', title: 'Location', type: 'string', group: 'overview' }),
+    defineField({
+      name: 'location',
+      title: 'Location',
+      type: 'string',
+      group: 'overview',
+      validation: (rule) => rule.custom((value, context) => proseWarning(value, context.document)).warning(),
+    }),
     defineField({
       name: 'status',
       title: 'Status',
@@ -137,6 +159,7 @@ export const project = defineType({
       type: 'string',
       group: 'overview',
       description: "For a completed project, set the commissioning date instead. For a planned or in-progress project, the target, for example 'Q3 2027'.",
+      validation: (rule) => rule.custom((value, context) => proseWarning(value, context.document)).warning(),
     }),
     defineField({
       name: 'financing',
@@ -229,6 +252,7 @@ export const project = defineType({
               validation: (rule) => [rule.max(70), rule.custom((value, context) => proseWarning(value, context.document)).warning()],
             }),
           ],
+          validation: (rule) => rule.custom((value, context) => rowWarning(value, context.document)).warning(),
         }),
       ],
       validation: (rule) => rule.custom((value) => resultsCountWarning(value)).warning(),
@@ -287,6 +311,7 @@ export const project = defineType({
             defineField({ name: 'label', type: 'string', title: 'Label', validation: (rule) => rule.required().max(40) }),
             defineField({ name: 'value', type: 'string', title: 'Value', validation: (rule) => rule.required().max(80) }),
           ],
+          validation: (rule) => rule.custom((value, context) => rowWarning(value, context.document)).warning(),
         }),
       ],
       validation: (rule) => [rule.max(8), rule.custom((value, context) => inputsWarning(value, context.document)).warning()],
@@ -365,6 +390,7 @@ export const project = defineType({
             defineField({ name: 'label', type: 'string', title: 'Label' }),
             defineField({ name: 'value', type: 'string', title: 'Value' }),
           ],
+          validation: (rule) => rule.custom((value, context) => rowWarning(value, context.document)).warning(),
         }),
       ],
       validation: (rule) => rule.custom((value) => systemRowsWarning(value)).warning(),
@@ -386,8 +412,18 @@ export const project = defineType({
               options: { list: [...EQUIPMENT_COMPONENTS] },
               validation: (rule) => rule.required(),
             }),
-            defineField({ name: 'brand', type: 'string', title: 'Brand', validation: (rule) => rule.required() }),
-            defineField({ name: 'model', type: 'string', title: 'Model' }),
+            defineField({
+              name: 'brand',
+              type: 'string',
+              title: 'Brand',
+              validation: (rule) => [rule.required(), rule.custom((value, context) => proseWarning(value, context.document)).warning()],
+            }),
+            defineField({
+              name: 'model',
+              type: 'string',
+              title: 'Model',
+              validation: (rule) => rule.custom((value, context) => proseWarning(value, context.document)).warning(),
+            }),
             defineField({ name: 'quantity', type: 'number', title: 'Quantity', validation: (rule) => rule.integer().min(1) }),
           ],
           preview: { select: { title: 'brand', subtitle: 'model' } },
@@ -409,7 +445,12 @@ export const project = defineType({
       type: 'array',
       group: 'facts',
       description: "Each approval or certificate on its own line, for example 'Municipal SSEG approval'.",
-      of: [defineArrayMember({ type: 'string', validation: (rule) => rule.max(100) })],
+      of: [
+        defineArrayMember({
+          type: 'string',
+          validation: (rule) => [rule.max(100), rule.custom((value, context) => proseWarning(value, context.document)).warning()],
+        }),
+      ],
       validation: (rule) => rule.max(6),
     }),
 

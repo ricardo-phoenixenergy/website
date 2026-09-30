@@ -6,7 +6,7 @@
 // imported by a relative path: Next bundles the embedded Studio and would
 // resolve "@/", but the Sanity CLI reads no tsconfig paths, and a relative path
 // works for both. That module's only other import is a type.
-import { isRandAmount } from '../../src/lib/projectDisclosure';
+import { isRandAmount, isRandRow } from '../../src/lib/projectDisclosure';
 
 /** The document being edited, as a custom validator's context gives it. */
 type ProjectDocument = Record<string, unknown> | undefined;
@@ -15,6 +15,7 @@ export const RAND_WARNING =
   "This looks like a rand amount, but 'Show rand amounts' is off. Remove it, or turn the switch on once the client agrees.";
 export const CLIENT_NAME_WARNING =
   "This names the client, but 'Show client name' is off or has no consent date. Remove the name, or record the client's written consent.";
+export const ROW_DROPPED_WARNING = "This row looks like a rand amount, so it won't show while 'Show rand amounts' is off. Reword it, or turn the switch on once the client agrees.";
 export const HERO_WIDTH_WARNING = 'Photos under 2400px wide look soft on large screens.';
 export const RESULTS_COUNT_WARNING = 'Only the first four results show. Remove the rows after the fourth.';
 export const SYSTEM_ROWS_WARNING = 'Use 2 to 4 rows. Phones show the first two before the rest of the facts.';
@@ -54,19 +55,68 @@ function namesClient(text: string, clientName: unknown): boolean {
   return name.length >= 3 && text.toLowerCase().includes(name);
 }
 
+/** A date as the Studio's date field writes it and the project queries read it: "2026-06-12". */
+const STUDIO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+const isStudioDate = (value: unknown): boolean => typeof value === 'string' && STUDIO_DATE.test(value);
+
 /**
- * Prose the site shows as written (the summary, the story, the headlines, the
- * results note and figure notes, alt text, captions and the search
- * description): a warning while it holds a rand amount and "Show rand amounts"
- * is off, or the client's name before the name may show, which takes both
- * "Show client name" and the consent date.
+ * True only when the client's name may show: "Show client name" on, and a
+ * consent date in the form the Studio writes (2026-06-12). That is the test
+ * the queries apply (src/lib/queries.ts, CLIENT_NAME_WITH_CONSENT), so an
+ * import or API write of "" or "TBC" keeps the name hidden on the site and
+ * keeps the Studio's warnings on.
+ */
+export function nameMayShow(document: ProjectDocument): boolean {
+  return document?.showClientName === true && isStudioDate(document?.clientConsentOn);
+}
+
+/**
+ * Text the site shows as written: the title, the site type, the location, the
+ * completion date, the summary, the story, the headlines, the results note and
+ * figure notes, each approval, each equipment brand and model, alt text,
+ * captions and the search description. A warning while it holds a rand amount
+ * and "Show rand amounts" is off, or the client's name before the name may show.
  */
 export function proseWarning(value: unknown, document: ProjectDocument): true | string {
   const text = proseText(value);
   if (!text.trim()) return true;
   if (document?.showRandAmounts !== true && isRandAmount(text)) return RAND_WARNING;
-  const nameMayShow = document?.showClientName === true && Boolean(document?.clientConsentOn);
-  if (!nameMayShow && namesClient(text, document?.clientName)) return CLIENT_NAME_WARNING;
+  if (!nameMayShow(document) && namesClient(text, document?.clientName)) return CLIENT_NAME_WARNING;
+  return true;
+}
+
+/**
+ * The slug, which every link to the page shows: a warning when it names the
+ * client before the name may show, its hyphens read as spaces, so
+ * "example-client-warehouse" names "Example Client". A slug can't hold a rand
+ * amount, so only the name is checked.
+ */
+export function slugWarning(value: unknown, document: ProjectDocument): true | string {
+  const current = (value as { current?: unknown } | null | undefined)?.current;
+  if (typeof current !== 'string' || !current.trim()) return true;
+  return !nameMayShow(document) && namesClient(current.replace(/-/g, ' '), document?.clientName) ? CLIENT_NAME_WARNING : true;
+}
+
+/** A row's label, value and note, each only when it's a string, as the page reads them. */
+function rowText(value: unknown): { label?: string; value?: string; note?: string } {
+  const row = (value ?? {}) as { label?: unknown; value?: unknown; note?: unknown };
+  const text = (field: unknown): string | undefined => (typeof field === 'string' ? field : undefined);
+  return { label: text(row.label), value: text(row.value), note: text(row.note) };
+}
+
+/**
+ * A results figure, System row or calculation input. The page drops a row
+ * whose label, value or note looks like a rand amount while "Show rand
+ * amounts" is off (isRandRow(), the page's own test), so the row warns that it
+ * won't show. Otherwise it warns when the row names the client before the name
+ * may show.
+ */
+export function rowWarning(value: unknown, document: ProjectDocument): true | string {
+  const row = rowText(value);
+  if (document?.showRandAmounts !== true && isRandRow(row)) return ROW_DROPPED_WARNING;
+  const texts = [row.label, row.value, row.note].filter((text): text is string => Boolean(text));
+  if (!nameMayShow(document) && texts.some((text) => namesClient(text, document?.clientName))) return CLIENT_NAME_WARNING;
   return true;
 }
 
@@ -117,7 +167,11 @@ export function commissionedWarning(value: unknown, document: ProjectDocument): 
   return document?.status === 'completed' && !value ? COMMISSIONED_WARNING : true;
 }
 
-/** An error, which stops publishing, for "Show client name" on without the consent date. */
+/**
+ * An error, which stops publishing, for "Show client name" on without a
+ * consent date the query can read: empty, or written through the API or an
+ * import as "TBC" or "12 June 2026" rather than the Studio's 2026-06-12.
+ */
 export function consentDateError(value: unknown, document: ProjectDocument): true | string {
-  return document?.showClientName === true && !value ? CONSENT_DATE_ERROR : true;
+  return document?.showClientName === true && !isStudioDate(value) ? CONSENT_DATE_ERROR : true;
 }

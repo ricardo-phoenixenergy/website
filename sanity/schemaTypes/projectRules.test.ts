@@ -9,6 +9,7 @@ import {
   MEASURED_WARNING,
   RAND_WARNING,
   RESULTS_COUNT_WARNING,
+  ROW_DROPPED_WARNING,
   SYSTEM_ROWS_WARNING,
   asOfWarning,
   commissionedWarning,
@@ -16,9 +17,12 @@ import {
   heroWidthWarning,
   inputsWarning,
   measuredWarning,
+  nameMayShow,
   proseText,
   proseWarning,
   resultsCountWarning,
+  rowWarning,
+  slugWarning,
   systemRowsWarning,
   widthFromAssetRef,
 } from './projectRules';
@@ -53,6 +57,88 @@ describe('proseWarning', () => {
     expect(proseWarning('   ', off)).toBe(true);
     expect(proseWarning(undefined, undefined)).toBe(true);
     expect(proseWarning('AB Logistics', { clientName: 'AB' })).toBe(true);
+  });
+});
+
+describe('the name may show: one test, the one the query applies', () => {
+  const named = { clientName: 'Hidden Client Ltd', showClientName: true };
+
+  it('counts only a consent date in the form the Studio writes and the query reads (2026-06-12)', () => {
+    // An import or an API write can leave "", "TBC" or a date in words: the query reads none of
+    // them as consent, so the name stays hidden, the warnings keep warning and publishing stops.
+    for (const clientConsentOn of ['', 'TBC', '12 June 2026']) {
+      expect(nameMayShow({ ...named, clientConsentOn }), clientConsentOn).toBe(false);
+      expect(proseWarning('Built for Hidden Client Ltd', { ...named, clientConsentOn }), clientConsentOn).toBe(CLIENT_NAME_WARNING);
+      expect(consentDateError(clientConsentOn, { ...named, clientConsentOn }), clientConsentOn).toBe(CONSENT_DATE_ERROR);
+    }
+    expect(nameMayShow({ ...named, clientConsentOn: '2026-06-12' })).toBe(true);
+    expect(proseWarning('Built for Hidden Client Ltd', { ...named, clientConsentOn: '2026-06-12' })).toBe(true);
+    expect(consentDateError('2026-06-12', { ...named, clientConsentOn: '2026-06-12' })).toBe(true);
+  });
+
+  it('never counts a date while "Show client name" is off, and asks for none then', () => {
+    expect(nameMayShow({ clientName: 'Hidden Client Ltd', showClientName: false, clientConsentOn: '2026-06-12' })).toBe(false);
+    expect(nameMayShow(undefined)).toBe(false);
+    expect(consentDateError('TBC', { showClientName: false })).toBe(true);
+  });
+});
+
+describe('slugWarning', () => {
+  const client = { clientName: 'Example Client' };
+  const slug = (current: string) => ({ _type: 'slug', current });
+
+  it('warns when the slug names the client, its hyphens read as spaces, until the name may show', () => {
+    expect(slugWarning(slug('example-client-warehouse'), client)).toBe(CLIENT_NAME_WARNING);
+    expect(slugWarning(slug('example-client-warehouse'), { ...client, showClientName: true, clientConsentOn: '2026-06-12' })).toBe(true);
+  });
+
+  it('passes a slug that does not name the client, or no slug, and checks the name only', () => {
+    expect(slugWarning(slug('harbour-road-warehouse'), client)).toBe(true);
+    expect(slugWarning(slug(''), client)).toBe(true);
+    expect(slugWarning(undefined, client)).toBe(true);
+    // A slug can't hold a rand amount ("R1.5M" slugs to "r1-5m"), so there is no rand check.
+    expect(slugWarning(slug('r1-5m-rooftop'), client)).toBe(true);
+  });
+});
+
+describe('rowWarning', () => {
+  const on = { ...off, showRandAmounts: true };
+
+  it("warns that a row whose label, value or note looks like a rand amount won't show while the switch is off", () => {
+    for (const row of [
+      { label: 'Annual savings (R)', value: '1.2 million' },
+      { label: 'Capital cost', value: 'R1.5M' },
+      { label: 'Energy bill reduction', value: '41.8%', note: 'Year 1, against R2.1m of 2025 bills' },
+      { label: 'Tariff', value: '180c/kWh' },
+    ]) {
+      expect(rowWarning(row, off), JSON.stringify(row)).toBe(ROW_DROPPED_WARNING);
+      expect(rowWarning(row, on), JSON.stringify(row)).toBe(true);
+    }
+  });
+
+  it('warns when the label, value or note names the client, until the name may show', () => {
+    const named = { ...off, showClientName: true, clientConsentOn: '2026-06-12' };
+    for (const row of [
+      { label: 'Hidden Client Ltd site', value: '82.8 kWp' },
+      { label: 'Tenant', value: 'Hidden Client Ltd' },
+      { label: 'Energy bill reduction', value: '41.8%', note: 'Against hidden client ltd bills' },
+    ]) {
+      expect(rowWarning(row, off), JSON.stringify(row)).toBe(CLIENT_NAME_WARNING);
+      expect(rowWarning(row, named), JSON.stringify(row)).toBe(true);
+    }
+  });
+
+  it('puts the rand warning first, since a dropped row shows no name', () => {
+    const both = { label: 'Hidden Client Ltd savings', value: 'R1.5M' };
+    expect(rowWarning(both, off)).toBe(ROW_DROPPED_WARNING);
+    expect(rowWarning(both, on)).toBe(CLIENT_NAME_WARNING);
+  });
+
+  it('passes a clean row, and an incomplete or missing one, which the page leaves out for being incomplete', () => {
+    expect(rowWarning({ label: 'Payback period', value: '51 months', note: 'Year 1, against 2025 municipal bills' }, off)).toBe(true);
+    expect(rowWarning({ label: 'Payback period' }, off)).toBe(true);
+    expect(rowWarning({ label: 'Payback period', value: 51 }, off)).toBe(true);
+    expect(rowWarning(undefined, off)).toBe(true);
   });
 });
 
