@@ -26,6 +26,8 @@ describe('SolutionCard', () => {
     const markup = html(createElement(SolutionCard, { meta: SOLUTION_META['ev-fleets'], line, image: photo }));
     // The last word and the arrow share one inline-flex group, which never breaks inside.
     expect(markup).toMatch(/Explore EV Fleets &amp; <span class="inline-flex[^"]*">Infrastructure<span aria-hidden="true"/);
+    // The line itself flows as text: as a flex box, its first words would squeeze into a column beside the group.
+    expect(markup).toMatch(/<span class="(?![^"]*inline-flex)[^"]*\bblock\b[^"]*">Explore EV Fleets &amp; /);
   });
 
   it('nudges the arrow on hover, like every arrow link', () => {
@@ -41,7 +43,8 @@ describe('SolutionCard', () => {
 
   it("marks the card with the service's accent, in a line under the photo", () => {
     const markup = html(createElement(SolutionCard, { meta: wheeling, line, image: photo }));
-    expect(markup).toContain('background:#D97C76');
+    // The photo, then the 3px accent line, then the body that opens with the heading.
+    expect(markup).toMatch(/<img [^>]*>[\s\S]*<div aria-hidden="true" class="h-\[3px\][^"]*" style="background:#D97C76"><\/div><div class="[^"]*"><h2/);
   });
 
   it("falls back to a tint of the service's accent when it has no photo", () => {
