@@ -161,7 +161,7 @@ The How It Works singletons keep `showCta`, which still hides or shows the butto
 |---|---|---|
 | `ciSolarStorage`, `wheeling`, `energyOptimisation`, `carbonCredits`, `webuysolar`, `evFleets` | image (hotspot on) | That vertical's photo in the home hero accordion, on its solution page hero and on its card on /solutions. |
 
-A missing image falls back to a gradient in the home accordion and the solution hero, and to a plain grey block on the /solutions card. The query returns the full image URL, so the hotspot doesn't change the crop; the site crops with CSS.
+A missing image falls back to a gradient in the home accordion and the solution hero, and to a tint of the vertical's accent on the /solutions card. The query returns the full image URL, so the hotspot doesn't change the crop; the site crops with CSS.
 
 ---
 

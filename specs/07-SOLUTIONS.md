@@ -8,7 +8,7 @@
 
 ## Overview
 
-Six page files, one per vertical (`src/app/solutions/{vertical}/page.tsx`). There is no shared template: each page composes shared section components in its own order (see Page Structure). The copy lives in the page file or in a content file under `src/config/` (`strategies.ts`, `carbonCreditsContent.ts`, `evFleetsContent.ts`, `webuysolarContent.ts`). `VERTICAL_CONFIG` holds only the SEO title, description and stats; `SOLUTION_META` (`src/types/solutions.ts`) holds the label and accent colours; How It Works steps come from Sanity. Type sizes and colours follow `specs/01-BRAND.md` (12px minimum; muted text is `#646B78`).
+Six page files, one per vertical (`src/app/solutions/{vertical}/page.tsx`). There is no shared template: each page composes shared section components in its own order (see Page Structure). The copy lives in the page file or in a content file under `src/config/` (`strategies.ts`, `carbonCreditsContent.ts`, `evFleetsContent.ts`, `webuysolarContent.ts`). `VERTICAL_CONFIG` holds only the SEO title, description and share image, the line on the vertical's `/solutions` card, and the stats; `SOLUTION_META` (`src/types/solutions.ts`) holds the label and accent colours; How It Works steps come from Sanity. Type sizes and colours follow `specs/01-BRAND.md` (12px minimum; muted text is `#646B78`).
 
 **Verticals and routes:**
 | Vertical | Route | Accent |
@@ -100,7 +100,7 @@ background: linear-gradient(105deg, rgba(13,31,34,0.92) 0%, rgba(13,31,34,0.84) 
 
 ## 5. Stats Strip
 
-Removed from the solution pages in May 2026; the unused `StatsStrip` component was deleted in September 2026. Each vertical's four stats are `VERTICAL_CONFIG[vertical].stats` (`src/config/verticals.ts`), read from the claims register (`src/config/claims.ts`). Only the first two show, on the vertical's card on `/solutions`; the solution pages show none.
+Removed from the solution pages in May 2026; the unused `StatsStrip` component was deleted in September 2026. Each vertical's four stats are `VERTICAL_CONFIG[vertical].stats` (`src/config/verticals.ts`), read from the claims register (`src/config/claims.ts`). No page shows them. The first two showed on the vertical's card on `/solutions` until 30 September 2026, when the cards dropped them; the register records each as not rendered until the business confirms or removes it.
 
 ### Stats per vertical
 | Vertical | Stat 1 | Stat 2 | Stat 3 | Stat 4 |
@@ -405,8 +405,9 @@ The WeBuySolar page (`src/app/solutions/webuysolar/page.tsx`) doesn't use the ta
 
 ```typescript
 // src/config/verticals.ts
-// SEO copy and headline stats per vertical. Every figure comes from the claims
-// register (src/config/claims.ts) through claimStat() and claimValue().
+// SEO copy, the /solutions card line and the headline stats per vertical. Every
+// figure comes from the claims register (src/config/claims.ts) through claimStat()
+// and claimValue(). No page shows the stats at present.
 
 export interface VerticalStat {
   value: string;
@@ -416,7 +417,9 @@ export interface VerticalStat {
 export interface VerticalConfig {
   seoTitle: string;
   seoDescription: string;
-  stats: VerticalStat[];       // 4 per vertical; the /solutions card shows the first two
+  shareImage: ShareImage;      // 1200 by 630, a JPEG, with alt text
+  cardLine: string;            // under the service's name on its /solutions card; no figure
+  stats: VerticalStat[];       // 4 per vertical; not rendered (see §5)
 }
 
 export const VERTICAL_CONFIG: Record<SolutionVertical, VerticalConfig> = { /* one entry per vertical */ };
@@ -502,6 +505,7 @@ April 2026 descriptions that the build replaced, kept because they carry claims.
 | Component | Path |
 |---|---|
 | Solution pages | `src/app/solutions/{vertical}/page.tsx`, one file per vertical |
+| `/solutions` overview | `src/app/solutions/page.tsx`, one `src/components/sections/SolutionCard.tsx` per vertical (see `specs/02-ARCHITECTURE.md`) |
 | Page template | None: each page composes the sections below |
 | Hero section | `src/components/sections/SolutionHero.tsx` |
 | Stats strip | None (removed, see §5) |
@@ -516,7 +520,7 @@ April 2026 descriptions that the build replaced, kept because they carry claims.
 | Related articles | `src/components/sections/RelatedArticles.tsx` |
 | CTA banner | `src/components/layout/PageFooter.tsx` (shared, `ctaVariant="centered"`) |
 | WeBuySolar only | `src/components/sections/ComparisonTable.tsx`, `PullQuote.tsx` |
-| Vertical config | `src/config/verticals.ts` (SEO and stats), `src/types/solutions.ts` (`SOLUTION_META`), `src/config/ctas.ts` (`SERVICE_CTA`) |
+| Vertical config | `src/config/verticals.ts` (SEO, the `/solutions` card line and stats), `src/types/solutions.ts` (`SOLUTION_META`), `src/config/ctas.ts` (`SERVICE_CTA`) |
 
 ---
 

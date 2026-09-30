@@ -373,10 +373,10 @@ Default page size: 6 posts. First page has no `?page=` param.
 
 ### `alt` text policy
 Every `next/image` and `<img>` sets `alt`; decorative images use `alt=""`. As built:
-- Project cards (`ProjectCard`), the home hero accordion, the footer watermark, the logo mark beside the wordmark and the author avatar beside the name in a post header: `alt=""`.
+- Project cards (`ProjectCard`), the `/solutions` cards (`SolutionCard`, whose heading names the service), the home hero accordion, the footer watermark, the logo mark beside the wordmark and the author avatar beside the name in a post header: `alt=""`.
 - Project heroes and the featured project card: the image's `alt` from Sanity, or the project title. Gallery tiles and photo viewer images: the image's `alt`, or "Project photo N"; each gallery tile's button is named by a visually hidden "Open photo N of M:" before its image (`specs/06-PROJECT-SINGLE.md`).
 - Blog heroes and article cards: the image's `alt`, or the post title.
-- Solution page heroes and the `/solutions` cards: the vertical's name.
+- Solution page heroes: the vertical's name.
 - Team photos: the member's name. Other author photos: the author's name. Partner logos: the logo's `alt`, or the partner name. Industry proof photos: the given alt, or the client name.
 - No image sets `role="presentation"`.
 
@@ -398,11 +398,12 @@ Route: `src/app/solutions/page.tsx`
 [Footer; there is no CTA band on this page]
 ```
 
-Each vertical card:
-- A dark `Card` (pattern 1, no hover overlay) linking to `/solutions/[vertical]`; it lifts 4px with a shadow on hover.
-- Image: the vertical's hero image from Sanity (`heroImages`), 180px tall, with the vertical's name as `alt`.
-- Body: the vertical's SEO description from `src/config/verticals.ts`, cut to three lines, then two stats from the claims register with the value in the accent colour.
-- Footer: an "Explore {vertical}" pill, drawn with `buttonClasses({ variant: 'ghost', size: 'compact', inCard: true })` on a span (the card is the link, so the pill brightens and presses with the card): 40px, plain ghost on all six cards, because in the accent tint WeBuySolar's copper label measured 4.3:1 on hover.
+Each vertical card is a `SolutionCard` (`src/components/sections/SolutionCard.tsx`), light since 30 September 2026:
+- A light `Card` (pattern 1), the same family as the project cards: white, a 1px border and 16px corners. The whole card is one link to `/solutions/[vertical]`, and it lifts 4px with a shadow on hover.
+- Photo: the vertical's hero image from Sanity (`heroImages`), 16:10, clear of the dark gradient the project cards put over theirs (`scrim={false}`), with `alt=""` because the heading names the service. With no photo, a tint of the vertical's accent.
+- A 3px line in the vertical's accent under the photo.
+- Body, 24px in: the vertical's name as an H2 (Plus Jakarta Sans, 20px bold, Near Black), one line on what the service does (`VERTICAL_CONFIG[vertical].cardLine`, Inter 14px, Slate), then "Explore {vertical}" at the foot, so the six line up. That line has the arrow link's look on a span (`arrowLinkClasses()`, Deep Teal, darker when the card is hovered), since the card is the link, and its arrow nudges 4px on hover like every arrow link. The line flows as text, with its last word and the arrow held together, so the one label that wraps (EV Fleets & Infrastructure, below about 340px) keeps the arrow beside its last word.
+- No figures. The dark card's SEO description and its two stats from the claims register were dropped; the register records those stats as not rendered, and a test keeps digits out of every card line.
 
 ### `/tools` — Tools index page
 Route: `src/app/tools/page.tsx`
