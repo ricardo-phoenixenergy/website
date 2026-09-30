@@ -9,6 +9,18 @@ export const CONTACT = {
   phoneHref: 'tel:+27798928197',
   /** Office hours for the phone line. */
   phoneHours: 'Mon to Fri, 08:00 to 17:00 SAST',
+  /** The registered company name, as the privacy policy gives it. */
+  legalName: 'Phoenix Energy Solutions (Pty) Ltd',
+  /** The head office, as the privacy policy gives it, in the parts structured data asks for. */
+  address: {
+    streetAddress: '1st Floor, Foyer 3, The Colosseum, Century Way, Century City',
+    addressLocality: 'Cape Town',
+    addressRegion: 'Western Cape',
+    postalCode: '7441',
+    addressCountry: 'ZA',
+  },
+  /** The LinkedIn company page. This address opens for anyone; the numeric one asks signed-out visitors to log in. */
+  linkedin: 'https://www.linkedin.com/company/phoenix-energy-solutions',
 } as const;
 
 /**
