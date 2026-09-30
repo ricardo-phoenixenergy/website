@@ -3,21 +3,19 @@ import Link from 'next/link';
 import { getAllProjects } from '@/lib/projectData';
 import { ProjectsGrid } from '@/components/sections/ProjectsGrid';
 import { PageFooter } from '@/components/layout/PageFooter';
+import { JsonLd } from '@/components/layout/JsonLd';
+import { pageMetadata } from '@/lib/seo';
+import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Projects & Installations',
   // Not every project has results yet, and those shown are projections, so the
   // copy promises neither "results for each project" nor measured outcomes.
   description:
     'Commercial solar and battery installations by Phoenix Energy in South Africa: the site and system for each, with projected results where available.',
-  alternates: { canonical: 'https://phoenixenergy.solutions/projects' },
-  openGraph: {
-    title: 'Projects & Installations | Phoenix Energy',
-    description: 'Commercial solar and battery installations by Phoenix Energy in South Africa, with projected results where available.',
-    url: 'https://phoenixenergy.solutions/projects',
-    images: [{ url: 'https://phoenixenergy.solutions/og-default.png', width: 1200, height: 630 }],
-  },
-};
+  path: '/projects',
+  shareDescription: 'Commercial solar and battery installations by Phoenix Energy in South Africa, with projected results where available.',
+});
 
 export const revalidate = 3600;
 
@@ -50,6 +48,7 @@ export default async function ProjectsPage() {
 
   return (
     <>
+      <JsonLd data={breadcrumbJsonLd([HOME_CRUMB, { name: 'Projects', path: '/projects' }])} />
       <ProjectsGrid projects={projects} header={header} />
       <PageFooter ctaVariant="centered" />
     </>

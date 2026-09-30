@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { JsonLd } from '@/components/layout/JsonLd';
+import { pageMetadata } from '@/lib/seo';
+import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Privacy Policy',
-  description:
-    'How Phoenix Energy Solutions (Pty) Ltd collects, uses and protects your personal information in accordance with POPIA.',
-  alternates: { canonical: 'https://phoenixenergy.solutions/privacy-policy' },
-};
+  description: 'How Phoenix Energy Solutions (Pty) Ltd collects, uses and protects your personal information in accordance with POPIA.',
+  path: '/privacy-policy',
+});
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -28,6 +30,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function PrivacyPolicyPage() {
   return (
     <>
+    <JsonLd data={breadcrumbJsonLd([HOME_CRUMB, { name: 'Privacy Policy', path: '/privacy-policy' }])} />
     <div className="bg-pe-bg min-h-screen">
       <div className="page-container pt-24 pb-16">
 

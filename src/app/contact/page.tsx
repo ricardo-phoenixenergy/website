@@ -3,25 +3,25 @@ import Link from 'next/link';
 import { ContactForm } from '@/components/sections/ContactForm';
 import { NextSteps } from '@/components/ui/NextSteps';
 import { IconMail, IconPhone, IconMapPin, IconLinkedIn } from '@/components/ui/Icons';
+import { JsonLd } from '@/components/layout/JsonLd';
 import { CONTACT, CONTACT_NEXT_STEPS, REPLY_PROMISE } from '@/config/contact';
+import { pageMetadata } from '@/lib/seo';
+import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   // The root template adds "| Phoenix Energy", so the brand appears once.
   title: 'Contact Us',
   description:
     'Reach out to Phoenix Energy to discuss C&I solar, wheeling, carbon credits, EV fleets and more. Free energy assessments for Southern African businesses.',
-  alternates: { canonical: 'https://phoenixenergy.solutions/contact' },
-  openGraph: {
-    title: 'Contact Phoenix Energy',
-    description: 'Reach out to Phoenix Energy to discuss C&I solar, wheeling, carbon credits, EV fleets and more.',
-    url: 'https://phoenixenergy.solutions/contact',
-    images: [{ url: 'https://phoenixenergy.solutions/og-default.png', width: 1200, height: 630 }],
-  },
-};
+  path: '/contact',
+  shareTitle: 'Contact Phoenix Energy',
+  shareDescription: 'Reach out to Phoenix Energy to discuss C&I solar, wheeling, carbon credits, EV fleets and more.',
+});
 
 export default function ContactPage() {
   return (
     <>
+    <JsonLd data={breadcrumbJsonLd([HOME_CRUMB, { name: 'Contact', path: '/contact' }])} />
     <div className="bg-pe-bg min-h-screen">
       <div className="page-container pt-24 pb-16">
 
@@ -135,7 +135,7 @@ export default function ContactPage() {
                 Connect with us
               </p>
               <Link
-                href="https://www.linkedin.com/company/phoenix-energy-solutions"
+                href={CONTACT.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 group"

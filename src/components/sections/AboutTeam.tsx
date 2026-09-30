@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import type { TeamMember } from '@/types/sanity';
 import type { TeamCategory } from '@/types/sanity';
+import { CONTACT } from '@/config/contact';
 import { IconArrowRight } from '../ui/Icons';
 import { Button } from '../ui/Button';
 import { Chip } from '../ui/Chip';
@@ -124,7 +125,7 @@ export function AboutTeam({ members }: AboutTeamProps) {
                 </p>
               </div>
               <Button
-                href="https://linkedin.com/company/105465145"
+                href={CONTACT.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 variant="light"

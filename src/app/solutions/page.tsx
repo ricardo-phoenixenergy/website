@@ -11,21 +11,17 @@ import { Button } from '@/components/ui/Button';
 import { buttonClasses } from '@/components/ui/buttonStyles';
 import { Card, CardImage, CardBody, CardFooter } from '@/components/ui/Card';
 import { getHeroImages } from '@/lib/getHeroImages';
+import { pageMetadata } from '@/lib/seo';
+import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Energy Solutions',
   description:
-    'Commercial solar, wheeling, energy optimisation, carbon credits, WeBuySolar, and EV fleet solutions. Phoenix Energy delivers measurable savings across every energy challenge.',
-  alternates: { canonical: 'https://phoenixenergy.solutions/solutions' },
-  openGraph: {
-    title: 'Energy Solutions | Phoenix Energy',
-    description:
-      'Commercial solar, wheeling, energy optimisation, carbon credits, WeBuySolar, and EV fleet solutions. Phoenix Energy delivers measurable savings across every energy challenge.',
-    url: 'https://phoenixenergy.solutions/solutions',
-  },
-};
+    'Commercial solar, wheeling, energy optimisation, carbon credits, WeBuySolar and EV fleet solutions, with measurable savings across every energy challenge.',
+  path: '/solutions',
+});
 
 export default async function SolutionsPage() {
   const heroImages = await getHeroImages();
@@ -46,6 +42,7 @@ export default async function SolutionsPage() {
 
   return (
     <>
+      <JsonLd data={breadcrumbJsonLd([HOME_CRUMB, { name: 'Solutions', path: '/solutions' }])} />
       <JsonLd data={jsonLd} />
 
       {/* Hero — full-bleed FloatingOrbs behind left-aligned headline */}

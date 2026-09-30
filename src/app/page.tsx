@@ -12,58 +12,23 @@ import { PARTNERS_QUERY, PUBLISHED_POSTS_COUNT_QUERY } from '@/lib/queries';
 import { getCompanyStats } from '@/lib/getCompanyStats';
 import { getHowItWorks } from '@/lib/getHowItWorks';
 import { getHeroImages } from '@/lib/getHeroImages';
+import { pageMetadata, SITE_DESCRIPTION, SITE_TITLE } from '@/lib/seo';
+import { websiteJsonLd } from '@/lib/structuredData';
 import type { Partner } from '@/types/sanity';
 
 // Safety-net ISR: refresh hourly even if the Sanity revalidate webhook isn't
 // wired up, so partner/featured changes eventually appear without a redeploy.
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: { absolute: 'Phoenix Energy: Integrated Clean Energy Solutions for SA Businesses' },
-  description:
-    'C&I solar, wheeling, carbon credits, EV fleets and more. Get a free energy assessment from Phoenix Energy today.',
-  alternates: { canonical: 'https://phoenixenergy.solutions' },
-  openGraph: {
-    title: 'Phoenix Energy: Save, Earn & Grow with Renewable Energy',
-    description:
-      'Six clean energy verticals. One partner. End-to-end solutions for Southern African businesses.',
-    url: 'https://phoenixenergy.solutions',
-    siteName: 'Phoenix Energy',
-    images: [
-      {
-        url: 'https://phoenixenergy.solutions/og-default.png',
-        width: 1200,
-        height: 630,
-        alt: 'Phoenix Energy: Clean Energy Solutions for Southern Africa',
-      },
-    ],
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Phoenix Energy: Save, Earn & Grow with Renewable Energy',
-    description:
-      'Six clean energy verticals. One partner. End-to-end solutions for Southern African businesses.',
-    images: ['https://phoenixenergy.solutions/og-default.png'],
-  },
-};
-
-/** The site search is the blog search, so it is advertised only once there is a post to find. */
-function websiteJsonLd(hasPosts: boolean) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    name: 'Phoenix Energy',
-    url: 'https://phoenixenergy.solutions',
-    ...(hasPosts && {
-      potentialAction: {
-        '@type': 'SearchAction',
-        target: 'https://phoenixenergy.solutions/blog?q={search_term_string}',
-        'query-input': 'required name=search_term_string',
-      },
-    }),
-  };
-}
+export const metadata: Metadata = pageMetadata({
+  // 57 characters, inside the roughly 60 Google shows.
+  title: SITE_TITLE,
+  absoluteTitle: true,
+  description: SITE_DESCRIPTION,
+  path: '/',
+  shareTitle: 'Phoenix Energy: Save, Earn & Grow with Renewable Energy',
+  shareDescription: 'Six clean energy verticals. One partner. End-to-end solutions for Southern African businesses.',
+});
 
 export default async function HomePage() {
   let partners: Partner[] = [];
@@ -86,7 +51,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <JsonLd data={websiteJsonLd(hasPosts)} />
+      <JsonLd data={websiteJsonLd({ searchable: hasPosts })} />
       <div>
         <HeroAccordion heroImages={heroImages} />
         <CompanyStats stats={companyStats} />

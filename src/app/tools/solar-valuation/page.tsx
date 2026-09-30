@@ -6,20 +6,17 @@ import { ArrowLink } from '@/components/ui/ArrowLink';
 import { JsonLd } from '@/components/layout/JsonLd';
 import { WEBUYSOLAR_OFFER } from '@/config/webuysolarOffer';
 import { SOLUTION_META } from '@/types/solutions';
+import { pageMetadata } from '@/lib/seo';
+import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 
 // A request form, not a calculator: the WeBuySolar team prepares the valuation
 // after a free on-site audit, so nothing here promises an on-screen figure.
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Solar System Valuation Request',
   description:
     'Request a valuation of your solar system and battery storage. Our WeBuySolar team prepares it after a free on-site audit, with no obligation.',
-  openGraph: {
-    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
-  },
-  alternates: {
-    canonical: 'https://phoenixenergy.solutions/tools/solar-valuation',
-  },
-};
+  path: '/tools/solar-valuation',
+});
 
 const howToJsonLd = {
   '@context': 'https://schema.org',
@@ -47,6 +44,13 @@ const howToJsonLd = {
 export default function SolarValuationPage() {
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          HOME_CRUMB,
+          { name: 'Tools', path: '/tools' },
+          { name: 'Solar Valuation Request', path: '/tools/solar-valuation' },
+        ])}
+      />
       <JsonLd data={howToJsonLd} />
 
       <div className="bg-pe-bg min-h-screen">

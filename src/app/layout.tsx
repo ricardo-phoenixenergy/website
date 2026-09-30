@@ -6,6 +6,8 @@ import { SiteShell } from '@/components/layout/SiteShell';
 import { ScrollDepth } from '@/components/analytics/ScrollDepth';
 import { WebVitals } from './_components/WebVitals';
 import { sanityServerClient } from '@/lib/sanity.server';
+import { organizationJsonLd } from '@/lib/structuredData';
+import { DEFAULT_SHARE_IMAGE, SITE_DESCRIPTION, SITE_LOCALE, SITE_NAME, SITE_TITLE, SITE_URL } from '@/lib/seo';
 import './globals.css';
 
 const jakarta = Plus_Jakarta_Sans({
@@ -22,20 +24,21 @@ const inter = Inter({
   display: 'swap',
 });
 
+// The defaults every page starts from. Each page replaces them through
+// pageMetadata() (src/lib/seo.ts); a page that sets nothing, such as the 404,
+// keeps these.
 export const metadata: Metadata = {
-  title: {
-    default: 'Phoenix Energy: Integrated Clean Energy Solutions for SA Businesses',
-    template: '%s | Phoenix Energy',
+  title: { default: SITE_TITLE, template: `%s | ${SITE_NAME}` },
+  description: SITE_DESCRIPTION,
+  metadataBase: new URL(SITE_URL),
+  openGraph: { siteName: SITE_NAME, locale: SITE_LOCALE, type: 'website', images: [DEFAULT_SHARE_IMAGE] },
+  twitter: { card: 'summary_large_image' },
+  // max-image-preview:large lets Google show a large image preview, which Discover requires.
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1, 'max-video-preview': -1 },
   },
-  description:
-    'C&I solar, wheeling, carbon credits, EV fleets and more. Get a free energy assessment from Phoenix Energy today.',
-  metadataBase: new URL('https://phoenixenergy.solutions'),
-  openGraph: {
-    siteName: 'Phoenix Energy',
-    locale: 'en_ZA',
-    type: 'website',
-  },
-  robots: { index: true, follow: true },
 };
 
 // Hourly by default, so the navbar's blog link (below) appears on every page
@@ -56,22 +59,6 @@ async function hasEnoughPosts(): Promise<boolean> {
   }
 }
 
-const orgJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'Phoenix Energy',
-  url: 'https://phoenixenergy.solutions',
-  logo: 'https://phoenixenergy.solutions/logo.png',
-  email: 'info@phoenixenergy.solutions',
-  contactPoint: {
-    '@type': 'ContactPoint',
-    telephone: '+27-79-892-8197',
-    contactType: 'sales',
-    areaServed: 'ZA',
-  },
-  sameAs: ['https://www.linkedin.com/company/105465145'],
-};
-
 export default async function RootLayout({
   children,
 }: {
@@ -85,7 +72,7 @@ export default async function RootLayout({
       className={`${jakarta.variable} ${inter.variable}`}
     >
       <head>
-        <JsonLd data={orgJsonLd} />
+        <JsonLd data={organizationJsonLd()} />
       </head>
       <body className="font-body antialiased" style={{ background: '#F5F5F5', color: '#1A1A1A' }}>
         <WebVitals />

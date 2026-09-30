@@ -4,9 +4,12 @@ import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { FloatingOrbs } from '@/components/ui/FloatingOrbs';
 import { Button } from '@/components/ui/Button';
 import { IconArrowRight } from '@/components/ui/Icons';
+import { JsonLd } from '@/components/layout/JsonLd';
 import { sanityServerClient } from '@/lib/sanity.server';
 import { TEAM_MEMBERS_QUERY, MILESTONE_TIMELINE_QUERY, PARTNERS_QUERY } from '@/lib/queries';
 import { getCompanyStats } from '@/lib/getCompanyStats';
+import { pageMetadata } from '@/lib/seo';
+import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 import { AboutStory } from '@/components/sections/AboutStory';
 import { AboutMission } from '@/components/sections/AboutMission';
 import { AboutValues } from '@/components/sections/AboutValues';
@@ -21,20 +24,15 @@ import type { TeamMember, MilestoneTimeline, Partner } from '@/types/sanity';
 // wired up, so partner/team/timeline changes eventually appear without a redeploy.
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   // The root template adds "| Phoenix Energy", so the brand appears once.
   title: 'About Us: Our Story, Mission & Team',
   description:
-    "Learn about Phoenix Energy's founding story, mission to drive Net Zero across Africa, our values, and the team behind Southern Africa's leading clean energy company.",
-  alternates: { canonical: 'https://phoenixenergy.solutions/about' },
-  openGraph: {
-    title: 'About Phoenix Energy: Our Story, Mission & Team',
-    description:
-      "The story, mission and team behind Southern Africa's leading integrated clean energy company.",
-    url: 'https://phoenixenergy.solutions/about',
-    images: [{ url: 'https://phoenixenergy.solutions/og-default.png', width: 1200, height: 630 }],
-  },
-};
+    "Phoenix Energy's founding story, mission to drive Net Zero across Africa, our values, and the team behind Southern Africa's leading clean energy company.",
+  path: '/about',
+  shareTitle: 'About Phoenix Energy: Our Story, Mission & Team',
+  shareDescription: "The story, mission and team behind Southern Africa's leading integrated clean energy company.",
+});
 
 async function getTeamMembers(): Promise<TeamMember[]> {
   try {
@@ -70,6 +68,7 @@ export default async function AboutPage() {
 
   return (
     <>
+    <JsonLd data={breadcrumbJsonLd([HOME_CRUMB, { name: 'About', path: '/about' }])} />
     <div>
       {/* Hero — matches Solutions page: FloatingOrbs + dark background */}
       <section className="focus-on-dark relative overflow-hidden" style={{ background: '#0d1f22', minHeight: 480 }}>

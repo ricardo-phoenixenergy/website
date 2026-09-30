@@ -1,12 +1,15 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { JsonLd } from '@/components/layout/JsonLd';
+import { pageMetadata } from '@/lib/seo';
+import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Disclaimer',
   description:
     'Important disclaimers regarding the accuracy of calculators, financial estimates, and information published on the Phoenix Energy website.',
-  alternates: { canonical: 'https://phoenixenergy.solutions/disclaimer' },
-};
+  path: '/disclaimer',
+});
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -28,6 +31,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function DisclaimerPage() {
   return (
     <>
+    <JsonLd data={breadcrumbJsonLd([HOME_CRUMB, { name: 'Disclaimer', path: '/disclaimer' }])} />
     <div className="bg-pe-bg min-h-screen">
       <div className="page-container pt-24 pb-16">
 

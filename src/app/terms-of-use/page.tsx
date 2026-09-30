@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { JsonLd } from '@/components/layout/JsonLd';
+import { pageMetadata } from '@/lib/seo';
+import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Terms of Use',
   description: 'Terms and conditions governing your use of the Phoenix Energy website.',
-  alternates: { canonical: 'https://phoenixenergy.solutions/terms-of-use' },
-};
+  path: '/terms-of-use',
+});
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -27,6 +30,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function TermsOfUsePage() {
   return (
     <>
+    <JsonLd data={breadcrumbJsonLd([HOME_CRUMB, { name: 'Terms of Use', path: '/terms-of-use' }])} />
     <div className="bg-pe-bg min-h-screen">
       <div className="page-container pt-24 pb-16">
 

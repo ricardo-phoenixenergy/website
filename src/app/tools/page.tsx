@@ -8,21 +8,13 @@ import { IconArrowRight } from '@/components/ui/Icons';
 import { arrowLinkClasses } from '@/components/ui/buttonStyles';
 import { SOLUTION_META } from '@/types/solutions';
 import { VALUATION_CTA } from '@/config/ctas';
+import { pageMetadata } from '@/lib/seo';
+import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 
 const DESCRIPTION =
   'Free resources for smarter energy decisions, including a valuation request for existing solar systems, prepared by our WeBuySolar team.';
 
-export const metadata: Metadata = {
-  title: 'Tools & Resources',
-  description: DESCRIPTION,
-  alternates: { canonical: 'https://phoenixenergy.solutions/tools' },
-  openGraph: {
-    title: 'Tools & Resources | Phoenix Energy',
-    description: DESCRIPTION,
-    url: 'https://phoenixenergy.solutions/tools',
-    images: [{ url: 'https://phoenixenergy.solutions/og-default.png', width: 1200, height: 630 }],
-  },
-};
+export const metadata: Metadata = pageMetadata({ title: 'Tools & Resources', description: DESCRIPTION, path: '/tools' });
 
 const TOOLS = [
   {
@@ -54,6 +46,7 @@ export default function ToolsPage() {
 
   return (
     <>
+      <JsonLd data={breadcrumbJsonLd([HOME_CRUMB, { name: 'Tools', path: '/tools' }])} />
       <JsonLd data={jsonLd} />
 
       <div className="bg-pe-bg min-h-screen">
