@@ -373,42 +373,47 @@ export const ALL_PROJECT_SLUGS_QUERY = `*[_type == "project" && defined(slug.cur
 // Sitemap entries
 export const PROJECT_SITEMAP_QUERY = `*[_type == "project" && defined(slug.current)]{ "slug": slug.current, _updatedAt }`;
 
-// Every live post ("...live post...": has a slug and a publish date that has come), dated by "Last updated" else the publish date
-export const BLOG_SITEMAP_QUERY = `*[...live post...]{ "slug": slug.current, "lastModified": coalesce(updatedAt, publishedAt) }`;
+// Every blog query below reads only live posts, through LIVE_POST:
+// _type == "blogPost" && defined(slug.current) && dateTime(publishedAt) <= dateTime(now())
+// A post without a slug, or dated in the future, is left out of every list, count, sitemap
+// entry and lookup below, until its date comes.
+
+// Every live post, dated by "Last updated" else the publish date
+export const BLOG_SITEMAP_QUERY = `*[LIVE_POST]{ "slug": slug.current, "lastModified": coalesce(updatedAt, publishedAt) }`;
 
 // Every author with a live post, dated by their latest one
-export const AUTHOR_SITEMAP_QUERY = `*[_type == "author" && defined(slug.current) && count(*[...live post... && references(^._id)]) > 0]{ "slug": slug.current, "lastModified": *[...live post... && references(^._id)] | order(publishedAt desc) [0].publishedAt }`;
+export const AUTHOR_SITEMAP_QUERY = `*[_type == "author" && defined(slug.current) && count(*[LIVE_POST && references(^._id)]) > 0]{ "slug": slug.current, "lastModified": *[LIVE_POST && references(^._id)] | order(publishedAt desc) [0].publishedAt }`;
 
 // Blog index: category, tag and search filters, featured first, six per page (/blog)
-export const BLOG_INDEX_QUERY = `*[_type == "blogPost" && ($category == "" || category == $category) && ($tag == "" || $tag in tags) && ($q == "" || title match $q || excerpt match $q)] | order(featured desc, publishedAt desc) [$offset...$offset+6] { ... }`;
+export const BLOG_INDEX_QUERY = `*[LIVE_POST && ($category == "" || category == $category) && ($tag == "" || $tag in tags) && ($q == "" || title match $q || excerpt match $q)] | order(featured desc, publishedAt desc) [$offset...$offset+6] { ... }`;
 
 // Post count under the same filters (/blog pagination)
-export const BLOG_COUNT_QUERY = `count(*[_type == "blogPost" && ...same filters as BLOG_INDEX_QUERY])`;
+export const BLOG_COUNT_QUERY = `count(*[LIVE_POST && ...same filters as BLOG_INDEX_QUERY])`;
 
-// Every published post, whatever the filters (home SearchAction; /blog noindex while it is 0)
-export const PUBLISHED_POSTS_COUNT_QUERY = `count(*[_type == "blogPost"])`;
+// Every live post, whatever the filters (home SearchAction; /blog noindex while it is 0)
+export const PUBLISHED_POSTS_COUNT_QUERY = `count(*[LIVE_POST])`;
 
 // Featured article card (/blog)
-export const FEATURED_POST_QUERY = `*[_type == "blogPost"] | order(featured desc, publishedAt desc) [0] { ... }`;
+export const FEATURED_POST_QUERY = `*[LIVE_POST] | order(featured desc, publishedAt desc) [0] { ... }`;
 
 // Tags for the filter pills (/blog)
-export const ALL_BLOG_TAGS_QUERY = `array::unique(*[_type == "blogPost"].tags[])`;
+export const ALL_BLOG_TAGS_QUERY = `array::unique(*[LIVE_POST].tags[])`;
 
 // Latest 3 posts (home)
-export const LATEST_POSTS_QUERY = `*[_type == "blogPost"] | order(publishedAt desc) [0..2] { ... }`;
+export const LATEST_POSTS_QUERY = `*[LIVE_POST] | order(publishedAt desc) [0..2] { ... }`;
 
 // Up to three posts tagged with a vertical (RelatedArticles on solution pages)
-export const POSTS_BY_VERTICAL_QUERY = `*[_type == "blogPost" && $tag in tags] | order(publishedAt desc) [0..2] { ... }`;
+export const POSTS_BY_VERTICAL_QUERY = `*[LIVE_POST && $tag in tags] | order(publishedAt desc) [0..2] { ... }`;
 
 // Single post, with its author and up to three related posts sharing its category or a tag (/blog/[slug])
-export const POST_BY_SLUG_QUERY = `*[_type == "blogPost" && slug.current == $slug][0] { ..., "author": author->{ ... }, "related": *[ ... ] | order(publishedAt desc) [0..2] { ... } }`;
+export const POST_BY_SLUG_QUERY = `*[LIVE_POST && slug.current == $slug][0] { ..., "author": author->{ ... }, "related": *[LIVE_POST && ... ] | order(publishedAt desc) [0..2] { ... } }`;
 
 // Post slugs (generateStaticParams)
-export const ALL_BLOG_SLUGS_QUERY = `*[_type == "blogPost"]{ "slug": slug.current }`;
+export const ALL_BLOG_SLUGS_QUERY = `*[LIVE_POST]{ "slug": slug.current }`;
 
 // Author page (/blog/authors/[slug]): the author, their posts, and every author slug
 export const AUTHOR_BY_SLUG_QUERY = `*[_type == "author" && slug.current == $slug][0] { ... }`;
-export const POSTS_BY_AUTHOR_QUERY = `*[_type == "blogPost" && references(*[_type == "author" && slug.current == $slug]._id)] | order(publishedAt desc) { ... }`;
+export const POSTS_BY_AUTHOR_QUERY = `*[LIVE_POST && references(*[_type == "author" && slug.current == $slug]._id)] | order(publishedAt desc) { ... }`;
 export const ALL_AUTHOR_SLUGS_QUERY = `*[_type == "author"]{ "slug": slug.current }`;
 
 // About timeline, and the partners section on home and About (TEAM_MEMBERS_QUERY: see GROQ Queries, Team Members below)
