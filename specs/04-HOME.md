@@ -440,16 +440,19 @@ Categories: `Industry Insights` · `Project Spotlight` · `Company News` · `Pre
 
 ```typescript
 // src/app/page.tsx
-export const metadata: Metadata = {
-  title: { absolute: 'Phoenix Energy: Integrated Clean Energy Solutions for SA Businesses' },
-  description: 'C&I solar, wheeling, carbon credits, EV fleets and more. Get a free energy assessment from Phoenix Energy today.',
-  openGraph: {
-    images: [{ url: 'https://phoenixenergy.solutions/og-default.png' }],
-  },
-};
+export const metadata: Metadata = pageMetadata({
+  title: SITE_TITLE,   // "Phoenix Energy: Integrated Clean Energy for SA Businesses"
+  absoluteTitle: true,
+  description: SITE_DESCRIPTION,
+  path: '/',
+  shareTitle: 'Phoenix Energy: Save, Earn & Grow with Renewable Energy',
+  shareDescription: 'Six clean energy verticals. One partner. End-to-end solutions for Southern African businesses.',
+});
 ```
 
-The page also sets `revalidate = 3600`, an hourly refresh in case the Sanity webhook misses a change, and renders a `WebSite` JSON-LD block. Its `SearchAction`, which points at `/blog?q={search_term_string}`, is included only once a blog post is published (`PUBLISHED_POSTS_COUNT_QUERY`), so the site never advertises a search that finds nothing (updated September 2026, audit BLG-01). The full metadata is under Engineering Review Fixes below.
+`pageMetadata()` (`src/lib/seo.ts`) builds every tag search and sharing need, the same helper every page uses (`specs/02-ARCHITECTURE.md`, "Search and sharing tags"). The home page keeps its own sharing title and description, distinct from the search ones; both fall back to `DEFAULT_SHARE_IMAGE`, `og-default.png`, whose alt text reads "The Phoenix Energy logo and the line: Powering Africa's energy transition."
+
+The page also sets `revalidate = 3600`, an hourly refresh in case the Sanity webhook misses a change, and renders a `websiteJsonLd()` block (`src/lib/structuredData.ts`) under its own `@id` (`${SITE_URL}/#website`), naming the organisation as `publisher` by its `@id`. Its `SearchAction`, which points at `/blog?q={search_term_string}`, is included only once a blog post is published (`PUBLISHED_POSTS_COUNT_QUERY`), so the site never advertises a search that finds nothing.
 
 ---
 
@@ -487,28 +490,4 @@ const homeHowItWorks = await getHowItWorks('home'); // howItWorks.home, or null 
 // cta is not passed, so the button is the default DISCOVERY_CTA: "Book a discovery meeting".
 ```
 
-### Homepage metadata — complete spec
-```typescript
-export const metadata: Metadata = {
-  title: { absolute: 'Phoenix Energy: Integrated Clean Energy Solutions for SA Businesses' },
-  description: 'C&I solar, wheeling, carbon credits, EV fleets and more. Get a free energy assessment from Phoenix Energy today.',
-  alternates: { canonical: 'https://phoenixenergy.solutions' },
-  openGraph: {
-    title: 'Phoenix Energy: Save, Earn & Grow with Renewable Energy',
-    description: 'Six clean energy verticals. One partner. End-to-end solutions for Southern African businesses.',
-    url: 'https://phoenixenergy.solutions',
-    siteName: 'Phoenix Energy',
-    images: [{ url: 'https://phoenixenergy.solutions/og-default.png', width: 1200, height: 630, alt: 'Phoenix Energy: Clean Energy Solutions for Southern Africa' }],
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Phoenix Energy: Save, Earn & Grow with Renewable Energy',
-    description: 'Six clean energy verticals. One partner. End-to-end solutions for Southern African businesses.',
-    images: ['https://phoenixenergy.solutions/og-default.png'],
-  },
-};
-```
-
-**Static asset:** Open Graph and Twitter use the shared `/public/og-default.png`, declared as 1200×630. There is no `og-home.jpg`.
 

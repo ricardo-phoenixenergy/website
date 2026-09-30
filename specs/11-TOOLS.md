@@ -166,7 +166,7 @@ src/
 ├── app/
 │   └── tools/
 │       └── solar-valuation/
-│           └── page.tsx                    ← Page, metadata, HowTo JSON-LD
+│           └── page.tsx                    ← Page, metadata, breadcrumb and HowTo JSON-LD
 ├── components/
 │   ├── tools/
 │   │   ├── SolarValuationTool.tsx          ← Step state, focus, analytics, reCAPTCHA script
@@ -273,14 +273,16 @@ interface WeBuySolarLead {
 ## SEO & Metadata
 
 ```typescript
-export const metadata: Metadata = {
+// src/app/tools/solar-valuation/page.tsx
+export const metadata: Metadata = pageMetadata({
   title: 'Solar System Valuation Request',   // the root layout adds " | Phoenix Energy"
   description:
     'Request a valuation of your solar system and battery storage. Our WeBuySolar team prepares it after a free on-site audit, with no obligation.',
-  openGraph: { images: [{ url: '/og-default.png', width: 1200, height: 630 }] },
-  alternates: { canonical: 'https://phoenixenergy.solutions/tools/solar-valuation' },
-};
+  path: '/tools/solar-valuation',
+});
 ```
+
+`/tools` builds its own metadata the same way, with the title "Tools & Resources". Both pages publish a `breadcrumbJsonLd()` trail (Home, Tools, and, on this page, Solar Valuation Request), alongside the HowTo schema below, which is unchanged.
 
 **Structured data (HowTo schema):**
 ```typescript

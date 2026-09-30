@@ -76,8 +76,12 @@ phoenix-energy/
 │   │   ├── sanity.ts                ← Public Sanity client and urlFor()
 │   │   ├── sanity.server.ts         ← Server-only client: API token, no CDN, published documents only
 │   │   ├── queries.ts               ← GROQ query library
+│   │   ├── seo.ts                   ← pageMetadata(), the site constants and DEFAULT_SHARE_IMAGE
+│   │   ├── structuredData.ts        ← organizationJsonLd(), websiteJsonLd(), serviceJsonLd(), breadcrumbJsonLd()
+│   │   ├── sanityShareImage.ts      ← a Sanity photo as a share image or an Article image, cropped and served as a JPEG
+│   │   ├── blogSeo.ts               ← a blog post's and an author page's structured data, and the blog index's canonical path
 │   │   ├── utils.ts                 ← cn(), formatDate(), formatRand(), estimateReadTime()
-│   │   └── …                        ← analytics.ts, recaptcha.ts, contactLink.ts, projectResults.ts, validators/, calculator logic, Sanity fetch helpers
+│   │   └── …                        ← analytics.ts, recaptcha.ts, contactLink.ts, projectResults.ts, projectSeo.ts, validators/, calculator logic, Sanity fetch helpers
 │   └── types/
 │       ├── solutions.ts             ← SolutionVertical, SOLUTION_META
 │       ├── sanity.ts                ← Project, BlogPost, TeamMember and the other document types
@@ -85,7 +89,7 @@ phoenix-energy/
 ├── sanity/
 │   └── schemaTypes/                 ← project, blogPost, author, teamMember, milestoneTimeline, partner, companyStats, howItWorks, heroImages, energyPrices, index.ts
 ├── sanity.config.ts                 ← Studio config, at the repo root
-├── public/                          ← logo.png, inverted-logo.png, og-default.png, og-solutions-*.png, proof/ (IndustryProofCard photos), five unused create-next-app SVGs
+├── public/                          ← logo.png, inverted-logo.png, og-default.png (stays a PNG), og-solutions-*.jpg, proof/ (IndustryProofCard photos), five unused create-next-app SVGs
 ├── postcss.config.mjs               ← @tailwindcss/postcss; there is no tailwind.config.ts
 ├── next.config.ts
 ├── tsconfig.json                    ← Strict mode
@@ -175,7 +179,7 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // The Chepstow Properties case study was renamed to its street address.
+      // The warehouse project was renamed to its street address.
       { source: '/projects/logistics-warehouse-chepstow-properties', destination: '/projects/31-sacks-circle', permanent: true },
     ];
   },
@@ -246,10 +250,23 @@ Only the About timeline snaps, and only on phones (`[scroll-snap-type:x_mandator
 
 ## SEO Infrastructure (Engineering Review April 2026)
 
+### Search and sharing tags
+Every page builds its title, meta description, canonical, Open Graph and Twitter tags with `pageMetadata()` (`src/lib/seo.ts`), never with its own `openGraph` or `twitter` block. Next.js replaces the root layout's `openGraph` and `twitter` objects with a page's own rather than merging them, so a page that set only a title and an image used to lose the site name, the locale and the type; `pageMetadata()` rebuilds the full set every time, and every URL it returns is absolute. A page passes a title, an optional description (a page with none gets none, never another page's), its path, and, where they differ from the page title and description, a sharing title and description; it can also mark the page `noindex`, add `pagination` links, or make it an Open Graph article with its dates, authors and tags.
+
+A page without its own image falls back to `DEFAULT_SHARE_IMAGE`: `og-default.png`, 1200 by 630, alt text naming the logo and the line "Powering Africa's energy transition." It stays a PNG, sharper than a JPEG for a flat graphic at 63KB. `src/lib/sanityShareImage.ts` builds a share image from a Sanity photo instead, cropped around its hotspot to 1200 by 630 and served as a JPEG (`sanityShareImage()`), or in the three shapes Google recommends for an Article's image, 16:9, 4:3 and 1:1, 1200px wide (`sanityArticleImages()`). A JPEG loads lighter than the PNG originals did, over 1MB for some, and keeps link previews that skip large images, WhatsApp's among them, from dropping the photo. A photo without alt text falls back to the title passed in.
+
+`src/app/pageMetadata.test.ts` is a guard test: it reads every `page.tsx` under `src/app` and fails if one builds its own `openGraph` or `twitter` block instead of calling `pageMetadata()`. The Studio's page is exempt, since its metadata lives in `src/app/studio/layout.tsx`.
+
+`next.config.ts` sets `htmlLimitedBots: /.*/`. By default Next.js streams a page's metadata into the body after the initial render, and blocks on it, in the head, only for requests it recognises as bots that can't run scripts; `htmlLimitedBots` widens that recognition to every request, so metadata never streams and always sits in the head, for AI crawlers such as GPTBot, ClaudeBot and PerplexityBot as much as for a browser. `/blog` is the only page built per request, so it is the one page with a slightly later first byte as a result.
+
+The Studio's own layout (`src/app/studio/layout.tsx`) sets `robots: { index: false, follow: false }`, because its page is a client component and can't export `metadata` itself. The root layout's `robots` block covers every other page by default: `index: true, follow: true`, with a `googleBot` entry adding `max-image-preview: large` (Google Discover requires it) and unlimited snippet and video preview lengths.
+
+`src/app/icon.png` and `src/app/apple-icon.png` are Next.js file-based icons: Next serves them as the favicon and the Apple touch icon without extra markup, sharper than the icons they replaced. The Apple touch icon has a white background, since iOS fills any transparency with black.
+
 ### `src/app/sitemap.ts`
-Revalidates hourly. Entries (priority, change frequency):
+Revalidates hourly, and at once when the webhook (`src/app/api/revalidate/route.ts`) reports a blog post, author or project change. Entries (priority, change frequency):
 - Static: `/` (1.0, weekly); `/about` and `/contact` (0.8, monthly); `/solutions` (0.9, monthly); the six solution pages (0.8, monthly); `/projects` (0.8, weekly); `/tools` and `/tools/solar-valuation` (0.7, monthly); `/privacy-policy`, `/terms-of-use` and `/disclaimer` (0.3, yearly).
-- Blog: `/blog` (0.8, weekly) only once a post is published (updated September 2026; until then it is `noindex`), then every `blogPost` (0.7, weekly), with `lastModified` taken from `publishedAt`.
+- Blog: only once a post is live (`BLOG_SITEMAP_QUERY`) does `/blog` (0.8, weekly) appear, followed by that post and every other live post (0.7, weekly), each dated by its "Last updated" field, else its publish date. Live authors follow: every author with a live post (`AUTHOR_SITEMAP_QUERY`), dated by their latest one (0.5, monthly). Until there is a live post, the blog routes are left out and `/blog` is `noindex` (`specs/10-BLOG.md`).
 - Projects: every project (0.7, monthly), with `lastModified` from `_updatedAt` (`getProjectSitemapEntries()`, `src/lib/projectData.ts`). Every project page is indexed.
 
 ### `src/app/robots.ts`
@@ -262,30 +279,41 @@ export default function robots(): MetadataRoute.Robots {
 }
 ```
 
-### `Organization` JSON-LD — inject in `layout.tsx`
+### `organizationJsonLd()` (`src/lib/structuredData.ts`), injected in `layout.tsx`
+The organisation is described once, in the root layout's `<head>`, under a fixed `@id` (`${SITE_URL}/#organization`, exported as `ORGANIZATION_ID`). Every other block that needs to name Phoenix Energy points at that `@id` instead of describing the company again, through `ORGANIZATION_REF` (`{ '@type': 'Organization', '@id': ORGANIZATION_ID, name, url }`).
 ```typescript
-const orgJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'Phoenix Energy',
-  url: 'https://phoenixenergy.solutions',
-  logo: 'https://phoenixenergy.solutions/logo.png',
-  email: 'info@phoenixenergy.solutions',
-  contactPoint: { '@type': 'ContactPoint', telephone: '+27-79-892-8197', contactType: 'sales', areaServed: 'ZA' },
-  sameAs: ['https://www.linkedin.com/company/105465145'],
-};
+function organizationJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': ORGANIZATION_ID,
+    name: 'Phoenix Energy',
+    legalName: CONTACT.legalName,
+    url: 'https://phoenixenergy.solutions',
+    logo: { '@type': 'ImageObject', url: 'https://phoenixenergy.solutions/logo.png', width: 512, height: 512 },
+    email: CONTACT.email,
+    telephone: CONTACT.phone,
+    address: { '@type': 'PostalAddress', ...CONTACT.address },
+    areaServed: AREA_SERVED,             // { '@type': 'Country', name: 'South Africa' }
+    contactPoint: { '@type': 'ContactPoint', contactType: 'sales', telephone: CONTACT.phone, email: CONTACT.email, areaServed: 'ZA', availableLanguage: 'English' },
+    sameAs: [CONTACT.linkedin],          // the address that opens for anyone, not the numeric one
+  };
+}
 ```
 
-### `WebSite` JSON-LD with SearchAction — inject in `src/app/page.tsx`
-The site search is the blog search, so the `SearchAction` is included only once a post is published (updated September 2026). While there are none, `/blog` is also `noindex, follow` and left out of the sitemap (`specs/10-BLOG.md`).
+### `websiteJsonLd()` (`src/lib/structuredData.ts`), injected on the home page
+The site search is the blog search, so the `SearchAction` is included only once a post is published. While there are none, `/blog` is also `noindex, follow` and left out of the sitemap (`specs/10-BLOG.md`). Its own `@id` is `${SITE_URL}/#website`, and it names the organisation as `publisher` by `ORGANIZATION_REF`.
 ```typescript
-function websiteJsonLd(hasPosts: boolean) {   // hasPosts: PUBLISHED_POSTS_COUNT_QUERY > 0
+function websiteJsonLd({ searchable }: { searchable: boolean }) {   // searchable: PUBLISHED_POSTS_COUNT_QUERY > 0
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
+    '@id': WEBSITE_ID,
     name: 'Phoenix Energy',
     url: 'https://phoenixenergy.solutions',
-    ...(hasPosts && {
+    inLanguage: 'en-ZA',
+    publisher: ORGANIZATION_REF,
+    ...(searchable && {
       potentialAction: { '@type': 'SearchAction',
         target: 'https://phoenixenergy.solutions/blog?q={search_term_string}',
         'query-input': 'required name=search_term_string' },
@@ -294,9 +322,37 @@ function websiteJsonLd(hasPosts: boolean) {   // hasPosts: PUBLISHED_POSTS_COUNT
 }
 ```
 
+### `serviceJsonLd()` (`src/lib/structuredData.ts`), on each solution page
+A `Service` block on all six solution pages, naming the vertical, pointing `provider` at the organisation by `@id` and `areaServed` at South Africa.
+```typescript
+function serviceJsonLd(service: { name: string; description: string; path: string }) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: service.name,
+    description: service.description,
+    url: absoluteUrl(service.path),
+    provider: ORGANIZATION_REF,
+    areaServed: AREA_SERVED,
+  };
+}
+```
+
+### `breadcrumbJsonLd()` (`src/lib/structuredData.ts`), on every page but home
+A `BreadcrumbList` for the trail a page's visible breadcrumb shows: home first (`HOME_CRUMB`), the page itself last, numbered from 1, with absolute URLs.
+```typescript
+function breadcrumbJsonLd(crumbs: readonly { name: string; path: string }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: crumbs.map((crumb, i) => ({ '@type': 'ListItem', position: i + 1, name: crumb.name, item: absoluteUrl(crumb.path) })),
+  };
+}
+```
+
 ### Blog pagination SEO — chosen approach: Option A (SSR paginated)
 Route: `/blog?page=2`. The page awaits `searchParams`, so `/blog` renders per request, not statically.
-`generateMetadata` sets the canonical (`/blog`, or `/blog?page=N` from page 2) and puts `prev` and `next` inside `alternates`, only where that page exists and keeping `category` and `tag`. Next.js 16 reads only `canonical`, `languages`, `media` and `types` from `alternates`, so no `<link rel="prev">` or `<link rel="next">` tag is rendered today (Next.js renders those from the `pagination: { previous, next }` field). The visible Prev and Next buttons follow the same rules.
+`generateMetadata` builds its metadata with `pageMetadata()`, like every page, passing the canonical path from `blogIndexPath()` (`src/lib/blogSeo.ts`): a filtered or searched view canonicalises to `/blog`, whatever its page number, and a later page of the whole list canonicalises to itself. `pageMetadata()`'s `pagination` field, a `Metadata` key in its own right rather than something nested inside `alternates`, carries the previous and next page's addresses, only where that page exists and keeping `category` and `tag`; Next.js renders `<link rel="prev">` and `<link rel="next">` from it. The visible Prev and Next buttons follow the same rules. The index is `noindex` while a search is active (`q` is set) and while there are no live posts to show.
 Default page size: 6 posts. First page has no `?page=` param.
 
 ### Revalidation webhook: nine of the ten document types

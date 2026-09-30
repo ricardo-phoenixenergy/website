@@ -290,7 +290,7 @@ With no members, the grid holds only the join card and "Team members coming soon
 - `background: #0d1f22`, `border-radius: 16px`, `padding: 24px`.
 - Stacked on phones; from md a row with `align-items: center`, `justify-content: space-between`, `gap: 16px`.
 - Left: title *"Become a part of our journey"* (Plus Jakarta Sans 700, 16px, white) + sub *"We're always looking for passionate, ambitious individuals who share our vision for a prosperous Africa."* (Inter 400, 14px, `on-dark-subtle`).
-- Right: `See career opportunities →`, a link to the Phoenix Energy LinkedIn company page (new tab): `Button`, light, compact (40px), `#F5F5F5` bg, Night Teal text, pill, white on hover.
+- Right: `See career opportunities →`, linking to `CONTACT.linkedin` (`src/config/contact.ts`), the Phoenix Energy LinkedIn address that opens for anyone rather than the numeric one (new tab): `Button`, light, compact (40px), `#F5F5F5` bg, Night Teal text, pill, white on hover.
 
 ### Mobile: 1 column, filter tabs scroll horizontally
 
@@ -390,23 +390,20 @@ Body: "Meet with our engineers to identify the solutions that will reduce costs,
 
 ```typescript
 // src/app/about/page.tsx
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   // The root template adds "| Phoenix Energy", so the brand appears once.
   title: 'About Us: Our Story, Mission & Team',
   description:
-    "Learn about Phoenix Energy's founding story, mission to drive Net Zero across Africa, our values, and the team behind Southern Africa's leading clean energy company.",
-  alternates: { canonical: 'https://phoenixenergy.solutions/about' },
-  openGraph: {
-    title: 'About Phoenix Energy: Our Story, Mission & Team',
-    description:
-      "The story, mission and team behind Southern Africa's leading integrated clean energy company.",
-    url: 'https://phoenixenergy.solutions/about',
-    images: [{ url: 'https://phoenixenergy.solutions/og-default.png', width: 1200, height: 630 }],
-  },
-};
+    "Phoenix Energy's founding story, mission to drive Net Zero across Africa, our values, and the team behind Southern Africa's leading clean energy company.",
+  path: '/about',
+  shareTitle: 'About Phoenix Energy: Our Story, Mission & Team',
+  shareDescription: "The story, mission and team behind Southern Africa's leading integrated clean energy company.",
+});
 
 export const revalidate = 3600; // hourly safety net in case the Sanity webhook misses a change
 ```
+
+`pageMetadata()` (`src/lib/seo.ts`) builds the canonical, Open Graph and Twitter tags; the search description no longer opens with "Learn about ", so it reads as a description rather than an instruction. The page also publishes a `breadcrumbJsonLd()` trail, Home then About.
 
 ---
 

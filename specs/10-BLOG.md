@@ -408,120 +408,110 @@ Each item:
 
 ## SEO Implementation
 
-### generateMetadata (per post)
+### `generateMetadata` (per post)
 
 ```typescript
 // src/app/blog/[slug]/page.tsx
-export async function generateMetadata(
-  { params }: { params: { slug: string } }
-): Promise<Metadata> {
-  const post = await getPost(params.slug);
-  return {
-    title: post.seoTitle || `${post.title} | Phoenix Energy`,
-    description: post.seoDescription || post.excerpt,
-    alternates: {
-      canonical: post.canonicalUrl || `https://phoenixenergy.solutions/blog/${post.slug}`,
-    },
-    openGraph: {
-      title: post.seoTitle || post.title,
-      description: post.seoDescription || post.excerpt,
-      url: `https://phoenixenergy.solutions/blog/${post.slug}`,
-      type: 'article',
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getPost(slug);
+  if (!post) return {};
+  // The social share image when the post has one, else its hero, as a JPEG; it has no alt text of its own.
+  const image = sanityShareImage(post.ogImage, post.title) ?? sanityShareImage(post.heroImage, post.title);
+  return pageMetadata({
+    title: post.seoTitle ?? post.title,   // an editor's SEO title is used as written; otherwise the template adds the brand
+    absoluteTitle: Boolean(post.seoTitle),
+    description: post.seoDescription ?? post.excerpt,
+    path: `/blog/${post.slug.current}`,
+    canonical: post.canonicalUrl,         // a syndicated post's canonical points there; og:url stays on this site
+    shareTitle: post.seoTitle ?? post.title,
+    image,
+    article: {
       publishedTime: post.publishedAt,
-      modifiedTime: post.updatedAt,
-      authors: [post.author.name],
+      modifiedTime: post.updatedAt ?? post.publishedAt,
+      authors: [authorUrl(post.author.slug.current)],
       tags: post.tags,
-      images: [{
-        url: urlFor(post.ogImage || post.heroImage).width(1200).height(630).url(),
-        width: 1200,
-        height: 630,
-        alt: post.title,
-      }],
     },
-    twitter: {
-      card: 'summary_large_image',
-      title: post.seoTitle || post.title,
-      description: post.seoDescription || post.excerpt,
-      images: [urlFor(post.ogImage || post.heroImage).width(1200).height(630).url()],
-    },
-  };
+  });
 }
 ```
 
-### JSON-LD Article Schema (per post)
+`pageMetadata()` (`src/lib/seo.ts`) builds the title, description, canonical, Open Graph and Twitter tags from these few lines, the same helper every page uses (`specs/02-ARCHITECTURE.md`, "Search and sharing tags").
 
+### JSON-LD Article schema (per post)
+
+`blogArticleJsonLd()` (`src/lib/blogSeo.ts`):
 ```typescript
-// Injected via <script type="application/ld+json"> in page.tsx
-const jsonLd = {
+{
   '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: post.seoTitle || post.title,
+  '@type': articleType(post.category),          // NewsArticle for Company News and Press Release; BlogPosting otherwise
+  headline: post.title,                         // the display title, even beside an SEO title that names the brand
   description: post.seoDescription || post.excerpt,
-  image: urlFor(post.heroImage).width(1200).height(630).url(),
+  image: sanityArticleImages(post.heroImage),   // the hero in three shapes, 16:9, 4:3 and 1:1, 1200px wide, as JPEGs
   datePublished: post.publishedAt,
   dateModified: post.updatedAt || post.publishedAt,
-  author: {
+  inLanguage: 'en-ZA',
+  articleSection: post.category,
+  keywords: post.tags?.join(', '),
+  author: {                                     // personJsonLd(): a Person under an @id their page and their posts share
     '@type': 'Person',
+    '@id': `${authorUrl}#person`,
     name: post.author.name,
-    url: `https://phoenixenergy.solutions/blog/authors/${post.author.slug}`,
+    url: authorUrl,
     jobTitle: post.author.role,
-    worksFor: {
-      '@type': 'Organization',
-      name: 'Phoenix Energy',
-    },
+    image: post.author.photoUrl,
+    sameAs: [post.author.linkedin],
+    worksFor: ORGANIZATION_REF,                 // the organisation by its @id, not restated
   },
-  publisher: {
-    '@type': 'Organization',
-    name: 'Phoenix Energy',
-    url: 'https://phoenixenergy.solutions',
-    logo: {
-      '@type': 'ImageObject',
-      url: 'https://phoenixenergy.solutions/logo.png',
-    },
-  },
-  mainEntityOfPage: {
-    '@type': 'WebPage',
-    '@id': `https://phoenixenergy.solutions/blog/${post.slug}`,
-  },
-};
+  publisher: ORGANIZATION_REF,
+  mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
+}
 ```
+A field the post has nothing for (no tags, no category, no author LinkedIn or photo) is left out rather than sent empty.
 
 ### BreadcrumbList schema (blog index + single post)
 
+`breadcrumbJsonLd()` (`src/lib/structuredData.ts`): Home, then News & Insights, and, on a single post, the post itself, named by its on-site path (`/blog/{slug}`), even when `canonicalUrl` points a syndicated post elsewhere. The canonical points there; `og:url`, the breadcrumb and the site's own links stay on this site.
+
+### Author page metadata and ProfilePage schema
+
 ```typescript
-// Injected on both /blog and /blog/[slug]
-{
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://phoenixenergy.solutions' },
-    { '@type': 'ListItem', position: 2, name: 'News & Insights', item: 'https://phoenixenergy.solutions/blog' },
-    // Single post only:
-    { '@type': 'ListItem', position: 3, name: post.title, item: `https://phoenixenergy.solutions/blog/${post.slug}` },
-  ]
+// src/app/blog/authors/[slug]/page.tsx
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const [author, posts] = await Promise.all([getAuthor(slug), getAuthorPosts(slug)]);
+  if (!author) return {};
+  return pageMetadata({
+    title: `${author.name}, News & Insights`,
+    description: author.bio ?? (author.role ? `Articles by ${author.name}, ${author.role}.` : `Articles by ${author.name}.`),
+    path: `/blog/authors/${slug}`,
+    noindex: posts.length === 0,   // nothing published yet: a page with nothing on it for search
+  });
 }
 ```
+`authorProfileJsonLd()` makes the page a `ProfilePage`, its `mainEntity` the author as a Person (`personJsonLd()`, the same block a post's Article names as author), with their bio as its description.
 
 ### ISR + Sanity webhook
 
 ```typescript
-// Rebuild strategy (/blog and /blog/[slug])
+// Rebuild strategy (/blog/[slug] and the author pages; /blog itself renders per request)
 export const revalidate = 3600; // Background ISR every hour
 
 // On-demand revalidation via the Sanity webhook: src/app/api/revalidate/route.ts
 // Webhook URL: https://phoenixenergy.solutions/api/revalidate
 // Needs the header `Authorization: Bearer ${REVALIDATE_SECRET}` (401 without it).
-// Handles nine document types. For the blog:
-//   blogPost → /blog/[slug], /blog and / (the home page lists the latest posts)
-//   author   → /blog/authors/[slug]
-// Full list: specs/02-ARCHITECTURE.md, "Revalidation webhook".
+// For the blog:
+//   blogPost → /blog/[slug], /blog, / (latest posts), the author page, each solution page's
+//              related articles, and /sitemap.xml
+//   author   → /blog/authors/[slug], /blog/[slug] and /sitemap.xml
 ```
+A post that goes live only because its scheduled date has passed, with nothing edited in Sanity, fires no webhook: it appears on `/blog` at once, since that page renders per request, and everywhere else, including the sitemap, at the next hourly refresh.
 
-### generateStaticParams (pre-render all posts at build time)
+### `generateStaticParams` (pre-render every live post at build time)
 
 ```typescript
 export async function generateStaticParams() {
-  const slugs = await getAllBlogSlugs(); // GROQ: *[_type == "blogPost"]{ "slug": slug.current }
+  const slugs = await sanityServerClient.fetch<{ slug: string }[]>(ALL_BLOG_SLUGS_QUERY);   // live posts only
   return slugs.map(({ slug }) => ({ slug }));
 }
 ```
@@ -538,29 +528,38 @@ export async function generateStaticParams() {
   title: 'Blog Post',
   type: 'document',
   fields: [
-    { name: 'title',          type: 'string',   title: 'Display title' },
-    { name: 'slug',           type: 'slug',     options: { source: 'title' } },
-    { name: 'author',         type: 'reference', to: [{ type: 'author' }] },
-    { name: 'publishedAt',    type: 'datetime' },
-    { name: 'updatedAt',      type: 'datetime' },
-    { name: 'featured',       type: 'boolean',  description: 'Pin to top of blog index' },
+    { name: 'title',          type: 'string',   title: 'Display title', validation: required },
+    { name: 'slug',           type: 'slug',     options: { source: 'title' }, validation: required },
+    { name: 'author',         type: 'reference', to: [{ type: 'author' }], validation: required },
+    { name: 'publishedAt',    type: 'datetime', title: 'Published at', validation: required },   // a future date holds the post back; see "Live posts" below
+    { name: 'updatedAt',      type: 'datetime', title: 'Last updated' },   // JSON-LD dateModified, falls back to publishedAt
+    { name: 'featured',       type: 'boolean',  title: 'Pinned to top of index', initialValue: false },
     { name: 'category',       type: 'string',
       options: { list: [
         'Industry Insights', 'Project Spotlight', 'Company News', 'Press Release'
-      ]}},
+      ]}, validation: required },
     { name: 'tags',           type: 'array', of: [{ type: 'string' }],
-      description: 'Vertical tags e.g. Solar, Wheeling, Carbon Credits' },
+      options: { list: ['Solar & Storage', 'Wheeling', 'Carbon Credits', 'Energy Optimisation', 'EV Fleets', 'WeBuySolar'] } },
     { name: 'heroImage',      type: 'image', options: { hotspot: true },
-      fields: [{ name: 'alt', type: 'string', title: 'Alt text', isHighlighted: true }] },
+      fields: [{ name: 'alt', type: 'string', title: 'Alt text', validation: required }],
+      // required(), but a warning rather than a block: the post can still be published without one.
+      validation: required.warning("Without a hero image, the post is shared with the site's default image and its search data has no image.") },
     { name: 'excerpt',        type: 'text', rows: 3,
-      description: 'Used in cards and as meta description fallback (155 chars max)' },
+      description: 'Used in cards and as meta description fallback (155 chars max)',
+      validation: max(155).warning('Search results show about 155 characters of a description; the rest is cut.') },
     { name: 'readTime',       type: 'number', description: 'Minutes — set manually' },
     { name: 'body',           type: 'array',
       of: [
-        { type: 'block' },
+        // Normal text, two heading levels and a quote: the post's title is its only H1.
+        { type: 'block', styles: [
+          { title: 'Normal', value: 'normal' },
+          { title: 'Heading 2', value: 'h2' },
+          { title: 'Heading 3', value: 'h3' },
+          { title: 'Quote', value: 'blockquote' },
+        ]},
         { type: 'image', options: { hotspot: true },
           fields: [
-            { name: 'alt',     type: 'string' },
+            { name: 'alt',     type: 'string', validation: required },
             { name: 'caption', type: 'string' },
           ]},
         { name: 'callout', type: 'object',
@@ -586,9 +585,11 @@ export async function generateStaticParams() {
       ]},
     // SEO fields
     { name: 'seoTitle',       type: 'string',
-      description: 'Google headline — 60 chars max. Leave blank to use display title.' },
+      description: 'Google headline, 60 chars max. Leave blank to use display title.',
+      validation: max(60).warning('Search results show about 60 characters of a title; the rest is cut.') },
     { name: 'seoDescription', type: 'text', rows: 2,
-      description: 'Meta description — 155 chars max. Leave blank to use excerpt.' },
+      description: 'Meta description, 155 chars max. Leave blank to use excerpt.',
+      validation: max(155).warning('Search results show about 155 characters of a description; the rest is cut.') },
     { name: 'ogImage',        type: 'image',
       description: 'Social share image — 1200×630px. Leave blank to use hero image.' },
     { name: 'canonicalUrl',   type: 'url',
@@ -599,6 +600,10 @@ export async function generateStaticParams() {
   },
 }
 ```
+
+Every warning above (`heroImage`, `excerpt`, `seoTitle`, `seoDescription`) lets the editor publish past it; nothing here blocks saving. `sanity/schemaTypes/blogPost.test.ts` pins the body's four styles and each warning's field and threshold.
+
+**Live posts:** every read of blog content filters on slug and `publishedAt`: a post needs a slug and a publish date that has come, or it appears in no list, count, sitemap entry or lookup, whatever else is filled in (`specs/12-CMS.md`). A post scheduled for later appears once its date comes, at the next hourly refresh of the page it would show on, except on `/blog` itself, which renders per request.
 
 ### author
 
@@ -621,9 +626,11 @@ export async function generateStaticParams() {
 
 ## GROQ Queries
 
+Every query below filters on `LIVE_POST` (`_type == "blogPost" && defined(slug.current) && dateTime(publishedAt) <= dateTime(now())`, `src/lib/queries.ts`): a post needs a slug and a publish date that has come, or it is left out of every list, count, sitemap entry and lookup, whatever else is filled in. A post scheduled for later appears once its date comes: at once on `/blog`, which renders per request, and at the next hourly refresh everywhere else, since nothing edits the post in Sanity to fire the webhook.
+
 ```groq
 // Blog index, paginated and filterable (BLOG_INDEX_QUERY in src/lib/queries.ts)
-*[_type == "blogPost"
+*[LIVE_POST
   && ($category == "" || category == $category)
   && ($tag == "" || $tag in tags)
   && ($q == "" || title match $q || excerpt match $q)
@@ -634,13 +641,13 @@ export async function generateStaticParams() {
   "author": author->{ name, slug, photo { asset-> } }
 }
 // BLOG_COUNT_QUERY wraps the same filter in count(...) for the page numbers
-// PUBLISHED_POSTS_COUNT_QUERY counts every post, unfiltered: 0 keeps /blog noindex and out of the sitemap
+// PUBLISHED_POSTS_COUNT_QUERY is count(*[LIVE_POST]): 0 keeps /blog noindex and out of the sitemap
 
-// Featured card (FEATURED_POST_QUERY): no filters, so it is the same on every page
-*[_type == "blogPost"] | order(featured desc, publishedAt desc) [0] { ... }
+// Featured card (FEATURED_POST_QUERY): no filters besides LIVE_POST, so it is the same on every page
+*[LIVE_POST] | order(featured desc, publishedAt desc) [0] { ... }
 
 // Single post — full content
-*[_type == "blogPost" && slug.current == $slug][0] {
+*[LIVE_POST && slug.current == $slug][0] {
   title, slug, category, tags, excerpt, readTime,
   publishedAt, updatedAt,
   heroImage { asset->, alt },
@@ -651,7 +658,7 @@ export async function generateStaticParams() {
   seoTitle, seoDescription, ogImage { asset-> }, canonicalUrl,
   "author": author->{ name, slug, role, bio, linkedin, photo { asset-> } },
   "related": *[
-    _type == "blogPost"
+    LIVE_POST
     && slug.current != $slug
     && (category == ^.category || count((tags)[@ in ^.tags]) > 0)
   ] | order(publishedAt desc) [0..2] {
@@ -660,12 +667,21 @@ export async function generateStaticParams() {
     "author": author->{ name }
   }
 }
+// A future post's own page (POST_BY_SLUG_QUERY with its slug) returns null until its date comes.
 
 // All unique tags (for filter pills)
-array::unique(*[_type == "blogPost"].tags[])
+array::unique(*[LIVE_POST].tags[])
 
-// All slugs (for generateStaticParams)
-*[_type == "blogPost"]{ "slug": slug.current }
+// Live post slugs (for generateStaticParams)
+*[LIVE_POST]{ "slug": slug.current }
+
+// Sitemap entries: live posts, dated by "Last updated" else the publish date
+*[LIVE_POST]{ "slug": slug.current, "lastModified": coalesce(updatedAt, publishedAt) }
+// Authors with a live post, dated by their latest one
+*[_type == "author" && defined(slug.current) && count(*[LIVE_POST && references(^._id)]) > 0]{
+  "slug": slug.current,
+  "lastModified": *[LIVE_POST && references(^._id)] | order(publishedAt desc) [0].publishedAt
+}
 ```
 
 ---
@@ -683,9 +699,9 @@ array::unique(*[_type == "blogPost"].tags[])
 
 ### E-E-A-T signals built into template
 - Named authors on every post: the author card shows the photo (or initials), role and bio, and links to the author's profile, which carries the LinkedIn link when one is set.
-- Author profile pages at `/blog/authors/[slug]` with post archive. The dark hero shows the LinkedIn link, when one is set, as a compact ghost `Button` (40px, white at 8% with a white 20% edge, opens in a new tab).
+- Author profile pages at `/blog/authors/[slug]` with post archive, `noindex` while the author has no live post. The dark hero shows the LinkedIn link, when one is set, as a compact ghost `Button` (40px, white at 8% with a white 20% edge, opens in a new tab). The page publishes `ProfilePage` JSON-LD, its `mainEntity` the author as a Person.
 - The published date shows on the page. `datePublished` and `dateModified` (which falls back to the published date) are in the JSON-LD.
-- JSON-LD `Article` schema with `publisher` organisation markup
+- JSON-LD `NewsArticle` (Company News and Press Release) or `BlogPosting` (every other category), the author as a Person with `sameAs` and `worksFor`, and `publisher` naming the organisation by its `@id`
 - Internal links from every post to relevant solution pages
 
 ### Internal linking rules for editors
@@ -779,21 +795,31 @@ export default async function BlogPage({ searchParams }: { searchParams: BlogSea
   // Fetch posts, count, featured post and tags in parallel
 }
 
-// Metadata for paginated pages: prev and next only where that page exists,
-// keeping category and tag (buildBlogHref)
+// Metadata for paginated pages, built with pageMetadata() like every page
 export async function generateMetadata({ searchParams }: { searchParams: BlogSearchParams }) {
-  // canonical is /blog, or /blog?page=N from page 2; totalPages comes from BLOG_COUNT_QUERY
-  return {
-    // While no post is published (PUBLISHED_POSTS_COUNT_QUERY is 0) the index is noindex
-    ...(published === 0 && { robots: { index: false, follow: true } }),
-    alternates: {
-      canonical,
-      ...(page > 1 && { prev: `${SITE}${buildBlogHref(page - 1, category, tag)}` }),
-      ...(page < totalPages && { next: `${SITE}${buildBlogHref(page + 1, category, tag)}` }),
+  const { page: pageParam, category, tag, q: qParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam) || 1);
+  const search = qParam?.trim() ?? '';
+  const [total, published] = await Promise.all([
+    sanityServerClient.fetch<number>(BLOG_COUNT_QUERY, { category: category ?? '', tag: tag ?? '', q: search }),
+    sanityServerClient.fetch<number>(PUBLISHED_POSTS_COUNT_QUERY),
+  ]);
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+  return pageMetadata({
+    title: 'News & Insights',
+    description: 'Expert perspectives on clean energy, SA market trends, project spotlights and company news.',
+    // A filtered or searched view canonicalises to /blog, whatever its page number; a later page of the whole list canonicalises to itself.
+    path: blogIndexPath({ page, category: category ?? '', tag: tag ?? '', q: search }),
+    noindex: published === 0 || search !== '',
+    pagination: {
+      previous: page > 1 ? buildBlogHref(page - 1, category, tag) : undefined,
+      next: page < totalPages ? buildBlogHref(page + 1, category, tag) : undefined,
     },
-  };
+  });
 }
 ```
-**With no posts** (updated September 2026, audit BLG-01 and BLG-05): `/blog` is `noindex, follow`, the sitemap leaves out `/blog` until the first post exists (`src/app/sitemap.ts`), and the home page's `WebSite` JSON-LD carries its `SearchAction` (which targets `/blog?q=`) only when a post exists. The revalidation webhook refreshes `/` and `/blog` when a post is published; the sitemap refreshes within the hour.
+`pagination` is a `Metadata` field in its own right, not nested inside `alternates`; Next.js renders `<link rel="prev">` and `<link rel="next">` from it.
+
+**With no live posts:** `/blog` is `noindex, follow`, the sitemap leaves out `/blog` until the first post is live (`src/app/sitemap.ts`), and the home page's `WebSite` JSON-LD carries its `SearchAction` (which targets `/blog?q=`) only when a live post exists. A search result page (`q` set) is `noindex, follow` too, whatever it finds, with its canonical pointing at plain `/blog`. Publishing a post fires the webhook, which refreshes `/`, `/blog` and the sitemap at once; a post that only goes live because its scheduled date has passed refreshes them within the hour instead.
 UI as built: page number chips with Prev and Next at the bottom of the grid, at every width, all `Chip` links, wrapping on a phone, with a window of numbers past 7 pages (`BlogPagination`; see Pagination above). There is no Load more, on mobile or anywhere else.
 

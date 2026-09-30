@@ -190,23 +190,25 @@ Each missing or invalid price falls back to its constant in `src/lib/evfleet/est
   title:          string
   slug:           slug (unique)
   author:         reference → author   // required; see Author Schema below
-  publishedAt:    datetime
-  updatedAt:      datetime             // optional; JSON-LD dateModified, falls back to publishedAt
+  publishedAt:    datetime             // a future date holds the post back; see "Live posts" below
+  updatedAt:      datetime             // optional, "Last updated"; JSON-LD dateModified, falls back to publishedAt
   featured:       boolean              // pinned to the top of the blog index
   category:       'Industry Insights' | 'Project Spotlight' | 'Company News' | 'Press Release'
   tags:           string[]             // vertical tags from a fixed list of six; filter pills, related posts, solution page articles
-  heroImage:      image (with alt)
-  excerpt:        text (155 characters max)
+  heroImage:      image (with alt)     // required, but only a Studio warning: without one the post shares the site's default image and has no image in its search data
+  excerpt:        text                 // a Studio warning past 155 characters, not a block
   readTime:       number (minutes)
-  body:           portable text (with image, callout, stat strip and inline CTA blocks)
-  seoTitle:       string
-  seoDescription: text
+  body:           portable text        // Normal, Heading 2 and Heading 3 text, a quote, and image, callout, stat strip and inline CTA blocks; only two heading levels, so the title stays the post's only H1
+  seoTitle:       string               // a Studio warning past 60 characters
+  seoDescription: text                 // a Studio warning past 155 characters
   ogImage:        image
   canonicalUrl:   url                  // only when the post was first published elsewhere
 }
 ```
 
 The full blogPost schema, with the body block fields and the Studio descriptions, is in `10-BLOG.md` (Sanity Schema, blogPost).
+
+**Live posts:** every read of blog content filters on slug and `publishedAt`: a post needs a slug and a publish date that has come, or it appears in no list, count, sitemap entry or lookup, whatever else is filled in. A post scheduled for later appears once its date comes, at the next hourly refresh of the page it would show on, except on `/blog` itself, which renders per request.
 
 ---
 
@@ -370,6 +372,12 @@ export const ALL_PROJECT_SLUGS_QUERY = `*[_type == "project" && defined(slug.cur
 
 // Sitemap entries
 export const PROJECT_SITEMAP_QUERY = `*[_type == "project" && defined(slug.current)]{ "slug": slug.current, _updatedAt }`;
+
+// Every live post ("...live post...": has a slug and a publish date that has come), dated by "Last updated" else the publish date
+export const BLOG_SITEMAP_QUERY = `*[...live post...]{ "slug": slug.current, "lastModified": coalesce(updatedAt, publishedAt) }`;
+
+// Every author with a live post, dated by their latest one
+export const AUTHOR_SITEMAP_QUERY = `*[_type == "author" && defined(slug.current) && count(*[...live post... && references(^._id)]) > 0]{ "slug": slug.current, "lastModified": *[...live post... && references(^._id)] | order(publishedAt desc) [0].publishedAt }`;
 
 // Blog index: category, tag and search filters, featured first, six per page (/blog)
 export const BLOG_INDEX_QUERY = `*[_type == "blogPost" && ($category == "" || category == $category) && ($tag == "" || $tag in tags) && ($q == "" || title match $q || excerpt match $q)] | order(featured desc, publishedAt desc) [$offset...$offset+6] { ... }`;

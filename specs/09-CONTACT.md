@@ -10,7 +10,7 @@
 
 ```
 1. Navbar: solid white pill, "Contact" highlighted (see specs/03-NAVIGATION.md)
-2. Breadcrumb: Home / Contact
+2. Breadcrumb: Home / Contact (also published as a BreadcrumbList, `breadcrumbJsonLd()`)
 3. Page header: eyebrow + H1 + subtitle
 4. Two-column grid: form card (left) + right column (right), stacked below 1024px
 5. Footer (this page has no CTA band)
@@ -341,7 +341,7 @@ Row 4 was left out: nothing else on the site promises a site assessment within 5
 The third card is *"Connect with us"*, in place of the April "Explore solutions" card (six solution links with accent dots):
 - `background: #fff`, `border: 1px solid #E5E7EB`, `border-radius: 16px`, `padding: 24px`.
 - Label: `CONNECT WITH US` in Inter 700, 12px, muted, uppercase, `letter-spacing: 0.14em`.
-- One link, to `https://www.linkedin.com/company/phoenix-energy-solutions` in a new tab: a 40px icon box (`#EBF4F6`, Deep Teal LinkedIn icon), then *"Phoenix Energy Solutions"* (Plus Jakarta Sans 600, 14px, Deep Teal on hover) over *"Follow us on LinkedIn"* (Inter 12px, muted).
+- One link, to `CONTACT.linkedin` (`src/config/contact.ts`; `https://www.linkedin.com/company/phoenix-energy-solutions`, the address that opens for anyone, not the numeric one that asks a signed-out visitor to log in) in a new tab: a 40px icon box (`#EBF4F6`, Deep Teal LinkedIn icon), then *"Phoenix Energy Solutions"* (Plus Jakarta Sans 600, 14px, Deep Teal on hover) over *"Follow us on LinkedIn"* (Inter 12px, muted).
 
 ---
 

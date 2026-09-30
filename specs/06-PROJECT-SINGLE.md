@@ -119,7 +119,7 @@ The page file only reads the project and composes the parts in `src/components/p
   - 5 or more: four columns, a lead tile two columns wide and two rows tall, with four beside it.
 - **Phones:** at most three tiles: the lead full width with two below.
 - **"+N":** the last tile shown at each width carries "+N" for the photos not shown.
-- **Tile names:** each tile is a button named "Open photo i of N: alt", or "Project photo N" without alt text.
+- **Tile names:** each tile's image carries the photo's alt text, or "Project photo N" without one, so image search reads it there; the button adds a visually hidden "Open photo i of N: " before it, so its accessible name reads "Open photo i of N: alt".
 - **The viewer** (`PhotoViewer`):
   - a full-screen dialog, "Photo i of N";
   - each photo is shown whole, with "i of N" visible in a polite live region, and its caption under it when set (`photoCaption()`), inside the dialog;
@@ -195,11 +195,13 @@ With no next project above it, it keeps the gap between parts itself.
 
 - **Title:** the headline, else the project title (`projectTitle()`); the root template adds "| Phoenix Energy". The Open Graph title is the same.
 - **Description:** the search description, else the summary cut to 155 characters at a word boundary (`projectDescription()`).
-- **Canonical and sharing:** the canonical URL is `/projects/{slug}`. Open Graph holds the title, the description and the hero at 1200 by 630.
+- **Metadata:** built with `pageMetadata()` (`src/lib/seo.ts`, `specs/02-ARCHITECTURE.md`), which gives the page `og:type` `article`, with `publishedTime` (`_createdAt`) and `modifiedTime` (`_updatedAt`).
+- **Canonical and sharing:** the canonical URL is `/projects/{slug}`. The share image is the hero, cropped to 1200 by 630 and served as a JPEG (`sanityShareImage()`, `src/lib/sanityShareImage.ts`), with the hero's alt text, or, when it has none, the page title.
 - **Indexing:** every project is indexed.
 - **Structured data:** `projectArticleJsonLd()` and `projectBreadcrumbJsonLd()` in `src/lib/projectSeo.ts`, rendered through `JsonLd` (`src/components/layout/JsonLd.tsx`), which escapes "<".
-  - **Article:** the headline (the page title), the description (the meta description), the image, `datePublished` (`_createdAt`), `dateModified` (`_updatedAt`), Phoenix Energy as author and publisher, `about` (the service) and `contentLocation` (the city).
+  - **Article:** the headline (the page title), the description (the meta description), the image, `datePublished` (`_createdAt`), `dateModified` (`_updatedAt`), the organisation as author and publisher by its `@id`, `about` (the service) and `contentLocation` (the city).
   - It never holds the client's name field, an `address` property, or a results figure or System value.
+  - **Breadcrumb:** `projectBreadcrumbJsonLd()` builds a `BreadcrumbList` with `breadcrumbJsonLd()` (`src/lib/structuredData.ts`): Home, Projects, then the project.
 - **Errors:** only a missing project is a 404. A CMS error throws, so ISR keeps serving the last good page.
 
 ---

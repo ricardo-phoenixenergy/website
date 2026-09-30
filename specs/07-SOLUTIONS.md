@@ -433,43 +433,42 @@ The rest of what the April interface held lives elsewhere now:
 
 ## SEO & Metadata per vertical
 
-Each page exports a static `metadata` object; there is no `generateMetadata`. The shape is the same on all six pages:
+Each page builds its metadata with `pageMetadata()` (`src/lib/seo.ts`); there is no `generateMetadata`. The shape is the same on all six pages:
 
 ```typescript
 // src/app/solutions/ci-solar-storage/page.tsx
 const vertical = 'ci-solar-storage' as const;
 const cfg = VERTICAL_CONFIG[vertical];
+const meta = SOLUTION_META[vertical];
 
-export const metadata: Metadata = {
-  title: { absolute: cfg.seoTitle },
+export const metadata: Metadata = pageMetadata({
+  title: cfg.seoTitle,
+  absoluteTitle: true,
   description: cfg.seoDescription,
-  alternates: { canonical: `https://phoenixenergy.solutions/solutions/${vertical}` },
-  openGraph: {
-    title: cfg.seoTitle,
-    description: cfg.seoDescription,
-    url: `https://phoenixenergy.solutions/solutions/${vertical}`,
-    images: [{ url: 'https://phoenixenergy.solutions/og-solutions-ci-solar.png', width: 1200, height: 630 }],
-  },
-};
+  path: meta.slug,
+  image: cfg.shareImage,
+});
 
 export const revalidate = 3600;
 ```
 
-OG images: `public/og-solutions-{ci-solar | wheeling | energy-optimisation | carbon-credits | webuysolar | ev-fleets}.png`, 1200×630.
+Share images: `public/og-solutions-{ci-solar | wheeling | energy-optimisation | carbon-credits | webuysolar | ev-fleets}.jpg`, 1200×630, each under 250KB, with alt text set alongside the image in `cfg.shareImage` (`src/config/verticals.ts`). A JPEG loads far lighter than the PNG originals, some of them past 700KB.
 
-**JSON-LD Service schema** (C&I Solar & Storage, Wheeling, Energy Optimisation, Carbon Credits and EV Fleets):
+**`serviceJsonLd()`** (`src/lib/structuredData.ts`), on all six pages:
 ```typescript
-{
-  '@context': 'https://schema.org',
-  '@type': 'Service',
-  name: meta.label,            // SOLUTION_META[vertical].label
-  provider: { '@type': 'Organization', name: 'Phoenix Energy' },
-  description: cfg.seoDescription,
-  url: `https://phoenixenergy.solutions/solutions/${vertical}`,
-}
+serviceJsonLd({ name: meta.label, description: cfg.seoDescription, path: meta.slug })
+// {
+//   '@context': 'https://schema.org',
+//   '@type': 'Service',
+//   name: meta.label,
+//   description: cfg.seoDescription,
+//   url: `https://phoenixenergy.solutions${meta.slug}`,
+//   provider: ORGANIZATION_REF,                              // the organisation by its @id
+//   areaServed: { '@type': 'Country', name: 'South Africa' },
+// }
 ```
 
-There is no `areaServed` and the provider has no `url`. Carbon Credits and EV Fleets also get FAQPage JSON-LD from `FaqAccordion`. WeBuySolar's JSON-LD differs: a BreadcrumbList, a Service named "Solar Asset Acquisition & Energy-as-a-Service" with `areaServed: 'ZA'`, and an Organization.
+Every page also publishes a BreadcrumbList (`breadcrumbJsonLd()`): Home, Solutions, then the vertical. Carbon Credits and EV Fleets also get FAQPage JSON-LD from `FaqAccordion`. WeBuySolar's Service is named "Solar Asset Acquisition & Energy-as-a-Service"; it publishes no separate Organization block of its own, since the root layout's `organizationJsonLd()` already covers the site.
 
 ### SEO titles and descriptions per vertical
 
@@ -477,7 +476,7 @@ There is no `areaServed` and the provider has no `url`. Carbon Credits and EV Fl
 |---|---|---|
 | Solar | C&I Solar & Storage Solutions \| Phoenix Energy | Commercial and industrial solar and battery storage systems. Zero upfront with our PPA model. Cut your electricity bill by up to 60%. |
 | Wheeling | Electricity Wheeling Solutions \| Phoenix Energy | Buy renewable energy directly from generators via the Eskom grid. Save up to 32% on electricity costs with Phoenix Energy wheeling agreements. |
-| Optimisation | Energy Optimisation Services \| Phoenix Energy | Cut energy costs with high-efficiency WEG motors, VSDs, smart controls and demand management, bought outright or on a zero-capex efficiency lease. Book a free energy audit. |
+| Optimisation | Energy Optimisation Services \| Phoenix Energy | Cut energy costs with high-efficiency WEG motors, VSDs, smart controls and demand management, bought outright or on a zero-capex efficiency lease. |
 | Carbon Credits | Carbon Credit Solutions \| Phoenix Energy | Monetise your solar generation through Verra-certified carbon credits. Quarterly payouts, no admin burden, fully managed by Phoenix Energy. |
 | WeBuySolar | WeBuySolar: We Acquire & Operate Your Solar \| Phoenix Energy | We acquire and operate existing C&I solar and battery systems: fair-market valuation, flexible PPA or lease, and active optimisation. Free expert audit. (Updated 2026-09-24, from `VERTICAL_CONFIG.webuysolar`.) |
 | EV Fleets | EV Fleet & Infrastructure Solutions \| Phoenix Energy | Electrify your commercial fleet with SANS-certified chargers, a fleet management dashboard, and up to 60% savings on fuel costs. |
@@ -547,7 +546,7 @@ Breakpoints differ by section, so each cell names its own.
 | 2 | Not needed: the solution pages have no testimonials section (removed in May 2026, see §9). | Client |
 | 3 | Real project data in Sanity — tagged by vertical | Dev |
 | 4 | Done (September 2026): the WeBuySolar page has no Financing tab, and no tabs at all. The deal is an acquisition, not an installation. | Client |
-| 5 | Done: `public/og-solutions-{short name}.png` for all six verticals, 1200×630, set in each page's metadata. | Dev |
+| 5 | Done: `public/og-solutions-{short name}.jpg` for all six verticals, 1200×630 and under 250KB, set in each page's metadata. | Dev |
 
 ---
 
@@ -564,12 +563,7 @@ Not on the site: the sub-nav was removed in May 2026 (see §3).
 Not on the site: there is no sub-nav (see §3).
 
 ### Canonical URL — all solution pages
-```typescript
-// In each page's static metadata; `vertical` is the page's own constant:
-alternates: {
-  canonical: `https://phoenixenergy.solutions/solutions/${vertical}`
-}
-```
+Each page passes its own path (`meta.slug`, from `SOLUTION_META`) as `pageMetadata()`'s `path`, which sets `alternates.canonical` to the absolute address: `https://phoenixenergy.solutions/solutions/${vertical}`.
 
 ### HowItWorks — showCTA prop
 Solution pages pass `cta={SERVICE_CTA[vertical]}` (`src/config/ctas.ts`): the page's button label, with a `/contact?intent=client&message=...` link that writes the service into the form. `showCTA` comes from the Sanity document's `showCta` field (default true). There are no `ctaLabel` or `ctaHref` props; the Sanity fields of those names are deprecated and unused. The button is the Deep Teal pill below the progress dots.
