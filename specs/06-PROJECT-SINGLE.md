@@ -87,7 +87,7 @@ The page file only reads the project and composes the parts in `src/components/p
 - Sanity cuts each crop (`rect=`) and never enlarges it; next/image's `getImageProps()` gives each its srcset, and its `object-position` keeps the hotspot in view.
 - Loading: the photo is the LCP element. The `<img>` is `loading="eager"` with `fetchPriority="high"`, and `preload()` adds one preload link per crop, each with its own `media`. `getImageProps()` can't take a blur placeholder, so the LQIP sits blurred behind the photo instead.
 
-**No hero photo, or one whose size can't be read:** phones show no photo block, and wider screens show the service's colour gradient.
+**No hero photo, one whose size can't be read, or one whose Studio crop leaves too little of it for the hero's shape:** phones show no photo block, and wider screens show the service's colour gradient.
 
 ---
 
