@@ -3,7 +3,8 @@
 // audience links, "View all solutions" and the desktop hero's "Explore …" (lg).
 // Deep Teal by default; pass a colour class or style for another surface.
 // On hover the arrow nudges 4px right, the same on every arrow link.
-// For an arrow line inside a card link, put arrowLinkClasses() on a span.
+// For an arrow line inside a card link, put arrowLinkClasses() on a span and end
+// it with ArrowLinkArrow.
 import Link from 'next/link';
 import type { ComponentPropsWithoutRef } from 'react';
 import { arrowLinkClasses, type ArrowLinkSize } from './buttonStyles';
@@ -20,9 +21,16 @@ export function ArrowLink({ size = 'default', className, children, ...linkProps 
   return (
     <Link className={arrowLinkClasses({ size, className })} {...linkProps}>
       {children}
-      <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1">
-        <IconArrowRight />
-      </span>
+      <ArrowLinkArrow />
     </Link>
+  );
+}
+
+/** An arrow link's arrow: it nudges 4px right when its group (the link, or the card around it) is hovered. */
+export function ArrowLinkArrow() {
+  return (
+    <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1">
+      <IconArrowRight />
+    </span>
   );
 }

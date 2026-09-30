@@ -1,7 +1,7 @@
 // src/components/sections/SolutionCard.tsx
 import Link from 'next/link';
+import { ArrowLinkArrow } from '@/components/ui/ArrowLink';
 import { Card, CardBody, CardImage } from '@/components/ui/Card';
-import { IconArrowRight } from '@/components/ui/Icons';
 import { arrowLinkClasses } from '@/components/ui/buttonStyles';
 import type { HeroImageAsset } from '@/types/sanity';
 import type { SolutionMeta } from '@/types/solutions';
@@ -47,9 +47,7 @@ export function SolutionCard({ meta, line, image }: SolutionCardProps) {
             {`${words.join(' ')} `}
             <span className="inline-flex items-center gap-1.5">
               {lastWord}
-              <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1">
-                <IconArrowRight />
-              </span>
+              <ArrowLinkArrow />
             </span>
           </span>
         </CardBody>
