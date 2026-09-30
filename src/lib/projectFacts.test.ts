@@ -103,6 +103,21 @@ describe('projectFacts', () => {
     expect(groups[2].rows).toEqual([{ key: 'approvals', label: 'Approvals', lines: [{ text: 'Certificate of Compliance' }] }]);
     expect(projectFacts({ ...base, installationWeeks: 105 }).some((g) => g.key === 'delivery')).toBe(false);
   });
+
+  it('falls back like an unset field, without throwing, when an API write or an import stores the wrong type', () => {
+    const wrong = (fields: Record<string, unknown>) => projectFacts({ ...base, metrics: [], ...fields } as unknown as FactsSource);
+    const keys = (fields: Record<string, unknown>) => wrong(fields).map((g) => g.key);
+    // A string where the query expects a list: no Equipment or Delivery group.
+    expect(keys({ equipment: 'Sunsynk 50K' })).toEqual(['project']);
+    expect(keys({ approvals: 'Municipal SSEG approval' })).toEqual(['project']);
+    // A brand given as a number gives no row for its component; a model given as a number, the brand alone.
+    const equipment = wrong({ equipment: [{ component: 'inverter', brand: 50, model: '50K' }, { component: 'battery', brand: 'Pylontech', model: 5 }] });
+    expect(equipment.find((g) => g.key === 'equipment')?.rows.map((r) => [r.label, r.lines[0].text])).toEqual([['Battery', 'Pylontech']]);
+    // Financing as a string or a number: no Financing row.
+    for (const financing of ['ppa', 5]) {
+      expect(wrong({ financing })[0].rows.some((r) => r.key === 'financing'), String(financing)).toBe(false);
+    }
+  });
 });
 
 describe('financingHref', () => {

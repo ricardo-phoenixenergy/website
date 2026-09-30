@@ -67,6 +67,18 @@ export function countWords(count: number, one: string, many: string): string {
 const isWhole = (n: unknown, min: number, max = Number.MAX_SAFE_INTEGER): n is number =>
   typeof n === 'number' && Number.isInteger(n) && n >= min && n <= max;
 
+// The query returns what the document holds, and an API write or an import can
+// store any type: a string where a list belongs, or a number for a brand. Such
+// a field reads as unset, so the row falls away rather than failing the page.
+function listOf<T>(value: readonly T[] | null | undefined): readonly T[] {
+  return Array.isArray(value) ? value : [];
+}
+
+/** A string field trimmed, or undefined when it's blank or not a string. */
+function textOf(value: unknown): string | undefined {
+  return typeof value === 'string' ? value.trim() || undefined : undefined;
+}
+
 function row(key: string, label: string, text: string | null | undefined, href?: string): FactRow[] {
   const value = text?.trim();
   if (!value) return [];
@@ -74,11 +86,11 @@ function row(key: string, label: string, text: string | null | undefined, href?:
 }
 
 function equipmentRows(equipment: readonly ProjectEquipment[] | null | undefined): FactRow[] {
-  return (equipment ?? []).flatMap((item, i) => {
+  return listOf(equipment).flatMap((item, i) => {
     const label = equipmentLabel(item?.component);
-    const brand = item?.brand?.trim();
+    const brand = textOf(item?.brand);
     if (!label || !brand) return [];
-    const name = [brand, item.model?.trim()].filter(Boolean).join(' ');
+    const name = [brand, textOf(item.model)].filter(Boolean).join(' ');
     const text = isWhole(item.quantity, 1) ? `${name}, ${countWords(item.quantity, 'unit', 'units')}` : name;
     return [{ key: `equipment-${i}`, label, lines: [{ text }] }];
   });
@@ -87,7 +99,7 @@ function equipmentRows(equipment: readonly ProjectEquipment[] | null | undefined
 export function projectFacts(project: FactsSource): FactGroup[] {
   const meta: SolutionMeta | undefined = SOLUTION_META[project.vertical];
 
-  const financing = [...new Set(project.financing ?? [])].flatMap((method) => {
+  const financing = [...new Set(listOf(project.financing))].flatMap((method) => {
     const text = financingLabel(method);
     const href = financingHref(project.vertical);
     return text ? [href ? { text, href } : { text }] : [];
@@ -108,7 +120,10 @@ export function projectFacts(project: FactsSource): FactGroup[] {
     return label ? row(`system-${i}`, label, metric.value) : [];
   });
 
-  const approvals = (project.approvals ?? []).flatMap((text) => (typeof text === 'string' && text.trim() ? [{ text: text.trim() }] : []));
+  const approvals = listOf(project.approvals).flatMap((approval) => {
+    const text = textOf(approval);
+    return text ? [{ text }] : [];
+  });
   const deliveryRows: FactRow[] = [
     ...(isWhole(project.installationWeeks, 1, 104) ? row('on-site', 'On site', countWords(project.installationWeeks, 'week', 'weeks')) : []),
     ...(approvals.length > 0 ? [{ key: 'approvals', label: 'Approvals', lines: approvals }] : []),
