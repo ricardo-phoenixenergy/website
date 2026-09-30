@@ -1,6 +1,9 @@
 // src/config/verticals.ts
-// SEO copy and headline stats per vertical. Every figure comes from the claims
-// register (src/config/claims.ts), so a confirmed change is made there once.
+// SEO copy, the /solutions card line and the headline stats per vertical. Every
+// figure comes from the claims register (src/config/claims.ts), so a confirmed
+// change is made there once. No page shows the stats at present: the /solutions
+// cards dropped them on 30 September 2026, and the register records them as not
+// rendered until the business confirms or removes them.
 // The qualifier around a figure ("up to", "Avg.", the "+" on 60%+) stays here;
 // where two qualifiers disagree, the register notes the conflict.
 import type { SolutionVertical } from '@/types/solutions';
@@ -17,6 +20,8 @@ export interface VerticalConfig {
   seoDescription: string;
   /** The page's share image: 1200 by 630, a JPEG, with alt text. */
   shareImage: ShareImage;
+  /** The line under the service's name on its /solutions card: what it does, in the buyer's words, with no figure. */
+  cardLine: string;
   stats: VerticalStat[];
 }
 
@@ -28,6 +33,7 @@ export const VERTICAL_CONFIG: Record<SolutionVertical, VerticalConfig> = {
     seoDescription:
       `Commercial and industrial solar and battery storage systems. Zero upfront with our PPA model. Cut your electricity bill by up to ${claimValue('ci-bill-reduction')}.`,
     shareImage: shareImage('og-solutions-ci-solar.jpg', 'Solar panels on a warehouse roof at sunset, with the words C&I Solar & Storage and the Phoenix Energy logo.'),
+    cardLine: 'Generate your own power with solar and batteries on your roof.',
     stats: [
       claimStat('ci-installations'),
       claimStat('ci-bill-reduction'),
@@ -40,6 +46,7 @@ export const VERTICAL_CONFIG: Record<SolutionVertical, VerticalConfig> = {
     seoDescription:
       `Buy renewable energy directly from generators via the Eskom grid. Save up to ${claimValue('wheeling-cost-saving')} on electricity costs with Phoenix Energy wheeling agreements.`,
     shareImage: shareImage('og-solutions-wheeling.jpg', 'Electricity pylons against an evening sky, with the word Wheeling and the Phoenix Energy logo.'),
+    cardLine: 'Buy renewable power from a generator elsewhere, delivered through the grid.',
     stats: [
       claimStat('wheeling-cost-saving'),
       claimStat('wheeling-licensed-platforms'),
@@ -52,6 +59,7 @@ export const VERTICAL_CONFIG: Record<SolutionVertical, VerticalConfig> = {
     seoDescription:
       'Cut energy costs with high-efficiency WEG motors, VSDs, smart controls and demand management, bought outright or on a zero-capex efficiency lease.',
     shareImage: shareImage('og-solutions-energy-optimisation.jpg', 'An energy monitoring dashboard in front of an industrial plant, with the words Energy Optimisation and the Phoenix Energy logo.'),
+    cardLine: 'Use less energy before you generate more.',
     stats: [
       claimStat('eo-waste-identified'),
       claimStat('eo-typical-roi'),
@@ -64,6 +72,7 @@ export const VERTICAL_CONFIG: Record<SolutionVertical, VerticalConfig> = {
     seoDescription:
       `Monetise your solar generation through ${claimValue('carbon-standard')}-certified carbon credits. ${claimValue('carbon-payout-frequency')} payouts, no admin burden, fully managed by Phoenix Energy.`,
     shareImage: shareImage('og-solutions-carbon-credits.jpg', 'A solar farm in open savanna, with the words Carbon Credits and the Phoenix Energy logo.'),
+    cardLine: 'Earn from the carbon your solar system already avoids.',
     stats: [
       claimStat('carbon-credit-price-floor'),
       claimStat('carbon-standard'),
@@ -76,6 +85,7 @@ export const VERTICAL_CONFIG: Record<SolutionVertical, VerticalConfig> = {
     seoDescription:
       'We acquire and operate existing C&I solar and battery systems: fair-market valuation, flexible PPA or lease, and active optimisation. Free expert audit.',
     shareImage: shareImage('og-solutions-webuysolar.jpg', 'A smiling man with folded arms on a rooftop of solar panels, Table Mountain behind him, with the words We Buy Solar and the Phoenix Energy logo.'),
+    cardLine: 'Sell your existing solar system to us, and keep using its power.',
     // Worded to match the WeBuySolar offer (src/config/webuysolarOffer.ts): an
     // acquisition, not a "buyback", and Tier 1 equipment rather than any brand.
     stats: [
@@ -90,6 +100,7 @@ export const VERTICAL_CONFIG: Record<SolutionVertical, VerticalConfig> = {
     seoDescription:
       `Electrify your commercial fleet with ${claimValue('ev-chargers-sans')}-certified chargers, a fleet management dashboard, and up to ${claimValue('ev-fuel-saving')} savings on fuel costs.`,
     shareImage: shareImage('og-solutions-ev-fleets.jpg', 'An electric truck at a charging station beneath a solar canopy, with the words EV Fleets & Infrastructure and the Phoenix Energy logo.'),
+    cardLine: 'Vehicles, charging and finance to electrify your fleet.',
     stats: [
       { ...claimStat('ev-fuel-saving'), value: `${claimValue('ev-fuel-saving')}+` },
       claimStat('ev-chargers-sans'),

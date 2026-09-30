@@ -77,6 +77,11 @@ export interface CardImageProps {
   priority?: boolean;
   /** CSS background for the placeholder div shown when src is absent. */
   placeholderStyle?: React.CSSProperties;
+  /**
+   * The dark gradient over the photo's lower half, which lets a badge sit on the
+   * photo (project and article cards). False keeps a photo with nothing on it clear.
+   */
+  scrim?: boolean;
   /** Badge overlays — use absolute positioning classes on children. */
   children?: React.ReactNode;
 }
@@ -90,6 +95,7 @@ export function CardImage({
   sizes = '400px',
   priority = false,
   placeholderStyle,
+  scrim = true,
   children,
 }: CardImageProps) {
   return (
@@ -109,14 +115,15 @@ export function CardImage({
             placeholder="blur"
             blurDataURL={blurDataURL ?? DEFAULT_LQIP}
           />
-          {/* Gradient scrim */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                'linear-gradient(to top, rgba(13,31,34,0.92) 0%, rgba(13,31,34,0.55) 30%, rgba(13,31,34,0.08) 65%, transparent 100%)',
-            }}
-          />
+          {scrim && (
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  'linear-gradient(to top, rgba(13,31,34,0.92) 0%, rgba(13,31,34,0.55) 30%, rgba(13,31,34,0.08) 65%, transparent 100%)',
+              }}
+            />
+          )}
         </>
       ) : (
         <div

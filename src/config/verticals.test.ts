@@ -21,4 +21,11 @@ describe('VERTICAL_CONFIG', () => {
   it.each(verticals)('%s has a description that fits a search result', (_vertical, cfg) => {
     expect(cfg.seoDescription.length).toBeLessThanOrEqual(160);
   });
+
+  it.each(verticals)('%s has one short line for its /solutions card, with no figure in it', (_vertical, cfg) => {
+    expect(cfg.cardLine.trim().length).toBeGreaterThan(20);
+    expect(cfg.cardLine.length).toBeLessThanOrEqual(90);
+    // The figures are unconfirmed claims (src/config/claims.ts), so none goes on a card.
+    expect(cfg.cardLine).not.toMatch(/\d/);
+  });
 });

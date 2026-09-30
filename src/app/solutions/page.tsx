@@ -9,7 +9,7 @@ import { DISCOVERY_CTA } from '@/config/ctas';
 import { IconArrowRight } from '@/components/ui/Icons';
 import { Button } from '@/components/ui/Button';
 import { buttonClasses } from '@/components/ui/buttonStyles';
-import { Card, CardImage, CardBody, CardFooter } from '@/components/ui/Card';
+import { SolutionCard } from '@/components/sections/SolutionCard';
 import { getHeroImages } from '@/lib/getHeroImages';
 import { pageMetadata } from '@/lib/seo';
 import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
@@ -86,64 +86,14 @@ export default async function SolutionsPage() {
         </div>
       </section>
 
-      {/* Solution cards grid */}
+      {/* Solution cards: light, like the project cards, each headed by the service's name */}
       <section id="solutions" className="bg-pe-bg py-16 md:py-24">
         <div className="page-container grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {SOLUTION_VERTICALS.map((vertical, i) => {
-            const meta = SOLUTION_META[vertical];
-            const cfg = VERTICAL_CONFIG[vertical];
-            const stat0 = cfg.stats[0];
-            const stat1 = cfg.stats[1];
-
-            return (
-              <AnimatedSection key={vertical} delay={i * 0.06} className="h-full">
-                <Link href={meta.slug} className="block h-full">
-                  <Card variant="dark" pattern={1} overlay={false} className="h-full">
-                    <CardImage
-                      src={heroImages[vertical]?.url}
-                      blurDataURL={heroImages[vertical]?.lqip}
-                      alt={meta.label}
-                      height={180}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-
-                    <CardBody padding="sm">
-                      <p
-                        className="font-body text-sm leading-[1.75] flex-1 mb-4 line-clamp-3"
-                        style={{ color: 'var(--color-on-dark-subtle)' }}
-                      >
-                        {cfg.seoDescription}
-                      </p>
-
-                      {/* Stat pair */}
-                      <div className="grid grid-cols-2 gap-2">
-                        {[stat0, stat1].map((s) => (
-                          <div
-                            key={s.label}
-                            className="rounded-xl p-3"
-                            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
-                          >
-                            <p className="font-display font-bold text-sm" style={{ color: meta.accent }}>{s.value}</p>
-                            <p className="font-body text-xs" style={{ color: 'var(--color-on-dark-subtle)' }}>{s.label}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </CardBody>
-
-                    <CardFooter variant="dark">
-                      {/* The card is the link, so its action is drawn as a button, not built as one,
-                          and brightens and presses with the card.
-                          Plain ghost on all six: in the accent tint, WeBuySolar's copper measured 4.3:1 on hover. */}
-                      <span className={buttonClasses({ variant: 'ghost', size: 'compact', inCard: true })}>
-                        Explore {meta.label}
-                        <IconArrowRight />
-                      </span>
-                    </CardFooter>
-                  </Card>
-                </Link>
-              </AnimatedSection>
-            );
-          })}
+          {SOLUTION_VERTICALS.map((vertical, i) => (
+            <AnimatedSection key={vertical} delay={i * 0.06} className="h-full">
+              <SolutionCard meta={SOLUTION_META[vertical]} line={VERTICAL_CONFIG[vertical].cardLine} image={heroImages[vertical]} />
+            </AnimatedSection>
+          ))}
         </div>
       </section>
 

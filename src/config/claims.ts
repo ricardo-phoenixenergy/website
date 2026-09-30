@@ -59,21 +59,20 @@ const REGISTER = {
     source: NOT_RECORDED,
     asOf: null,
     status: 'unconfirmed',
-    usedOn: ['/solutions (C&I Solar & Storage card stat)'],
+    usedOn: ['VERTICAL_CONFIG stat (not rendered)'],
     note: 'Conflicts with "40+ projects completed" (company stats, home and About) and with the two projects published. The audit recommends removing it unless it can be evidenced.',
   },
   'ci-bill-reduction': {
     value: '60%',
     label: 'Avg. Bill Reduction',
-    definition: 'Reduction in a client’s electricity bill from C&I solar and storage. The card calls it an average; the page description calls it a maximum ("up to 60%").',
+    definition: 'Reduction in a client’s electricity bill from C&I solar and storage. Its label calls it an average; the page description calls it a maximum ("up to 60%").',
     basis: NOT_RECORDED,
     source: NOT_RECORDED,
     asOf: null,
     status: 'unconfirmed',
     usedOn: [
-      '/solutions (C&I Solar & Storage card stat, as an average)',
+      'VERTICAL_CONFIG stat (not rendered, as an average)',
       '/solutions/ci-solar-storage (meta description, "up to 60%")',
-      '/solutions (C&I Solar & Storage card text, "up to 60%")',
     ],
     note: 'An average and a maximum can’t both be 60%. The one published case study (31 Sacks Circle) projects a 41.8% bill reduction.',
   },
@@ -106,17 +105,16 @@ const REGISTER = {
   'wheeling-cost-saving': {
     value: '32%',
     label: 'Avg. Cost Saving',
-    definition: 'Saving on electricity costs from a wheeling agreement. The card calls it an average; the page description calls it a maximum ("up to 32%").',
+    definition: 'Saving on electricity costs from a wheeling agreement. Its label calls it an average; the page description calls it a maximum ("up to 32%").',
     basis: NOT_RECORDED,
     source: NOT_RECORDED,
     asOf: null,
     status: 'unconfirmed',
     usedOn: [
-      '/solutions (Wheeling card stat, as an average)',
+      'VERTICAL_CONFIG stat (not rendered, as an average)',
       '/solutions/wheeling (meta description, "Save up to 32%")',
-      '/solutions (Wheeling card text, "Save up to 32%")',
     ],
-    note: 'Average on the card, maximum in the description.',
+    note: 'Average in its label, maximum in the description.',
   },
   'wheeling-licensed-platforms': {
     value: '3',
@@ -126,7 +124,7 @@ const REGISTER = {
     source: NOT_RECORDED,
     asOf: null,
     status: 'unconfirmed',
-    usedOn: ['/solutions (Wheeling card stat)'],
+    usedOn: ['VERTICAL_CONFIG stat (not rendered)'],
     note: 'Not explained anywhere on the site. The audit recommends removing it unless it can be evidenced.',
   },
   'wheeling-infrastructure-cost': {
@@ -162,7 +160,7 @@ const REGISTER = {
     source: NOT_RECORDED,
     asOf: null,
     status: 'unconfirmed',
-    usedOn: ['/solutions (Energy Optimisation card stat)'],
+    usedOn: ['VERTICAL_CONFIG stat (not rendered)'],
   },
   'eo-typical-roi': {
     value: '<12mo',
@@ -172,7 +170,7 @@ const REGISTER = {
     source: NOT_RECORDED,
     asOf: null,
     status: 'unconfirmed',
-    usedOn: ['/solutions (Energy Optimisation card stat)'],
+    usedOn: ['VERTICAL_CONFIG stat (not rendered)'],
   },
   'eo-capital-outlay': {
     value: 'R0',
@@ -207,7 +205,7 @@ const REGISTER = {
     source: NOT_RECORDED,
     asOf: null,
     status: 'unconfirmed',
-    usedOn: ['/solutions (Carbon Credits card stat)'],
+    usedOn: ['VERTICAL_CONFIG stat (not rendered)'],
     note: 'Conflicts with the estimator’s R50 to R150 band on the Carbon Credits page (carbon-credit-price-band).',
   },
   'carbon-credit-price-band': {
@@ -219,7 +217,7 @@ const REGISTER = {
     asOf: null,
     status: 'unconfirmed',
     usedOn: ['/solutions/carbon-credits (estimator result and assumptions line)'],
-    note: 'Conflicts with "R8+ per carbon credit" on /solutions.',
+    note: 'Conflicts with the unrendered "R8+ per carbon credit" stat (carbon-credit-price-floor).',
   },
   'carbon-standard': {
     value: 'Verra',
@@ -230,9 +228,8 @@ const REGISTER = {
     asOf: null,
     status: 'unconfirmed',
     usedOn: [
-      '/solutions (Carbon Credits card stat)',
+      'VERTICAL_CONFIG stat (not rendered)',
       '/solutions/carbon-credits (meta description, "Verra-certified carbon credits")',
-      '/solutions (Carbon Credits card text)',
     ],
     note: 'The Carbon Credits page itself names no standard ("recognised carbon standards"). Confirm that Verra accepts South African grid-connected solar before naming it.',
   },
@@ -247,7 +244,6 @@ const REGISTER = {
     usedOn: [
       'VERTICAL_CONFIG stat (not rendered)',
       '/solutions/carbon-credits (meta description, "Quarterly payouts")',
-      '/solutions (Carbon Credits card text)',
     ],
     note: 'The FAQ says credits are "issued and sold on a scheduled basis", not quarterly.',
   },
@@ -287,7 +283,7 @@ const REGISTER = {
     asOf: null,
     status: 'unconfirmed',
     usedOn: [
-      '/solutions (WeBuySolar card stat)',
+      'VERTICAL_CONFIG stat (not rendered)',
       '/solutions/webuysolar (meta description, hero CTA, How It Works, final CTA)',
       '/tools/solar-valuation (step 3)',
     ],
@@ -300,7 +296,7 @@ const REGISTER = {
     source: 'src/config/webuysolarContent.ts (comparison) and src/config/webuysolarOffer.ts (steps 2 and 4)',
     asOf: null,
     status: 'unconfirmed',
-    usedOn: ['/solutions (WeBuySolar card stat)'],
+    usedOn: ['VERTICAL_CONFIG stat (not rendered)'],
     note: 'Relabelled in September 2026: it said "Flexible buyback", the retired name for what is an acquisition.',
   },
   'webuysolar-operated': {
@@ -372,9 +368,8 @@ const REGISTER = {
     asOf: null,
     status: 'unconfirmed',
     usedOn: [
-      '/solutions (EV Fleets card stat, "60%+")',
+      'VERTICAL_CONFIG stat (not rendered, as "60%+")',
       '/solutions/ev-fleets (meta description, "up to 60% savings on fuel costs")',
-      '/solutions (EV Fleets card text)',
     ],
     note: '"60%+" (at least 60%) and "up to 60%" (at most 60%) contradict each other. The FAQ quotes 23 to 27% total-cost savings (ev-total-cost-saving).',
   },
@@ -386,7 +381,7 @@ const REGISTER = {
     source: NOT_RECORDED,
     asOf: null,
     status: 'unconfirmed',
-    usedOn: ['/solutions (EV Fleets card stat)', '/solutions/ev-fleets (meta description, "SANS-certified chargers")'],
+    usedOn: ['VERTICAL_CONFIG stat (not rendered)', '/solutions/ev-fleets (meta description, "SANS-certified chargers")'],
   },
   'ev-dashboard': {
     value: 'Fleet',
