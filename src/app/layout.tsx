@@ -7,6 +7,7 @@ import { ScrollDepth } from '@/components/analytics/ScrollDepth';
 import { WebVitals } from './_components/WebVitals';
 import { sanityServerClient } from '@/lib/sanity.server';
 import { PUBLISHED_POSTS_COUNT_QUERY } from '@/lib/queries';
+import { showsBlogLink } from '@/lib/blogNav';
 import { organizationJsonLd } from '@/lib/structuredData';
 import { DEFAULT_SHARE_IMAGE, SITE_DESCRIPTION, SITE_LOCALE, SITE_NAME, SITE_TITLE, SITE_URL } from '@/lib/seo';
 import './globals.css';
@@ -43,16 +44,13 @@ export const metadata: Metadata = {
 };
 
 // Hourly by default, so the navbar's blog link (below) appears on every page
-// within an hour of the third post being published.
+// within an hour of the first post being published.
 export const revalidate = 3600;
 
-/** News & Insights joins the navbar only once there is something to read. */
-const BLOG_NAV_MIN_POSTS = 3;
-
+/** News & Insights joins the navbar only once there is something to read (src/lib/blogNav.ts). */
 async function hasEnoughPosts(): Promise<boolean> {
   try {
-    const count = await sanityServerClient.fetch<number>(PUBLISHED_POSTS_COUNT_QUERY);
-    return count >= BLOG_NAV_MIN_POSTS;
+    return showsBlogLink(await sanityServerClient.fetch<number>(PUBLISHED_POSTS_COUNT_QUERY));
   } catch {
     return false;
   }
