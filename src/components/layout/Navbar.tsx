@@ -18,7 +18,7 @@ const BASE_LINKS = [
   { label: 'About', href: '/about' },
   { label: 'Tools', href: '/tools' },
 ];
-// Shown once the blog has enough posts (decided in the root layout).
+// Shown once a blog post is live (the root layout decides, through src/lib/blogNav.ts).
 const BLOG_LINK = { label: 'News & Insights', href: '/blog' };
 
 const DROPDOWN_ITEMS = [
@@ -149,8 +149,9 @@ export function Navbar({ showBlog }: { showBlog: boolean }) {
     boxShadow: '0 4px 20px rgba(57,87,92,0.10), 0 1px 4px rgba(57,87,92,0.06)',
   };
 
-  const linkCls = 'px-3 py-1.5 rounded-full font-body text-sm font-medium text-pe-muted hover:bg-pe-primary/[0.07] hover:text-pe-primary transition-all duration-150';
-  const activeLinkCls = 'px-3 py-1.5 rounded-full font-body text-sm font-semibold bg-pe-primary/[0.07] text-pe-primary';
+  // One line each: "News & Insights" would otherwise wrap and make the pill taller.
+  const linkCls = 'px-3 py-1.5 rounded-full whitespace-nowrap font-body text-sm font-medium text-pe-muted hover:bg-pe-primary/[0.07] hover:text-pe-primary transition-all duration-150';
+  const activeLinkCls = 'px-3 py-1.5 rounded-full whitespace-nowrap font-body text-sm font-semibold bg-pe-primary/[0.07] text-pe-primary';
   const logoWordColor = 'var(--color-pe-primary)';
   const logoAccentColor = '#709DA9';
 
@@ -159,9 +160,11 @@ export function Navbar({ showBlog }: { showBlog: boolean }) {
 
   return (
     <>
+      {/* 960px wide from xl, where the links show: with News & Insights in bold, the
+          logo, links and button need 935px. Below xl the pill keeps 920px. */}
       <nav
         aria-label="Main"
-        className="fixed top-4 inset-x-4 mx-auto max-w-[920px] z-50 rounded-full px-4 xl:px-5 py-2 xl:py-2.5 flex items-center justify-between gap-3 xl:gap-4 transition-all duration-300"
+        className="fixed top-4 inset-x-4 mx-auto max-w-[920px] xl:max-w-[960px] z-50 rounded-full px-4 xl:px-5 py-2 xl:py-2.5 flex items-center justify-between gap-3 xl:gap-4 transition-all duration-300"
         style={navStyle}
       >
         {/* Logo */}
