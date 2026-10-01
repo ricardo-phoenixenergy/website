@@ -431,7 +431,7 @@ export const HERO_IMAGES_QUERY = `*[_id == "heroImages"][0]{ ... }`; // getHeroI
 export const ENERGY_PRICES_QUERY = `*[_id == "energyPrices"][0]{ ... }`; // getEnergyPrices()
 ```
 
-No blog or author query sits outside this file. The navbar's post count in `src/app/layout.tsx` reads `PUBLISHED_POSTS_COUNT_QUERY` (the blog link appears once three live posts exist), and `src/app/sitemap.ts` reads `BLOG_SITEMAP_QUERY` and `AUTHOR_SITEMAP_QUERY`.
+No blog or author query sits outside this file. The navbar's post count in `src/app/layout.tsx` reads `PUBLISHED_POSTS_COUNT_QUERY` (the blog link appears once a post is live; the rule is in `src/lib/blogNav.ts`), and `src/app/sitemap.ts` reads `BLOG_SITEMAP_QUERY` and `AUTHOR_SITEMAP_QUERY`.
 
 ---
 

@@ -32,7 +32,7 @@ phoenix-energy/
 ├── scripts/                         ← seedHeroImages.mjs, seedHowItWorks.mjs
 ├── src/
 │   ├── app/                         ← Next.js App Router
-│   │   ├── layout.tsx               ← Root layout: fonts, GTM, Organization JSON-LD, WebVitals, ScrollDepth; shows the blog nav link once 3 posts exist
+│   │   ├── layout.tsx               ← Root layout: fonts, GTM, Organization JSON-LD, WebVitals, ScrollDepth; shows the blog nav link once a post is live (`src/lib/blogNav.ts`)
 │   │   ├── globals.css              ← Tailwind v4 import, @theme static tokens, base styles, custom utilities
 │   │   ├── _components/WebVitals.tsx ← Pushes Web Vitals to the dataLayer
 │   │   ├── page.tsx                 ← Home

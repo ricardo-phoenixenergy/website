@@ -15,7 +15,7 @@ Greenlyte navbar: a pill-shaped container with the logo left, links in the middl
 [logo Phoenix Energy]  [Solutions][▾] [Projects] [About] [Tools] ([News & Insights]) [Contact]  [Get in touch ⚡]
 ```
 
-- `position: fixed`, 16px from the top and sides (`top-4 inset-x-4`), centred, `max-width: 920px`, `z-index: 50`.
+- `position: fixed`, 16px from the top and sides (`top-4 inset-x-4`), centred, `max-width: 920px` (960px from 1280px, `xl:max-w-[960px]`), `z-index: 50`. The extra 40px is for News & Insights: with it in the pill, and in bold on `/blog`, the logo, links and button need 935px (measured October 2026).
 - Pill shape (`rounded-full`), white, with a soft teal-tinted shadow.
 - Padding 8px 16px (10px 20px from 1280px).
 - The links and the button show from **1280px** (`xl`). Below that the pill holds the logo and the menu button.
@@ -41,9 +41,9 @@ The current page is marked on its link (see Nav links).
 - Links to `/`. The image is decorative (`alt=""`); the words name the link.
 
 ### Nav links
-- In order: **Solutions** (see below), **Projects**, **About**, **Tools**, then **News & Insights** once the blog has 3 posts, then **Contact**.
-- The blog link is added by the root layout: `BLOG_NAV_MIN_POSTS = 3` in `src/app/layout.tsx` counts the live blog posts (a slug and a publish date that has come) and passes `showBlog` to the navbar. Until then the navbar has no blog link. The "Latest insights" and "Industry insights" sections link to `/blog`, but they only render once there are posts to show.
-- Inter 500, 14px, muted (`pe-muted`), `padding: 6px 12px`, pill-shaped hover with a 7% Deep Teal tint and Deep Teal text.
+- In order: **Solutions** (see below), **Projects**, **About**, **Tools**, then **News & Insights** once a blog post is live, then **Contact**.
+- The blog link is added by the root layout: it counts the live blog posts (a slug and a publish date that has come) and passes `showBlog` to the navbar, true from the first one (`showsBlogLink()` and `BLOG_NAV_MIN_POSTS = 1` in `src/lib/blogNav.ts`; it was 3 until October 2026). That is the same point at which `/blog` joins search results and the sitemap. Until then the navbar has no blog link. The "Latest insights" and "Industry insights" sections link to `/blog`, but they only render once there are posts to show.
+- Inter 500, 14px, muted (`pe-muted`), `padding: 6px 12px`, pill-shaped hover with a 7% Deep Teal tint and Deep Teal text. Each label stays on one line (`whitespace-nowrap`), so a two-word label never makes the pill taller.
 - Current page: `aria-current="page"`, Inter 600, Deep Teal text on the 7% tint. A link counts as current on its own path and every path under it (Projects stays current on a project page).
 
 ### Contact link
@@ -99,7 +99,7 @@ In this order:
   - the page behind can't scroll and is inert, so screen readers and the keyboard can't reach it;
   - on close, focus returns to the menu button.
 - Layout: a full-screen Deep Nav (`pe-nav-dark`) panel over a 40% black backdrop. The header row has the inverted logo and a close button (`aria-label="Close menu"`): a 44px ghost `IconButton` with a 20px cross.
-- Links: a **Solutions** accordion button (`aria-expanded`), then Projects, About, Tools, News & Insights (once the blog has 3 posts) and Contact, in Plus Jakarta Sans 700, 24px, white.
+- Links: a **Solutions** accordion button (`aria-expanded`), then Projects, About, Tools, News & Insights (once a blog post is live) and Contact, in Plus Jakarta Sans 700, 24px, white.
 - The Solutions accordion lists the six solutions with their accent dots, then "All solutions →" (`/solutions`).
 - At the bottom: the full-width "Get in touch" button (`CONTACT_CTA`): `Button`, light, default size (48px), with an arrow in a 20px Night Teal disc.
 - Choosing any link, the backdrop or the close button closes the menu and collapses the accordion.

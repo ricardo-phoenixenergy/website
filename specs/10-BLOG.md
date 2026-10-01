@@ -9,7 +9,7 @@
 ## Section Order — Blog Index (`/blog`)
 
 ```
-1. Navbar: solid white pill; "News & Insights" highlighted once the link shows (3 or more posts)
+1. Navbar: solid white pill; "News & Insights" highlighted once the link shows (from the first live post)
 2. Breadcrumb: Home / News & Insights
 3. Page header: eyebrow + H1 + subtitle, one column
 4. Search bar: above the pills; ?q= filters on the server
@@ -38,7 +38,7 @@
 
 ### Navbar & Breadcrumb
 - The section is named "News & Insights" everywhere: the navbar link, the breadcrumbs, the eyebrow, the page title and the BreadcrumbList JSON-LD.
-- Active link: "News & Insights". The root layout adds it to the navbar only once 3 or more live posts exist, meaning a slug and a publish date that has come (`BLOG_NAV_MIN_POSTS` in `src/app/layout.tsx`; see `specs/03-NAVIGATION.md`).
+- Active link: "News & Insights". The root layout adds it to the navbar once a live post exists, meaning a slug and a publish date that has come (`BLOG_NAV_MIN_POSTS = 1` in `src/lib/blogNav.ts`; see `specs/03-NAVIGATION.md`).
 - Breadcrumb: `Home / News & Insights`.
 
 ---
