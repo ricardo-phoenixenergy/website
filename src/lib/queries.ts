@@ -191,6 +191,16 @@ export const LATEST_POSTS_QUERY = `
   }
 `;
 
+/**
+ * Every live post, newest first, with no cap: /blog below BLOG_FILTER_THRESHOLD
+ * live posts lists them all, so no slice here can hide one if the threshold rises.
+ */
+export const LIVE_POSTS_QUERY = `
+  *[${LIVE_POST}] | order(publishedAt desc) {
+    ${BLOG_CARD_FIELDS}
+  }
+`;
+
 export const POST_BY_SLUG_QUERY = `
   *[${LIVE_POST} && slug.current == $slug][0] {
     _id,

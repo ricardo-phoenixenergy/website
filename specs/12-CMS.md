@@ -403,6 +403,9 @@ export const FEATURED_POST_QUERY = `*[LIVE_POST] | order(featured desc, publishe
 // Each live post's category and tags, for the /blog pills and their counts
 export const BLOG_FILTER_ROWS_QUERY = `*[LIVE_POST]{ category, tags }`;
 
+// Every live post, newest first, no cap (/blog below BLOG_FILTER_THRESHOLD live posts)
+export const LIVE_POSTS_QUERY = `*[LIVE_POST] | order(publishedAt desc) { ... }`;
+
 // Latest 3 posts (home)
 export const LATEST_POSTS_QUERY = `*[LIVE_POST] | order(publishedAt desc) [0..2] { ... }`;
 

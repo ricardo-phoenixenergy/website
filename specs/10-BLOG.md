@@ -51,7 +51,7 @@
 |---|---|---|
 | Search and pills | None | The search, then the pills from the data |
 | Featured card | None | Only a post marked featured, on page 1, with no category, tag or search |
-| Grid | Every live post, newest first, as large cards: `grid-cols-1 md:grid-cols-2`, `gap-6` | 6 a page, `grid-cols-1 sm:grid-cols-2 md:grid-cols-3`, `gap-4`, without the featured post |
+| Grid | Every live post, newest first (`LIVE_POSTS_QUERY`, no cap, so a higher threshold can't hide a post), as large cards: `grid-cols-1 md:grid-cols-2`, `gap-6` | 6 a page, `grid-cols-1 sm:grid-cols-2 md:grid-cols-3`, `gap-4`, without the featured post |
 | URL parameters | Ignored: `page`, `category`, `tag` and `q`. A shared `?tag=` link still shows every post | Read |
 | Pagination | None (one page) | `BlogPagination` |
 
@@ -731,7 +731,7 @@ Route strategy: `/blog?page=2` via Next.js `searchParams`.
 // loadIndex (React's cache) fetches once for the metadata and the page:
 // PUBLISHED_POSTS_COUNT_QUERY, then blogIndexView(params, published) (src/lib/blogIndex.ts).
 // Below 4 live posts the view ignores page, category, tag and q, and the page
-// lists LATEST_POSTS_QUERY. From 4: FEATURED_POST_QUERY (unless filtered) and
+// lists LIVE_POSTS_QUERY (every live post, no slice). From 4: FEATURED_POST_QUERY (unless filtered) and
 // BLOG_FILTER_ROWS_QUERY, then BLOG_INDEX_QUERY and BLOG_COUNT_QUERY with
 // $exclude = blogExclude(view, featured) and offset = (page - 1) * BLOG_PAGE_SIZE (6).
 

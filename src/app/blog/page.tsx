@@ -12,7 +12,7 @@ import {
   PUBLISHED_POSTS_COUNT_QUERY,
   FEATURED_POST_QUERY,
   BLOG_FILTER_ROWS_QUERY,
-  LATEST_POSTS_QUERY,
+  LIVE_POSTS_QUERY,
 } from '@/lib/queries';
 import type { BlogPostCard } from '@/types/sanity';
 import { pageMetadata } from '@/lib/seo';
@@ -56,8 +56,8 @@ const loadIndex = cache(async (pageParam?: string, category?: string, tag?: stri
   const view = blogIndexView({ page: pageParam, category, tag, q }, published);
 
   if (view.few) {
-    // Fewer live posts than the threshold, so the three newest are all of them.
-    const posts = published > 0 ? await sanityServerClient.fetch<BlogPostCard[]>(LATEST_POSTS_QUERY) : [];
+    // Fewer live posts than the threshold: all of them, from a query with no cap.
+    const posts = published > 0 ? await sanityServerClient.fetch<BlogPostCard[]>(LIVE_POSTS_QUERY) : [];
     return { published, view, posts, total: posts.length, featured: null, options: [] };
   }
 

@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { evaluate, parse } from 'groq-js';
 import * as queries from './queries';
 import { orderForProjectsPage } from './projectOrder';
+import { BLOG_FILTER_THRESHOLD } from './blogUtils';
 
 type Doc = Record<string, unknown>;
 type Row = Record<string, unknown>;
@@ -317,6 +318,13 @@ describe('blog index: the featured post kept out of the grid', () => {
     expect(await run(queries.BLOG_COUNT_QUERY, dataset, { ...params, exclude: '' })).toBe(4);
   });
 
+  it('lists every live post, newest first, with no cap, for the index below the threshold', async () => {
+    // More posts than the threshold, so raising BLOG_FILTER_THRESHOLD can never hide one.
+    const many = Array.from({ length: BLOG_FILTER_THRESHOLD + 3 }, (_, i) => post(`p${i + 1}`, `2026-01-${String(i + 1).padStart(2, '0')}T08:00:00Z`));
+    const future = post('future', '2999-01-01T08:00:00Z');
+    expect(ids(await run(queries.LIVE_POSTS_QUERY, [...many, future]))).toEqual(many.map((row) => row._id).reverse());
+  });
+
   it("gives the pills each live post's category and tags", async () => {
     expect(await run(queries.BLOG_FILTER_ROWS_QUERY, dataset)).toHaveLength(4);
     expect(await run(queries.BLOG_FILTER_ROWS_QUERY, dataset)).toContainEqual({ category: 'Company News', tags: ['Wheeling'] });
@@ -394,8 +402,8 @@ describe('every query', () => {
   // [string, string]; the cast below just widens it back.)
   const ALL_QUERIES = Object.entries(queries).filter((entry) => typeof entry[1] === 'string') as [string, string][];
 
-  it('covers all 27 queries', () => {
-    expect(ALL_QUERIES).toHaveLength(27);
+  it('covers all 28 queries', () => {
+    expect(ALL_QUERIES).toHaveLength(28);
   });
 
   // From the base file (git show 57a7bed:src/lib/queries.test.ts): a static
