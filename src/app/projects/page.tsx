@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { getAllProjects } from '@/lib/projectData';
 import { ProjectsGrid } from '@/components/sections/ProjectsGrid';
+import { IndexHeader } from '@/components/ui/IndexHeader';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { JsonLd } from '@/components/layout/JsonLd';
 import { pageMetadata } from '@/lib/seo';
@@ -25,25 +25,12 @@ export default async function ProjectsPage() {
   const projects = await getAllProjects();
 
   const header = (
-    <>
-      <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 mb-5 font-body text-sm text-pe-muted">
-        <Link href="/" className="hover:text-pe-primary transition-colors duration-150">Home</Link>
-        <span aria-hidden="true">/</span>
-        <span className="font-semibold text-pe-primary" aria-current="page">Projects</span>
-      </nav>
-      <div className="mb-8">
-        <p className="font-body font-bold text-xs uppercase tracking-[0.14em] text-pe-secondary-ink mb-2">
-          Our work
-        </p>
-        <h1 className="font-display font-extrabold text-4xl text-pe-text leading-[1.2] mb-2">
-          Projects &amp; <em className="not-italic text-pe-primary">installations</em>
-        </h1>
-        <p className="font-body text-base text-pe-muted leading-[1.7] max-w-[60ch]">
-          Commercial solar and battery installations by Phoenix Energy: the site and system for
-          each project, with projected results where available.
-        </p>
-      </div>
-    </>
+    <IndexHeader
+      crumb="Projects"
+      eyebrow="Our work"
+      title={<>Projects &amp; <em className="not-italic text-pe-primary">installations</em></>}
+      intro="Commercial solar and battery installations by Phoenix Energy: the site and system for each project, with projected results where available."
+    />
   );
 
   return (

@@ -166,8 +166,11 @@ export const POSTS_BY_VERTICAL_QUERY = `
   }
 `;
 
+// $exclude is the featured post's _id while /blog shows it in its own card
+// (the whole list, any page), else "": the grid and the page count leave it out.
 export const BLOG_INDEX_QUERY = `
   *[${LIVE_POST}
+    && _id != $exclude
     && ($category == "" || category == $category)
     && ($tag == "" || $tag in tags)
     && ($q == "" || title match $q || excerpt match $q)
@@ -237,8 +240,9 @@ export const AUTHOR_SITEMAP_QUERY = `
   }
 `;
 
-export const ALL_BLOG_TAGS_QUERY = `
-  array::unique(*[${LIVE_POST}].tags[])
+/** Each live post's category and tags: /blog builds its pills, with counts, from these. */
+export const BLOG_FILTER_ROWS_QUERY = `
+  *[${LIVE_POST}]{ category, tags }
 `;
 
 /** Every live post, whatever the filters: while it is 0, the blog index stays out of search. */
@@ -246,6 +250,7 @@ export const PUBLISHED_POSTS_COUNT_QUERY = `count(*[${LIVE_POST}])`;
 
 export const BLOG_COUNT_QUERY = `
   count(*[${LIVE_POST}
+    && _id != $exclude
     && ($category == "" || category == $category)
     && ($tag == "" || $tag in tags)
     && ($q == "" || title match $q || excerpt match $q)

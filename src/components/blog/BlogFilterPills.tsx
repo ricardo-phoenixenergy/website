@@ -3,30 +3,27 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
 import { FilterPills, type FilterPill } from '@/components/ui/FilterPills';
-
-const CATEGORIES = [
-  'Industry Insights',
-  'Project Spotlight',
-  'Company News',
-  'Press Release',
-];
+import type { BlogFilterOption } from '@/lib/blogUtils';
 
 interface BlogFilterPillsProps {
-  tags: string[];
+  /** The categories and tags that have live posts, with counts (blogFilterOptions). */
+  options: BlogFilterOption[];
+  /** Every live post, for the "All articles" pill. */
+  total: number;
   activeCategory: string;
   activeTag: string;
 }
 
-export function BlogFilterPills({ tags, activeCategory, activeTag }: BlogFilterPillsProps) {
+/** Pills come from the data, with counts, as on /projects, so no pill leads to an empty grid. */
+export function BlogFilterPills({ options, total, activeCategory, activeTag }: BlogFilterPillsProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const pills: FilterPill[] = useMemo(() => [
-    { key: '', label: 'All articles' },
-    ...CATEGORIES.map(c => ({ key: `cat:${c}`, label: c })),
-    ...tags.map(t => ({ key: `tag:${t}`, label: t })),
-  ], [tags]);
+    { key: '', label: `All articles (${total})` },
+    ...options.map((o) => ({ key: `${o.kind === 'category' ? 'cat' : 'tag'}:${o.value}`, label: `${o.value} (${o.count})` })),
+  ], [options, total]);
 
   const activeKey = activeTag
     ? `tag:${activeTag}`

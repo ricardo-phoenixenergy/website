@@ -240,7 +240,7 @@ describe('blog queries: live posts only', () => {
     post('future', { publishedAt: '2999-01-01T08:00:00.000Z', author: { _type: 'reference', _ref: 'author-b' } }),
     post('no-slug', { slug: undefined }),
   ];
-  const listParams = { category: '', tag: '', q: '', offset: 0 };
+  const listParams = { category: '', tag: '', q: '', offset: 0, exclude: '' };
 
   it('lists, counts and finds only the live post', async () => {
     expect(await run(queries.PUBLISHED_POSTS_COUNT_QUERY, dataset)).toBe(1);
@@ -252,7 +252,7 @@ describe('blog queries: live posts only', () => {
     expect(ids(await run(queries.POSTS_BY_AUTHOR_QUERY, dataset, { slug: 'b' }))).toEqual([]);
     expect((await run(queries.FEATURED_POST_QUERY, dataset)) as Row).toMatchObject({ _id: 'live' });
     expect(await run(queries.ALL_BLOG_SLUGS_QUERY, dataset)).toEqual([{ slug: 'live' }]);
-    expect(await run(queries.ALL_BLOG_TAGS_QUERY, dataset)).toEqual(['Wheeling']);
+    expect(await run(queries.BLOG_FILTER_ROWS_QUERY, dataset)).toEqual([{ category: 'Company News', tags: ['Wheeling'] }]);
     expect(await run(queries.POST_BY_SLUG_QUERY, dataset, { slug: 'future' })).toBeNull();
     expect((await run(queries.POST_BY_SLUG_QUERY, dataset, { slug: 'live' })) as Row).toMatchObject({ _id: 'live' });
   });
@@ -279,6 +279,47 @@ describe('blog queries: live posts only', () => {
     const forms: Doc[] = [author, post('unreadable-update', { updatedAt: 'TBC' })];
     const rows = (await run(queries.BLOG_SITEMAP_QUERY, forms)) as Row[];
     expect(new Date(rows[0].lastModified as string).toISOString()).toBe('2026-01-01T08:00:00.000Z');
+  });
+});
+
+describe('blog index: the featured post kept out of the grid', () => {
+  // /blog shows a featured post in its own card on page 1, so the grid and the
+  // page count leave it out ($exclude), on every page, or the pages would shift.
+  const post = (id: string, publishedAt: string, extra: Doc = {}): Doc => ({
+    _id: id,
+    _type: 'blogPost',
+    title: `Post ${id}`,
+    slug: { current: id },
+    category: 'Industry Insights',
+    tags: ['Energy Optimisation'],
+    excerpt: 'An excerpt',
+    publishedAt,
+    featured: false,
+    ...extra,
+  });
+  const dataset: Doc[] = [
+    post('one', '2026-01-01T08:00:00Z'),
+    post('two', '2026-02-01T08:00:00Z'),
+    post('lead', '2026-03-01T08:00:00Z', { featured: true }),
+    post('four', '2026-04-01T08:00:00Z', { category: 'Company News', tags: ['Wheeling'] }),
+  ];
+  const params = { category: '', tag: '', q: '', offset: 0 };
+
+  it('leaves the excluded post out of the list and the count', async () => {
+    expect(queries.BLOG_INDEX_QUERY).toContain('_id != $exclude');
+    expect(queries.BLOG_COUNT_QUERY).toContain('_id != $exclude');
+    expect(ids(await run(queries.BLOG_INDEX_QUERY, dataset, { ...params, exclude: 'lead' }))).toEqual(['four', 'two', 'one']);
+    expect(await run(queries.BLOG_COUNT_QUERY, dataset, { ...params, exclude: 'lead' })).toBe(3);
+  });
+
+  it('leaves nothing out when nothing is excluded', async () => {
+    expect(ids(await run(queries.BLOG_INDEX_QUERY, dataset, { ...params, exclude: '' }))).toEqual(['lead', 'four', 'two', 'one']);
+    expect(await run(queries.BLOG_COUNT_QUERY, dataset, { ...params, exclude: '' })).toBe(4);
+  });
+
+  it("gives the pills each live post's category and tags", async () => {
+    expect(await run(queries.BLOG_FILTER_ROWS_QUERY, dataset)).toHaveLength(4);
+    expect(await run(queries.BLOG_FILTER_ROWS_QUERY, dataset)).toContainEqual({ category: 'Company News', tags: ['Wheeling'] });
   });
 });
 
@@ -346,7 +387,7 @@ describe('every query', () => {
     project('c', { vertical: 'ci-solar-storage' }),
     project('b', { vertical: 'wheeling' }),
   ];
-  const params = { slug: 'a', vertical: 'ci-solar-storage', tag: 'Wheeling', category: '', q: '', offset: 0, id: 'howItWorks.home' };
+  const params = { slug: 'a', vertical: 'ci-solar-storage', tag: 'Wheeling', category: '', q: '', offset: 0, exclude: '', id: 'howItWorks.home' };
 
   // Every export in queries.ts is a GROQ string. (Each export's inferred type is
   // its own string literal, not `string`, so a type predicate can't narrow to

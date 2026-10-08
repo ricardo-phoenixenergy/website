@@ -3,6 +3,7 @@ import { POSTS_BY_VERTICAL_QUERY } from '@/lib/queries';
 import { ArticleCard } from '@/components/ui/ArticleCard';
 import { SectionCarousel } from '@/components/ui/SectionCarousel';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
+import { carouselLayout } from '@/lib/blogUtils';
 import type { BlogPostCard } from '@/types/sanity';
 import type { SolutionVertical } from '@/types/solutions';
 import { SOLUTION_META } from '@/types/solutions';
@@ -15,6 +16,9 @@ const VERTICAL_CATEGORY_MAP = {
   'webuysolar':          'WeBuySolar',
   'ev-fleets':           'EV Fleets',
 } as const satisfies Record<SolutionVertical, string>;
+
+// Four or more: the scroller, each card a third of the container on md+ (as FeaturedProjects).
+const CAROUSEL_ITEM = 'flex-shrink-0 w-[82vw] md:w-[calc((min(100vw,80rem)-4rem-28px)/3)]';
 
 interface RelatedArticlesProps {
   vertical: SolutionVertical;
@@ -32,12 +36,14 @@ async function getPosts(vertical: SolutionVertical): Promise<BlogPostCard[]> {
 export async function RelatedArticles({ vertical }: RelatedArticlesProps) {
   const posts = await getPosts(vertical);
   if (posts.length === 0) return null;
+  // Three or fewer: a static grid, as FeaturedProjects; one or two take large cards.
+  const { gridColumns, size } = carouselLayout(posts.length);
 
   const meta = SOLUTION_META[vertical];
 
   return (
     <SectionCarousel
-      label="Industry insights"
+      label="From the blog"
       title={
         <>
           Further reading on{' '}
@@ -47,15 +53,11 @@ export async function RelatedArticles({ vertical }: RelatedArticlesProps) {
       viewAllHref="/blog"
       viewAllLabel="View all articles"
       bg="gray"
+      gridColumns={gridColumns}
     >
       {posts.map((post, i) => (
-        <AnimatedSection
-          key={post._id}
-          as="div"
-          delay={i * 0.06}
-          className="flex-shrink-0 w-[82vw] md:w-[calc((min(100vw,80rem)-4rem-28px)/3)]"
-        >
-          <ArticleCard post={post} />
+        <AnimatedSection key={post._id} as="div" delay={i * 0.06} className={gridColumns ? undefined : CAROUSEL_ITEM}>
+          <ArticleCard post={post} size={size} />
         </AnimatedSection>
       ))}
     </SectionCarousel>

@@ -147,3 +147,20 @@ export function relatedLayout(count: number): RelatedPostsLayout | null {
   if (count === 2) return 'two';
   return 'three';
 }
+
+export interface CarouselLayout {
+  /** A static grid of this many columns, or undefined for the scroller. */
+  gridColumns: 2 | 3 | undefined;
+  size: 'default' | 'large';
+}
+
+/**
+ * The article carousels (home, solution pages) follow FeaturedProjects: three
+ * or fewer posts sit in a static grid, so no empty column or hidden card sits
+ * behind a swipe; one or two take large cards in two columns.
+ */
+export function carouselLayout(count: number): CarouselLayout {
+  if (count > 3) return { gridColumns: undefined, size: 'default' };
+  if (count === 3) return { gridColumns: 3, size: 'default' };
+  return { gridColumns: 2, size: 'large' };
+}

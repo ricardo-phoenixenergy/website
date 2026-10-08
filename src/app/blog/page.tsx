@@ -1,69 +1,111 @@
 // src/app/blog/page.tsx
+// /blog follows /projects (src/lib/blogIndex.ts has the rule): below four live
+// posts, equal large cards in two columns and nothing to filter; from four,
+// the search and the pills, the featured card on page 1 of the whole list, and
+// a paged grid without it.
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
+import { Suspense, cache } from 'react';
 import { sanityServerClient } from '@/lib/sanity.server';
 import {
   BLOG_INDEX_QUERY,
   BLOG_COUNT_QUERY,
   PUBLISHED_POSTS_COUNT_QUERY,
   FEATURED_POST_QUERY,
-  ALL_BLOG_TAGS_QUERY,
+  BLOG_FILTER_ROWS_QUERY,
+  LATEST_POSTS_QUERY,
 } from '@/lib/queries';
 import type { BlogPostCard } from '@/types/sanity';
 import { pageMetadata } from '@/lib/seo';
 import { blogIndexPath } from '@/lib/blogSeo';
+import { blogFilterOptions } from '@/lib/blogUtils';
+import {
+  BLOG_PAGE_SIZE,
+  blogEmptyReason,
+  blogExclude,
+  blogIndexHref,
+  blogIndexView,
+  showFeaturedCard,
+  type BlogIndexParams,
+} from '@/lib/blogIndex';
 import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { FeaturedArticleCard } from '@/components/ui/FeaturedArticleCard';
 import { ArticleCard } from '@/components/ui/ArticleCard';
+import { IndexHeader } from '@/components/ui/IndexHeader';
 import { JsonLd } from '@/components/layout/JsonLd';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { BlogSearchInput } from '@/components/blog/BlogSearchInput';
 import { BlogFilterPills } from '@/components/blog/BlogFilterPills';
 import { BlogPagination } from '@/components/blog/BlogPagination';
-import Link from 'next/link';
+import { BlogEmptyState } from '@/components/blog/BlogEmptyState';
 
 export const revalidate = 3600;
 
-const PAGE_SIZE = 6;
+const DESCRIPTION = 'Expert perspectives on clean energy, SA market trends, project spotlights and company news.';
 
-function buildBlogHref(p: number, cat: string, t: string): string {
-  const params = new URLSearchParams();
-  if (p > 1) params.set('page', String(p));
-  if (cat) params.set('category', cat);
-  if (t) params.set('tag', t);
-  const qs = params.toString();
-  return qs ? `/blog?${qs}` : '/blog';
-}
+// `tag` is a reserved key in Sanity's QueryParams interface (typed `never`),
+// so the params objects are cast to bypass the deprecation guard.
+type GroqParams = { [key: string]: string | number };
+
+/**
+ * Everything the page shows for a request, fetched once and shared by the
+ * metadata and the page (React's cache, keyed by the URL's parameters).
+ */
+const loadIndex = cache(async (pageParam?: string, category?: string, tag?: string, q?: string) => {
+  const published = await sanityServerClient.fetch<number>(PUBLISHED_POSTS_COUNT_QUERY);
+  const view = blogIndexView({ page: pageParam, category, tag, q }, published);
+
+  if (view.few) {
+    // Fewer live posts than the threshold, so the three newest are all of them.
+    const posts = published > 0 ? await sanityServerClient.fetch<BlogPostCard[]>(LATEST_POSTS_QUERY) : [];
+    return { published, view, posts, total: posts.length, featured: null, options: [] };
+  }
+
+  const [lead, rows] = await Promise.all([
+    view.filtered ? Promise.resolve(null) : sanityServerClient.fetch<BlogPostCard | null>(FEATURED_POST_QUERY),
+    sanityServerClient.fetch<{ category: string | null; tags: string[] | null }[]>(BLOG_FILTER_ROWS_QUERY),
+  ]);
+  const filters = {
+    category: view.category,
+    tag: view.tag,
+    q: view.search ? `${view.search}*` : '',
+    exclude: blogExclude(view, lead),
+  };
+  const [posts, total] = await Promise.all([
+    sanityServerClient.fetch<BlogPostCard[]>(BLOG_INDEX_QUERY, { ...filters, offset: (view.page - 1) * BLOG_PAGE_SIZE } as GroqParams),
+    sanityServerClient.fetch<number>(BLOG_COUNT_QUERY, filters as GroqParams),
+  ]);
+  return {
+    published,
+    view,
+    posts,
+    total,
+    featured: showFeaturedCard(view, lead) ? lead : null,
+    options: blogFilterOptions(rows),
+  };
+});
 
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; category?: string; tag?: string; q?: string }>;
+  searchParams: Promise<BlogIndexParams>;
 }): Promise<Metadata> {
-  const { page: pageParam, category: catParam, tag: tagParam, q: qParam } = await searchParams;
-  const page = Math.max(1, Number(pageParam) || 1);
-  const category = catParam ?? '';
-  const tag = tagParam ?? '';
-  const search = qParam?.trim() ?? '';
-  const q = search ? `${search}*` : '';
-
-  const [total, published] = await Promise.all([
-    sanityServerClient.fetch<number>(BLOG_COUNT_QUERY, { category, tag, q } as Record<string, string>),
-    sanityServerClient.fetch<number>(PUBLISHED_POSTS_COUNT_QUERY),
-  ]);
-  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const { page, category, tag, q } = await searchParams;
+  const { published, view, total } = await loadIndex(page, category, tag, q);
+  const totalPages = view.few ? 1 : Math.ceil(total / BLOG_PAGE_SIZE);
 
   return pageMetadata({
     title: 'News & Insights',
-    description: 'Expert perspectives on clean energy, SA market trends, project spotlights and company news.',
-    path: blogIndexPath({ page, category, tag, q: search }),
+    description: DESCRIPTION,
+    // A few posts: every URL shows the same list, so every one points at /blog.
+    path: blogIndexPath({ page: view.page, category: view.category, tag: view.tag, q: view.search }),
     // An index with no posts has nothing for search engines, and search results
-    // shouldn't be indexed. The sitemap (src/app/sitemap.ts) leaves out both.
-    noindex: published === 0 || search !== '',
+    // shouldn't be indexed, even below the threshold, where the search is
+    // ignored. The sitemap (src/app/sitemap.ts) leaves out both.
+    noindex: published === 0 || (q?.trim() ?? '') !== '',
     pagination: {
-      previous: page > 1 ? buildBlogHref(page - 1, category, tag) : undefined,
-      next: page < totalPages ? buildBlogHref(page + 1, category, tag) : undefined,
+      previous: view.page > 1 ? blogIndexHref(view, view.page - 1) : undefined,
+      next: view.page < totalPages ? blogIndexHref(view, view.page + 1) : undefined,
     },
   });
 }
@@ -71,26 +113,11 @@ export async function generateMetadata({
 export default async function BlogPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; category?: string; tag?: string; q?: string }>;
+  searchParams: Promise<BlogIndexParams>;
 }) {
-  const { page: pageParam, category: categoryParam, tag: tagParam, q: qParam } = await searchParams;
-  const page = Math.max(1, Number(pageParam) || 1);
-  const category = categoryParam ?? '';
-  const tag = tagParam ?? '';
-  const q = qParam ? `${qParam.trim()}*` : '';
-  const offset = (page - 1) * PAGE_SIZE;
-
-  // `tag` is a reserved key in Sanity's QueryParams interface (typed `never`),
-  // so we cast the params objects to bypass the deprecation guard.
-  type GroqParams = { [key: string]: string | number };
-  const [posts, total, featured, tags] = await Promise.all([
-    sanityServerClient.fetch<BlogPostCard[]>(BLOG_INDEX_QUERY, { category, tag, offset, q } as GroqParams),
-    sanityServerClient.fetch<number>(BLOG_COUNT_QUERY, { category, tag, q } as GroqParams),
-    sanityServerClient.fetch<BlogPostCard | null>(FEATURED_POST_QUERY),
-    sanityServerClient.fetch<string[]>(ALL_BLOG_TAGS_QUERY),
-  ]);
-
-  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const { page, category, tag, q } = await searchParams;
+  const { published, view, posts, total, featured, options } = await loadIndex(page, category, tag, q);
+  const totalPages = view.few ? 1 : Math.ceil(total / BLOG_PAGE_SIZE);
 
   const jsonLd = breadcrumbJsonLd([HOME_CRUMB, { name: 'News & Insights', path: '/blog' }]);
 
@@ -98,82 +125,55 @@ export default async function BlogPage({
     <>
       <JsonLd data={jsonLd} />
 
-      <div className="bg-pe-bg min-h-screen flex flex-col">
+      <div className="bg-pe-bg pb-16">
+        <div className="page-container pt-24">
+          <IndexHeader
+            crumb="News & Insights"
+            eyebrow="News & Insights"
+            title={<>Energy intelligence, <em className="not-italic text-pe-primary">delivered</em></>}
+            intro={DESCRIPTION}
+          />
 
-        {/* Page header */}
-        <section className="bg-pe-bg">
-          <AnimatedSection>
-            <div className="page-container pt-24">
-              {/* Breadcrumb */}
-              <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 font-body text-sm text-pe-muted mb-6">
-                <Link href="/" className="hover:text-pe-primary transition-colors">Home</Link>
-                <span>/</span>
-                <span className="font-semibold text-pe-primary">News &amp; Insights</span>
-              </nav>
-
-              {/* Title block */}
-              <div className="mb-6">
-                <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-pe-muted mb-2">
-                  News &amp; Insights
-                </p>
-                <h1 className="font-display font-extrabold text-4xl text-pe-text leading-[1.2] mb-3">
-                  Energy intelligence,{' '}
-                  <em className="not-italic text-pe-secondary-ink">delivered</em>
-                </h1>
-                <p className="font-body text-base text-pe-muted leading-[1.7] max-w-lg">
-                  Expert perspectives on clean energy, SA market trends, project spotlights and company news.
-                </p>
-              </div>
+          {!view.few && (
+            <div className="mb-6 flex flex-col gap-3">
+              <Suspense fallback={null}>
+                <BlogSearchInput defaultValue={view.search} />
+              </Suspense>
+              <Suspense fallback={null}>
+                <BlogFilterPills options={options} total={published} activeCategory={view.category} activeTag={view.tag} />
+              </Suspense>
             </div>
-          </AnimatedSection>
+          )}
 
-          {/* Filter pills + search bar */}
-          <AnimatedSection delay={0.05}>
-            <div className="page-container pb-6">
-              <div className="flex flex-col gap-3">
-                <div className="flex justify-start sm:justify-between items-center">
-                  <Suspense fallback={null}>
-                    <BlogSearchInput defaultValue={qParam ?? ''} />
-                  </Suspense>
-                </div>
-                <Suspense fallback={null}>
-                  <BlogFilterPills tags={tags ?? []} activeCategory={category} activeTag={tag} />
-                </Suspense>
-              </div>
+          {featured && (
+            <div className="mb-4">
+              <FeaturedArticleCard post={featured} priority />
             </div>
-          </AnimatedSection>
-        </section>
+          )}
 
-        {/* Featured card */}
-        {featured && (
-          <section className="bg-pe-bg pb-5">
-            <AnimatedSection delay={0.1}>
-              <div className="page-container">
-                <FeaturedArticleCard post={featured} />
-              </div>
-            </AnimatedSection>
-          </section>
-        )}
+          {posts.length === 0 ? (
+            <BlogEmptyState reason={blogEmptyReason(view, published)} search={view.search} />
+          ) : view.few ? (
+            <ul className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              {posts.map((post, i) => (
+                <AnimatedSection key={post._id} as="li" delay={i * 0.04}>
+                  <ArticleCard post={post} size="large" headingLevel={2} />
+                </AnimatedSection>
+              ))}
+            </ul>
+          ) : (
+            <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+              {posts.map((post, i) => (
+                <AnimatedSection key={post._id} as="li" delay={i * 0.04}>
+                  <ArticleCard post={post} headingLevel={2} />
+                </AnimatedSection>
+              ))}
+            </ul>
+          )}
+        </div>
 
-        {/* Article grid */}
-        <section className="flex-1 bg-pe-bg pb-2">
-          <div className="page-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-            {posts.map((post, i) => (
-              <AnimatedSection key={post._id} as="div" delay={i * 0.04}>
-                <ArticleCard post={post} />
-              </AnimatedSection>
-            ))}
-            {posts.length === 0 && (
-              <div className="col-span-3 py-16 text-center">
-                <p className="font-body text-sm text-pe-muted">No articles found.</p>
-              </div>
-            )}
-          </div>
-
-          {/* SSR pagination: chip links, the current page filled; nothing for a single page */}
-          <BlogPagination page={page} totalPages={totalPages} hrefFor={(p) => buildBlogHref(p, category, tag)} />
-        </section>
-
+        {/* SSR pagination: chip links, the current page filled; nothing for a single page */}
+        <BlogPagination page={view.page} totalPages={totalPages} hrefFor={(p) => blogIndexHref(view, p)} />
       </div>
 
       <PageFooter ctaVariant="centered" />
