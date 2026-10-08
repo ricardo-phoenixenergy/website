@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { urlFor } from '@/lib/sanity';
+import { initials } from '@/lib/blogUtils';
 import { sanityServerClient } from '@/lib/sanity.server';
 import { AUTHOR_BY_SLUG_QUERY, POSTS_BY_AUTHOR_QUERY, ALL_AUTHOR_SLUGS_QUERY } from '@/lib/queries';
 import type { Author, BlogPostCard } from '@/types/sanity';
@@ -48,10 +49,6 @@ export async function generateMetadata({
     // An author with nothing published yet has a page with nothing on it for search.
     noindex: posts.length === 0,
   });
-}
-
-function initials(name: string) {
-  return name.split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase();
 }
 
 export default async function AuthorPage({ params }: { params: Promise<{ slug: string }> }) {

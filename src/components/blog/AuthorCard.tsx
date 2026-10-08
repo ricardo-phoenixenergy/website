@@ -2,10 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { Author } from '@/types/sanity';
 import { urlFor } from '@/lib/sanity';
-
-function initials(name: string) {
-  return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
-}
+import { initials } from '@/lib/blogUtils';
 
 interface AuthorCardProps {
   author: Author;

@@ -2,12 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { BlogPostCard } from '@/types/sanity';
 import { urlFor } from '@/lib/sanity';
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-ZA', {
-    day: 'numeric', month: 'short', year: 'numeric',
-  });
-}
+import { formatDate } from '@/lib/blogUtils';
 
 interface RelatedPostsProps {
   posts: BlogPostCard[];

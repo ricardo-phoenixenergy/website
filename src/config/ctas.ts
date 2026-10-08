@@ -19,6 +19,10 @@
 //    About only, beside the partners and financiers it lists. They open step 2
 //    as a partner or an investor, so neither is handed the client form.
 //
+// A blog post's closing band takes its service's CTA when one of its tags
+// names a service (the first such tag wins), and kind 2 when none does
+// (articleCta).
+//
 // Page CTAs open step 2 of the form as a client, with a message that names the
 // service already written, so the visitor never has to explain where they came
 // from. Tool results (Strategy Finder, Wheeling eligibility, the Carbon and
@@ -86,6 +90,9 @@ export const INVESTOR_CTA: Cta = {
  */
 export const PROJECTS_CTA: Cta = { label: 'View published projects', href: '/projects' };
 
+/** The blog index, the closing band's second button on a post. */
+export const BLOG_CTA: Cta = { label: 'View all articles', href: '/blog' };
+
 /** The opening line each solution page's CTA writes into the form, in the visitor's words. */
 const SERVICE_MESSAGE: Record<SolutionVertical, string> = {
   'ci-solar-storage': 'I’d like to book a discovery meeting about C&I solar and storage for my business.',
@@ -125,4 +132,11 @@ export function projectCta(vertical: SolutionVertical, projectTitle: string): Ct
     label: SERVICE_LABEL[vertical],
     href: contactHref(`${SERVICE_MESSAGE[vertical]} I read about your ${projectTitle} project.`),
   };
+}
+
+/** A post's CTA: its service's label when a tag names one, with the article named in the message. */
+export function articleCta(vertical: SolutionVertical | null, postTitle: string): Cta {
+  const read = `I read your article "${postTitle}".`;
+  if (!vertical) return { label: DISCOVERY_LABEL, href: contactHref(`I’d like to book a discovery meeting to find the right energy strategy for my business. ${read}`) };
+  return { label: SERVICE_LABEL[vertical], href: contactHref(`${SERVICE_MESSAGE[vertical]} ${read}`) };
 }

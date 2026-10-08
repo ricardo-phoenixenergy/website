@@ -13,6 +13,7 @@ import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 import { authorUrl, blogArticleJsonLd } from '@/lib/blogSeo';
 import { sanityArticleImages, sanityShareImage } from '@/lib/sanityShareImage';
 import { portableTextComponents } from '@/lib/portableTextComponents';
+import { formatDate, initials, slugify } from '@/lib/blogUtils';
 import { TableOfContents, type TocItem } from '@/components/blog/TableOfContents';
 import { ShareButtons } from '@/components/blog/ShareButtons';
 import { Chip } from '@/components/ui/Chip';
@@ -63,13 +64,6 @@ export async function generateMetadata({
   });
 }
 
-function slugify(text: string) {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
-}
-
 function extractTocItems(body: PortableTextBlock[]): TocItem[] {
   return body
     .filter(
@@ -87,16 +81,6 @@ function extractTocItems(body: PortableTextBlock[]): TocItem[] {
         level: b.style as 'h2' | 'h3',
       };
     });
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-ZA', {
-    day: 'numeric', month: 'long', year: 'numeric',
-  });
-}
-
-function initials(name: string) {
-  return name.split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase();
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -210,7 +194,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             <span className="font-body text-xs" style={{ color: 'rgba(255,255,255,0.6)' }}>
               {post.author.name}
               <span className="mx-1.5">·</span>
-              {formatDate(post.publishedAt)}
+              {formatDate(post.publishedAt, 'long')}
               <span className="mx-1.5">·</span>
               {post.readTime} min read
             </span>
