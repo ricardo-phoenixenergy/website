@@ -25,7 +25,7 @@
 | Event | Trigger | GTM tag |
 |---|---|---|
 | `form_submit` | Contact form success | GA4 Event |
-| `cta_click` | A result button in one of the four solution tools: Strategy Finder, wheeling eligibility check, carbon estimator, fleet estimator | GA4 Event |
+| `cta_click` | A result button in one of the four solution tools (Strategy Finder, wheeling eligibility check, carbon estimator, fleet estimator), or a booking button on a project or post page (`TrackedButton`): the project facts, the project's closing band, the post's closing band | GA4 Event |
 | `strategy_finder_start`, `strategy_finder_complete`, `strategy_learn_more` | Strategy Finder on C&I Solar & Storage: first goal picked; result shown; a strategy chip under "Learn more" on the result clicked | GA4 Event |
 | `wheeling_eligibility_start`, `wheeling_eligibility_complete` | Wheeling eligibility check: first supply point picked; result shown | GA4 Event |
 | `carbon_estimate_used` | Carbon Credits estimator: first move of the system size slider | GA4 Event |
@@ -84,9 +84,12 @@ export function WebVitals() {
 ### Additional conversion events
 ```typescript
 // src/lib/analytics.ts (DlEvent), pushed with dlPush():
-'cta_click'                     // tool result button: { cta_label, cta_location }
-                                // cta_location: 'strategy_finder_result:<strategy>', 'wheeling_eligibility_result:<status>',
+'cta_click'                     // tool result or booking button: { cta_label, cta_location }
+                                // cta_location, tools: 'strategy_finder_result:<strategy>', 'wheeling_eligibility_result:<status>',
                                 // 'carbon_estimator_result' or 'fleet_estimator_result'
+                                // cta_location, booking buttons (TrackedButton): 'project_facts:<slug>' (the facts panel,
+                                // /projects/[slug]), 'project_band:<slug>' (the project's closing band) or
+                                // 'post_band:<slug>' (the post's closing band, /blog/[slug])
 'valuation_complete'            // WeBuySolar tool reaches step 3, once per page load: { kw, bess_kwh, install_year }
 'valuation_lead'                // valuation request sent (Step3Capture, after the API returns OK): { kw, has_battery }
 'blog_read_complete'            // 90% scroll depth on /blog/[slug]: { post_slug, post_category }
