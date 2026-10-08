@@ -159,7 +159,9 @@ export default async function BlogPage({
         <section className="flex-1 bg-pe-bg pb-2">
           <div className="page-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
             {posts.map((post, i) => (
-              <ArticleCard key={post._id} post={post} delay={i * 0.04} />
+              <AnimatedSection key={post._id} as="div" delay={i * 0.04}>
+                <ArticleCard post={post} />
+              </AnimatedSection>
             ))}
             {posts.length === 0 && (
               <div className="col-span-3 py-16 text-center">

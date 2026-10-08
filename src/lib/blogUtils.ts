@@ -3,19 +3,6 @@ import { SOLUTION_META } from '@/types/solutions';
 import type { SolutionMeta, SolutionVertical } from '@/types/solutions';
 import type { BlogPostCard, PortableTextBlock } from '@/types/sanity';
 
-// Badge text passes 4.5:1 on each fill. White fails on the gold (2.9:1), so
-// Project Spotlight takes a dark "on" colour (4.9:1), like the accent badges.
-export const CATEGORY_STYLES: Record<string, { bg: string; color: string }> = {
-  'Industry Insights':  { bg: '#39575C', color: '#FFFFFF' },
-  'Project Spotlight':  { bg: '#B8923A', color: '#3A2806' },
-  'Company News':       { bg: '#2E7D6B', color: '#FFFFFF' },
-  'Press Release':      { bg: '#B85450', color: '#FFFFFF' },
-};
-
-export function categoryStyle(cat: string): { bg: string; color: string } {
-  return CATEGORY_STYLES[cat] ?? { bg: '#39575C', color: '#FFFFFF' };
-}
-
 const TAG_VERTICAL_MAP: Record<string, SolutionVertical> = {
   'Solar & Storage':      'ci-solar-storage',
   'Wheeling':             'wheeling',

@@ -2,6 +2,7 @@ import { sanityServerClient } from '@/lib/sanity.server';
 import { LATEST_POSTS_QUERY } from '@/lib/queries';
 import { ArticleCard } from '@/components/ui/ArticleCard';
 import { SectionCarousel } from '@/components/ui/SectionCarousel';
+import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import type { BlogPostCard } from '@/types/sanity';
 
 async function getLatestPosts(): Promise<BlogPostCard[]> {
@@ -31,12 +32,14 @@ export async function LatestPosts({ flushTop = false }: LatestPostsProps = {}) {
       flushTop={flushTop}
     >
       {posts.map((post, i) => (
-        <ArticleCard
+        <AnimatedSection
           key={post._id}
-          post={post}
+          as="div"
           delay={i * 0.05}
           className="flex-shrink-0 w-[82vw] md:w-[calc((min(100vw,80rem)-4rem-28px)/3)]"
-        />
+        >
+          <ArticleCard post={post} />
+        </AnimatedSection>
       ))}
     </SectionCarousel>
   );

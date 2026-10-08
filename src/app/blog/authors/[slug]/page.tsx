@@ -160,7 +160,9 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
         ) : (
           <div className="page-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {posts.map((post, i) => (
-              <ArticleCard key={post._id} post={post} delay={i * 0.04} />
+              <AnimatedSection key={post._id} as="div" delay={i * 0.04}>
+                <ArticleCard post={post} />
+              </AnimatedSection>
             ))}
           </div>
         )}

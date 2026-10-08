@@ -1,112 +1,103 @@
 // src/components/ui/FeaturedArticleCard.tsx
+// One article as a wide card, built like FeaturedProjectCard: the photo takes
+// three fifths with the title and meta line over a scrim, and the panel beside
+// it holds the excerpt, the author and the action. On phones the photo sits on
+// top. The photo does not zoom on hover (the card lifts, as every card does).
 import Image from 'next/image';
 import Link from 'next/link';
 import type { BlogPostCard } from '@/types/sanity';
+import { SOLUTION_META } from '@/types/solutions';
 import { urlFor } from '@/lib/sanity';
-import { categoryStyle, formatDate, initials } from '@/lib/blogUtils';
+import { initials, postMetaLine, postVertical } from '@/lib/blogUtils';
 import { Card } from '@/components/ui/Card';
+import { IconArrowRight } from '@/components/ui/Icons';
+import { buttonClasses } from '@/components/ui/buttonStyles';
 
 const DEFAULT_LQIP =
   'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
+// FeaturedProjectCard's scrim, drawn from the nav-dark token.
+const SCRIM =
+  'linear-gradient(to top, color-mix(in srgb, var(--color-pe-nav-dark) 82%, transparent) 0%, color-mix(in srgb, var(--color-pe-nav-dark) 15%, transparent) 55%, transparent 100%)';
+
 interface FeaturedArticleCardProps {
   post: BlogPostCard;
+  /** 2 where the card sits straight under the page's H1 (/blog); 3 under a section h2. */
+  headingLevel?: 2 | 3;
+  /** Preload the photo: only where the card is the first image on the page. */
+  priority?: boolean;
 }
 
-export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
-  const cs = categoryStyle(post.category);
-  const imgSrc = post.heroImage?.asset
-    ? urlFor(post.heroImage).width(600).height(440).auto('format').url()
-    : undefined;
-  const blurSrc = post.heroImage?.asset?.metadata?.lqip;
-  const authorImgSrc = post.author.photo?.asset
-    ? urlFor(post.author.photo).width(48).height(48).url()
-    : null;
+export function FeaturedArticleCard({ post, headingLevel = 2, priority = false }: FeaturedArticleCardProps) {
+  const vertical = postVertical(post.tags);
+  const meta = vertical ? SOLUTION_META[vertical] : null;
+  const Title = headingLevel === 2 ? 'h2' : 'h3';
+  const src = post.heroImage?.asset ? urlFor(post.heroImage).width(1200).auto('format').url() : undefined;
+  const authorSrc = post.author?.photo?.asset ? urlFor(post.author.photo).width(52).height(52).url() : null;
 
   return (
-    <Link href={`/blog/${post.slug.current}`} className="block">
+    <Link href={`/blog/${post.slug.current}`} className="block rounded-2xl">
       <Card variant="light" pattern={1}>
-        {/* Photo and text side by side from 640px; on phones the photo sits on top */}
-        <div className="grid grid-cols-1 sm:grid-cols-2" style={{ minHeight: 240 }}>
-          {/* Left: Photo */}
-          <div className="relative overflow-hidden z-10" style={{ minHeight: 240 }}>
-            {imgSrc ? (
+        <div className="grid grid-cols-1 sm:grid-cols-[3fr_2fr]">
+          {/* Photo column, with the title over it */}
+          <div className="relative z-10 min-h-[260px] overflow-hidden">
+            {src ? (
               <Image
-                src={imgSrc}
-                alt={post.heroImage?.alt ?? post.title}
+                src={src}
+                alt=""
                 fill
-                priority
-                className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
-                sizes="(max-width: 640px) 100vw, 50vw"
+                priority={priority}
+                className="object-cover"
+                sizes="(max-width: 640px) 100vw, 60vw"
                 placeholder="blur"
-                blurDataURL={blurSrc ?? DEFAULT_LQIP}
+                blurDataURL={post.heroImage?.asset?.metadata?.lqip ?? DEFAULT_LQIP}
               />
             ) : (
-              <div className="w-full h-full bg-pe-border" />
+              <div
+                className="h-full w-full"
+                style={{
+                  background: meta
+                    ? `linear-gradient(135deg, ${meta.accent}88 0%, ${meta.accent}33 100%)`
+                    : 'linear-gradient(135deg, var(--color-pe-primary) 0%, var(--color-pe-secondary) 100%)',
+                }}
+              />
             )}
-            <span
-              className="absolute top-3 left-3 z-10 font-body font-bold text-xs uppercase tracking-[0.08em] text-white rounded-full px-2.5 py-1"
-              style={{ background: '#39575C' }}
-            >
-              Featured
-            </span>
+            <div className="absolute inset-0" style={{ background: SCRIM }} />
+            <div className="absolute left-4 top-4 z-10">
+              <span className="rounded-full border border-white/20 bg-pe-primary px-3 py-1.5 font-body text-xs font-bold uppercase tracking-[0.08em] text-white">
+                Featured article
+              </span>
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 z-10 p-5">
+              <Title className="mb-1 font-display text-2xl font-extrabold leading-[1.2] text-white">{post.title}</Title>
+              {/* Full white: over a light photo, 60% white measured 3.1:1 */}
+              <p className="font-body text-sm text-white">{postMetaLine(post)}</p>
+            </div>
           </div>
 
-          {/* Right: Body */}
-          <div className="flex flex-col p-6 relative z-10">
-            {/* Tags */}
-            <div className="flex flex-wrap gap-1.5 mb-3">
-              <span
-                className="font-body font-bold text-xs uppercase tracking-[0.08em] rounded-full px-2.5 py-1"
-                style={{ background: cs.bg, color: cs.color }}
-              >
-                {post.category}
-              </span>
-              {post.tags?.slice(0, 2).map((tag) => (
-                <span
-                  key={tag}
-                  className="font-body font-bold text-xs uppercase tracking-[0.08em] rounded-full px-2.5 py-1"
-                  style={{ background: 'rgba(112,157,169,0.10)', color: '#39575C' }}
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-
-            <h2 className="font-display font-extrabold text-xl text-pe-text leading-[1.3] mb-2 flex-1 line-clamp-3">
-              {post.title}
-            </h2>
-
-            <p className="font-body text-sm text-pe-muted leading-[1.7] mb-4 line-clamp-3">
-              {post.excerpt}
-            </p>
-
-            {/* Meta */}
-            <div className="flex items-center gap-2">
-              {authorImgSrc ? (
-                <Image
-                  src={authorImgSrc}
-                  alt={post.author.name}
-                  width={26}
-                  height={26}
-                  className="rounded-full object-cover flex-shrink-0"
-                />
-              ) : (
-                <div
-                  className="w-[26px] h-[26px] rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{ background: '#39575C' }}
-                >
-                  <span className="font-display font-bold text-xs text-white">
-                    {initials(post.author.name)}
-                  </span>
+          {/* Panel: the excerpt, the author and the action, on the card's own white */}
+          <div className="relative z-10 flex flex-col justify-between border-t border-pe-border p-6 sm:border-l sm:border-t-0">
+            <div>
+              {post.excerpt && (
+                <p className="mb-5 line-clamp-4 font-body text-sm leading-[1.7] text-pe-muted">{post.excerpt}</p>
+              )}
+              {post.author?.name && (
+                <div className="mb-5 flex items-center gap-2">
+                  {authorSrc ? (
+                    <Image src={authorSrc} alt="" width={26} height={26} className="size-[26px] shrink-0 rounded-full object-cover" />
+                  ) : (
+                    <span aria-hidden="true" className="flex size-[26px] shrink-0 items-center justify-center rounded-full bg-pe-primary font-display text-[10px] font-bold text-white">
+                      {initials(post.author.name)}
+                    </span>
+                  )}
+                  <span className="font-body text-sm text-pe-text">{post.author.name}</span>
                 </div>
               )}
-              <span className="font-body text-xs text-pe-muted">
-                {post.author.name}
-                <span className="mx-1">·</span>
-                {formatDate(post.publishedAt)}
-                <span className="mx-1">·</span>
-                {post.readTime} min read
+            </div>
+            <div className="flex items-center justify-end border-t border-pe-border pt-4">
+              {/* The card is the link, so its action is drawn as a button, not built as one. */}
+              <span className={buttonClasses({ size: 'compact', inCard: true })}>
+                Read article <IconArrowRight />
               </span>
             </div>
           </div>
