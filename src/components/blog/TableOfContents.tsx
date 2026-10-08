@@ -2,7 +2,13 @@
 'use client';
 
 // "In this article": the post's h2 and h3 headings as a numbered list of links.
-// - panel: in the sidebar from 1024px, in the shared SidePanel frame.
+// - panel: in the sidebar from 1024px, in the shared SidePanel frame. The page
+//   keeps it in view under the navbar (StickyWhenFits), so it is capped at the
+//   window less that 96px top and the 24px margin, and a longer list scrolls
+//   inside it. Every item is a link, so Tab reaches each one and the browser
+//   scrolls the list to it: the list needs no tab stop of its own. When the
+//   current heading changes, the list scrolls (itself, never the page) to keep
+//   its item in view.
 // - disclosure: below 1024px, a closed <details> between the hero and the
 //   article, so the list is there before the reading starts.
 // The current heading (the last one whose top has passed the line under the
@@ -13,6 +19,7 @@ import { useEffect, useState, type MouseEvent } from 'react';
 import { SidePanel } from '@/components/ui/SidePanel';
 import { IconChevronDown } from '@/components/ui/Icons';
 import { activeHeadingId, type PostHeading } from '@/lib/blogUtils';
+import { revealScrollTop } from '@/lib/stickyFit';
 import { cn } from '@/lib/utils';
 
 interface TableOfContentsProps {
@@ -79,7 +86,7 @@ function Items({ items, activeId, roomy }: { items: PostHeading[]; activeId: str
                 active ? 'border-pe-primary text-pe-primary' : 'border-transparent text-pe-muted',
               )}
             >
-              <span className="shrink-0 font-body text-xs font-bold leading-5 text-pe-secondary-ink">
+              <span className="w-5 shrink-0 font-body text-xs font-bold leading-5 tabular-nums text-pe-secondary-ink">
                 {String(i + 1).padStart(2, '0')}
               </span>
               <span className={cn('font-body text-sm leading-5', item.level === 'h2' ? 'font-medium' : 'pl-2')}>{item.text}</span>
@@ -91,14 +98,31 @@ function Items({ items, activeId, roomy }: { items: PostHeading[]; activeId: str
   );
 }
 
+// Keeps the current item in view inside the panel's list, scrolling only the list.
+function useActiveInView(list: HTMLDivElement | null, activeId: string | null) {
+  useEffect(() => {
+    if (!list || !activeId) return;
+    const link = list.querySelector<HTMLAnchorElement>(`a[href="#${CSS.escape(activeId)}"]`);
+    if (!link) return;
+    const top = revealScrollTop({ top: link.offsetTop, height: link.offsetHeight }, { scrollTop: list.scrollTop, height: list.clientHeight });
+    if (top === null) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    list.scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
+  }, [list, activeId]);
+}
+
 export function TableOfContents({ items, variant, className }: TableOfContentsProps) {
   const activeId = useActiveHeading(items);
+  const [list, setList] = useState<HTMLDivElement | null>(null);
+  useActiveInView(list, activeId);
   if (items.length === 0) return null;
 
   if (variant === 'panel') {
+    // 120px: STICKY_TOP (96) and STICKY_BOTTOM_GAP (24) in src/lib/stickyFit.ts. The list's 4px
+    // padding, taken back by its negative margin, keeps each link's focus ring clear of the clip.
     return (
-      <SidePanel as="nav" title="In this article" titleId="toc-title" className={className}>
-        <div className="mt-3">
+      <SidePanel as="nav" title="In this article" titleId="toc-title" className={cn('flex max-h-[calc(100vh-120px)] flex-col', className)}>
+        <div ref={setList} className="relative -mx-1 -mb-1 mt-2 min-h-0 overflow-y-auto px-1 pb-1 pt-1">
           <Items items={items} activeId={activeId} roomy={false} />
         </div>
       </SidePanel>

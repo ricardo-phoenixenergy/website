@@ -7,6 +7,7 @@ import { PortableText } from '@portabletext/react';
 import { describe, expect, it } from 'vitest';
 import { postHeadings } from '@/lib/blogUtils';
 import { postTextComponents } from '@/lib/postTextComponents';
+import { STICKY_BOTTOM_GAP, STICKY_TOP } from '@/lib/stickyFit';
 import type { Author, BlogPostCard, PortableTextBlock, SanityImage } from '@/types/sanity';
 import { TableOfContents } from './TableOfContents';
 import { AuthorCard } from './AuthorCard';
@@ -85,6 +86,29 @@ describe('TableOfContents', () => {
     expect(markup).toMatch(/^<nav aria-label="In this article"/);
     expect(markup).toMatch(/<details\b(?![^>]*\bopen\b)[^>]*>\s*<summary\b[^>]*>In this article/);
     expect([...markup.matchAll(/href="([^"]+)"/g)]).toHaveLength(2);
+  });
+
+  it('gives each number a fixed width in tabular figures, so the item text lines up', () => {
+    const markup = html(createElement(TableOfContents, { items, variant: 'panel' }));
+    const numbers = [...markup.matchAll(/<span class="([^"]*)">0\d<\/span>/g)].map((m) => m[1].split(' '));
+    expect(numbers).toHaveLength(2);
+    for (const classes of numbers) expect(classes).toEqual(expect.arrayContaining(['w-5', 'shrink-0', 'tabular-nums']));
+  });
+
+  it('caps the panel at the window less the sticky top and margin, with the list scrolling inside it', () => {
+    const markup = html(createElement(TableOfContents, { items, variant: 'panel' }));
+    const nav = markup.match(/^<nav [^>]*class="([^"]*)"/)?.[1].split(' ') ?? [];
+    expect(nav).toEqual(expect.arrayContaining(['flex', 'flex-col', `max-h-[calc(100vh-${STICKY_TOP + STICKY_BOTTOM_GAP}px)]`]));
+    const list = markup.match(/<div class="([^"]*)"[^>]*>\s*<ol/)?.[1].split(' ') ?? [];
+    expect(list).toEqual(expect.arrayContaining(['min-h-0', 'overflow-y-auto', 'relative']));
+    // Every item is a link, so Tab reaches each one and scrolls the list: the list adds no tab stop of its own.
+    expect(markup).not.toContain('tabindex');
+    expect([...markup.matchAll(/<li\b[^>]*>\s*<a href=/g)]).toHaveLength(2);
+  });
+
+  it('leaves the disclosure uncapped: it opens in the page flow', () => {
+    const markup = html(createElement(TableOfContents, { items, variant: 'disclosure' }));
+    expect(markup).not.toMatch(/max-h-|overflow-y-auto/);
   });
 
   it('renders nothing without headings', () => {

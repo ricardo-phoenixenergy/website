@@ -2,8 +2,13 @@
 // One template for every post, on the project page's parts: the breadcrumb row
 // with the share actions, the shared hero (the service badge when a tag names
 // one, the title, then the author, date and read time), the article beside a
-// sticky sidebar (contents and author) from 1024px, "More articles" and the
+// sidebar (the sticky contents, then the author) from 1024px, "More articles" and the
 // rounded closing band. The site footer comes from the layout.
+// From 1024px only the contents panel stays in view (it is capped to the window,
+// so it sticks on a laptop window of any common height): it opens the sidebar, beside the article's first
+// lines, and stays there while the article is read; the author card sits at the
+// sidebar's foot, beside the tags, and scrolls with the page. That is the order
+// phones get too: contents before the article, the author after it.
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { PortableText } from '@portabletext/react';
@@ -158,13 +163,17 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </article>
           <AuthorCard author={post.author} className="mt-8 lg:hidden" />
         </div>
-        <div className="hidden lg:block">
-          <StickyWhenFits>
-            <div className="flex flex-col gap-4">
-              <TableOfContents items={headings} variant="panel" />
-              <AuthorCard author={post.author} titleId="author-title-sidebar" />
+        {/* The panel sticks within its own flex-1 wrapper, which ends above the author card,
+            so it stops there instead of sliding over the card. */}
+        <div className="hidden lg:flex lg:flex-col lg:gap-4">
+          {headings.length > 0 && (
+            <div className="flex-1">
+              <StickyWhenFits>
+                <TableOfContents items={headings} variant="panel" />
+              </StickyWhenFits>
             </div>
-          </StickyWhenFits>
+          )}
+          <AuthorCard author={post.author} titleId="author-title-sidebar" />
         </div>
       </div>
 
