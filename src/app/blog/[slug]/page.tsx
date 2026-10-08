@@ -7,18 +7,18 @@ import { PortableText } from '@portabletext/react';
 import { urlFor } from '@/lib/sanity';
 import { sanityServerClient } from '@/lib/sanity.server';
 import { POST_BY_SLUG_QUERY, ALL_BLOG_SLUGS_QUERY } from '@/lib/queries';
-import type { BlogPost, PortableTextBlock } from '@/types/sanity';
+import type { BlogPost } from '@/types/sanity';
 import { pageMetadata, SITE_URL } from '@/lib/seo';
 import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 import { authorUrl, blogArticleJsonLd } from '@/lib/blogSeo';
 import { sanityArticleImages, sanityShareImage } from '@/lib/sanityShareImage';
-import { portableTextComponents } from '@/lib/portableTextComponents';
-import { formatDate, initials, slugify } from '@/lib/blogUtils';
-import { TableOfContents, type TocItem } from '@/components/blog/TableOfContents';
+import { postTextComponents } from '@/lib/postTextComponents';
+import { formatDate, initials, postHeadings } from '@/lib/blogUtils';
+import { TableOfContents } from '@/components/blog/TableOfContents';
 import { ShareButtons } from '@/components/blog/ShareButtons';
 import { Chip } from '@/components/ui/Chip';
 import { AuthorCard } from '@/components/blog/AuthorCard';
-import { RelatedPosts } from '@/components/blog/RelatedPosts';
+import { PostNext } from '@/components/blog/PostNext';
 import { JsonLd } from '@/components/layout/JsonLd';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { BlogReadDepth } from '@/components/analytics/BlogReadDepth';
@@ -64,31 +64,12 @@ export async function generateMetadata({
   });
 }
 
-function extractTocItems(body: PortableTextBlock[]): TocItem[] {
-  return body
-    .filter(
-      b =>
-        b._type === 'block' &&
-        (b.style === 'h2' || b.style === 'h3'),
-    )
-    .map(b => {
-      const text = (b.children as Array<{ text: string }>)
-        ?.map((c) => c.text)
-        .join('') ?? '';
-      return {
-        id: slugify(text),
-        text,
-        level: b.style as 'h2' | 'h3',
-      };
-    });
-}
-
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const post = await getPost(slug);
   if (!post) notFound();
 
-  const tocItems = extractTocItems(post.body);
+  const headings = postHeadings(post.body);
   const canonicalUrl = post.canonicalUrl ?? `${SITE_URL}/blog/${post.slug.current}`;
   const heroSrc = post.heroImage?.asset
     ? urlFor(post.heroImage).width(1400).height(560).auto('format').url()
@@ -225,39 +206,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         {/* Article body */}
         <article className="min-w-0 max-w-[42rem]">
           <PortableText
-            value={post.body}
-            components={{
-              ...(portableTextComponents as object),
-              block: {
-                ...((portableTextComponents.block ?? {}) as object),
-                h2: ({ children, value }) => {
-                  const text = (value?.children as Array<{ text: string }>)
-                    ?.map(c => c.text).join('') ?? '';
-                  const id = slugify(text);
-                  return (
-                    <h2
-                      id={id}
-                      className="font-display font-extrabold text-2xl text-pe-text leading-[1.25] mt-12 mb-4 scroll-mt-24 text-balance"
-                    >
-                      {children}
-                    </h2>
-                  );
-                },
-                h3: ({ children, value }) => {
-                  const text = (value?.children as Array<{ text: string }>)
-                    ?.map(c => c.text).join('') ?? '';
-                  const id = slugify(text);
-                  return (
-                    <h3
-                      id={id}
-                      className="font-display font-bold text-xl text-pe-text leading-[1.3] mt-9 mb-3 scroll-mt-24"
-                    >
-                      {children}
-                    </h3>
-                  );
-                },
-              },
-            }}
+            value={post.body ?? []}
+            components={postTextComponents(headings)}
           />
 
           {/* Tags footer: chip links, like the /blog tag pills. Wrapped rows sit
@@ -280,12 +230,12 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
         {/* Sidebar — stacks below article on mobile, sticky column on lg+ */}
         <aside className="flex flex-col gap-4 lg:sticky lg:top-6 lg:self-start">
-          <TableOfContents items={tocItems} />
+          <TableOfContents items={headings} variant="panel" />
           <AuthorCard author={post.author} />
-          {post.related.length > 0 && <RelatedPosts posts={post.related} />}
         </aside>
       </div>
 
+      <PostNext posts={post.related ?? []} />
       <PageFooter ctaVariant="centered" />
     </>
   );

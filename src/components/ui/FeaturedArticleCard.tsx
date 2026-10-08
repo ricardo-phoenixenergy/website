@@ -26,9 +26,11 @@ interface FeaturedArticleCardProps {
   headingLevel?: 2 | 3;
   /** Preload the photo: only where the card is the first image on the page. */
   priority?: boolean;
+  /** The pill over the photo. Under a heading that names the section ("More articles"), the post's service. */
+  kicker?: string;
 }
 
-export function FeaturedArticleCard({ post, headingLevel = 2, priority = false }: FeaturedArticleCardProps) {
+export function FeaturedArticleCard({ post, headingLevel = 2, priority = false, kicker = 'Featured article' }: FeaturedArticleCardProps) {
   const vertical = postVertical(post.tags);
   const meta = vertical ? SOLUTION_META[vertical] : null;
   const Title = headingLevel === 2 ? 'h2' : 'h3';
@@ -65,7 +67,7 @@ export function FeaturedArticleCard({ post, headingLevel = 2, priority = false }
             <div className="absolute inset-0" style={{ background: SCRIM }} />
             <div className="absolute left-4 top-4 z-10">
               <span className="rounded-full border border-white/20 bg-pe-primary px-3 py-1.5 font-body text-xs font-bold uppercase tracking-[0.08em] text-white">
-                Featured article
+                {kicker}
               </span>
             </div>
             <div className="absolute bottom-0 left-0 right-0 z-10 p-5">

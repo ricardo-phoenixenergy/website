@@ -1,56 +1,55 @@
+// src/components/blog/AuthorCard.tsx
+// "About the author" in the shared SidePanel frame: the 44px photo (or the
+// initials disc), the name as a link to the author's page, the role, and the
+// bio only when there is one, so a short card leaves no empty gap. The photo's
+// alt text is empty: the name sits beside it.
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Author } from '@/types/sanity';
 import { urlFor } from '@/lib/sanity';
 import { initials } from '@/lib/blogUtils';
+import { SidePanel } from '@/components/ui/SidePanel';
 
 interface AuthorCardProps {
   author: Author;
+  className?: string;
+  /** The heading id: the page renders two cards (one hidden at each width), each with its own. */
+  titleId?: string;
 }
 
-export function AuthorCard({ author }: AuthorCardProps) {
-  const photoSrc = author.photo?.asset
-    ? urlFor(author.photo).width(88).height(88).url()
-    : null;
+export function AuthorCard({ author, className, titleId = 'author-title' }: AuthorCardProps) {
+  const photoSrc = author.photo?.asset ? urlFor(author.photo).width(88).height(88).url() : null;
   const lqip = author.photo?.asset?.metadata?.lqip ?? null;
+  const bio = author.bio?.trim();
 
   return (
-    <div className="bg-white rounded-[14px] p-[18px]" style={{ border: '1px solid #E5E7EB' }}>
-      <Link
-        href={`/blog/authors/${author.slug.current}`}
-        className="flex items-start gap-3 mb-3 group"
-      >
+    <SidePanel title="About the author" titleId={titleId} className={className}>
+      <div className="mt-4 flex items-center gap-3">
         {photoSrc ? (
           <Image
             src={photoSrc}
-            alt={author.name}
+            alt=""
             width={44}
             height={44}
-            className="rounded-full object-cover flex-shrink-0"
+            className="size-11 shrink-0 rounded-full object-cover"
             {...(lqip ? { placeholder: 'blur' as const, blurDataURL: lqip } : {})}
           />
         ) : (
-          <div
-            className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-            style={{ background: '#39575C' }}
-          >
-            <span className="font-display font-bold text-sm text-white">{initials(author.name)}</span>
-          </div>
+          <span aria-hidden="true" className="flex size-11 shrink-0 items-center justify-center rounded-full bg-pe-primary font-display text-sm font-bold text-white">
+            {initials(author.name)}
+          </span>
         )}
-        <div>
-          <p className="font-display font-bold text-sm text-pe-text leading-tight group-hover:text-pe-primary transition-colors">
+        <div className="min-w-0">
+          <Link
+            href={`/blog/authors/${author.slug.current}`}
+            className="hit-area relative font-display text-base font-bold leading-tight text-pe-text transition-colors duration-150 hover:text-pe-primary"
+          >
             {author.name}
-          </p>
-          {author.role && (
-            <p className="font-body font-medium text-xs mt-0.5 text-pe-secondary-ink">
-              {author.role}
-            </p>
-          )}
+          </Link>
+          {author.role && <p className="mt-0.5 font-body text-sm text-pe-secondary-ink">{author.role}</p>}
         </div>
-      </Link>
-      {author.bio && (
-        <p className="font-body text-xs text-pe-muted leading-[1.65]">{author.bio}</p>
-      )}
-    </div>
+      </div>
+      {bio && <p className="mt-3 font-body text-sm leading-[1.65] text-pe-muted">{bio}</p>}
+    </SidePanel>
   );
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { blogFilterOptions, carouselLayout, formatDate, initials, postHeadings, postMetaLine, postVertical, relatedLayout } from './blogUtils';
+import { activeHeadingId, blogFilterOptions, carouselLayout, formatDate, initials, postHeadings, postMetaLine, postVertical, relatedLayout } from './blogUtils';
 import { articleCta } from '@/config/ctas';
 import type { PortableTextBlock } from '@/types/sanity';
 
@@ -99,5 +99,15 @@ describe('articleCta', () => {
   });
   it('falls back to the discovery meeting when no tag names a service', () => {
     expect(articleCta(null, 'A post').label).toBe('Book a discovery meeting');
+  });
+});
+
+describe('activeHeadingId', () => {
+  it('picks the last heading whose top has passed the line under the navbar', () => {
+    expect(activeHeadingId([{ id: 'a', top: -400 }, { id: 'b', top: 112 }, { id: 'c', top: 600 }])).toBe('b');
+  });
+  it('picks none while the first heading is still below the line, as after a jump back to the top', () => {
+    expect(activeHeadingId([{ id: 'a', top: 300 }, { id: 'b', top: 900 }])).toBeNull();
+    expect(activeHeadingId([])).toBeNull();
   });
 });

@@ -7,29 +7,21 @@ import { StatStrip } from '@/components/blog/StatStrip';
 import { InlineCta } from '@/components/blog/InlineCta';
 import { urlFor } from '@/lib/sanity';
 
+// The body headings. The h2 matches the project page's chapter headline (26px);
+// the h3 stays at 20px, a clear third level for a long article.
+// postTextComponents adds the ids the table of contents links to.
+export const POST_H2_CLASS = 'font-display font-extrabold text-[26px] text-pe-text leading-[1.2] mt-12 mb-4 text-balance';
+export const POST_H3_CLASS = 'font-display font-bold text-xl text-pe-text leading-[1.3] mt-9 mb-3';
+
 export const portableTextComponents: PortableTextComponents = {
   block: {
     normal: ({ children }) => (
       <p className="font-body text-lg leading-[1.75] text-pe-text-soft mb-6">{children}</p>
     ),
-    h2: ({ children }) => (
-      <h2 className="font-display font-extrabold text-2xl text-pe-text leading-[1.25] mt-12 mb-4 text-balance">
-        {children}
-      </h2>
-    ),
-    h3: ({ children }) => (
-      <h3 className="font-display font-bold text-xl text-pe-text leading-[1.3] mt-9 mb-3">
-        {children}
-      </h3>
-    ),
+    h2: ({ children }) => <h2 className={POST_H2_CLASS}>{children}</h2>,
+    h3: ({ children }) => <h3 className={POST_H3_CLASS}>{children}</h3>,
     blockquote: ({ children }) => (
-      <blockquote
-        className="my-8 rounded-r-lg pl-5 py-4 pr-4"
-        style={{
-          borderLeft: '3px solid #709DA9',
-          background: 'rgba(112,157,169,0.06)',
-        }}
-      >
+      <blockquote className="my-8 rounded-r-lg border-l-[3px] border-pe-secondary bg-pe-secondary/6 py-4 pl-5 pr-4">
         <p className="font-display font-bold text-xl text-pe-text italic leading-[1.45]">
           {children}
         </p>

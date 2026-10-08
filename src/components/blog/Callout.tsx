@@ -1,3 +1,9 @@
+// src/components/blog/Callout.tsx
+// A note inside the article, at 16px so it reads at the prose's pace:
+//   info     a Dusty Blue tint
+//   warning  a Soft Amber tint
+//   stat     Night Teal, with the text in on-dark-muted
+// Colours come from the tokens; the icon is the editor's emoji, decorative.
 interface CalloutProps {
   type: 'info' | 'warning' | 'stat';
   icon?: string;
@@ -6,53 +12,23 @@ interface CalloutProps {
 }
 
 const CALLOUT_STYLES = {
-  info: {
-    bg: 'rgba(112,157,169,0.08)',
-    border: '1px solid rgba(112,157,169,0.25)',
-    titleColor: '#1A1A1A',
-    textColor: 'var(--color-pe-muted)',
-  },
-  warning: {
-    bg: 'rgba(227,197,141,0.12)',
-    border: '1px solid rgba(227,197,141,0.35)',
-    titleColor: '#1A1A1A',
-    textColor: 'var(--color-pe-muted)',
-  },
-  stat: {
-    bg: '#0d1f22',
-    border: '1px solid rgba(255,255,255,0.08)',
-    titleColor: '#ffffff',
-    textColor: 'rgba(255,255,255,0.60)',
-  },
+  info: { box: 'border-pe-secondary/25 bg-pe-secondary/8', title: 'text-pe-text', text: 'text-pe-text-soft' },
+  warning: { box: 'border-accent-solar/35 bg-accent-solar/12', title: 'text-pe-text', text: 'text-pe-text-soft' },
+  stat: { box: 'border-white/10 bg-pe-nav-dark', title: 'text-white', text: 'text-on-dark-muted' },
 } as const;
 
 export function Callout({ type, icon, title, text }: CalloutProps) {
-  const s = CALLOUT_STYLES[type];
+  const s = CALLOUT_STYLES[type] ?? CALLOUT_STYLES.info;
   return (
-    <div
-      className="flex gap-3 my-5"
-      style={{
-        background: s.bg,
-        border: s.border,
-        borderRadius: 12,
-        padding: '16px 18px',
-      }}
-    >
+    <div className={`my-6 flex gap-3 rounded-xl border px-5 py-4 ${s.box}`}>
       {icon && (
-        <span className="flex-shrink-0 text-lg leading-none" aria-hidden="true">
+        <span className="shrink-0 text-lg leading-6" aria-hidden="true">
           {icon}
         </span>
       )}
       <div>
-        <p
-          className="font-display font-bold text-xs leading-tight mb-1"
-          style={{ color: s.titleColor }}
-        >
-          {title}
-        </p>
-        <p className="font-body text-xs leading-[1.7]" style={{ color: s.textColor }}>
-          {text}
-        </p>
+        <p className={`font-display text-base font-bold leading-6 ${s.title}`}>{title}</p>
+        <p className={`mt-1 font-body text-base leading-[1.65] ${s.text}`}>{text}</p>
       </div>
     </div>
   );

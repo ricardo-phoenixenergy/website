@@ -3,7 +3,7 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { ShareButtons } from './ShareButtons';
+import { ShareButtons, ShareButtonsView } from './ShareButtons';
 import { InlineCta } from './InlineCta';
 import { BlogPagination, pageSlots } from './BlogPagination';
 
@@ -12,30 +12,37 @@ const controls = (markup: string) => [...markup.matchAll(/<(a|button)\b([^>]*)>(
 const attr = (attrs: string, name: string) => attrs.match(new RegExp(`\\b${name}="([^"]*)"`))?.[1];
 
 describe('ShareButtons', () => {
-  const markup = html(createElement(ShareButtons, { url: 'https://phoenixenergy.solutions/blog/a-post', title: 'A post' }));
+  const url = 'https://phoenixenergy.solutions/blog/a-post';
+  const markup = html(createElement(ShareButtons, { url, title: 'A post' }));
   const found = controls(markup);
 
-  it('draws three 44px outline icon buttons, named for what they do', () => {
-    expect(found.map(([, , attrs]) => attr(attrs, 'aria-label'))).toEqual(['Share on LinkedIn', 'Share on X', 'Copy link']);
-    for (const [, , attrs] of found) {
+  it('groups two 44px outline icon buttons, then Copy link, under one name', () => {
+    expect(markup).toMatch(/^<div role="group" aria-label="Share this article"/);
+    expect(found.map(([, , attrs]) => attr(attrs, 'aria-label'))).toEqual(['Share on LinkedIn', 'Share on X', undefined]);
+    for (const [, , attrs] of found.slice(0, 2)) {
       expect(attr(attrs, 'class')?.split(' ')).toEqual(expect.arrayContaining(['size-11', 'rounded-full', 'border', 'bg-white']));
     }
+    const [, tag, attrs, inner] = found[2];
+    expect(tag).toBe('button');
+    expect(attr(attrs, 'type')).toBe('button');
+    expect(attr(attrs, 'class')).toMatch(/\bmin-h-11\b/);
+    expect(inner).toMatch(/<\/svg>Copy link$/);
   });
 
-  it('shows a drawn glyph in each, not a letter or an emoji', () => {
-    for (const [, , , inner] of found) {
+  it('shows a drawn glyph in the icon buttons, not a letter or an emoji', () => {
+    for (const [, , , inner] of found.slice(0, 2)) {
       expect(inner).toMatch(/^<svg\b[\s\S]*<\/svg>$/);
     }
     expect(markup).not.toMatch(/🔗|✓|>in<|>X</);
   });
 
-  it('draws the filled LinkedIn square at 16px, so it matches the open 20px glyphs beside it', () => {
-    const svgClass = found.map(([, , , inner]) => attr(inner.match(/^<svg\b[^>]*>/)?.[0] ?? '', 'class'));
-    expect(svgClass).toEqual(['size-4', undefined, undefined]);
+  it('draws the filled LinkedIn square at 16px, so it matches the open 20px X beside it', () => {
+    const svgClass = found.slice(0, 2).map(([, , , inner]) => attr(inner.match(/^<svg\b[^>]*>/)?.[0] ?? '', 'class'));
+    expect(svgClass).toEqual(['size-4', undefined]);
   });
 
-  it('opens the two share links in a new tab and keeps the copy button out of any form', () => {
-    const [linkedIn, x, copy] = found;
+  it('opens the two share links in a new tab', () => {
+    const [linkedIn, x] = found;
     for (const [, tag, attrs] of [linkedIn, x]) {
       expect(tag).toBe('a');
       expect(attr(attrs, 'target')).toBe('_blank');
@@ -43,9 +50,15 @@ describe('ShareButtons', () => {
     }
     expect(attr(linkedIn[2], 'href')).toContain('linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fphoenixenergy.solutions');
     expect(attr(x[2], 'href')).toContain('x.com/intent/tweet?url=');
-    expect(copy[1]).toBe('button');
-    expect(attr(copy[2], 'type')).toBe('button');
-    expect(attr(copy[2], 'title')).toBe('Copy link');
+  });
+
+  it('keeps the live region and the fallback field outside the group, so the field takes its own line in the row', () => {
+    const copy = { state: 'failed' as const, copy: () => {}, fieldId: 'copy-field', fieldRef: { current: null } };
+    const failed = html(createElement(ShareButtonsView, { url, title: 'A post', copy }));
+    const groupEnd = failed.indexOf('</div>');
+    expect(failed.indexOf('role="status"')).toBeGreaterThan(groupEnd);
+    expect(failed).toMatch(/<\/div><span role="status"[^>]*><\/span><div class="basis-full"><label for="copy-field"[^>]*>Copy the link from this box\.<\/label><input id="copy-field"[^>]*value="https:\/\/phoenixenergy\.solutions\/blog\/a-post"/);
+    expect(html(createElement(ShareButtons, { url, title: 'A post' }))).not.toContain('<input');
   });
 });
 

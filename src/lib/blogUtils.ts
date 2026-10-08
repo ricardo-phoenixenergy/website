@@ -111,6 +111,23 @@ export function postHeadings(body: PortableTextBlock[] | null | undefined): Post
   return headings;
 }
 
+/** The line a heading's top must pass to be the current one: just below a jump's landing (112px). */
+export const TOC_ACTIVE_LINE = 120;
+
+/**
+ * The table of contents' current heading: the last one whose top has passed
+ * the line. None while the first heading is still below it, so a jump back to
+ * the top clears the highlight.
+ */
+export function activeHeadingId(tops: { id: string; top: number }[], line = TOC_ACTIVE_LINE): string | null {
+  let current: string | null = null;
+  for (const { id, top } of tops) {
+    if (top <= line) current = id;
+    else break;
+  }
+  return current;
+}
+
 /** From this many live posts, /blog shows the featured card, the pills and the search. */
 export const BLOG_FILTER_THRESHOLD = 4;
 

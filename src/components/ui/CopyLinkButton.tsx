@@ -7,15 +7,25 @@
 // the address appears on its own line, focused and selected, so the visitor can
 // copy it themselves. It renders a fragment: inside a wrapping flex row, that
 // field falls onto a line under the row (PageBreadcrumb).
-import { useEffect, useId, useRef, useState } from 'react';
+// The hook and the three parts are exported for a row that groups the button
+// with other actions (the post's share buttons): the group holds the button,
+// and the live region and the field stay outside it, in the row.
+import { useEffect, useId, useRef, useState, type RefObject } from 'react';
 import { IconCheck, IconLink } from './Icons';
 import { arrowLinkClasses } from './buttonStyles';
 
-type CopyState = 'idle' | 'copied' | 'failed';
+export type CopyState = 'idle' | 'copied' | 'failed';
 
 const COPIED_MS = 3000;
 
-export function CopyLinkButton({ url }: { url: string }) {
+export interface CopyLink {
+  state: CopyState;
+  copy: () => void;
+  fieldId: string;
+  fieldRef: RefObject<HTMLInputElement | null>;
+}
+
+export function useCopyLink(url: string): CopyLink {
   const [state, setState] = useState<CopyState>('idle');
   const fieldRef = useRef<HTMLInputElement>(null);
   const fieldId = useId();
@@ -41,31 +51,61 @@ export function CopyLinkButton({ url }: { url: string }) {
     }
   }
 
+  return { state, copy: () => void copy(), fieldId, fieldRef };
+}
+
+export function CopyLinkAction({ state, onCopy }: { state: CopyState; onCopy: () => void }) {
+  return (
+    <button type="button" onClick={onCopy} className={arrowLinkClasses({ className: 'min-h-11 shrink-0' })}>
+      {state === 'copied' ? <IconCheck size={16} className="size-4" /> : <IconLink size={16} className="size-4" />}
+      {state === 'copied' ? 'Link copied' : 'Copy link'}
+    </button>
+  );
+}
+
+export function CopyLinkStatus({ state }: { state: CopyState }) {
+  return (
+    <span role="status" className="sr-only">
+      {state === 'copied' ? 'Link copied' : ''}
+    </span>
+  );
+}
+
+interface CopyLinkFieldProps {
+  url: string;
+  state: CopyState;
+  fieldId: string;
+  fieldRef: CopyLink['fieldRef'];
+}
+
+/** The fallback field, only after a refused copy. */
+export function CopyLinkField({ url, state, fieldId, fieldRef }: CopyLinkFieldProps) {
+  if (state !== 'failed') return null;
+  return (
+    <div className="basis-full">
+      <label htmlFor={fieldId} className="block font-body text-xs text-pe-muted">
+        Copy the link from this box.
+      </label>
+      <input
+        id={fieldId}
+        ref={fieldRef}
+        type="text"
+        readOnly
+        value={url}
+        onFocus={(e) => e.currentTarget.select()}
+        className="mt-1 w-full rounded-lg border border-pe-control-border bg-white px-3 py-2 font-body text-sm text-pe-text"
+      />
+    </div>
+  );
+}
+
+export function CopyLinkButton({ url }: { url: string }) {
+  const { state, copy, fieldId, fieldRef } = useCopyLink(url);
   return (
     <>
-      <button type="button" onClick={copy} className={arrowLinkClasses({ className: 'min-h-11 shrink-0' })}>
-        {state === 'copied' ? <IconCheck size={16} className="size-4" /> : <IconLink size={16} className="size-4" />}
-        {state === 'copied' ? 'Link copied' : 'Copy link'}
-      </button>
-      <span role="status" className="sr-only">
-        {state === 'copied' ? 'Link copied' : ''}
-      </span>
-      {state === 'failed' && (
-        <div className="basis-full">
-          <label htmlFor={fieldId} className="block font-body text-xs text-pe-muted">
-            Copy the link from this box.
-          </label>
-          <input
-            id={fieldId}
-            ref={fieldRef}
-            type="text"
-            readOnly
-            value={url}
-            onFocus={(e) => e.currentTarget.select()}
-            className="mt-1 w-full rounded-lg border border-pe-control-border bg-white px-3 py-2 font-body text-sm text-pe-text"
-          />
-        </div>
-      )}
+      <CopyLinkAction state={state} onCopy={copy} />
+      <CopyLinkStatus state={state} />
+      <CopyLinkField url={url} state={state} fieldId={fieldId} fieldRef={fieldRef} />
     </>
   );
 }
