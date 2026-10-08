@@ -8,6 +8,7 @@ import Link from 'next/link';
 import type { BlogPostCard } from '@/types/sanity';
 import { SOLUTION_META } from '@/types/solutions';
 import { urlFor } from '@/lib/sanity';
+import { noPhotoBackground } from '@/lib/noPhotoBackground';
 import { initials, postMetaLine, postVertical } from '@/lib/blogUtils';
 import { Card } from '@/components/ui/Card';
 import { IconArrowRight } from '@/components/ui/Icons';
@@ -55,14 +56,8 @@ export function FeaturedArticleCard({ post, headingLevel = 2, priority = false, 
                 blurDataURL={post.heroImage?.asset?.metadata?.lqip ?? DEFAULT_LQIP}
               />
             ) : (
-              <div
-                className="h-full w-full"
-                style={{
-                  background: meta
-                    ? `linear-gradient(135deg, ${meta.accent}88 0%, ${meta.accent}33 100%)`
-                    : 'linear-gradient(135deg, var(--color-pe-primary) 0%, var(--color-pe-secondary) 100%)',
-                }}
-              />
+              // No photo: drawn as the post hero draws it, so the white title and meta line stay readable.
+              <div className="h-full w-full" style={{ background: noPhotoBackground(meta?.accent) }} />
             )}
             <div className="absolute inset-0" style={{ background: SCRIM }} />
             <div className="absolute left-4 top-4 z-10">

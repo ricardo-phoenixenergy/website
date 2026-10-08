@@ -109,6 +109,13 @@ describe('FeaturedArticleCard', () => {
     expect(html(createElement(FeaturedArticleCard, { post: post(), priority: true }))).toContain('rel="preload"');
   });
 
+  it('draws a missing photo as the hero does, the service accent fading into Night Teal', () => {
+    const solar = html(createElement(FeaturedArticleCard, { post: post({ tags: ['Solar & Storage'], heroImage: undefined as unknown as SanityImage }) }));
+    expect(solar).toContain('linear-gradient(135deg, #E3C58D44 0%, var(--color-pe-nav-dark) 100%), var(--color-pe-nav-dark)');
+    const plain = html(createElement(FeaturedArticleCard, { post: { ...noService, heroImage: undefined as unknown as SanityImage } }));
+    expect(plain).toMatch(/background:var\(--color-pe-nav-dark\)/);
+  });
+
   it('shows the initials when the author has no photo, and uses no colour outside the tokens', () => {
     const plain = html(createElement(FeaturedArticleCard, { post: { ...noService, heroImage: undefined as unknown as SanityImage, author: { name: 'Ricardo De Sousa', slug: { current: 'r' } } } }));
     expect(plain).toContain('>RD<');

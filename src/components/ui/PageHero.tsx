@@ -15,13 +15,15 @@
 //   placeholder, so the LQIP sits blurred behind the photo instead, and
 //   preload() adds one preload link per crop, each for its own widths.
 // - Without a photo, or one whose size can't be read, phones show no photo
-//   block and wider screens show a gradient from the fallback accent.
+//   block and wider screens show the fallback accent fading into Night Teal
+//   (src/lib/noPhotoBackground.ts, shared with the wide article card).
 // - The line under the headline has two parts: on phones each takes its own
 //   line; from 768px they share one, joined by " · ".
 import { getImageProps } from 'next/image';
 import Link from 'next/link';
 import { preload } from 'react-dom';
 import type { SanityImage } from '@/types/sanity';
+import { noPhotoBackground } from '@/lib/noPhotoBackground';
 import { HERO_PHONE_MEDIA, HERO_PHONE_SIZES, HERO_WIDE_MEDIA, HERO_WIDE_SIZES, heroCrops, type HeroCrops } from '@/lib/projectHeroImage';
 
 /** The service badge over the photo: a link to its page, in its accent colours. */
@@ -104,14 +106,7 @@ export function PageHero({ image, alt, title, titleId, badge, line, fallbackAcce
         {crops ? (
           <HeroPicture crops={crops} alt={alt} />
         ) : (
-          <div
-            className="absolute inset-0"
-            style={{
-              background: fallbackAccent
-                ? `linear-gradient(135deg, ${fallbackAccent}44 0%, var(--color-pe-nav-dark) 100%)`
-                : 'var(--color-pe-nav-dark)',
-            }}
-          />
+          <div className="absolute inset-0" style={{ background: noPhotoBackground(fallbackAccent) }} />
         )}
         <div aria-hidden="true" className="absolute inset-0 hidden md:block" style={{ background: SCRIM }} />
       </div>
