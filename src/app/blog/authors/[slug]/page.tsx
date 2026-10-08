@@ -2,7 +2,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import Link from 'next/link';
 import { urlFor } from '@/lib/sanity';
 import { initials } from '@/lib/blogUtils';
 import { sanityServerClient } from '@/lib/sanity.server';
@@ -16,7 +15,8 @@ import { ArticleCard } from '@/components/ui/ArticleCard';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { Button } from '@/components/ui/Button';
-import { IconArrowRight } from '@/components/ui/Icons';
+import { IconLinkedIn } from '@/components/ui/Icons';
+import { PageBreadcrumb } from '@/components/ui/PageBreadcrumb';
 import { cache } from 'react';
 
 const getAuthor = cache((slug: string) =>
@@ -61,6 +61,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
     ? urlFor(author.photo).width(176).height(176).url()
     : null;
   const photoLqip = author.photo?.asset?.metadata?.lqip ?? null;
+  const few = posts.length < 3;
 
   return (
     <>
@@ -82,41 +83,33 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
         ])}
       />
 
-      {/* Hero */}
-      <section className="focus-on-dark bg-pe-nav-dark px-6 py-14 text-center">
-        <AnimatedSection>
-          {photoSrc ? (
-            <Image
-              src={photoSrc}
-              alt={author.name}
-              width={88}
-              height={88}
-              className="rounded-full object-cover mx-auto mb-4"
-              style={{ border: '3px solid rgba(112,157,169,0.5)' }}
-              {...(photoLqip ? { placeholder: 'blur' as const, blurDataURL: photoLqip } : {})}
-            />
-          ) : (
-            <div
-              className="w-[88px] h-[88px] rounded-full flex items-center justify-center mx-auto mb-4"
-              style={{ background: '#39575C', border: '3px solid rgba(112,157,169,0.5)' }}
-            >
-              <span className="font-display font-bold text-2xl text-white">{initials(author.name)}</span>
-            </div>
-          )}
-          <h1 className="font-display font-extrabold text-3xl text-white mb-1">{author.name}</h1>
-          {author.role && (
-            <p className="font-body text-sm font-medium mb-3" style={{ color: '#709DA9' }}>
-              {author.role}
-            </p>
-          )}
-          {author.bio && (
-            <p
-              className="font-body text-sm leading-[1.75] max-w-[460px] mx-auto"
-              style={{ color: 'rgba(255,255,255,0.65)' }}
-            >
-              {author.bio}
-            </p>
-          )}
+      <PageBreadcrumb
+        trail={[{ label: 'Home', href: '/' }, { label: 'News & Insights', href: '/blog' }, { label: author.name }]}
+      />
+
+      {/* A light header, as the index pages: the photo beside the text from sm, above it on phones */}
+      <header className="page-container mt-6 flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-6">
+        {photoSrc ? (
+          <Image
+            src={photoSrc}
+            alt=""
+            width={88}
+            height={88}
+            className="size-[88px] shrink-0 rounded-full object-cover"
+            {...(photoLqip ? { placeholder: 'blur' as const, blurDataURL: photoLqip } : {})}
+          />
+        ) : (
+          <span
+            aria-hidden="true"
+            className="flex size-[88px] shrink-0 items-center justify-center rounded-full bg-pe-primary font-display text-2xl font-bold text-white"
+          >
+            {initials(author.name)}
+          </span>
+        )}
+        <div className="min-w-0">
+          <h1 className="font-display text-4xl font-extrabold leading-[1.2] text-pe-text">{author.name}</h1>
+          {author.role && <p className="mt-1 font-body text-sm font-medium text-pe-secondary-ink">{author.role}</p>}
+          {author.bio && <p className="mt-3 max-w-[60ch] font-body text-base leading-[1.7] text-pe-muted">{author.bio}</p>}
           {author.linkedin && (
             <Button
               variant="ghost"
@@ -126,45 +119,27 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
               rel="noopener noreferrer"
               className="mt-4"
             >
-              LinkedIn <IconArrowRight />
+              <IconLinkedIn /> LinkedIn
             </Button>
           )}
-        </AnimatedSection>
-      </section>
-
-      {/* Breadcrumb */}
-      <div className="page-container py-3" style={{ borderBottom: '1px solid #E5E7EB' }}>
-        <nav aria-label="Breadcrumb" className="font-body text-xs text-pe-muted flex items-center gap-1">
-          <Link href="/" className="hover:text-pe-primary transition-colors">Home</Link>
-          <span>/</span>
-          <Link href="/blog" className="hover:text-pe-primary transition-colors">News &amp; Insights</Link>
-          <span>/</span>
-          <span className="text-pe-text">{author.name}</span>
-        </nav>
-      </div>
-
-      {/* Posts grid */}
-      <section style={{ background: '#F5F5F5', paddingTop: 32, paddingBottom: 48 }}>
-        <div className="page-container mb-6">
-          <p className="font-body text-xs font-bold uppercase tracking-[0.14em] text-pe-muted mb-1">
-            Articles
-          </p>
-          <h2 className="font-display font-extrabold text-2xl text-pe-text">
-            By {author.name}
-          </h2>
         </div>
+      </header>
+
+      <section aria-labelledby="author-articles" className="page-container mt-10 pb-16 md:mt-12 lg:mt-16">
+        <h2 id="author-articles" className="mb-5 font-body text-xs font-bold uppercase tracking-[0.14em] text-pe-muted">
+          Articles by {author.name}
+        </h2>
         {posts.length === 0 ? (
-          <div className="page-container py-16 text-center">
-            <p className="font-body text-sm text-pe-muted">No articles yet.</p>
-          </div>
+          <p className="font-body text-base text-pe-muted">No articles yet.</p>
         ) : (
-          <div className="page-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          // Fewer than three: two large cards a row, as the few-posts index; else three a row.
+          <ul className={few ? 'grid grid-cols-1 gap-4 md:grid-cols-2' : 'grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3'}>
             {posts.map((post, i) => (
-              <AnimatedSection key={post._id} as="div" delay={i * 0.04}>
-                <ArticleCard post={post} />
+              <AnimatedSection key={post._id} as="li" delay={i * 0.04}>
+                <ArticleCard post={post} size={few ? 'large' : 'default'} headingLevel={3} />
               </AnimatedSection>
             ))}
-          </div>
+          </ul>
         )}
       </section>
 
