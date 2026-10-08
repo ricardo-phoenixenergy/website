@@ -5,11 +5,13 @@
 //   "All project facts";
 // - columns: full width from 1024px when there's no story, with the booking
 //   row at its foot.
-// Each version ends with the service's booking button and the reply promise.
+// Each version sits in the shared SidePanel frame and ends with the service's
+// booking button and the reply promise.
 // Each has its own heading id (project-facts-{variant}), so a page can render
 // two versions and hide one. A row with more than one line (Financing,
 // Approvals) puts each line on its own.
 import Link from 'next/link';
+import { SidePanel } from '@/components/ui/SidePanel';
 import { TrackedButton } from '@/components/ui/TrackedButton';
 import { IconArrowRight, IconChevronDown } from '@/components/ui/Icons';
 import { REPLY_PROMISE } from '@/config/contact';
@@ -90,10 +92,7 @@ export function ProjectFacts({ groups, variant, cta, ctaLocation, className }: P
   if (variant === 'compact') {
     const { main, rest } = splitMainRows(groups);
     return (
-      <section aria-labelledby={headingId} className={cn('rounded-card border border-pe-border bg-white p-5 sm:p-6', className)}>
-        <h2 id={headingId} className="font-display text-lg font-extrabold text-pe-text">
-          Project facts
-        </h2>
+      <SidePanel title="Project facts" titleId={headingId} className={cn('p-5 sm:p-6', className)}>
         {main.length > 0 && (
           <div className="mt-2">
             <Rows rows={main} />
@@ -116,16 +115,13 @@ export function ProjectFacts({ groups, variant, cta, ctaLocation, className }: P
           <Booking cta={cta} ctaLocation={ctaLocation} fullWidth />
           <p className="mt-2 text-center font-body text-xs text-pe-muted">{REPLY_PROMISE.sentence}</p>
         </div>
-      </section>
+      </SidePanel>
     );
   }
 
   if (variant === 'columns') {
     return (
-      <section aria-labelledby={headingId} className={cn('rounded-card border border-pe-border bg-white p-6', className)}>
-        <h2 id={headingId} className="font-display text-lg font-extrabold text-pe-text">
-          Project facts
-        </h2>
+      <SidePanel title="Project facts" titleId={headingId} className={className}>
         <div className={cn('mt-3 grid gap-x-8 gap-y-4', factColumnsClass(groups.length))}>
           {groups.map((group) => (
             <Group key={group.key} group={group} />
@@ -135,15 +131,12 @@ export function ProjectFacts({ groups, variant, cta, ctaLocation, className }: P
           <p className="font-body text-sm text-pe-muted">Planning something similar? {REPLY_PROMISE.sentence}</p>
           <Booking cta={cta} ctaLocation={ctaLocation} fullWidth={false} />
         </div>
-      </section>
+      </SidePanel>
     );
   }
 
   return (
-    <section aria-labelledby={headingId} className={cn('rounded-card border border-pe-border bg-white p-6', className)}>
-      <h2 id={headingId} className="font-display text-lg font-extrabold text-pe-text">
-        Project facts
-      </h2>
+    <SidePanel title="Project facts" titleId={headingId} className={className}>
       <div className="mt-2 flex flex-col gap-4">
         {groups.map((group) => (
           <Group key={group.key} group={group} />
@@ -153,6 +146,6 @@ export function ProjectFacts({ groups, variant, cta, ctaLocation, className }: P
         <Booking cta={cta} ctaLocation={ctaLocation} fullWidth />
         <p className="mt-2 text-center font-body text-xs text-pe-muted">{REPLY_PROMISE.sentence}</p>
       </div>
-    </section>
+    </SidePanel>
   );
 }

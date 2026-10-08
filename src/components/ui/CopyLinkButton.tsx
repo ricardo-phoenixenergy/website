@@ -6,7 +6,7 @@
 // refuses (no Clipboard API, or permission denied), a read-only field holding
 // the address appears on its own line, focused and selected, so the visitor can
 // copy it themselves. It renders a fragment: inside a wrapping flex row, that
-// field falls onto a line under the row (ProjectBreadcrumb).
+// field falls onto a line under the row (PageBreadcrumb).
 import { useEffect, useId, useRef, useState } from 'react';
 import { IconCheck, IconLink } from './Icons';
 import { arrowLinkClasses } from './buttonStyles';

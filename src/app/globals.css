@@ -22,6 +22,7 @@
   --color-pe-control-border: #848B96; /* a form control's own edge: 3.4:1 on white, 3.2:1 on pe-bg, above 3:1 on the dark tool cards (WCAG 1.4.11) */
   --color-pe-card: #FFFFFF;
   --color-pe-nav-dark: #0d1f22;
+  --color-pe-band-from: #1a3a3e;     /* the closing band's gradient starts here and ends on pe-nav-dark */
 
   /* Ink tier: the text-safe version of each colour on light surfaces */
   --color-pe-secondary-ink: #45727E;  /* Dusty Blue as text: 4.9:1 on pe-bg; white on it 5.3:1 */

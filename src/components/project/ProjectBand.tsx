@@ -1,13 +1,10 @@
 // src/components/project/ProjectBand.tsx
-// The closing band at the foot of a project page, unchanged in look. It holds
-// the service's booking button, which names the project in its message and
-// sends cta_click, and the link to every published project.
-import { Button } from '@/components/ui/Button';
-import { TrackedButton } from '@/components/ui/TrackedButton';
-import { IconArrowRight } from '@/components/ui/Icons';
+// The closing band at the foot of a project page, on the shared ClosingBand. It
+// holds the service's booking button, which names the project in its message
+// and sends cta_click, and the link to every published project.
+import { ClosingBand } from '@/components/ui/ClosingBand';
 import { PROJECTS_CTA, type Cta } from '@/config/ctas';
 import { REPLY_PROMISE } from '@/config/contact';
-import { cn } from '@/lib/utils';
 
 interface ProjectBandProps {
   cta: Cta;
@@ -19,31 +16,14 @@ interface ProjectBandProps {
 
 export function ProjectBand({ cta, ctaLocation, afterStory = false }: ProjectBandProps) {
   return (
-    <div className={cn('page-container py-5', afterStory && 'mt-5 md:mt-7 lg:mt-11')}>
-      <div
-        className="focus-on-dark rounded-2xl px-7 py-8 md:px-10 md:py-10"
-        style={{ background: 'linear-gradient(135deg, #1a3a3e 0%, #0d1f22 100%)', border: '1px solid rgba(255,255,255,0.08)' }}
-      >
-        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div className="md:max-w-sm">
-            <p className="mb-2 font-body text-xs font-bold uppercase tracking-[0.14em]" style={{ color: 'var(--color-on-dark-subtle)' }}>
-              Start your project
-            </p>
-            <h2 className="mb-2.5 font-display text-xl font-extrabold leading-[1.2] text-white md:text-2xl">Ready for a similar project?</h2>
-            <p className="font-body text-sm leading-[1.7]" style={{ color: 'var(--color-on-dark-subtle)' }}>
-              Tell us about your site. {REPLY_PROMISE.sentence}
-            </p>
-          </div>
-          <div className="flex flex-shrink-0 flex-col gap-3 sm:flex-row md:flex-col lg:flex-row">
-            <TrackedButton variant="light" href={cta.href} ctaLabel={cta.label} ctaLocation={ctaLocation}>
-              {cta.label} <IconArrowRight />
-            </TrackedButton>
-            <Button variant="ghost" href={PROJECTS_CTA.href}>
-              {PROJECTS_CTA.label} <IconArrowRight />
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <ClosingBand
+      eyebrow="Start your project"
+      heading="Ready for a similar project?"
+      body={`Tell us about your site. ${REPLY_PROMISE.sentence}`}
+      primary={cta}
+      primaryLocation={ctaLocation}
+      secondary={PROJECTS_CTA}
+      afterContent={afterStory}
+    />
   );
 }
