@@ -44,6 +44,7 @@ Tokens live in `src/app/globals.css` under `@theme static`, which generates the 
 | `--color-pe-control-border` | Control Grey | `#848B96` | A form control’s own edge: input, select and textarea borders, radio rings, segment strips and a switch’s off track. 3.4:1 on white and 3.2:1 on `#F5F5F5`, so the control can be seen (WCAG 1.4.11) |
 | `--color-pe-card` | White | `#FFFFFF` | Card backgrounds |
 | `--color-pe-nav-dark` | Night Teal | `#0d1f22` | Dark sections, footer, mobile menu |
+| `--color-pe-band-from` | Deep Night Teal | `#1a3a3e` | The closing band's gradient start (`ClosingBand`, project and post pages), ending on Night Teal |
 
 ### Ink tier (text that must pass on its surface)
 
@@ -128,7 +129,7 @@ Every text element on the site must use one of these roles. **Never use arbitrar
 | **card-h3** | `font-display font-bold text-xl leading-[1.3]` | 20px | Card titles, subsection titles |
 | **subheading** | `font-display font-bold text-lg leading-tight` | 18px | Smaller inline headings, form section titles |
 | **body** | `font-body font-normal text-base leading-[1.75]` | 16px | Main paragraph copy, legal pages (60ch column) |
-| **prose** | `font-body font-normal text-lg leading-[1.75] text-pe-text-soft` | 18px | Blog post body, in a 42rem column |
+| **prose** | `font-body font-normal text-lg leading-[1.75] text-pe-text-soft` | 18px | Blog post body, in a 42rem column. Its h2 is 26px (`text-[26px]`, Plus Jakarta Sans 800, line height 1.2), the project chapter headline size; its h3 is 20px |
 | **body-sm** | `font-body font-normal text-sm leading-[1.6]` | 14px | Secondary descriptions, card copy, step text |
 | **eyebrow** | `font-body font-bold text-xs uppercase tracking-[0.14em]` | 12px | Section labels above every heading |
 | **badge** | `font-body font-semibold text-xs uppercase tracking-[0.1em]` | 12px | Vertical badges and category tags (filter pills are chips, below) |
@@ -154,8 +155,7 @@ font-size: clamp(2rem, 6.4vw, 3.25rem);   /* about 32px to 52px */
 ```
 
 ### Other titles outside the scale
-- Larger: About `text-4xl md:text-5xl lg:text-6xl`, /solutions `text-4xl md:text-5xl`, solution heroes `text-[1.875rem] md:text-[2.625rem]` (30px rising to 42px), project pages `text-[28px] md:text-4xl lg:text-[44px]` (28px, 36px from 768px and 44px from 1024px), the 404 page `clamp(2rem, 5vw, 3.5rem)` and the error page `clamp(1.75rem, 4vw, 3rem)`.
-- Smaller, on dark or photo heroes: blog posts `text-2xl md:text-3xl` and author pages `text-3xl`.
+- Larger: About `text-4xl md:text-5xl lg:text-6xl`, /solutions `text-4xl md:text-5xl`, solution heroes `text-[1.875rem] md:text-[2.625rem]` (30px rising to 42px), project and blog post pages `text-[28px] md:text-4xl lg:text-[44px]` (28px, 36px from 768px and 44px from 1024px, the shared `PageHero`), the 404 page `clamp(2rem, 5vw, 3.5rem)` and the error page `clamp(1.75rem, 4vw, 3rem)`.
 
 ### Eyebrow colour rules
 - On light backgrounds: `text-pe-muted` (Cool Grey ink)
@@ -179,8 +179,8 @@ font-size: clamp(2rem, 6.4vw, 3.25rem);   /* about 32px to 52px */
 
 ## Spacing & Layout
 
-- **Max content width:** `1280px` through `.page-container` on every section; blog posts use `max-w-5xl` (1024px). `.max-w-content` (960px) is defined in `globals.css` but unused.
-- **Page horizontal padding:** `16px`, `24px` from 640px and `32px` from 1024px (`.page-container`); blog posts use `24px` (`px-6`).
+- **Max content width:** `1280px` through `.page-container` on every section, blog posts included (since October 2026). `.max-w-content` (960px) is defined in `globals.css` but unused.
+- **Page horizontal padding:** `16px`, `24px` from 640px and `32px` from 1024px (`.page-container`).
 - **Section vertical padding:** `py-16 md:py-24` (64px / 96px).
 - **Card padding:** `16px` inner body (`CardBody padding="sm"`), `24px` for content-heavy cards (`padding="lg"`).
 - **Grid gap:** `16px` cards, `24px` sections.
@@ -278,7 +278,7 @@ src/components/
 │   ├── BlogSearchInput.tsx
 │   ├── Callout.tsx
 │   ├── InlineCta.tsx
-│   ├── RelatedPosts.tsx
+│   ├── PostNext.tsx            // "More articles" after a post, on ProjectNext's pattern
 │   ├── ShareButtons.tsx
 │   ├── StatStrip.tsx
 │   └── TableOfContents.tsx

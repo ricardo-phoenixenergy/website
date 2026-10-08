@@ -218,9 +218,10 @@ When a project changes, the Sanity webhook (`src/app/api/revalidate/route.ts`) r
 |---|---|
 | `src/app/projects/[slug]/page.tsx` | Reads the project; metadata, structured data and composition |
 | `src/components/project/*` | `ProjectBreadcrumb`, `ProjectHero`, `ProjectResults`, `ProjectPhotos` (with `PhotoViewer`), `ProjectStory`, `ProjectFacts`, `StickyWhenFits`, `ProjectNext`, `ProjectBand` |
+| `src/components/ui/PageBreadcrumb.tsx`, `PageHero.tsx`, `SidePanel.tsx`, `ClosingBand.tsx` | The shared parts under the project page (October 2026): `ProjectBreadcrumb`, `ProjectHero` and `ProjectBand` are thin wrappers over them, with the same markup, and `ProjectFacts` sits in `SidePanel`. The blog post page (`specs/10-BLOG.md`) is built on the same parts, with `StickyWhenFits` for its sidebar |
 | `src/lib/projectData.ts` | Every project read, with the disclosure rules |
 | `src/lib/projectDisclosure.ts`, `projectMeta.ts`, `projectStory.ts`, `projectFacts.ts`, `projectPhotos.ts`, `projectHeroImage.ts`, `projectOptions.ts`, `stickyFit.ts`, `projectSeo.ts`, `projectOrder.ts`, `projectResults.ts` | Pure logic, each with vitest tests |
-| `src/components/ui/CopyLinkButton.tsx` and `TrackedButton.tsx` | Page actions |
+| `src/components/ui/CopyLinkButton.tsx` and `TrackedButton.tsx` | Page actions. `CopyLinkButton` also exports its hook and parts (`useCopyLink`, `CopyLinkAction`, `CopyLinkStatus`, `CopyLinkField`), which the post's share group uses; its own markup is unchanged |
 | `sanity/schemaTypes/project.ts` and `projectRules.ts` | The Studio's project form and the checks behind its warnings (`specs/12-CMS.md`) |
 
 ---

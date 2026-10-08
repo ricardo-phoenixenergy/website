@@ -2,7 +2,7 @@
 > Spoke | Hub: [`/CLAUDE.md`](/CLAUDE.md) | Version 3.1
 > Routes: `/blog` (index) · `/blog/[slug]` (single post) · `/blog/authors/[slug]` (author profile)
 > **Approved April 2026**
-> **Updated 2026-10-08:** the article cards, the blog index, the carousels and the author page follow the project cards and `/projects` (Blog Index below).
+> **Updated 2026-10-08:** the article cards, the blog index, the carousels and the author page follow the project cards and `/projects` (Blog Index below); the single post follows the project page (Single Post below).
 > **Updated 2026-09-24:** corrected to match the build. Type sizes follow the scale in `specs/01-BRAND.md`: nothing renders below 12px, so where a line below gives 9 to 11px, the build uses 12px or more.
 
 ---
@@ -28,11 +28,13 @@
 
 ```
 1. Navbar: solid white pill; "News & Insights" highlighted once the link shows
-2. Post hero: 360px full-bleed photo + gradient + tags + title + meta
-3. Breadcrumb + share bar
-4. Two-column layout: article body (left) + sidebar (right), from 1024px
-5. CTA band: PageFooter with ctaVariant="centered"
-6. Footer
+2. Breadcrumb row: PageBreadcrumb, Home / News & Insights / title, with Share (LinkedIn, X, Copy link) at the right
+3. Post hero: PageHero, the project hero (service badge, H1, author · date · read time)
+4. Below 1024px: the "In this article" disclosure, closed
+5. Article (42rem) beside the sticky sidebar (contents, author) from 1024px; tags footer; below 1024px the author card
+6. More articles: PostNext, only with related posts
+7. Closing band: ClosingBand, the project page's rounded band
+8. Footer
 ```
 
 ---
@@ -157,151 +159,115 @@ Rebuilt 2026-10-08 on the project page's grammar:
 
 ## Single Post
 
-### Post Hero
-
-- `position: relative`, `height: 360px` at every width, `overflow: hidden`, with Night Teal behind the photo.
-- `next/image` fill, `object-fit: cover`, `priority`, and `placeholder="blur"` when the image has an LQIP.
-- Overlay: `linear-gradient(180deg, rgba(13,31,34,0.15) 0%, rgba(13,31,34,0.88) 100%)`.
-
-**Bottom-anchored content** (`padding: 0 24px 28px`, `max-width: 1024px`, `margin: 0 auto`):
-- Tag row: the category (white text on white at 25%, bold, uppercase) + up to two tags (white text on white at 15%).
-- Title: Plus Jakarta Sans 800, 24px (30px from 768px), white, `line-height: 1.2`, `margin-bottom: 12px`.
-- Meta row: author photo, or initials on Deep Teal (28px, `border: 2px solid rgba(255,255,255,0.3)`) + name + `·` + date + `·` + read time.
-  - All: Inter 400, 12px, `rgba(255,255,255,0.6)`.
-
----
+As built 2026-10-08, on the project page's parts (`specs/06-PROJECT-SINGLE.md`): the breadcrumb row, the hero, a side panel beside the text, the next section and the closing band. The page sits in `min-h-screen bg-pe-bg`, every part in `page-container` (1280px, 16px sides, 24px from 640px, 32px from 1024px).
 
 ### Breadcrumb + Share Bar
 
-```css
-display: flex; /* a column with an 8px gap below 640px */
-align-items: center;
-justify-content: space-between;
-padding: 12px 24px;
-max-width: 1024px;
-margin: 0 auto;
-border-bottom: 1px solid #E5E7EB;
-```
+`PageBreadcrumb` (`src/components/ui/PageBreadcrumb.tsx`), the project page's row, first under the navbar at `pt-24`:
 
-**Left:** `Home / News & Insights / {post title}`, 12px, muted. The title is cut with an ellipsis to fit the line (CSS `truncate`), not at a set length.
-
-**Right — share buttons:**
-- Label: `Share:` in Inter 400, 12px, muted.
-- Three 44px outline `IconButton`s (updated September 2026, the button programme) with drawn glyphs in Deep Teal: LinkedIn (`IconLinkedIn`), X (`IconXLogo`) and Copy link (`IconLink`). They replaced the text `in`, the letter `X` and the `🔗` emoji. The X and link glyphs are 20px; the LinkedIn mark, a filled square that reads larger and darker at the same size, is 16px, the same height as the X.
-- Each: white, `border: 1px solid #E5E7EB`, which turns Deep Teal on hover over a `#F5F5F5` fill.
-- After a copy, the link glyph turns into a check (`IconCheck`) for 2 seconds.
+- Trail: `Home / News & Insights / {post title}`, Inter 14px, muted; the current crumb is 600 `pe-primary` with `aria-current="page"` and ends in an ellipsis; separators are `aria-hidden`; crumb links carry `hit-area`. Below 640px, Home drops out.
+- Action slot: `ShareButtons`, one `div role="group" aria-label="Share this article"` holding two 44px outline `IconButton`s, LinkedIn (`IconLinkedIn`, drawn at 16px, the X's height) and X (`IconXLogo`, 20px), then Copy link as on project pages (the text action from `CopyLinkButton`: "Link copied" for 3 seconds, announced in a polite live region; when the browser refuses, a read-only field holding the address, focused and selected). The live region and the field sit after the group, so the field takes a full line under the row, not a slot beside the buttons.
+- Below 640px the group takes its own line under the trail (`basis-full`), so the trail keeps its width.
 
 **Share behaviour:**
 - LinkedIn: `https://www.linkedin.com/sharing/share-offsite/?url={canonicalUrl}`
-- X: `https://x.com/intent/tweet?url={canonicalUrl}&text={seoTitle}`
-- Copy link: `navigator.clipboard.writeText(canonicalUrl)`; the button's `title` reads "Copied!" for 2 seconds.
+- X: `https://x.com/intent/tweet?url={canonicalUrl}&text={seoTitle or title}`
+- Copy link: `navigator.clipboard.writeText(canonicalUrl)`.
 
----
+### Post Hero
+
+`PageHero` (`src/components/ui/PageHero.tsx`), the project hero with the post's content, `titleId="post-title"`:
+
+- From 768px the photo runs edge to edge, 400px tall (470px from 1024px), under the Night Teal scrim, with the badge, H1 and line over it 40px above its foot. Below 768px the photo is 4:3 inside the page margins (16px radius) with the text under it on the page background.
+- Photo: the art-directed `<picture>` from `heroCrops()` (`src/lib/projectHeroImage.ts`): a 5:2 crop from 768px and a 4:3 crop below, both on the Studio hotspot, one preload per crop, the LQIP blurred behind. The post query already carries what it needs (`asset.url`, `metadata.dimensions`, `hotspot`, `crop`). Alt text: the hero's alt, else the title.
+- Badge: the service the post's tags name (`postVertical`, the first tag that names one), in its accent fill and "on" ink, linking to its solution page. No badge when no tag names a service. The category is not in the hero; it is on the cards and in the tags footer.
+- H1: the post title, Plus Jakarta Sans 800, 28px (36px from 768px, 44px from 1024px), `max-w-[25ch]`, balanced; `pe-text` on phones, white over the photo.
+- Line under it: the author's name, then "8 October 2026 · 6 min read" (the read time left out when unset). Phones: two lines, 14px `pe-muted`; from 768px one line joined by " · ", 16px `on-dark-muted`.
+- No hero photo: phones show no photo block, wider screens a gradient from the service accent to Night Teal (Night Teal alone with no service).
 
 ### Two-Column Post Layout
 
-```css
-display: grid;
-grid-template-columns: 1fr 280px; /* from 1024px; 1fr below */
-gap: 32px;
-max-width: 1024px;
-margin: 0 auto;
-padding: 32px 24px 48px;
+```
+page-container mt-10 md:mt-12 lg:mt-16
+lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-x-14
 ```
 
-**Mobile (below 1024px):** a single column in source order: article body, then ToC, author card and related posts. The sidebar is sticky only from 1024px.
+- Left (`min-w-0`): below 1024px the closed "In this article" disclosure (`mb-8`), then the article (`max-w-[42rem]`, labelled by the H1), the tags footer, and below 1024px the author card (`mt-8`).
+- Right, from 1024px: `StickyWhenFits` holding the table of contents panel and the author card, 16px apart. It stays in view 96px from the top (under the navbar pill) while it fits in the window with 24px to spare; a taller sidebar scrolls with the page.
+- Both versions of the contents and the author card are rendered and each is hidden at the other widths; the two author cards carry their own heading ids (`author-title`, `author-title-sidebar`).
 
 ---
 
 ## Article Body (left column)
 
-`max-width: 42rem` (672px), about 70 characters a line at the 18px body size. Reading copy never drops below 18px here; the smallest text anywhere is 12px (see `specs/01-BRAND.md`).
+`max-width: 42rem` (672px), about 70 characters a line at the 18px body size. Reading copy never drops below 18px here; the smallest text anywhere is 12px (see `specs/01-BRAND.md`). A post with no body renders an empty article.
 
 ### Intro paragraph
-No separate intro style. The first paragraph renders like every other body paragraph (Inter 400, 18px, `text-pe-text-soft`; see Standard prose), with no rule under it.
+No separate intro style. The first paragraph renders like every other body paragraph (Inter 400, 18px, `text-pe-text-soft`; see Standard prose), with no rule under it. Articles have no lead paragraph and no chapter labels (project structures).
 
 ### Standard prose
-- H2: Plus Jakarta Sans 800, 24px, `#1A1A1A`, `line-height: 1.25`, `margin: 48px 0 16px`
-- H3: Plus Jakarta Sans 700, 20px, `#1A1A1A`, `line-height: 1.3`, `margin: 36px 0 12px`
+- H2: Plus Jakarta Sans 800, 26px, `pe-text`, `line-height: 1.2`, `margin: 48px 0 16px`, balanced: the project page's chapter headline size
+- H3: Plus Jakarta Sans 700, 20px, `pe-text`, `line-height: 1.3`, `margin: 36px 0 12px`
 - Body paragraph: Inter 400, 18px, `#374151` (`text-pe-text-soft`), `line-height: 1.75`, `margin-bottom: 24px`
 - Lists: same size and colour as body, markers outside the text (`list-outside`, 24px indent), 8px between items
 - Blockquote text: Plus Jakarta Sans 700 italic, 20px, `line-height: 1.45`
 - Image caption: Inter 400, 14px, muted, centred, not italic
 
-The previous values (12px `#6B7280` body, 17px H2) set about 117 characters a line in grey at a size below any reading floor; they were replaced in the September 2026 UX audit fixes.
+On a post, `postTextComponents(headings)` (`src/lib/postTextComponents.tsx`) renders the h2 and h3 with ids from `postHeadings()` (`src/lib/blogUtils.ts`), found by the block's `_key`: lower case, other characters to `-`, and a repeated heading gets `-2`, `-3` and so on. Each heading has a 1rem scroll margin, which with html's 6rem `scroll-padding-top` lands it 112px from the top after a jump, below the navbar pill.
 
 ---
 
 ### Rich Content Blocks
 
-All blocks are custom Portable Text components in `src/lib/portableTextComponents.tsx`.
+All blocks are custom Portable Text components in `src/lib/portableTextComponents.tsx`, coloured from the tokens. Text under 24px reaches 4.5:1 or more on its fill.
 
 #### 1. Callout block (3 variants)
 
 ```
-type: 'info'    → Dusty Blue tint bg + border
-type: 'warning' → Amber tint bg + border
-type: 'stat'    → Dark (#0d1f22) bg
+type: 'info'    → bg-pe-secondary/8, border-pe-secondary/25
+type: 'warning' → bg-accent-solar/12, border-accent-solar/35
+type: 'stat'    → bg-pe-nav-dark, border-white/10
 ```
 
-Layout: `display: flex`, `gap: 12px`, `padding: 16px 18px`, `border-radius: 12px`, `margin: 20px 0`
-- Icon: 18px emoji, `flex-shrink: 0`
-- Title: Plus Jakarta Sans 700, 12px, dark on the light variants and white on the stat variant
-- Text: Inter 400, 12px minimum, `line-height: 1.7`, muted on the light variants and `var(--color-on-dark-subtle)` or lighter on the stat variant
+Layout: `flex gap-3 rounded-xl border px-5 py-4 my-6`
+- Icon: the editor's emoji, 18px, decorative (`aria-hidden`)
+- Title: Plus Jakarta Sans 700, 16px; `pe-text` on the light variants, white on the stat variant
+- Text: Inter 400, 16px, `line-height: 1.65`; `pe-text-soft` on the light variants, `on-dark-muted` on the stat variant
 
 **Sanity fields:** `type` (enum), `icon` (string, optional), `title` (string), `text` (text)
 
 #### 2. Stat strip
 
-```css
-display: grid;
-grid-template-columns: repeat(3, 1fr);
-background: #39575C;
-border-radius: 12px;
-overflow: hidden;
-margin: 20px 0;
-```
+`grid rounded-xl bg-pe-nav-dark my-6`: one figure per row on phones (hairline rules between), all in one row from 640px (`sm:grid-cols-{n}`, rules between columns).
 
-Each stat: `padding: 14px`, `text-align: center`, `border-right: 1px solid rgba(255,255,255,0.1)`
-- Value: Plus Jakarta Sans 800, 18px, white
-- Label: Inter 400, 12px, `var(--color-on-dark-subtle)`, uppercase
+Each stat: `px-4 py-4`, centred
+- Value: Plus Jakarta Sans 800, 24px (the scale's stat value), white
+- Label: Inter 400, 12px, uppercase, `tracking-[0.08em]`, `on-dark-muted` (9.4:1)
 
-**Sanity fields:** `stats[]` — array of `{ value: string, label: string }` (max 4)
+**Sanity fields:** `stats[]`, an array of `{ value: string, label: string }` (max 4)
 
 #### 3. Inline image with caption
 
-- `next/image`, `border-radius: 12px`, `width: 100%`, `margin: 20px 0`
+- `next/image`, `border-radius: 12px`, `width: 100%`, `margin: 32px 0`
 - Caption: Inter 400, 14px, muted, `text-align: center`
 
 **Sanity fields:** `image` (Sanity image asset), `alt` (string, required), `caption` (string, optional)
 
 #### 4. Blockquote
 
-```css
-border-left: 3px solid #709DA9;
-padding: 16px 16px 16px 20px;
-background: rgba(112,157,169,0.06);
-border-radius: 0 8px 8px 0;
-margin: 32px 0;
-```
-- Quote text: Plus Jakarta Sans 700, 20px, `#1A1A1A`, italic, `line-height: 1.45`
+`my-8 rounded-r-lg border-l-[3px] border-pe-secondary bg-pe-secondary/6 py-4 pl-5 pr-4`
+- Quote text: Plus Jakarta Sans 700, 20px, `pe-text`, italic, `line-height: 1.45`
 - There is no source line.
 
 **Sanity fields:** none of its own. A blockquote is the editor's standard Portable Text "Quote" style on a text block, rendered by `block.blockquote` in `src/lib/portableTextComponents.tsx`. There is no quote object and no source field.
 
 #### 5. Inline CTA banner
 
-```css
-background: #39575C;
-border-radius: 14px;
-padding: 20px;
-text-align: center;
-margin: 24px 0;
-```
-- Title: Plus Jakarta Sans 800, 16px (`text-base`), white
-- Subtitle: Inter 400, 12px, `rgba(255,255,255,0.65)`
-- Button: `Button`, light, compact size (updated September 2026): a 40px pill, `#F5F5F5` fill, Night Teal Inter 600 14px, white on hover. An external link opens in a new tab.
-- The block carries `focus-on-dark`, so the focus ring is white on it: the default Deep Teal ring vanished on the Deep Teal block.
+`focus-on-dark my-8 rounded-card bg-pe-nav-dark px-6 py-7 text-center`
+- Title: Plus Jakarta Sans 700, 18px, white. A paragraph, not a heading, so the outline stays the author's.
+- Subtitle: Inter 400, 14px, `on-dark-muted` (9.4:1), at most 48 characters wide
+- Button: `Button`, light, compact size, 20px under the text: a 40px pill, `pe-bg` fill, Night Teal Inter 600 14px. An external link opens in a new tab.
+- `focus-on-dark` turns the focus ring white on the dark block.
 
 **Sanity fields:** `title`, `subtitle`, `btnText`, `btnHref` (internal route or external URL)
 
@@ -309,63 +275,70 @@ margin: 24px 0;
 
 ### Tags Footer
 
-```css
-display: flex;
-align-items: center;
-gap: 10px 8px; /* each chip's touch target reaches 4px above and below, so wrapped rows keep 2px between them */
-flex-wrap: wrap;
-padding-top: 20px;
-border-top: 1px solid #E5E7EB;
-margin-top: 28px;
-```
-- "Tags:" label: Inter 600, 12px, `#1A1A1A`
-- Each tag: a `Chip` link (updated September 2026), like the /blog tag pills: 36px, white with a `#E5E7EB` border, muted Inter 500 14px text that turns Deep Teal on hover
-- Each tag links to `/blog?tag={tag}`, which drives internal linking
+A `footer` inside the article, only when the post has a category or tags: `mt-7 border-t border-pe-border pt-5`.
+- Label: "Filed under", the chapter-label style (Inter 700, 12px, uppercase, `tracking-[0.1em]`, `pe-muted`)
+- Then a wrapping row, `gap-x-2 gap-y-2.5` (each chip's touch target reaches 4px above and below, so wrapped rows keep 2px between them): the category as plain text (Inter 600, 14px, `pe-text`), then each tag as a `Chip` link to `/blog?tag={tag}`, which drives internal linking
 
 ---
 
-## Sidebar (right column, sticky)
+## Sidebar (right column, from 1024px)
 
-```css
-position: sticky;
-top: 24px;
-display: flex;
-flex-direction: column;
-gap: 16px;
-```
-
-All sidebar cards:
-- `background: #fff`, `border-radius: 14px`, `border: 1px solid #E5E7EB`, `padding: 18px`
+`StickyWhenFits` (`src/components/project/StickyWhenFits.tsx`), a `flex flex-col gap-4` column, 340px. Both panels use `SidePanel` (`src/components/ui/SidePanel.tsx`), the project facts' frame: `rounded-card border border-pe-border bg-white p-6`, an `h2` title (Plus Jakarta Sans 800, 18px), the panel labelled by it.
 
 ### 1. Table of Contents
 
-- Title: `In this article`, Plus Jakarta Sans 700, 14px (`text-sm`)
-- Auto-generated from H2 and H3 headings in article body
-- Each item: number (Inter 700, 12px, `pe-secondary-ink`) + heading text (Inter 12px; 500 for H2, 400 for H3)
-- `border-bottom: 1px solid #E5E7EB` between items
-- Click → smooth scroll to heading anchor
-- Active heading: text → Deep Teal (tracked via IntersectionObserver)
+`TableOfContents` (`src/components/blog/TableOfContents.tsx`), from the post's h2 and h3 headings (`postHeadings`); nothing renders without headings.
+- `panel` (sidebar): `SidePanel as="nav"`, title "In this article" (`toc-title`), then an `ol`.
+- `disclosure` (below 1024px, between the hero and the article): `nav aria-label="In this article"` around a closed `details` (`rounded-card border border-pe-border bg-white`); the 44px `summary` reads "In this article" (Plus Jakarta Sans 700, 16px) with the chevron that turns when open, as the project facts' "All project facts". Each link is 44px tall here.
+- Each item: the number (Inter 700, 12px, `pe-secondary-ink`) and the heading (Inter 14px; 500 for an h2, indented 8px for an h3), `border-b border-pe-border` between items, a 3px left rule.
+- Current heading: the last one whose top has passed 120px from the top of the window (`activeHeadingId`), `text-pe-primary` with a `pe-primary` rule and `aria-current="location"`; none while the first heading is still below that line, so a jump back to the top clears it. Others `pe-muted` with a transparent rule.
+- A click scrolls to the heading (smoothly unless the visitor asks for reduced motion), puts its address in the bar with `history.replaceState` and moves focus to the heading.
 
 ### 2. Author Card
 
-- Author avatar: 44px circle, Deep Teal bg, white initials
-- Name: Plus Jakarta Sans 700, 14px (`text-sm`)
-- Role: Inter 500, 12px, `pe-secondary-ink` (e.g. *"The Strategist · Co-Founder"*)
-- Bio: Inter 400, 12px, muted, `line-height: 1.65` (from Sanity `author.bio`)
-- Links to `/blog/authors/[slug]`
+`AuthorCard` (`src/components/blog/AuthorCard.tsx`), `SidePanel` titled "About the author":
+- The 44px photo (`alt=""`, the name is beside it) or the initials disc (`bg-pe-primary`, white)
+- Name: Plus Jakarta Sans 700, 16px, a link to `/blog/authors/[slug]` with `hit-area`
+- Role: Inter 400, 14px, `pe-secondary-ink`
+- Bio: Inter 400, 14px, `pe-muted`, `line-height: 1.65`, 12px under the name, only when set (no empty gap without one)
 
-### 3. Related Posts (3 articles)
+---
 
-Pulled via GROQ: posts sharing at least one tag OR same category, ordered by `publishedAt desc`, excluding current post.
+## More articles and the closing band
 
-- Card title: `Related articles`, Plus Jakarta Sans 700, 14px (`text-sm`)
+### More articles (`PostNext`)
 
-Each item:
-- Thumbnail: `52×44px`, `border-radius: 8px`, `next/image`
-- Title: Plus Jakarta Sans 700, 12px, `line-height: 1.35`, clamped to two lines
-- Meta: Inter 400, 12px, muted: date + read time
-- `border-bottom: 1px solid #E5E7EB`. Last: none
-- Full card links to `/blog/[slug]`
+`src/components/blog/PostNext.tsx`, on `ProjectNext`'s pattern, after the body: `section aria-labelledby="more-articles"`, `mt-10 bg-white py-8 md:mt-12 lg:mt-16`, a `page-container` with the `h2` "More articles" in the eyebrow style (Inter 700, 12px, uppercase, `tracking-[0.14em]`, `pe-muted`, `mb-5`).
+
+The related posts (up to 3: live posts sharing a tag or the category, newest first) follow `relatedLayout`:
+- three: `ArticleCard`s in a `ul`, `grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3`
+- two: large `ArticleCard`s, `grid-cols-1 gap-6 md:grid-cols-2`
+- one: a `FeaturedArticleCard` whose pill names the post's service (else its category), since the heading names the section
+
+Card titles are `h3`. With no related posts the section is not rendered.
+
+### Closing band
+
+`ClosingBand` (`src/components/ui/ClosingBand.tsx`), the project page's rounded band in the container:
+- Eyebrow "Start your project", heading "Want to know what this means for your site?", line "Tell us about your site. We reply within 1 business day."
+- Primary (light, sends `cta_click` with `cta_location` `post_band:{slug}`): `articleCta(vertical, title)` from `src/config/ctas.ts`, the service's booking label when a tag names one (for example "Book a free energy audit"), else "Book a discovery meeting"; the contact message names the article.
+- Secondary (ghost): "View all articles", to `/blog` (`BLOG_CTA`).
+- With no "More articles" section above it, the band keeps the gap after the article itself (`afterContent`).
+
+The post has no `PageFooter`; the site footer comes from the layout, as on project pages.
+
+### Decisions taken 2026-10-08 (reversible)
+
+| | Decision |
+|---|---|
+| D1 | The post hero follows the project hero: breadcrumb row first, a full-bleed photo from 768px with the badge, H1 and line over it, and a 4:3 photo with the text under it on phones. |
+| D3 | One badge: the service the tags name. The category is text in the card meta line and the tags footer. |
+| D6 | Related posts leave the sidebar for the full-width "More articles" section. |
+| D7 | Posts end in the rounded closing band, with the copy above. |
+| D8 | LinkedIn, X and Copy link stay, in the breadcrumb row's action slot; Copy behaves as on project pages. |
+| D9 | Below 1024px a closed "In this article" disclosure sits between the hero and the article. |
+
+Kept on purpose: 18px prose in a 42rem column, no lead paragraph, no chapter labels, no results card, facts panel or photo mosaic, body H3 at 20px.
 
 ---
 
@@ -688,9 +661,11 @@ Every query below filters on `LIVE_POST` (`_type == "blogPost" && defined(slug.c
 | Article grid, below 4 posts | 2 large cards a row from 768px | 1 column |
 | Article grid, 4 or more | 3 columns from 768px | 2 columns from 640px, 1 below |
 | Author page header | Photo beside the text from 640px | Photo above the text |
-| Post hero | 360px, bottom-anchored | 360px |
-| Post layout | 2-col (body + 280px sidebar) from 1024px | 1-col below 1024px: body, ToC, author, related |
-| Share bar | Right of the breadcrumb from 640px | Below the breadcrumb under 640px |
+| Breadcrumb row | Share group right of the trail from 640px | Share group on its own line under the trail |
+| Post hero | Full-bleed photo, 400px from 768px and 470px from 1024px, text over it | 4:3 photo in the margins, text under it |
+| Post layout | 2-col (body + 340px sticky sidebar, 56px gap) from 1024px | 1-col below 1024px: contents disclosure, body, tags, author |
+| More articles | 3 columns from 768px (2 large for two posts, one wide card for one) | 1 column; 2 from 640px for three |
+| Closing band | Copy left, buttons right from 768px | Stacked |
 
 ---
 
@@ -707,7 +682,7 @@ Every query below filters on `LIVE_POST` (`_type == "blogPost" && defined(slug.c
 | Blog search input | `src/components/blog/BlogSearchInput.tsx` |
 | Pagination | `src/components/blog/BlogPagination.tsx` |
 | Read-depth analytics (`blog_read_complete`) | `src/components/analytics/BlogReadDepth.tsx` |
-| CTA band before the footer | `src/components/layout/PageFooter.tsx` |
+| CTA band before the footer (index and author pages) | `src/components/layout/PageFooter.tsx` |
 | Index header (shared with /projects) | `src/components/ui/IndexHeader.tsx` |
 | Breadcrumb row and trail | `src/components/ui/PageBreadcrumb.tsx` (`PageBreadcrumb`, `BreadcrumbTrail`) |
 | Index rule: view, page links, featured card, empty reason | `src/lib/blogIndex.ts` |
@@ -715,13 +690,19 @@ Every query below filters on `LIVE_POST` (`_type == "blogPost" && defined(slug.c
 | Tag to service, dates, meta line, headings, filter options, carousel and related layouts | `src/lib/blogUtils.ts` |
 | GROQ queries | `src/lib/queries.ts` |
 | Portable Text renderer | `src/lib/portableTextComponents.tsx` |
+| Post body renderer (heading ids) | `src/lib/postTextComponents.tsx` |
+| Post hero | `src/components/ui/PageHero.tsx` (shared with projects) |
+| Side panel frame | `src/components/ui/SidePanel.tsx` (shared with projects) |
+| Sticky sidebar | `src/components/project/StickyWhenFits.tsx` |
+| Closing band | `src/components/ui/ClosingBand.tsx` (shared with projects) |
+| Copy link (button, live region, fallback field) | `src/components/ui/CopyLinkButton.tsx` |
 | Callout block | `src/components/blog/Callout.tsx` |
 | Stat strip block | `src/components/blog/StatStrip.tsx` |
 | Inline CTA block | `src/components/blog/InlineCta.tsx` |
 | Table of contents | `src/components/blog/TableOfContents.tsx` |
 | Share buttons | `src/components/blog/ShareButtons.tsx` |
 | Author card | `src/components/blog/AuthorCard.tsx` |
-| Related posts | `src/components/blog/RelatedPosts.tsx` |
+| More articles | `src/components/blog/PostNext.tsx` |
 | Revalidation API | `src/app/api/revalidate/route.ts` |
 
 ---
@@ -738,16 +719,9 @@ As built from 2026-10-08, as `/projects`: the page header, the search, the pills
 Blog article card hover: `translateY(-4px)`, `box-shadow: 0 12px 32px rgba(57,87,92,0.1)` and `border-color: #cccccc` over `0.2s` (the shared `Card`, pattern 1).
 
 ### Blog ToC — active state
-Tracked via `IntersectionObserver` with `rootMargin: '-80px 0px -70% 0px'` (accounts for fixed nav).
+As built 2026-10-08 (see Table of Contents above): a scroll listener, throttled to one check a frame, marks the last heading whose top has passed 120px (`activeHeadingId` in `src/lib/blogUtils.ts`), and none above the first heading. The IntersectionObserver it replaced could leave a heading marked after a jump back to the top.
 
-Active ToC item:
-```css
-color: #39575C;
-border-left: 3px solid #39575C;
-padding-left: 10px;   /* shift to accommodate the border */
-transition: color 0.2s ease, border-color 0.2s ease;
-```
-Inactive items: a transparent 3px left border, so the text doesn't shift, and `color: var(--color-pe-muted)`.
+Active item: `text-pe-primary`, `border-l-[3px] border-pe-primary`, `pl-2.5`, `aria-current="location"`, with a 0.2s colour transition. Inactive items: a transparent 3px left rule, so the text doesn't shift, and `text-pe-muted`.
 
 ### Blog pagination — SSR paginated (approved fix for 5.6)
 Route strategy: `/blog?page=2` via Next.js `searchParams`.
