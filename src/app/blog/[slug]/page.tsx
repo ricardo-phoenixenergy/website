@@ -139,10 +139,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       />
 
       {/* From 1024px the article sits beside the 340px sidebar, as a project's story beside its
-          facts; below that the contents come first as a closed disclosure and the author after. */}
+          facts; below that the contents come first as a closed disclosure and the author after,
+          both no wider than the article (42rem). */}
       <div className="page-container mt-10 md:mt-12 lg:mt-16 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-x-14">
         <div className="min-w-0">
-          <TableOfContents items={headings} variant="disclosure" className="mb-8 lg:hidden" />
+          <TableOfContents items={headings} variant="disclosure" className="mb-8 max-w-[42rem] lg:hidden" />
           <article className="max-w-[42rem]" aria-labelledby="post-title">
             <PortableText value={body} components={postTextComponents(headings)} />
 
@@ -161,7 +162,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               </footer>
             )}
           </article>
-          <AuthorCard author={post.author} className="mt-8 lg:hidden" />
+          <AuthorCard author={post.author} className="mt-8 max-w-[42rem] lg:hidden" />
         </div>
         {/* The panel sticks within its own flex-1 wrapper, which ends above the author card,
             so it stops there instead of sliding over the card. */}
