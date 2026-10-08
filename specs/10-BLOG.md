@@ -31,7 +31,7 @@
 2. Breadcrumb row: PageBreadcrumb, Home / News & Insights / title, with Share (LinkedIn, X, Copy link) at the right
 3. Post hero: PageHero, the project hero (service badge, H1, author · date · read time)
 4. Below 1024px: the "In this article" disclosure, closed
-5. Article (42rem) beside the sticky sidebar (contents, author) from 1024px; tags footer; below 1024px the author card
+5. Article (42rem) beside the sidebar from 1024px (the sticky contents panel, then the author card at its foot); tags footer; below 1024px the author card
 6. More articles: PostNext, only with related posts
 7. Closing band: ClosingBand, the project page's rounded band
 8. Footer
@@ -112,7 +112,7 @@ All articles (7)  |  Industry Insights (4)  |  Company News (3)  |  Energy Optim
 
 - The shared `Card` (pattern 1: lifts 4px with a shadow on hover). The photo does not zoom.
 - `grid-cols-1 sm:grid-cols-[3fr_2fr]`: photo on top on phones, three fifths beside the panel from 640px.
-- **Photo column**: `min-height: 260px`, `next/image` fill with `alt=""` and a blur placeholder; with no photo, the service accent's gradient (or Deep Teal to Dusty Blue). A scrim from `pe-nav-dark` at 82% to clear. Top left, the `Featured article` pill: Deep Teal, white text, a white 20% hairline, Inter 700, 12px, uppercase. Bottom, over the scrim: the title (`h2` by default, `h3` on request), Plus Jakarta Sans 800, 24px, white, `leading-[1.2]`; under it the meta line in white 14px.
+- **Photo column**: `min-height: 260px`, `next/image` fill with `alt=""` and a blur placeholder; with no photo, the post hero's fallback (`noPhotoBackground`, `src/lib/noPhotoBackground.ts`): the service accent at 27% fading into Night Teal, over Night Teal, or Night Teal alone with no service, so the white title and meta line keep 8.7:1 or more on every accent. A scrim from `pe-nav-dark` at 82% to clear. Top left, the `Featured article` pill: Deep Teal, white text, a white 20% hairline, Inter 700, 12px, uppercase. Bottom, over the scrim: the title (`h2` by default, `h3` on request), Plus Jakarta Sans 800, 24px, white, `leading-[1.2]`; under it the meta line in white 14px.
 - **Panel** (`padding: 24px`, white, a `pe-border` rule between it and the photo): the excerpt (14px, muted, `leading-[1.7]`, 4 lines at most); the author (26px photo with `alt=""`, or initials on Deep Teal, then the name in 14px `pe-text`); then a footer row over a `pe-border` rule with the action drawn as a compact button, `Read article` and an arrow (`buttonClasses({ size: 'compact', inCard: true })`).
 
 ---
@@ -183,7 +183,7 @@ As built 2026-10-08, on the project page's parts (`specs/06-PROJECT-SINGLE.md`):
 - Badge: the service the post's tags name (`postVertical`, the first tag that names one), in its accent fill and "on" ink, linking to its solution page. No badge when no tag names a service. The category is not in the hero; it is on the cards and in the tags footer.
 - H1: the post title, Plus Jakarta Sans 800, 28px (36px from 768px, 44px from 1024px), `max-w-[25ch]`, balanced; `pe-text` on phones, white over the photo.
 - Line under it: the author's name, then "8 October 2026 · 6 min read" (the read time left out when unset). Phones: two lines, 14px `pe-muted`; from 768px one line joined by " · ", 16px `on-dark-muted`.
-- No hero photo: phones show no photo block, wider screens a gradient from the service accent to Night Teal (Night Teal alone with no service).
+- No hero photo: phones show no photo block, wider screens a gradient from the service accent to Night Teal, over Night Teal (Night Teal alone with no service); `noPhotoBackground`, shared with the wide article card.
 
 ### Two-Column Post Layout
 
@@ -192,8 +192,8 @@ page-container mt-10 md:mt-12 lg:mt-16
 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-x-14
 ```
 
-- Left (`min-w-0`): below 1024px the closed "In this article" disclosure (`mb-8`), then the article (`max-w-[42rem]`, labelled by the H1), the tags footer, and below 1024px the author card (`mt-8`).
-- Right, from 1024px: `StickyWhenFits` holding the table of contents panel and the author card, 16px apart. It stays in view 96px from the top (under the navbar pill) while it fits in the window with 24px to spare; a taller sidebar scrolls with the page.
+- Left (`min-w-0`): below 1024px the closed "In this article" disclosure (`mb-8`), then the article (`max-w-[42rem]`, labelled by the H1), the tags footer, and below 1024px the author card (`mt-8`). The disclosure and that author card are `max-w-[42rem]` too, so neither is wider than the article.
+- Right, from 1024px: a `flex flex-col gap-4` column. First a `flex-1` wrapper holding `StickyWhenFits` around the table of contents panel alone; then the author card, which sits at the column's foot (beside the tags footer) and scrolls with the page. Only the contents panel sticks, 96px from the top (under the navbar pill), and it is capped at the window less that 96px and the 24px margin, so it fits, and sticks, on any common laptop window (checked at 1024x768, 1280x720, 1366x657 and 1440x900). Its wrapper ends above the author card, so the panel stops there instead of sliding over it. Contents first because it is the part a reader returns to: it sits beside the article's first lines and stays in reach to the end, and the order matches phones (contents before the article, the author after it). Without headings, the author card alone opens the column.
 - Both versions of the contents and the author card are rendered and each is hidden at the other widths; the two author cards carry their own heading ids (`author-title`, `author-title-sidebar`).
 
 ---
@@ -283,14 +283,14 @@ A `footer` inside the article, only when the post has a category or tags: `mt-7 
 
 ## Sidebar (right column, from 1024px)
 
-`StickyWhenFits` (`src/components/project/StickyWhenFits.tsx`), a `flex flex-col gap-4` column, 340px. Both panels use `SidePanel` (`src/components/ui/SidePanel.tsx`), the project facts' frame: `rounded-card border border-pe-border bg-white p-6`, an `h2` title (Plus Jakarta Sans 800, 18px), the panel labelled by it.
+A `flex flex-col gap-4` column, 340px: the contents panel in `StickyWhenFits` (`src/components/project/StickyWhenFits.tsx`), inside a `flex-1` wrapper, then the author card at the foot. Both panels use `SidePanel` (`src/components/ui/SidePanel.tsx`), the project facts' frame: `rounded-card border border-pe-border bg-white p-6`, an `h2` title (Plus Jakarta Sans 800, 18px), the panel labelled by it.
 
 ### 1. Table of Contents
 
 `TableOfContents` (`src/components/blog/TableOfContents.tsx`), from the post's h2 and h3 headings (`postHeadings`); nothing renders without headings.
-- `panel` (sidebar): `SidePanel as="nav"`, title "In this article" (`toc-title`), then an `ol`.
+- `panel` (sidebar): `SidePanel as="nav"`, title "In this article" (`toc-title`), then an `ol`. The panel is a flex column capped at `max-h-[calc(100vh-120px)]` (`STICKY_TOP` 96 plus `STICKY_BOTTOM_GAP` 24, `src/lib/stickyFit.ts`); the list's wrapper is `min-h-0 overflow-y-auto`, so a long list scrolls inside the panel, with 4px of padding (taken back by a negative margin) so each link's focus ring stays clear of the clip. Every item is a link, so Tab reaches each one and the browser scrolls the list to it; the list has no tab stop of its own. When the current heading changes, the list scrolls itself (never the page) to keep that item 40px clear of its edges (`revealScrollTop`), smoothly unless the visitor asks for reduced motion.
 - `disclosure` (below 1024px, between the hero and the article): `nav aria-label="In this article"` around a closed `details` (`rounded-card border border-pe-border bg-white`); the 44px `summary` reads "In this article" (Plus Jakarta Sans 700, 16px) with the chevron that turns when open, as the project facts' "All project facts". Each link is 44px tall here.
-- Each item: the number (Inter 700, 12px, `pe-secondary-ink`) and the heading (Inter 14px; 500 for an h2, indented 8px for an h3), `border-b border-pe-border` between items, a 3px left rule.
+- Each item: the number (Inter 700, 12px, `pe-secondary-ink`, `tabular-nums` in a fixed 20px `w-5`, so every item's text starts at the same x) and the heading (Inter 14px; 500 for an h2, indented 8px for an h3), `border-b border-pe-border` between items, a 3px left rule.
 - Current heading: the last one whose top has passed 120px from the top of the window (`activeHeadingId`), `text-pe-primary` with a `pe-primary` rule and `aria-current="location"`; none while the first heading is still below that line, so a jump back to the top clears it. Others `pe-muted` with a transparent rule.
 - A click scrolls to the heading (smoothly unless the visitor asks for reduced motion), puts its address in the bar with `history.replaceState` and moves focus to the heading.
 
@@ -663,7 +663,7 @@ Every query below filters on `LIVE_POST` (`_type == "blogPost" && defined(slug.c
 | Author page header | Photo beside the text from 640px | Photo above the text |
 | Breadcrumb row | Share group right of the trail from 640px | Share group on its own line under the trail |
 | Post hero | Full-bleed photo, 400px from 768px and 470px from 1024px, text over it | 4:3 photo in the margins, text under it |
-| Post layout | 2-col (body + 340px sticky sidebar, 56px gap) from 1024px | 1-col below 1024px: contents disclosure, body, tags, author |
+| Post layout | 2-col (body + 340px sidebar, 56px gap) from 1024px: the sticky contents panel, the author card at the foot | 1-col below 1024px: contents disclosure, body, tags, author, each no wider than 42rem |
 | More articles | 3 columns from 768px (2 large for two posts, one wide card for one) | 1 column; 2 from 640px for three |
 | Closing band | Copy left, buttons right from 768px | Stacked |
 
