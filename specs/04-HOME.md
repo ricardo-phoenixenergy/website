@@ -377,9 +377,9 @@ padding-bottom: 16px;
 - `background: #F5F5F5`.
 - No top padding (flush under How It Works, also `#F5F5F5`); `padding-bottom: 64px`, 96px from 768px.
 - Header row: eyebrow `Latest insights` + H2 `News, views & analysis`, with "analysis" in Dusty Blue ink `#45727E`. On the right, `View all articles` with an arrow, linking to `/blog` (`ArrowLink`: Inter 600, 14px, Deep Teal).
-- A horizontal scroller (gap 14px, no scrollbar), even for three posts. Cards are `82vw` on phones and a third of the container from 768px, so all three show from there.
+- Updated 2026-10-08, as the projects row (`FeaturedProjects`): three posts or fewer sit in a static grid (`carouselLayout(count)` in `src/lib/blogUtils.ts`): one or two as large cards, two columns from 768px; three in three columns from 768px. From four, a horizontal scroller (gap 14px, no scrollbar), cards `82vw` on phones and a third of the container from 768px. `LATEST_POSTS_QUERY` returns three at most, so today it is always the grid. Each card sits in its own `AnimatedSection` (`delay: i * 0.05`).
 - The section is hidden when there are no posts.
-- Card: the same shell and hover as the project cards. Photo 160px tall; category badge top-right (solid category colour, white text, Inter 700, 12px, uppercase); the first tag, when it names a vertical, as an accent badge bottom-left; title in Plus Jakarta Sans 700, 14px, two lines at most; excerpt in Inter 12px, `#646B78`, two lines at most; footer with the date and "{n} min read" (12px, the read time in Dusty Blue ink).
+- Card: `ArticleCard`, with the project card's anatomy (see `specs/10-BLOG.md`, Article Grid and the Article Card): a 16:10 photo with one badge, the service the tags name; the title as an `h3`; the meta line `Industry Insights · 8 Oct 2026 · 6 min read`; the excerpt; a footer reading "Read article" with the card arrow.
 
 ### Content (from Sanity, `publishedAt desc`)
 Categories: `Industry Insights` · `Project Spotlight` · `Company News` · `Press Release` (singular, as in the `blogPost` schema)

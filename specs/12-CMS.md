@@ -389,7 +389,7 @@ export const BLOG_SITEMAP_QUERY = `*[LIVE_POST]{ "slug": slug.current, "lastModi
 export const AUTHOR_SITEMAP_QUERY = `*[_type == "author" && defined(slug.current) && count(*[LIVE_POST && references(^._id)]) > 0]{ "slug": slug.current, "lastModified": *[LIVE_POST && references(^._id)] | order(publishedAt desc) [0].publishedAt }`;
 
 // Blog index: category, tag and search filters, featured first, six per page (/blog)
-export const BLOG_INDEX_QUERY = `*[LIVE_POST && ($category == "" || category == $category) && ($tag == "" || $tag in tags) && ($q == "" || title match $q || excerpt match $q)] | order(featured desc, publishedAt desc) [$offset...$offset+6] { ... }`;
+export const BLOG_INDEX_QUERY = `*[LIVE_POST && _id != $exclude && ($category == "" || category == $category) && ($tag == "" || $tag in tags) && ($q == "" || title match $q || excerpt match $q)] | order(featured desc, publishedAt desc) [$offset...$offset+6] { ... }`;
 
 // Post count under the same filters (/blog pagination)
 export const BLOG_COUNT_QUERY = `count(*[LIVE_POST && ...same filters as BLOG_INDEX_QUERY])`;
@@ -397,11 +397,11 @@ export const BLOG_COUNT_QUERY = `count(*[LIVE_POST && ...same filters as BLOG_IN
 // Every live post, whatever the filters (home SearchAction; /blog noindex while it is 0)
 export const PUBLISHED_POSTS_COUNT_QUERY = `count(*[LIVE_POST])`;
 
-// Featured article card (/blog)
+// Featured article card (/blog): shown only when the post it returns is marked featured
 export const FEATURED_POST_QUERY = `*[LIVE_POST] | order(featured desc, publishedAt desc) [0] { ... }`;
 
-// Tags for the filter pills (/blog)
-export const ALL_BLOG_TAGS_QUERY = `array::unique(*[LIVE_POST].tags[])`;
+// Each live post's category and tags, for the /blog pills and their counts
+export const BLOG_FILTER_ROWS_QUERY = `*[LIVE_POST]{ category, tags }`;
 
 // Latest 3 posts (home)
 export const LATEST_POSTS_QUERY = `*[LIVE_POST] | order(publishedAt desc) [0..2] { ... }`;

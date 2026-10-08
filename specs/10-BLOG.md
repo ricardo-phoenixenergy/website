@@ -2,6 +2,7 @@
 > Spoke | Hub: [`/CLAUDE.md`](/CLAUDE.md) | Version 3.1
 > Routes: `/blog` (index) · `/blog/[slug]` (single post) · `/blog/authors/[slug]` (author profile)
 > **Approved April 2026**
+> **Updated 2026-10-08:** the article cards, the blog index, the carousels and the author page follow the project cards and `/projects` (Blog Index below).
 > **Updated 2026-09-24:** corrected to match the build. Type sizes follow the scale in `specs/01-BRAND.md`: nothing renders below 12px, so where a line below gives 9 to 11px, the build uses 12px or more.
 
 ---
@@ -11,11 +12,13 @@
 ```
 1. Navbar: solid white pill; "News & Insights" highlighted once the link shows (from the first live post)
 2. Breadcrumb: Home / News & Insights
-3. Page header: eyebrow + H1 + subtitle, one column
+3. Page header (IndexHeader): eyebrow + H1 + intro, one column
+   Below 4 live posts: every post as a large card, 2 columns from 768px, and nothing else
+   From 4 live posts:
 4. Search bar: above the pills; ?q= filters on the server
-5. Filter pills: one scrolling row, one active pill at a time
-6. Featured article: 2-col card, the most recent pinned post (or the latest post)
-7. Article grid: 1, 2 or 3 columns, 6 cards a page
+5. Filter pills: from the data, with counts; one scrolling row, one active pill at a time
+6. Featured article: only a post marked featured, page 1, no filter or search
+7. Article grid: 1, 2 or 3 columns, 6 cards a page, without the featured post
 8. Pagination: Prev, page numbers, Next (no Load more)
 9. CTA band: PageFooter with ctaVariant="centered"
 10. Footer
@@ -36,159 +39,119 @@
 
 ## Blog Index
 
+> **Rebuilt 2026-10-08** to follow `/projects` (`specs/05-PROJECTS.md`). The rule lives in `src/lib/blogIndex.ts` (tested in `blogIndex.test.ts`), so the page and its metadata read the URL the same way.
+
+### The rule: a few posts, or four and more
+
+`BLOG_FILTER_THRESHOLD = 4` (`src/lib/blogUtils.ts`), counted over every live post (`PUBLISHED_POSTS_COUNT_QUERY`).
+
+| | Below 4 live posts ("few") | 4 or more |
+|---|---|---|
+| Search and pills | None | The search, then the pills from the data |
+| Featured card | None | Only a post marked featured, on page 1, with no category, tag or search |
+| Grid | Every live post, newest first, as large cards: `grid-cols-1 md:grid-cols-2`, `gap-6` | 6 a page, `grid-cols-1 sm:grid-cols-2 md:grid-cols-3`, `gap-4`, without the featured post |
+| URL parameters | Ignored: `page`, `category`, `tag` and `q`. A shared `?tag=` link still shows every post | Read |
+| Pagination | None (one page) | `BlogPagination` |
+
+Metadata follows the same view: below 4, every URL's canonical is `/blog` and there are no `prev` or `next` links. A search URL (`q` set) stays `noindex, follow` at any post count, and `/blog` with no live posts is `noindex` too.
+
 ### Navbar & Breadcrumb
 - The section is named "News & Insights" everywhere: the navbar link, the breadcrumbs, the eyebrow, the page title and the BreadcrumbList JSON-LD.
 - Active link: "News & Insights". The root layout adds it to the navbar once a live post exists, meaning a slug and a publish date that has come (`BLOG_NAV_MIN_POSTS = 1` in `src/lib/blogNav.ts`; see `specs/03-NAVIGATION.md`).
-- Breadcrumb: `Home / News & Insights`.
+- Breadcrumb: `Home / News & Insights`, from `IndexHeader`.
 
 ---
 
-### Page Header
+### Page Header (`IndexHeader`)
 
-- Inside `page-container` (up to 1280px wide), with `padding-top: 96px`.
-- One column at every width: breadcrumb, then the title block (`margin-bottom: 24px`), then the search bar, then the filter pills. There is no two-column header.
+`src/components/ui/IndexHeader.tsx`, shared with `/projects`. Inside `page-container` with `padding-top: 96px` (`pt-24`), one column at every width:
+- Breadcrumb (`BreadcrumbTrail` from `PageBreadcrumb.tsx`: an `ol`, `aria-current="page"` on the current crumb, separators hidden from screen readers), 14px, `margin-bottom: 20px`.
+- Eyebrow `NEWS & INSIGHTS`: Inter 700, 12px, uppercase, `tracking-[0.14em]`, `pe-muted`.
+- H1 `Energy intelligence, delivered`: Plus Jakarta Sans 800, 36px, `leading-[1.2]`, with "delivered" in Deep Teal (`text-pe-primary`).
+- Intro: Inter 400, 16px, `pe-muted`, `leading-[1.7]`, `max-width: 60ch`: *"Expert perspectives on clean energy, SA market trends, project spotlights and company news."*
+- The block ends `margin-bottom: 32px`.
 
-**Title block:**
-- Eyebrow: `NEWS & INSIGHTS`
-- H1: `Energy intelligence, delivered`, 36px, with "delivered" in Dusty Blue ink `#45727E` (`text-pe-secondary-ink`).
-- Subtitle: Inter 400, 16px, muted, `max-width: 512px`: *"Expert perspectives on clean energy, SA market trends, project spotlights and company news."*
-
-**Search bar** (`BlogSearchInput`, below the title block and above the pills):
-- `border-radius: 9999px`, `border: 1px solid #E5E7EB`, `background: #fff`
+**Search bar** (`BlogSearchInput`, from 4 live posts, above the pills):
+- `border-radius: 9999px`, a `pe-border` edge, white.
 - `padding: 10px 16px 10px 38px` (space for a 14px SVG search icon on the left).
 - `placeholder: "Search articles..."`, with a visually hidden label "Search articles" and `role="search"`.
 - Typing sets `?q=` after a 400ms pause (`router.replace`, so a pause doesn't add a history entry). It keeps any category or tag and drops `page`, so results start at page 1.
 - A new `?q=` in the URL (Back, a filter or a link) replaces the text, except while the field has focus: a navigation for an earlier pause that lands late never overwrites what the visitor has typed since (audit BLG-10). The text follows the URL during render, not in an effect. A search still waiting when the visitor leaves the page is dropped.
 - The server does the filtering: `title match $q || excerpt match $q`, where `$q` is the trimmed text plus `*` (a GROQ prefix match). The post count and the page numbers use the same filter.
-- Inter 400, 14px.
-- Full width, and one third of the row from 1024px.
+- Inter 400, 14px. Full width, and one third of the row from 1024px.
 
 ---
 
 ### Filter Pills
 
-`BlogFilterPills` (`src/components/blog/BlogFilterPills.tsx`) wraps the shared `FilterPills` (`src/components/ui/FilterPills.tsx`).
+`BlogFilterPills` (`src/components/blog/BlogFilterPills.tsx`) wraps the shared `FilterPills` (`src/components/ui/FilterPills.tsx`). Shown from 4 live posts only.
 
 - One row that scrolls sideways with a hidden scrollbar, at every width: `display: flex`, `gap: 8px`, `overflow-x: auto`, no wrapping. It keeps 6px of padding and 6px of scroll padding, and a pill that takes keyboard focus scrolls fully into view, so it keeps its whole focus ring (see `specs/05-PROJECTS.md`, Filter bar).
-- In the same `page-container` as the search bar, with `padding-bottom: 24px` under the pair.
+- The search and the pills sit in a column 12px apart, with `margin-bottom: 24px` under the pair.
 
-Each pill is a `Chip` toggle (`src/components/ui/Chip.tsx`, updated September 2026, the button programme): 36px tall, `padding: 0 16px`, pill shape, Inter 500, 14px, in both states.
-**Default state:** white bg, `border: 1px solid #E5E7EB`, muted text
-**Active state:** Deep Teal bg and edge, white text, no shadow, `aria-pressed="true"`
-**Hover:** the default text turns Deep Teal
+Each pill is a `Chip` toggle (`src/components/ui/Chip.tsx`): 36px tall, `padding: 0 16px`, pill shape, Inter 500, 14px. Default: white, `pe-border` edge, muted text. Active: Deep Teal fill and edge, white text, `aria-pressed="true"`. Hover: the default text turns Deep Teal.
 
-**Pills (one row):**
-
-Category pills, with the singular names stored in Sanity:
+**Pills come from the data, with counts**, as on `/projects`, so no pill leads to an empty grid. `BLOG_FILTER_ROWS_QUERY` returns each live post's `{ category, tags }`, and `blogFilterOptions(rows)` counts them: categories first, then tags, each by count (most first) then name. For example:
 ```
-All articles  |  Industry Insights  |  Project Spotlight  |  Company News  |  Press Release
-```
-
-Then one pill per tag used on a published post (`ALL_BLOG_TAGS_QUERY`). The Studio offers these tags:
-```
-Solar & Storage  |  Wheeling  |  Carbon Credits  |  Energy Optimisation  |  EV Fleets  |  WeBuySolar
+All articles (7)  |  Industry Insights (4)  |  Company News (3)  |  Energy Optimisation (5)  |  Wheeling (2)
 ```
 
 **Filter logic:**
-- `All articles` → show all posts (clears the category and tag, keeps the search).
-- Category pill → filter by `category` field.
-- Vertical tag pill → filter by `$tag in tags`.
+- `All articles` clears the category and tag and keeps the search.
+- A category pill filters by `category`; a tag pill by `$tag in tags`.
 - One pill is active at a time: choosing a pill clears the other filter and resets to page 1. The search term stays. The query still applies both if a hand-typed URL has a category and a tag.
-- URL: `/blog?category=Industry+Insights` or `/blog?tag=Wheeling`, with the full name (`router.push`). The URL can be shared. The pills are buttons, not links, so crawlers reach tag pages only through the tag links on posts.
+- URL: `/blog?category=Industry+Insights` or `/blog?tag=Wheeling`, with the full name (`router.push`). The pills are buttons, not links, so crawlers reach tag pages only through the tag links on posts.
 
 ---
 
 ### Featured Article Card
 
-- In the `page-container`, with `padding-bottom: 20px` below it.
-- Shown on every page of the index, whatever the filter or search: `FEATURED_POST_QUERY` takes no parameters.
+`FeaturedArticleCard` (`src/components/ui/FeaturedArticleCard.tsx`), built like `FeaturedProjectCard`. On `/blog` it shows from 4 live posts, only for a post marked `featured` (`FEATURED_POST_QUERY` returns the newest pinned post, else the newest post; the page shows it only when `featured == true`), on page 1 with no category, tag or search. It sits `margin-bottom: 16px` above the grid and is the page's first image, so it takes `priority`.
 
-```css
-display: grid;
-grid-template-columns: 1fr;        /* phones: photo on top */
-grid-template-columns: 1fr 1fr;    /* from 640px (sm) */
-min-height: 240px;
-border-radius: 16px;
-overflow: hidden;
-background: #fff;
-border: 1px solid #E5E7EB;
-cursor: pointer;
-```
-
-Hover (the shared `Card`, pattern 1): `translateY(-4px)`, `box-shadow: 0 12px 32px rgba(57,87,92,0.1)`, `border-color: #cccccc`; the photo zooms to 105%.
-
-**Left — photo:**
-- `next/image` fill, `object-fit: cover`, `min-height: 240px`, `priority`, blur placeholder.
-- `FEATURED` badge: absolute top-left (12px in), Deep Teal fill, white text, Inter 700, 12px, uppercase, pill.
-
-**Right — body** (`padding: 24px`):
-- Tag row: category pill (solid fill, see Tag pill anatomy) + up to two tag pills (`rgba(112,157,169,0.10)` with Deep Teal text).
-- Title: Plus Jakarta Sans 800, 20px, `line-height: 1.3`, `-webkit-line-clamp: 3`.
-- Excerpt: Inter 400, 14px, muted, `line-height: 1.7`, `-webkit-line-clamp: 3`.
-- Meta row: author photo, or initials on Deep Teal (26px circle) + author name + `·` + date + `·` + read time, in 12px muted text.
-
-**Sanity source:** the most recent post with `featured: true`, or the most recent post when none is pinned (`order(featured desc, publishedAt desc) [0]`).
-
-**Mobile:** below 640px the photo stacks above the body (`grid-cols-1 sm:grid-cols-2` in `FeaturedArticleCard.tsx`, updated September 2026; it used to hold a fixed `1fr 1fr` at every width).
+- The shared `Card` (pattern 1: lifts 4px with a shadow on hover). The photo does not zoom.
+- `grid-cols-1 sm:grid-cols-[3fr_2fr]`: photo on top on phones, three fifths beside the panel from 640px.
+- **Photo column**: `min-height: 260px`, `next/image` fill with `alt=""` and a blur placeholder; with no photo, the service accent's gradient (or Deep Teal to Dusty Blue). A scrim from `pe-nav-dark` at 82% to clear. Top left, the `Featured article` pill: Deep Teal, white text, a white 20% hairline, Inter 700, 12px, uppercase. Bottom, over the scrim: the title (`h2` by default, `h3` on request), Plus Jakarta Sans 800, 24px, white, `leading-[1.2]`; under it the meta line in white 14px.
+- **Panel** (`padding: 24px`, white, a `pe-border` rule between it and the photo): the excerpt (14px, muted, `leading-[1.7]`, 4 lines at most); the author (26px photo with `alt=""`, or initials on Deep Teal, then the name in 14px `pe-text`); then a footer row over a `pe-border` rule with the action drawn as a compact button, `Read article` and an arrow (`buttonClasses({ size: 'compact', inCard: true })`).
 
 ---
 
-### Article Grid
+### Article Grid and the Article Card
 
-```css
-display: grid;
-grid-template-columns: repeat(3, 1fr); /* from 768px; 2 columns from 640px, 1 below */
-gap: 16px;
-/* inside page-container */
-```
+`ArticleCard` (`src/components/ui/ArticleCard.tsx`) has `ProjectCard`'s anatomy, on the shared `Card` (pattern 1). The whole card is one link; it carries no reveal wrapper, so each caller wraps it (`AnimatedSection as="li"` in the `/blog` and author grids, `as="div"` in the carousels).
 
-**Each card** (`ArticleCard`, on the shared `Card`):
-- `background: #fff`, `border-radius: 16px`, `overflow: hidden`, `border: 1px solid #E5E7EB`.
-- Hover: `translateY(-4px)`, `box-shadow: 0 12px 32px rgba(57,87,92,0.1)`, `border-color: #cccccc`.
+- **Photo**: `CardImage`, `aspect-ratio: 16 / 10`, `alt=""` (the title names the link), the Sanity URL at 1200px wide with the LQIP. With no photo, the service accent's gradient, or `pe-border`.
+- **One badge**, bottom left on the photo: the service the post's tags name (`postVertical(tags)`, the first tag that names one), in its accent with its "on" ink, Inter 700, 12px, uppercase, `tracking-[0.1em]`. No service tag, no badge. The category is not a badge.
+- **Body** (`padding: 16px`, large `24px`): the title as a heading (`h3` by default, `h2` straight under the page's H1 on `/blog`), Plus Jakarta Sans 700, 18px (large 20px), `leading-[1.3]`, 3 lines at most; the meta line, 14px muted, `margin-top: 4px`: `Industry Insights · 8 Oct 2026 · 6 min read` (`postMetaLine`; a missing read time is left out); the excerpt, 14px muted, `leading-[1.65]`, `margin-top: 12px`, 3 lines at most.
+- **Footer**: `Read article` in 14px semibold Deep Teal, and the card arrow, over a `pe-border` rule.
+- `size="large"` where only a few cards sit in two columns (the few-posts `/blog`, a carousel of one or two, an author with fewer than three posts).
 
-**Card anatomy:**
-- Photo: `height: 160px`, `next/image` fill, `object-fit: cover`, with a dark gradient scrim from the bottom.
-- On the photo: the category badge top right, and the first tag bottom left when that tag names a vertical.
-- Body: `padding: 16px`, with no tags row.
-- Title: Plus Jakarta Sans 700, 14px, `line-height: 1.4`, `-webkit-line-clamp: 2`.
-- Excerpt: Inter 400, 12px, muted, `line-height: 1.65`, `-webkit-line-clamp: 2`.
-- Footer: date (left) + read time in Dusty Blue ink `#45727E` (right), `border-top: 1px solid #E5E7EB`, `padding: 12px 16px`.
+The category colours (`CATEGORY_STYLES`) are gone: the category is text in the meta line.
 
-**Tag pill anatomy:**
-```css
-font-size: 12px;
-font-weight: 700;
-text-transform: uppercase;
-letter-spacing: 0.08em;
-padding: 4px 10px;
-border-radius: 9999px;
-```
-Each category has a solid fill with text that passes 4.5:1 on it (`CATEGORY_STYLES` in `src/lib/blogUtils.ts`; an unknown category falls back to Deep Teal). Project Spotlight takes a dark "on" colour, like the accent badges, because white on its gold measured 2.9:1:
-| Category | Bg | Text |
-|---|---|---|
-| Industry Insights | `#39575C` | `#FFFFFF` |
-| Project Spotlight | `#B8923A` | `#3A2806` (4.9:1) |
-| Company News | `#2E7D6B` | `#FFFFFF` |
-| Press Release | `#B85450` | `#FFFFFF` |
+**Empty states** (`BlogEmptyState`, in place of the grid, in a white `rounded-card` box): no live posts, *"Articles are on their way."* with no link; a search that matches nothing, *"No articles match “{q}”."*; a filter that matches nothing, *"No articles match this filter."*; a page past the end, *"There are no articles on this page."* Each but the first ends in an `ArrowLink` "Show all articles" to `/blog`. No featured card shows above an empty grid.
 
-On article cards the vertical tag uses its vertical's solid accent with the accent's "on" text colour (`SOLUTION_META[vertical].accent` and `.accentText`, found with `tagMeta()`), with `letter-spacing: 0.1em`. On the featured card, tags use a 10% Dusty Blue tint with Deep Teal text.
-
-**Default load:** 6 cards a page (`PAGE_SIZE`), featured post included. `BLOG_INDEX_QUERY` doesn't exclude the featured post and also sorts pinned posts first, so on page 1 the featured post appears again as the first card whenever it matches the current filter and search (always, with none set). Numbered pagination replaces "Load more" (see below).
-
-**Mobile:** 1-column stack below 640px, 2 columns from 640px.
-
-**Empty:** *"No articles found."* when nothing matches.
+The section ends `padding-bottom: 64px` before `PageFooter`, as `/projects`.
 
 ---
 
 ### Pagination
 
-Load more is not built. As approved in the Engineering Review Fixes below, the index uses numbered pagination at every width, phones included. It is `BlogPagination` (`src/components/blog/BlogPagination.tsx`):
+Load more is not built. As approved in the Engineering Review Fixes below, the index uses numbered pagination at every width, phones included, from 4 live posts. It is `BlogPagination` (`src/components/blog/BlogPagination.tsx`):
 - It shows when there is more than one page: Prev (from page 2), the page numbers, then Next (before the last page), `padding: 40px 0`.
 - Up to 7 pages, every page number shows. Past 7, it shows the first and last pages, the current page and one either side, with an ellipsis (`…`, hidden from screen readers) for each run of hidden pages; a run of one page shows that page instead. That is 7 numbers at most: page 5 of 10 reads Prev, 1, …, 4, 5, 6, …, 10, Next.
-- The row sits in the page container, centred, and wraps rather than running off a phone (updated September 2026): chips 8px apart, wrapped rows 10px apart, so the 44px touch targets stay clear of each other. From 3 to 10 pages the row takes one or two rows at 320 to 414px, never three.
-- Each is a link to `/blog?page=N` that keeps the category and tag but drops the search term (`buildBlogHref` in `src/app/blog/page.tsx`, passed in as `hrefFor`).
-- Every one is a `Chip` link (updated September 2026), so the row is one height, 36px: Inter 500, 14px, white with a `#E5E7EB` border and muted text. The current page is `current`: Deep Teal with white text and `aria-current="page"`. Prev and Next keep their 14px arrows.
+- The row sits in the page container, centred, and wraps rather than running off a phone: chips 8px apart, wrapped rows 10px apart, so the 44px touch targets stay clear of each other.
+- Each is a link to `/blog?page=N` that keeps the category, the tag and the search (`blogIndexHref` in `src/lib/blogIndex.ts`).
+- The featured post is left out of the grid and the page count on every page of the whole list (`$exclude`), not only page 1, so page 2 starts where page 1's grid ended.
+- Every one is a `Chip` link, 36px: Inter 500, 14px, white with a `pe-border` edge and muted text. The current page is `current`: Deep Teal with white text and `aria-current="page"`. Prev and Next keep their 14px arrows.
+
+---
+
+### Author Page (`/blog/authors/[slug]`)
+
+Rebuilt 2026-10-08 on the project page's grammar:
+- `PageBreadcrumb` first: `Home / News & Insights / {name}`, no action (Home drops below 640px, as on every trail of three).
+- A light header in `page-container`, `margin-top: 24px`: the 88px photo (`alt=""`) or the initials on Deep Teal, beside the text from 640px and above it on phones; the name as the H1 (Plus Jakarta Sans 800, 36px, `pe-text`); the role (14px, 500, `pe-secondary-ink`); the bio (16px, muted, `leading-[1.7]`, `max-width: 60ch`) and LinkedIn (a compact ghost `Button` with the LinkedIn icon, new tab), each only when set.
+- The articles in a `section`, `margin-top: 40px` (48px from 768px, 64px from 1024px), `padding-bottom: 64px`: an `h2` in the eyebrow style, "Articles by {name}", then a `ul` of `ArticleCard`s (`h3`), each in `AnimatedSection as="li"`: fewer than three posts, large cards two a row from 768px; otherwise `sm:grid-cols-2 md:grid-cols-3`; `gap-4`. With none, "No articles yet."
+- Then `PageFooter ctaVariant="centered"`. No inline colours.
 
 ---
 
@@ -629,8 +592,10 @@ Every warning above (`heroImage`, `excerpt`, `seoTitle`, `seoDescription`) lets 
 Every query below filters on `LIVE_POST` (`_type == "blogPost" && defined(slug.current) && PUBLISHED_AT <= dateTime(now())`, `src/lib/queries.ts`): a post needs a slug and a publish date that has come, or it is left out of every list, count, sitemap entry and lookup, whatever else is filled in. `PUBLISHED_AT` reads a publish date written as a full date-time, one without a zone (read as UTC), or a bare date (read as midnight UTC); any other form keeps the post off the site. A post scheduled for later appears once its date comes: at once on `/blog`, which renders per request, and at the next hourly refresh everywhere else, since nothing edits the post in Sanity to fire the webhook. `BLOG_SITEMAP_QUERY` dates each post by its "Last updated" field, falling back to the publish date when that field is missing or can't be read as a date.
 
 ```groq
-// Blog index, paginated and filterable (BLOG_INDEX_QUERY in src/lib/queries.ts)
+// Blog index, paginated and filterable (BLOG_INDEX_QUERY in src/lib/queries.ts).
+// $exclude is the featured post's _id while /blog shows its card (the whole list, any page), else "".
 *[LIVE_POST
+  && _id != $exclude
   && ($category == "" || category == $category)
   && ($tag == "" || $tag in tags)
   && ($q == "" || title match $q || excerpt match $q)
@@ -640,10 +605,11 @@ Every query below filters on `LIVE_POST` (`_type == "blogPost" && defined(slug.c
   featured,
   "author": author->{ name, slug, photo { asset-> } }
 }
-// BLOG_COUNT_QUERY wraps the same filter in count(...) for the page numbers
+// BLOG_COUNT_QUERY wraps the same filter (with $exclude) in count(...) for the page numbers
 // PUBLISHED_POSTS_COUNT_QUERY is count(*[LIVE_POST]): 0 keeps /blog noindex and out of the sitemap
 
-// Featured card (FEATURED_POST_QUERY): no filters besides LIVE_POST, so it is the same on every page
+// Featured card (FEATURED_POST_QUERY): the newest pinned post, else the newest post;
+// /blog shows it only when it is marked featured (src/lib/blogIndex.ts)
 *[LIVE_POST] | order(featured desc, publishedAt desc) [0] { ... }
 
 // Single post — full content
@@ -669,8 +635,8 @@ Every query below filters on `LIVE_POST` (`_type == "blogPost" && defined(slug.c
 }
 // A future post's own page (POST_BY_SLUG_QUERY with its slug) returns null until its date comes.
 
-// All unique tags (for filter pills)
-array::unique(*[LIVE_POST].tags[])
+// Each live post's category and tags, for the pills and their counts (BLOG_FILTER_ROWS_QUERY)
+*[LIVE_POST]{ category, tags }
 
 // Live post slugs (for generateStaticParams)
 *[LIVE_POST]{ "slug": slug.current }
@@ -699,7 +665,7 @@ array::unique(*[LIVE_POST].tags[])
 
 ### E-E-A-T signals built into template
 - Named authors on every post: the author card shows the photo (or initials), role and bio, and links to the author's profile, which carries the LinkedIn link when one is set.
-- Author profile pages at `/blog/authors/[slug]` with post archive, `noindex` while the author has no live post. The dark hero shows the LinkedIn link, when one is set, as a compact ghost `Button` (40px, white at 8% with a white 20% edge, opens in a new tab). The page publishes `ProfilePage` JSON-LD, its `mainEntity` the author as a Person.
+- Author profile pages at `/blog/authors/[slug]` with post archive, `noindex` while the author has no live post. The light header shows the LinkedIn link, when one is set, as a compact ghost `Button` with the LinkedIn icon (opens in a new tab; see Author Page above). The page publishes `ProfilePage` JSON-LD, its `mainEntity` the author as a Person.
 - The published date shows on the page. `datePublished` and `dateModified` (which falls back to the published date) are in the JSON-LD.
 - JSON-LD `NewsArticle` (Company News and Press Release) or `BlogPosting` (every other category), the author as a Person with `sameAs` and `worksFor`, and `publisher` naming the organisation by its `@id`
 - Internal links from every post to relevant solution pages
@@ -717,9 +683,11 @@ array::unique(*[LIVE_POST].tags[])
 | Element | Desktop | Mobile |
 |---|---|---|
 | Page header | One column; search bar one third wide from 1024px | One column; search bar full width |
-| Filter pills | One row that scrolls sideways | Same |
-| Featured card | 2-col (photo + body) | 2-col as well; stacking is not built |
-| Article grid | 3 columns from 768px | 2 columns from 640px, 1 below |
+| Filter pills (4 or more posts) | One row that scrolls sideways | Same |
+| Featured card (4 or more posts) | Photo three fifths beside the panel from 640px | Photo above the panel |
+| Article grid, below 4 posts | 2 large cards a row from 768px | 1 column |
+| Article grid, 4 or more | 3 columns from 768px | 2 columns from 640px, 1 below |
+| Author page header | Photo beside the text from 640px | Photo above the text |
 | Post hero | 360px, bottom-anchored | 360px |
 | Post layout | 2-col (body + 280px sidebar) from 1024px | 1-col below 1024px: body, ToC, author, related |
 | Share bar | Right of the breadcrumb from 640px | Below the breadcrumb under 640px |
@@ -740,7 +708,11 @@ array::unique(*[LIVE_POST].tags[])
 | Pagination | `src/components/blog/BlogPagination.tsx` |
 | Read-depth analytics (`blog_read_complete`) | `src/components/analytics/BlogReadDepth.tsx` |
 | CTA band before the footer | `src/components/layout/PageFooter.tsx` |
-| Category colours, tag to vertical, dates | `src/lib/blogUtils.ts` |
+| Index header (shared with /projects) | `src/components/ui/IndexHeader.tsx` |
+| Breadcrumb row and trail | `src/components/ui/PageBreadcrumb.tsx` (`PageBreadcrumb`, `BreadcrumbTrail`) |
+| Index rule: view, page links, featured card, empty reason | `src/lib/blogIndex.ts` |
+| Empty grid message | `src/components/blog/BlogEmptyState.tsx` |
+| Tag to service, dates, meta line, headings, filter options, carousel and related layouts | `src/lib/blogUtils.ts` |
 | GROQ queries | `src/lib/queries.ts` |
 | Portable Text renderer | `src/lib/portableTextComponents.tsx` |
 | Callout block | `src/components/blog/Callout.tsx` |
@@ -761,11 +733,7 @@ array::unique(*[LIVE_POST].tags[])
 ## Engineering Review Fixes (April 2026)
 
 ### Animations
-Apply `AnimatedSection` wrapper (see `01-BRAND.md`) to:
-- Page header (breadcrumb + eyebrow + H1 + subtitle): `delay: 0`.
-- Search bar and filter pills: `delay: 0.05`.
-- Featured article card: `delay: 0.1`.
-- Article grid: staggered by `0.04s` per card, with each card in its own `AnimatedSection` at `delay: i * 0.04` (not `staggerChildren`).
+As built from 2026-10-08, as `/projects`: the page header, the search, the pills and the featured card render in place, with no reveal. The grid's cards reveal one by one, each `li` an `AnimatedSection` at `delay: i * 0.04` (not `staggerChildren`).
 
 Blog article card hover: `translateY(-4px)`, `box-shadow: 0 12px 32px rgba(57,87,92,0.1)` and `border-color: #cccccc` over `0.2s` (the shared `Card`, pattern 1).
 
@@ -785,36 +753,28 @@ Inactive items: a transparent 3px left border, so the text doesn't shift, and `c
 Route strategy: `/blog?page=2` via Next.js `searchParams`.
 
 ```typescript
-// src/app/blog/page.tsx: it awaits searchParams, so it renders per request
-type BlogSearchParams = Promise<{ page?: string; category?: string; tag?: string; q?: string }>;
+// src/app/blog/page.tsx: it awaits searchParams, so it renders per request.
+// loadIndex (React's cache) fetches once for the metadata and the page:
+// PUBLISHED_POSTS_COUNT_QUERY, then blogIndexView(params, published) (src/lib/blogIndex.ts).
+// Below 4 live posts the view ignores page, category, tag and q, and the page
+// lists LATEST_POSTS_QUERY. From 4: FEATURED_POST_QUERY (unless filtered) and
+// BLOG_FILTER_ROWS_QUERY, then BLOG_INDEX_QUERY and BLOG_COUNT_QUERY with
+// $exclude = blogExclude(view, featured) and offset = (page - 1) * BLOG_PAGE_SIZE (6).
 
-export default async function BlogPage({ searchParams }: { searchParams: BlogSearchParams }) {
-  const { page: pageParam } = await searchParams;
-  const page = Math.max(1, Number(pageParam) || 1);
-  const offset = (page - 1) * PAGE_SIZE; // PAGE_SIZE = 6
-  // Fetch posts, count, featured post and tags in parallel
-}
-
-// Metadata for paginated pages, built with pageMetadata() like every page
-export async function generateMetadata({ searchParams }: { searchParams: BlogSearchParams }) {
-  const { page: pageParam, category, tag, q: qParam } = await searchParams;
-  const page = Math.max(1, Number(pageParam) || 1);
-  const search = qParam?.trim() ?? '';
-  const q = search ? `${search}*` : ''; // BLOG_COUNT_QUERY's match wants the trailing wildcard
-  const [total, published] = await Promise.all([
-    sanityServerClient.fetch<number>(BLOG_COUNT_QUERY, { category: category ?? '', tag: tag ?? '', q }),
-    sanityServerClient.fetch<number>(PUBLISHED_POSTS_COUNT_QUERY),
-  ]);
-  const totalPages = Math.ceil(total / PAGE_SIZE);
+export async function generateMetadata({ searchParams }: { searchParams: Promise<BlogIndexParams> }) {
+  const { page, category, tag, q } = await searchParams;
+  const { published, view, total } = await loadIndex(page, category, tag, q);
+  const totalPages = view.few ? 1 : Math.ceil(total / BLOG_PAGE_SIZE);
   return pageMetadata({
     title: 'News & Insights',
-    description: 'Expert perspectives on clean energy, SA market trends, project spotlights and company news.',
-    // A filtered or searched view canonicalises to /blog, whatever its page number; a later page of the whole list canonicalises to itself.
-    path: blogIndexPath({ page, category: category ?? '', tag: tag ?? '', q: search }),
-    noindex: published === 0 || search !== '',
+    description: DESCRIPTION,
+    // A filtered or searched view canonicalises to /blog, whatever its page number; a later page of
+    // the whole list canonicalises to itself. Below 4 posts the view is always page 1, unfiltered.
+    path: blogIndexPath({ page: view.page, category: view.category, tag: view.tag, q: view.search }),
+    noindex: published === 0 || (q?.trim() ?? '') !== '',
     pagination: {
-      previous: page > 1 ? buildBlogHref(page - 1, category, tag) : undefined,
-      next: page < totalPages ? buildBlogHref(page + 1, category, tag) : undefined,
+      previous: view.page > 1 ? blogIndexHref(view, view.page - 1) : undefined,
+      next: view.page < totalPages ? blogIndexHref(view, view.page + 1) : undefined,
     },
   });
 }

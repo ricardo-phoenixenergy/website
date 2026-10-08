@@ -322,7 +322,7 @@ Tags: Free assessment | 5 business days | 6–10 weeks | Savings from day one
 Removed from the solution pages in May 2026; the unused `Testimonials` component was deleted in September 2026. No solution page has testimonials.
 
 - **FAQ:** Carbon Credits and EV Fleets (and WeBuySolar) have an FAQ accordion instead: `FaqAccordion` at `#faq`, which also emits FAQPage JSON-LD.
-- **Related articles:** every page has `RelatedArticles` (`src/components/sections/RelatedArticles.tsx`) on `#F5F5F5`, with the eyebrow "Industry insights", the H2 "Further reading on {label}" and a "View all articles" link to `/blog`. It shows up to three posts tagged for the vertical, newest first (`POSTS_BY_VERTICAL_QUERY`), and is hidden when there are none.
+- **Related articles:** every page has `RelatedArticles` (`src/components/sections/RelatedArticles.tsx`) on `#F5F5F5`, with the eyebrow "From the blog", the H2 "Further reading on {label}" and a "View all articles" link to `/blog`. It shows up to three posts tagged for the vertical, newest first (`POSTS_BY_VERTICAL_QUERY`), and is hidden when there are none. Updated 2026-10-08, as the projects row: three or fewer posts sit in a static grid (`carouselLayout`), one or two as large `ArticleCard`s in two columns from 768px, three in three; from four, the scroller. The cards are described in `specs/10-BLOG.md` (Article Grid and the Article Card).
 
 ---
 
