@@ -1,8 +1,11 @@
 // src/app/blog/[slug]/page.tsx
+// One template for every post, on the project page's parts: the breadcrumb row
+// with the share actions, the shared hero (the service badge when a tag names
+// one, the title, then the author, date and read time), the article beside a
+// sticky sidebar (contents and author) from 1024px, "More articles" and the
+// rounded closing band. The site footer comes from the layout.
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
 import { PortableText } from '@portabletext/react';
 import { urlFor } from '@/lib/sanity';
 import { sanityServerClient } from '@/lib/sanity.server';
@@ -13,14 +16,20 @@ import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 import { authorUrl, blogArticleJsonLd } from '@/lib/blogSeo';
 import { sanityArticleImages, sanityShareImage } from '@/lib/sanityShareImage';
 import { postTextComponents } from '@/lib/postTextComponents';
-import { formatDate, initials, postHeadings } from '@/lib/blogUtils';
+import { formatDate, postHeadings, postVertical } from '@/lib/blogUtils';
+import { articleCta, BLOG_CTA } from '@/config/ctas';
+import { REPLY_PROMISE } from '@/config/contact';
+import { SOLUTION_META, type SolutionMeta } from '@/types/solutions';
 import { TableOfContents } from '@/components/blog/TableOfContents';
 import { ShareButtons } from '@/components/blog/ShareButtons';
 import { Chip } from '@/components/ui/Chip';
 import { AuthorCard } from '@/components/blog/AuthorCard';
 import { PostNext } from '@/components/blog/PostNext';
 import { JsonLd } from '@/components/layout/JsonLd';
-import { PageFooter } from '@/components/layout/PageFooter';
+import { PageBreadcrumb } from '@/components/ui/PageBreadcrumb';
+import { PageHero } from '@/components/ui/PageHero';
+import { ClosingBand } from '@/components/ui/ClosingBand';
+import { StickyWhenFits } from '@/components/project/StickyWhenFits';
 import { BlogReadDepth } from '@/components/analytics/BlogReadDepth';
 import { cache } from 'react';
 
@@ -69,15 +78,14 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const post = await getPost(slug);
   if (!post) notFound();
 
-  const headings = postHeadings(post.body);
+  const body = post.body ?? [];
+  const headings = postHeadings(body);
+  const related = post.related ?? [];
+  const tags = post.tags ?? [];
   const canonicalUrl = post.canonicalUrl ?? `${SITE_URL}/blog/${post.slug.current}`;
-  const heroSrc = post.heroImage?.asset
-    ? urlFor(post.heroImage).width(1400).height(560).auto('format').url()
-    : null;
-  const heroBlur = post.heroImage?.asset?.metadata?.lqip;
-  const authorPhotoSrc = post.author.photo?.asset
-    ? urlFor(post.author.photo).width(52).height(52).url()
-    : null;
+  const vertical = postVertical(tags);
+  const meta: SolutionMeta | null = vertical ? SOLUTION_META[vertical] : null;
+  const when = `${formatDate(post.publishedAt, 'long')}${post.readTime ? ` · ${post.readTime} min read` : ''}`;
 
   const articleJsonLd = blogArticleJsonLd(
     {
@@ -105,138 +113,71 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   ]);
 
   return (
-    <>
+    <div className="min-h-screen bg-pe-bg">
       <BlogReadDepth slug={post.slug.current} category={post.category} />
       <JsonLd data={articleJsonLd} />
       <JsonLd data={breadcrumb} />
 
-      {/* Post hero */}
-      <section className="relative overflow-hidden" style={{ height: 360, background: '#0d1f22' }}>
-        {heroSrc && (
-          <Image
-            src={heroSrc}
-            alt={post.heroImage?.alt ?? post.title}
-            fill
-            priority
-            className="object-cover"
-            sizes="100vw"
-            {...(heroBlur ? { placeholder: 'blur', blurDataURL: heroBlur } : {})}
-          />
-        )}
-        {/* Overlay */}
-        <div
-          className="absolute inset-0"
-          style={{ background: 'linear-gradient(180deg, rgba(13,31,34,0.15) 0%, rgba(13,31,34,0.88) 100%)' }}
-        />
-        {/* Bottom-anchored content */}
-        <div className="absolute bottom-0 left-0 right-0 max-w-5xl mx-auto px-6 pb-7">
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2 mb-3">
-            <span
-              className="font-body font-bold text-xs uppercase tracking-[0.08em] text-white rounded-full px-2.5 py-1"
-              style={{ background: 'rgba(255,255,255,0.25)' }}
-            >
-              {post.category}
-            </span>
-            {post.tags?.slice(0, 2).map(tag => (
-              <span
-                key={tag}
-                className="font-body font-semibold text-xs text-white rounded-full px-2.5 py-1"
-                style={{ background: 'rgba(255,255,255,0.15)' }}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-          <h1 className="font-display font-extrabold text-2xl md:text-3xl text-white leading-[1.2] mb-3">
-            {post.title}
-          </h1>
-          {/* Meta */}
-          <div className="flex items-center gap-2">
-            {authorPhotoSrc ? (
-              <Image
-                src={authorPhotoSrc}
-                alt=""
-                width={28}
-                height={28}
-                className="rounded-full object-cover flex-shrink-0"
-                style={{ border: '2px solid rgba(255,255,255,0.30)' }}
-              />
-            ) : (
-              <div
-                className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{ background: '#39575C', border: '2px solid rgba(255,255,255,0.30)' }}
-              >
-                <span className="font-display font-bold text-xs text-white">
-                  {initials(post.author.name)}
-                </span>
-              </div>
+      <PageBreadcrumb
+        trail={[{ label: 'Home', href: '/' }, { label: 'News & Insights', href: '/blog' }, { label: post.title }]}
+        action={<ShareButtons url={canonicalUrl} title={post.seoTitle?.trim() || post.title} />}
+      />
+
+      <PageHero
+        image={post.heroImage}
+        alt={post.heroImage?.alt?.trim() || post.title}
+        title={post.title}
+        titleId="post-title"
+        badge={meta ? { label: meta.label, href: meta.slug, accent: meta.accent, accentText: meta.accentText } : undefined}
+        line={{ first: post.author.name, second: when }}
+        fallbackAccent={meta?.accent}
+      />
+
+      {/* From 1024px the article sits beside the 340px sidebar, as a project's story beside its
+          facts; below that the contents come first as a closed disclosure and the author after. */}
+      <div className="page-container mt-10 md:mt-12 lg:mt-16 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-x-14">
+        <div className="min-w-0">
+          <TableOfContents items={headings} variant="disclosure" className="mb-8 lg:hidden" />
+          <article className="max-w-[42rem]" aria-labelledby="post-title">
+            <PortableText value={body} components={postTextComponents(headings)} />
+
+            {/* Wrapped chip rows sit 10px apart, so each chip's 44px touch target stays clear of the next. */}
+            {(post.category || tags.length > 0) && (
+              <footer className="mt-7 border-t border-pe-border pt-5">
+                <p className="font-body text-xs font-bold uppercase tracking-[0.1em] text-pe-muted">Filed under</p>
+                <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-2.5">
+                  {post.category && <span className="mr-2 font-body text-sm font-semibold text-pe-text">{post.category}</span>}
+                  {tags.map((tag) => (
+                    <Chip key={tag} href={`/blog?tag=${encodeURIComponent(tag)}`}>
+                      {tag}
+                    </Chip>
+                  ))}
+                </div>
+              </footer>
             )}
-            <span className="font-body text-xs" style={{ color: 'rgba(255,255,255,0.6)' }}>
-              {post.author.name}
-              <span className="mx-1.5">·</span>
-              {formatDate(post.publishedAt, 'long')}
-              <span className="mx-1.5">·</span>
-              {post.readTime} min read
-            </span>
-          </div>
+          </article>
+          <AuthorCard author={post.author} className="mt-8 lg:hidden" />
         </div>
-      </section>
-
-      {/* Breadcrumb + Share bar */}
-      <div
-        className="max-w-5xl mx-auto flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between py-3 px-6"
-        style={{ borderBottom: '1px solid #E5E7EB' }}
-      >
-        <nav aria-label="Breadcrumb" className="font-body text-xs text-pe-muted flex items-center gap-1.5 min-w-0">
-          <Link href="/" className="hover:text-pe-primary transition-colors shrink-0">Home</Link>
-          <span className="shrink-0">/</span>
-          <Link href="/blog" className="hover:text-pe-primary transition-colors shrink-0">News &amp; Insights</Link>
-          <span className="shrink-0">/</span>
-          <span className="text-pe-text truncate">
-            {post.title}
-          </span>
-        </nav>
-        <ShareButtons url={canonicalUrl} title={post.seoTitle?.trim() || post.title} />
-      </div>
-
-      {/* Body — single col on mobile, sidebar on lg+ */}
-      <div className="max-w-5xl mx-auto pt-8 pb-12 px-6 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
-
-        {/* Article body */}
-        <article className="min-w-0 max-w-[42rem]">
-          <PortableText
-            value={post.body ?? []}
-            components={postTextComponents(headings)}
-          />
-
-          {/* Tags footer: chip links, like the /blog tag pills. Wrapped rows sit
-              10px apart, so each chip's 44px touch target stays clear of the
-              next row's. */}
-          {post.tags?.length > 0 && (
-            <div
-              className="flex flex-wrap items-center gap-x-2 gap-y-2.5 pt-5 mt-7"
-              style={{ borderTop: '1px solid #E5E7EB' }}
-            >
-              <span className="font-body font-semibold text-xs text-pe-text">Tags:</span>
-              {post.tags.map(tag => (
-                <Chip key={tag} href={`/blog?tag=${encodeURIComponent(tag)}`}>
-                  {tag}
-                </Chip>
-              ))}
+        <div className="hidden lg:block">
+          <StickyWhenFits>
+            <div className="flex flex-col gap-4">
+              <TableOfContents items={headings} variant="panel" />
+              <AuthorCard author={post.author} titleId="author-title-sidebar" />
             </div>
-          )}
-        </article>
-
-        {/* Sidebar — stacks below article on mobile, sticky column on lg+ */}
-        <aside className="flex flex-col gap-4 lg:sticky lg:top-6 lg:self-start">
-          <TableOfContents items={headings} variant="panel" />
-          <AuthorCard author={post.author} />
-        </aside>
+          </StickyWhenFits>
+        </div>
       </div>
 
-      <PostNext posts={post.related ?? []} />
-      <PageFooter ctaVariant="centered" />
-    </>
+      <PostNext posts={related} />
+      <ClosingBand
+        eyebrow="Start your project"
+        heading="Want to know what this means for your site?"
+        body={`Tell us about your site. ${REPLY_PROMISE.sentence}`}
+        primary={articleCta(vertical, post.title)}
+        primaryLocation={`post_band:${post.slug.current}`}
+        secondary={BLOG_CTA}
+        afterContent={related.length === 0}
+      />
+    </div>
   );
 }

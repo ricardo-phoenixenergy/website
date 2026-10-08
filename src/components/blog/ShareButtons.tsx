@@ -7,6 +7,8 @@
 // browser refuses). The three sit in one named group. The live region and the
 // fallback field come after the group, so in the wrapping row the field takes a
 // full line under the breadcrumb, not a squeezed slot beside the buttons.
+// Below 640px the group takes its own line under the trail, which would
+// otherwise shrink to a few letters beside it.
 // The LinkedIn mark is a filled square, which reads larger and darker than the
 // open X glyph at the same size, so it is drawn at 16px beside the X's 20px.
 import { IconButton } from '@/components/ui/IconButton';
@@ -22,7 +24,7 @@ interface ShareButtonsProps {
 export function ShareButtonsView({ url, title, copy }: ShareButtonsProps & { copy: CopyLink }) {
   return (
     <>
-      <div role="group" aria-label="Share this article" className="flex shrink-0 items-center gap-2">
+      <div role="group" aria-label="Share this article" className="flex shrink-0 basis-full items-center gap-2 sm:basis-auto">
         <IconButton
           variant="outline"
           label="Share on LinkedIn"

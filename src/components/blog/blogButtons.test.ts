@@ -18,6 +18,8 @@ describe('ShareButtons', () => {
 
   it('groups two 44px outline icon buttons, then Copy link, under one name', () => {
     expect(markup).toMatch(/^<div role="group" aria-label="Share this article"/);
+    // Phones put the group on its own line under the trail.
+    expect(attr(markup, 'class')?.split(' ')).toEqual(expect.arrayContaining(['basis-full', 'sm:basis-auto']));
     expect(found.map(([, , attrs]) => attr(attrs, 'aria-label'))).toEqual(['Share on LinkedIn', 'Share on X', undefined]);
     for (const [, , attrs] of found.slice(0, 2)) {
       expect(attr(attrs, 'class')?.split(' ')).toEqual(expect.arrayContaining(['size-11', 'rounded-full', 'border', 'bg-white']));
