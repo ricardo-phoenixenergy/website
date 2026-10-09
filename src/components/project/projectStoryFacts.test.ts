@@ -5,7 +5,6 @@ import { ProjectFacts } from './ProjectFacts';
 import { ProjectStory } from './ProjectStory';
 import { projectFacts } from '@/lib/projectFacts';
 import { projectChapters } from '@/lib/projectStory';
-import { REPLY_PROMISE } from '@/config/contact';
 import type { PortableTextBlock } from '@/types/sanity';
 
 const html = (el: Parameters<typeof renderToStaticMarkup>[0]) => renderToStaticMarkup(el);
@@ -26,13 +25,13 @@ const cta = { label: 'Book a discovery meeting', href: '/contact?service=ci' };
 const facts = (variant: 'panel' | 'compact' | 'columns') => html(createElement(ProjectFacts, { groups, variant, cta, ctaLocation: 'project_facts:a' }));
 
 describe('ProjectFacts', () => {
-  it('panel: every group, the Service link, the booking button and the reply line', () => {
+  it('panel: every group, the Service link and the booking button, with no reply line', () => {
     const markup = facts('panel');
     expect(markup).toMatch(/<h2 id="project-facts-panel"[^>]*>Project facts<\/h2>/);
     expect(markup.match(/<h3\b/g)).toHaveLength(2);
     expect(markup).toMatch(/<dt[^>]*>Service<\/dt><dd[^>]*><a [^>]*href="\/solutions\/ci-solar-storage"/);
     expect(markup).toContain('href="/contact?service=ci"');
-    expect(markup).toContain(REPLY_PROMISE.sentence);
+    expect(markup).not.toContain('reply within');
     expect(markup).not.toContain('<details');
   });
 
@@ -67,12 +66,12 @@ describe('ProjectFacts', () => {
     expect(facts('compact')).toMatch(/<dt class="[^"]*\bflex-1\b[^"]*">Battery Energy Storage Capacity<\/dt><dd class="[^"]*">80 kWh<\/dd>/);
   });
 
-  it('columns: one column per group, with the booking row and its sentence', () => {
+  it('columns: one column per group, with the booking row and its question', () => {
     const markup = facts('columns');
     expect(markup).toMatch(/<h2 id="project-facts-columns"/);
     // Two groups, two columns (factColumnsClass in src/lib/projectFacts.ts).
     expect(markup).toContain('class="mt-3 grid gap-x-8 gap-y-4 grid-cols-2"');
-    expect(markup).toContain(`Planning something similar? ${REPLY_PROMISE.sentence}`);
+    expect(markup).toContain('Planning something similar?</p>');
   });
 
   it('puts each Financing option and each approval on its own line, the options linking to the financing section', () => {

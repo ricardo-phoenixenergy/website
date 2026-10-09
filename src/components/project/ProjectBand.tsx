@@ -4,7 +4,6 @@
 // and sends cta_click, and the link to every published project.
 import { ClosingBand } from '@/components/ui/ClosingBand';
 import { PROJECTS_CTA, type Cta } from '@/config/ctas';
-import { REPLY_PROMISE } from '@/config/contact';
 
 interface ProjectBandProps {
   cta: Cta;
@@ -19,7 +18,6 @@ export function ProjectBand({ cta, ctaLocation, afterStory = false }: ProjectBan
     <ClosingBand
       eyebrow="Start your project"
       heading="Ready for a similar project?"
-      body={`Tell us about your site. ${REPLY_PROMISE.sentence}`}
       primary={cta}
       primaryLocation={ctaLocation}
       secondary={PROJECTS_CTA}

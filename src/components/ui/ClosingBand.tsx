@@ -13,7 +13,8 @@ import { cn } from '@/lib/utils';
 interface ClosingBandProps {
   eyebrow: string;
   heading: string;
-  body: string;
+  /** A line under the heading; without one, the heading stands alone. */
+  body?: string;
   primary: Cta;
   /** cta_click's cta_location, for example "project_band:31-sacks-circle". */
   primaryLocation: string;
@@ -34,10 +35,12 @@ export function ClosingBand({ eyebrow, heading, body, primary, primaryLocation, 
             <p className="mb-2 font-body text-xs font-bold uppercase tracking-[0.14em]" style={{ color: 'var(--color-on-dark-subtle)' }}>
               {eyebrow}
             </p>
-            <h2 className="mb-2.5 font-display text-xl font-extrabold leading-[1.2] text-white md:text-2xl">{heading}</h2>
-            <p className="font-body text-sm leading-[1.7]" style={{ color: 'var(--color-on-dark-subtle)' }}>
-              {body}
-            </p>
+            <h2 className={cn('font-display text-xl font-extrabold leading-[1.2] text-white md:text-2xl', body && 'mb-2.5')}>{heading}</h2>
+            {body && (
+              <p className="font-body text-sm leading-[1.7]" style={{ color: 'var(--color-on-dark-subtle)' }}>
+                {body}
+              </p>
+            )}
           </div>
           <div className="flex flex-shrink-0 flex-col gap-3 sm:flex-row md:flex-col lg:flex-row">
             <TrackedButton variant="light" href={primary.href} ctaLabel={primary.label} ctaLocation={primaryLocation}>

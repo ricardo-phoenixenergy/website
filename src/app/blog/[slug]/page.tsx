@@ -23,7 +23,6 @@ import { sanityArticleImages, sanityShareImage } from '@/lib/sanityShareImage';
 import { postTextComponents } from '@/lib/postTextComponents';
 import { postDateLine, postHeadings, postVertical, postWordCount } from '@/lib/blogUtils';
 import { articleCta, BLOG_CTA } from '@/config/ctas';
-import { REPLY_PROMISE } from '@/config/contact';
 import { SOLUTION_META, type SolutionMeta } from '@/types/solutions';
 import { TableOfContents } from '@/components/blog/TableOfContents';
 import { ShareButtons } from '@/components/blog/ShareButtons';
@@ -187,7 +186,6 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <ClosingBand
         eyebrow="Start your project"
         heading="Want to know what this means for your site?"
-        body={`Tell us about your site. ${REPLY_PROMISE.sentence}`}
         primary={articleCta(vertical, post.title)}
         primaryLocation={`post_band:${post.slug.current}`}
         secondary={BLOG_CTA}

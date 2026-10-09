@@ -41,12 +41,11 @@ export const REPLY_PROMISE = {
 /**
  * "What happens next" beside the contact form (specs/09-CONTACT.md). Only steps
  * the site already supports: the page's promise to connect you with the right
- * person, the reply window, and the free, no-obligation first step each
- * solution's process starts with. The spec's fourth step ("free site assessment
+ * person, and the free, no-obligation first step each solution's process
+ * starts with. The reply window was taken out in October 2026. The spec's fourth step ("free site assessment
  * within 5 days") is left out: nothing else on the site promises it.
  */
 export const CONTACT_NEXT_STEPS: ReadonlyArray<{ key: string; text: string }> = [
   { key: 'route', text: 'We pass your enquiry to the right specialist.' },
-  { key: 'reply', text: REPLY_PROMISE.sentence },
   { key: 'first-step', text: 'For clients, the first meeting or assessment is free, with no obligation.' },
 ];

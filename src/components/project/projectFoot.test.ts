@@ -3,7 +3,6 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { ProjectNext } from './ProjectNext';
 import { ProjectBand } from './ProjectBand';
-import { REPLY_PROMISE } from '@/config/contact';
 import type { ProjectCard } from '@/types/sanity';
 
 const html = (el: Parameters<typeof renderToStaticMarkup>[0]) => renderToStaticMarkup(el);
@@ -30,7 +29,8 @@ describe('ProjectBand', () => {
   it('keeps its heading and both buttons, the booking one first', () => {
     const markup = html(createElement(ProjectBand, { cta, ctaLocation: 'project_band:a' }));
     expect(markup).toContain('Ready for a similar project?');
-    expect(markup).toContain(REPLY_PROMISE.sentence);
+    expect(markup).not.toContain('reply within');
+    expect(markup).not.toContain('Tell us about your site');
     expect([...markup.matchAll(/<a [^>]*href="([^"]+)"/g)].map((m) => m[1])).toEqual(['/contact?m=x', '/projects']);
   });
 

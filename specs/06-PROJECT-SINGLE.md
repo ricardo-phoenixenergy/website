@@ -153,7 +153,7 @@ The page file only reads the project and composes the parts in `src/components/p
   - `columns`: full width from 1024px when there's no story: a column per group (`factColumnsClass()`), so one group sits in a column up to 28rem wide, two or three share the width, and four sit two by two until 1280px, then four across.
 
   Both versions for a width range are rendered and each is hidden at the other widths, so only one is ever in the accessibility tree.
-- **Booking:** each version ends with the service's booking button (`projectCta(vertical, title)`, `TrackedButton`, `cta_location: project_facts:{slug}`) and "We reply within 1 business day." The `columns` version shows "Planning something similar? We reply within 1 business day." beside the button.
+- **Booking:** each version ends with the service's booking button (`projectCta(vertical, title)`, `TrackedButton`, `cta_location: project_facts:{slug}`) with no reply line under it. The `columns` version shows "Planning something similar?" beside the button.
 
 ---
 
@@ -179,8 +179,7 @@ The page file only reads the project and composes the parts in `src/components/p
 ## Closing Band
 
 `ProjectBand`, unchanged in look:
-- "Start your project" and "Ready for a similar project?";
-- "Tell us about your site. We reply within 1 business day.";
+- "Start your project" and "Ready for a similar project?", with no line under the heading (October 2026);
 - the service's booking button (`TrackedButton`, light, `cta_location: project_band:{slug}`);
 - "View published projects" (ghost).
 

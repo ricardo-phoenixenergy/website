@@ -4,7 +4,7 @@ import { ContactForm } from '@/components/sections/ContactForm';
 import { NextSteps } from '@/components/ui/NextSteps';
 import { IconMail, IconPhone, IconMapPin, IconLinkedIn } from '@/components/ui/Icons';
 import { JsonLd } from '@/components/layout/JsonLd';
-import { CONTACT, CONTACT_NEXT_STEPS, REPLY_PROMISE } from '@/config/contact';
+import { CONTACT, CONTACT_NEXT_STEPS } from '@/config/contact';
 import { pageMetadata } from '@/lib/seo';
 import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 
@@ -69,7 +69,6 @@ export default function ContactPage() {
                     label: 'Email',
                     value: CONTACT.email,
                     href: `mailto:${CONTACT.email}`,
-                    sub: REPLY_PROMISE.sentence,
                   },
                   {
                     icon: <IconPhone size={17} />,
@@ -112,12 +111,14 @@ export default function ContactPage() {
                           row.value
                         )}
                       </p>
-                      <p
-                        className="font-body text-xs mt-0.5"
-                        style={{ color: 'var(--color-on-dark-subtle)' }}
-                      >
-                        {row.sub}
-                      </p>
+                      {row.sub && (
+                        <p
+                          className="font-body text-xs mt-0.5"
+                          style={{ color: 'var(--color-on-dark-subtle)' }}
+                        >
+                          {row.sub}
+                        </p>
+                      )}
                     </div>
                   </div>
                 ))}

@@ -321,7 +321,7 @@ Card titles are `h3`. With no related posts the section is not rendered.
 ### Closing band
 
 `ClosingBand` (`src/components/ui/ClosingBand.tsx`), the project page's rounded band in the container:
-- Eyebrow "Start your project", heading "Want to know what this means for your site?", line "Tell us about your site. We reply within 1 business day."
+- Eyebrow "Start your project", heading "Want to know what this means for your site?", with no line under it (taken out in October 2026).
 - Primary (light, sends `cta_click` with `cta_location` `post_band:{slug}`): `articleCta(vertical, title)` from `src/config/ctas.ts`, the service's booking label when a tag names one (for example "Book a free energy audit"), else "Book a discovery meeting"; the contact message names the article.
 - Secondary (ghost): "View all articles", to `/blog` (`BLOG_CTA`).
 - With no "More articles" section above it, the band keeps the gap after the article itself (`afterContent`).

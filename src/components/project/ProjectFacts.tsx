@@ -6,7 +6,7 @@
 // - columns: full width from 1024px when there's no story, with the booking
 //   row at its foot.
 // Each version sits in the shared SidePanel frame and ends with the service's
-// booking button and the reply promise.
+// booking button.
 // Each has its own heading id (project-facts-{variant}), so a page can render
 // two versions and hide one. A row with more than one line (Financing,
 // Approvals) puts each line on its own.
@@ -14,7 +14,6 @@ import Link from 'next/link';
 import { SidePanel } from '@/components/ui/SidePanel';
 import { TrackedButton } from '@/components/ui/TrackedButton';
 import { IconArrowRight, IconChevronDown } from '@/components/ui/Icons';
-import { REPLY_PROMISE } from '@/config/contact';
 import type { Cta } from '@/config/ctas';
 import { factColumnsClass, splitMainRows, type FactGroup, type FactLine, type FactRow } from '@/lib/projectFacts';
 import { cn } from '@/lib/utils';
@@ -113,7 +112,6 @@ export function ProjectFacts({ groups, variant, cta, ctaLocation, className }: P
         )}
         <div className="mt-4">
           <Booking cta={cta} ctaLocation={ctaLocation} fullWidth />
-          <p className="mt-2 text-center font-body text-xs text-pe-muted">{REPLY_PROMISE.sentence}</p>
         </div>
       </SidePanel>
     );
@@ -128,7 +126,7 @@ export function ProjectFacts({ groups, variant, cta, ctaLocation, className }: P
           ))}
         </div>
         <div className="mt-5 flex items-center justify-between gap-6 border-t border-pe-border pt-5">
-          <p className="font-body text-sm text-pe-muted">Planning something similar? {REPLY_PROMISE.sentence}</p>
+          <p className="font-body text-sm text-pe-muted">Planning something similar?</p>
           <Booking cta={cta} ctaLocation={ctaLocation} fullWidth={false} />
         </div>
       </SidePanel>
@@ -144,7 +142,6 @@ export function ProjectFacts({ groups, variant, cta, ctaLocation, className }: P
       </div>
       <div className="mt-5">
         <Booking cta={cta} ctaLocation={ctaLocation} fullWidth />
-        <p className="mt-2 text-center font-body text-xs text-pe-muted">{REPLY_PROMISE.sentence}</p>
       </div>
     </SidePanel>
   );

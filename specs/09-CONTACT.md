@@ -307,7 +307,7 @@ Three stacked cards, `gap: 16px`.
 Three rows (icon box + label + value + sub):
 | Icon | Label | Value | Sub |
 |---|---|---|---|
-| `IconMail` | Email | info@phoenixenergy.solutions | We reply within 1 business day. (`REPLY_PROMISE.sentence`) |
+| `IconMail` | Email | info@phoenixenergy.solutions | None |
 | `IconPhone` | Phone | +27 79 892 8197 | Mon to Fri, 08:00 to 17:00 SAST (`CONTACT.phoneHours`) |
 | `IconMapPin` | Head Office | The Colosseum, Century City | 1st Floor, Foyer 3, Cape Town, 7441 |
 
@@ -330,10 +330,11 @@ Email and phone come from `CONTACT` in `src/config/contact.ts`; the address is w
 
 > Placeholder from the April 2026 mockup, not confirmed and not on the site. Don't publish it without evidence (see `docs/content/claims-register.md`).
 
-**As built (September 2026):** the shared `NextSteps` component (`variant="card"`, an h2), second in the right column, with three numbered steps from `CONTACT_NEXT_STEPS` in `src/config/contact.ts`. Text is 14px, above the 12px floor.
+**As built (September 2026):** the shared `NextSteps` component (`variant="card"`, an h2), second in the right column, with two numbered steps from `CONTACT_NEXT_STEPS` in `src/config/contact.ts`. Text is 14px, above the 12px floor.
   1. We pass your enquiry to the right specialist.
-  2. We reply within 1 business day. (`REPLY_PROMISE`, the site's one response time)
-  3. For clients, the first meeting or assessment is free, with no obligation.
+  2. For clients, the first meeting or assessment is free, with no obligation.
+
+The reply time ("We reply within 1 business day.") was a step until October 2026, when it was taken out here, under the email address and in the project and blog closing bands. The thank-you message after sending and the home and About discovery band still give it.
 
 Row 4 was left out: nothing else on the site promises a site assessment within 5 days, and the site states one response time only. Add it back only once the business confirms the timing.
 
