@@ -21,7 +21,7 @@ import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 import { authorUrl, blogArticleJsonLd } from '@/lib/blogSeo';
 import { sanityArticleImages, sanityShareImage } from '@/lib/sanityShareImage';
 import { postTextComponents } from '@/lib/postTextComponents';
-import { formatDate, postHeadings, postVertical } from '@/lib/blogUtils';
+import { postDateLine, postHeadings, postVertical, postWordCount } from '@/lib/blogUtils';
 import { articleCta, BLOG_CTA } from '@/config/ctas';
 import { REPLY_PROMISE } from '@/config/contact';
 import { SOLUTION_META, type SolutionMeta } from '@/types/solutions';
@@ -73,6 +73,7 @@ export async function generateMetadata({
       publishedTime: post.publishedAt,
       modifiedTime: post.updatedAt ?? post.publishedAt,
       authors: [authorUrl(post.author.slug.current)],
+      section: post.category,
       tags: post.tags,
     },
   });
@@ -90,7 +91,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const canonicalUrl = post.canonicalUrl ?? `${SITE_URL}/blog/${post.slug.current}`;
   const vertical = postVertical(tags);
   const meta: SolutionMeta | null = vertical ? SOLUTION_META[vertical] : null;
-  const when = `${formatDate(post.publishedAt, 'long')}${post.readTime ? ` · ${post.readTime} min read` : ''}`;
+  const when = postDateLine(post);
 
   const articleJsonLd = blogArticleJsonLd(
     {
@@ -101,6 +102,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       seoDescription: post.seoDescription,
       publishedAt: post.publishedAt,
       updatedAt: post.updatedAt,
+      wordCount: postWordCount(body),
       author: {
         name: post.author.name,
         slug: post.author.slug.current,

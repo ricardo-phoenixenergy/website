@@ -182,7 +182,7 @@ As built 2026-10-08, on the project page's parts (`specs/06-PROJECT-SINGLE.md`):
 - Photo: the art-directed `<picture>` from `heroCrops()` (`src/lib/projectHeroImage.ts`): a 5:2 crop from 768px and a 4:3 crop below, both on the Studio hotspot, one preload per crop, the LQIP blurred behind. The post query already carries what it needs (`asset.url`, `metadata.dimensions`, `hotspot`, `crop`). Alt text: the hero's alt, else the title.
 - Badge: the service the post's tags name (`postVertical`, the first tag that names one), in its accent fill and "on" ink, linking to its solution page. No badge when no tag names a service. The category is not in the hero; it is on the cards and in the tags footer.
 - H1: the post title, Plus Jakarta Sans 800, 28px (36px from 768px, 44px from 1024px), `max-w-[25ch]`, balanced; `pe-text` on phones, white over the photo.
-- Line under it: the author's name, then "8 October 2026 · 6 min read" (the read time left out when unset). Phones: two lines, 14px `pe-muted`; from 768px one line joined by " · ", 16px `on-dark-muted`.
+- Line under it: the author's name, then the date line from `postDateLine()`: "8 October 2026 · Updated 9 October 2026 · 6 min read". The update shows only when "Last updated" falls on a later day than the publish date (compared in South African time), so readers see the freshness the JSON-LD `dateModified` and `article:modified_time` give search engines; the read time is left out when unset. Phones: two lines, 14px `pe-muted`; from 768px one line joined by " · ", 16px `on-dark-muted`.
 - No hero photo: phones show no photo block, wider screens a gradient from the service accent to Night Teal, over Night Teal (Night Teal alone with no service); `noPhotoBackground`, shared with the wide article card.
 
 ### Two-Column Post Layout
@@ -367,6 +367,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       publishedTime: post.publishedAt,
       modifiedTime: post.updatedAt ?? post.publishedAt,
       authors: [authorUrl(post.author.slug.current)],
+      section: post.category,                   // og article:section
       tags: post.tags,
     },
   });
@@ -390,6 +391,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   inLanguage: 'en-ZA',
   articleSection: post.category,
   keywords: post.tags?.join(', '),
+  wordCount: postWordCount(post.body),         // the words in the text blocks; left out at 0
   author: {                                     // personJsonLd(): a Person under an @id their page and their posts share
     '@type': 'Person',
     '@id': `${authorUrl}#person`,

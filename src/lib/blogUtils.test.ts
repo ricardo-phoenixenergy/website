@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { activeHeadingId, blogFilterOptions, formatDate, initials, postHeadings, postMetaLine, postVertical, relatedLayout } from './blogUtils';
+import { activeHeadingId, blogFilterOptions, formatDate, initials, postDateLine, postHeadings, postMetaLine, postVertical, postWordCount, relatedLayout } from './blogUtils';
 import { articleCta } from '@/config/ctas';
 import type { PortableTextBlock } from '@/types/sanity';
 
@@ -100,5 +100,32 @@ describe('activeHeadingId', () => {
   it('picks none while the first heading is still below the line, as after a jump back to the top', () => {
     expect(activeHeadingId([{ id: 'a', top: 300 }, { id: 'b', top: 900 }])).toBeNull();
     expect(activeHeadingId([])).toBeNull();
+  });
+});
+
+describe('postDateLine', () => {
+  it('shows the update date beside the publish date when the post changed on a later day', () => {
+    expect(postDateLine({ publishedAt: '2026-10-08T08:00:00.000Z', updatedAt: '2026-10-09T12:00:00.000Z', readTime: 6 })).toBe('8 October 2026 · Updated 9 October 2026 · 6 min read');
+  });
+
+  it('leaves the update out when it is missing, unreadable, the same day or earlier', () => {
+    const line = '8 October 2026 · 6 min read';
+    expect(postDateLine({ publishedAt: '2026-10-08T08:00:00.000Z', updatedAt: null, readTime: 6 })).toBe(line);
+    expect(postDateLine({ publishedAt: '2026-10-08T08:00:00.000Z', updatedAt: 'not a date', readTime: 6 })).toBe(line);
+    expect(postDateLine({ publishedAt: '2026-10-08T08:00:00.000Z', updatedAt: '2026-10-08T15:00:00.000Z', readTime: 6 })).toBe(line);
+    expect(postDateLine({ publishedAt: '2026-10-08T08:00:00.000Z', updatedAt: '2026-10-01T08:00:00.000Z', readTime: 6 })).toBe(line);
+  });
+
+  it('compares days in South African time, and leaves out a missing read time', () => {
+    // 23:30 UTC on 8 October is already 9 October in Johannesburg.
+    expect(postDateLine({ publishedAt: '2026-10-08T08:00:00.000Z', updatedAt: '2026-10-08T23:30:00.000Z', readTime: 0 })).toBe('8 October 2026 · Updated 9 October 2026');
+  });
+});
+
+describe('postWordCount', () => {
+  it('counts the words in the text blocks and the list items, and nothing else', () => {
+    const body = [block('a', 'h2', 'Why it pays'), block('b', 'normal', 'One short peak sets the charge.'), { _type: 'statStrip', _key: 'c' } as unknown as PortableTextBlock];
+    expect(postWordCount(body)).toBe(9);
+    expect(postWordCount(undefined)).toBe(0);
   });
 });

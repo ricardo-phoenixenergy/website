@@ -101,3 +101,12 @@ describe('pageMetadata', () => {
     expect(m.twitter).toMatchObject({ images: [{ url: image.url, alt: image.alt }] });
   });
 });
+
+describe('pageMetadata article section', () => {
+  it("names a post's section (its category) for link previews, and leaves it out when there is none", () => {
+    const withSection = pageMetadata({ title: 'A post', path: '/blog/a-post', article: { publishedTime: '2026-01-01T08:00:00Z', section: 'Industry Insights' } });
+    expect(withSection.openGraph).toMatchObject({ type: 'article', section: 'Industry Insights' });
+    const without = pageMetadata({ title: 'A post', path: '/blog/a-post', article: { publishedTime: '2026-01-01T08:00:00Z', section: null } });
+    expect(without.openGraph).not.toHaveProperty('section');
+  });
+});

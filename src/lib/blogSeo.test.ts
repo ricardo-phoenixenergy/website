@@ -90,3 +90,11 @@ describe('blogIndexPath', () => {
     expect(blogIndexPath({ page: 2, q: '   ' })).toBe('/blog?page=2');
   });
 });
+
+describe('blogArticleJsonLd word count', () => {
+  it('gives the word count when the page knows it, and leaves it out otherwise', () => {
+    expect(blogArticleJsonLd({ ...post, wordCount: 1483 }, page)).toMatchObject({ wordCount: 1483 });
+    expect(blogArticleJsonLd(post, page)).not.toHaveProperty('wordCount');
+    expect(blogArticleJsonLd({ ...post, wordCount: 0 }, page)).not.toHaveProperty('wordCount');
+  });
+});

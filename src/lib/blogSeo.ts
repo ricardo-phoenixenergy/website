@@ -51,6 +51,8 @@ export interface BlogArticleSource {
   seoDescription?: string | null;
   publishedAt: string;
   updatedAt?: string | null;
+  /** The words in the body (postWordCount), when the page has it. */
+  wordCount?: number;
   author: AuthorSource;
 }
 
@@ -68,6 +70,7 @@ export function blogArticleJsonLd(post: BlogArticleSource, page: { url: string; 
     inLanguage: 'en-ZA',
     ...(post.category ? { articleSection: post.category } : {}),
     ...(post.tags?.length ? { keywords: post.tags.join(', ') } : {}),
+    ...(post.wordCount ? { wordCount: post.wordCount } : {}),
     author: personJsonLd(post.author),
     publisher: ORGANIZATION_REF,
     mainEntityOfPage: { '@type': 'WebPage', '@id': page.url },

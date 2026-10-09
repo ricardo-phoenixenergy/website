@@ -68,6 +68,38 @@ export function postMetaLine(
   return parts.join(' · ');
 }
 
+/** "2026-10-09": the calendar day in South African time, or null for an unreadable date. */
+function saDay(iso: string): string | null {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Johannesburg', year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
+}
+
+/**
+ * The post hero's date line: "8 October 2026 · Updated 9 October 2026 · 6 min
+ * read". The update shows only when it falls on a later day than the publish
+ * date, so readers see the same freshness the page's dateModified gives search
+ * engines. A missing read time is left out.
+ */
+export function postDateLine(post: { publishedAt: string; updatedAt?: string | null; readTime?: number | null }): string {
+  const parts = [formatDate(post.publishedAt, 'long')];
+  const published = saDay(post.publishedAt);
+  const updated = post.updatedAt ? saDay(post.updatedAt) : null;
+  if (post.updatedAt && published && updated && updated > published) parts.push(`Updated ${formatDate(post.updatedAt, 'long')}`);
+  if (post.readTime) parts.push(`${post.readTime} min read`);
+  return parts.join(' · ');
+}
+
+/** The words in a post's text blocks (paragraphs, headings, list items), for the JSON-LD wordCount. */
+export function postWordCount(body: PortableTextBlock[] | null | undefined): number {
+  return (body ?? [])
+    .filter((block) => block._type === 'block')
+    .map((block) => ((block.children as Array<{ text?: string }> | undefined) ?? []).map((child) => child.text ?? '').join(''))
+    .join(' ')
+    .split(/\s+/)
+    .filter(Boolean).length;
+}
+
 /** A heading's anchor: lower case, runs of other characters to "-", no "-" at the ends. */
 export function slugify(text: string): string {
   return text

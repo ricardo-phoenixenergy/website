@@ -56,8 +56,8 @@ export interface PageMetadataInput {
   shareDescription?: string | null;
   /** Defaults to DEFAULT_SHARE_IMAGE. */
   image?: ShareImage;
-  /** Makes the page an Open Graph article, with its dates, its authors (their page URLs) and its tags. */
-  article?: { publishedTime?: string | null; modifiedTime?: string | null; authors?: string[]; tags?: string[] | null };
+  /** Makes the page an Open Graph article, with its dates, its authors (their page URLs), its section and its tags. */
+  article?: { publishedTime?: string | null; modifiedTime?: string | null; authors?: string[]; section?: string | null; tags?: string[] | null };
   /** Keeps the page out of search results; its links are still followed. */
   noindex?: boolean;
   /** The paths of the previous and next pages of a list. */
@@ -101,6 +101,7 @@ export function pageMetadata(input: PageMetadataInput): Metadata {
           ...(article.publishedTime ? { publishedTime: article.publishedTime } : {}),
           ...(article.modifiedTime ? { modifiedTime: article.modifiedTime } : {}),
           ...(article.authors?.length ? { authors: article.authors } : {}),
+          ...(article.section ? { section: article.section } : {}),
           ...(article.tags?.length ? { tags: article.tags } : {}),
         }
       : { ...shared, type: 'website' as const },
