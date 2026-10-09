@@ -1,29 +1,13 @@
 // sanity/schemaTypes/project.ts
 // A project: the project page, the project cards and the Studio's form
-// (docs/superpowers/specs/2026-09-29-project-page-design.md, "CMS fields").
-// Every field added in step 2 is optional, with a fallback on the site, so a
-// project that doesn't set one keeps working. The consent switches decide what
-// may show: the queries (src/lib/queries.ts) leave out the client's name and
-// the project value while theirs is off, and discloseProject()
-// (src/lib/projectDisclosure.ts) drops rand amounts from the figures. Text the
-// page shows as written isn't filtered, so the Studio warns when it holds a
-// rand amount or the client's name while a switch is off, and a figure or row
-// the page would drop for a rand amount warns that it won't show (projectRules.ts).
+// (specs/06-PROJECT-SINGLE.md, specs/12-CMS.md). Every field is optional
+// unless marked required, with a fallback on the site, so a project that
+// doesn't set one keeps working. What a field holds shows on the site as
+// written: the client's name wherever it is set, and any rand amount in the
+// figures or System rows.
 import { defineArrayMember, defineField, defineType } from 'sanity';
 import { EQUIPMENT_COMPONENTS, FINANCING_METHODS } from '../../src/lib/projectOptions';
-import {
-  asOfWarning,
-  commissionedWarning,
-  consentDateError,
-  heroWidthWarning,
-  inputsWarning,
-  measuredWarning,
-  proseWarning,
-  resultsCountWarning,
-  rowWarning,
-  slugWarning,
-  systemRowsWarning,
-} from './projectRules';
+import { commissionedWarning, heroWidthWarning, resultsCountWarning, systemRowsWarning } from './projectRules';
 
 const ALT_HELP = "What the photo shows, for people who can't see it.";
 const CHAPTER_HEADLINE_HELP =
@@ -71,7 +55,7 @@ export const project = defineType({
   type: 'document',
   groups: [
     { name: 'overview', title: 'Overview', default: true },
-    { name: 'results', title: 'Results' },
+    { name: 'results', title: 'Impact' },
     { name: 'story', title: 'Story' },
     { name: 'facts', title: 'Facts' },
     { name: 'photos', title: 'Photos' },
@@ -84,7 +68,7 @@ export const project = defineType({
       title: 'Project title',
       type: 'string',
       group: 'overview',
-      validation: (rule) => [rule.required(), rule.custom((value, context) => proseWarning(value, context.document)).warning()],
+      validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'slug',
@@ -92,7 +76,7 @@ export const project = defineType({
       type: 'slug',
       group: 'overview',
       options: { source: 'title' },
-      validation: (rule) => [rule.required(), rule.custom((value, context) => slugWarning(value, context.document)).warning()],
+      validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'headline',
@@ -101,7 +85,7 @@ export const project = defineType({
       group: 'overview',
       description:
         "The page heading: what was built and where, for example 'Rooftop solar and a battery for a Cape Town logistics warehouse'. Leave empty to use the project title. Search results use it too.",
-      validation: (rule) => [rule.max(90), rule.custom((value, context) => proseWarning(value, context.document)).warning()],
+      validation: (rule) => rule.max(90),
     }),
     defineField({
       name: 'vertical',
@@ -126,14 +110,13 @@ export const project = defineType({
       type: 'string',
       group: 'overview',
       description: "What the site is, in two or three words, for example 'Logistics warehouse' or 'Office park'.",
-      validation: (rule) => [rule.max(40), rule.custom((value, context) => proseWarning(value, context.document)).warning()],
+      validation: (rule) => rule.max(40),
     }),
     defineField({
       name: 'location',
       title: 'Location',
       type: 'string',
       group: 'overview',
-      validation: (rule) => rule.custom((value, context) => proseWarning(value, context.document)).warning(),
     }),
     defineField({
       name: 'status',
@@ -145,21 +128,13 @@ export const project = defineType({
     }),
     defineField({
       name: 'commissionedOn',
-      title: 'Commissioning date',
+      title: 'Completion date',
       type: 'date',
       group: 'overview',
       description:
-        'The day the system was commissioned. Shown as the month and year, and used to list projects newest first. For a planned or in-progress project, put the target in Completion date instead.',
+        "The day the project was completed or, for a planned or in-progress project, the day it's due. Shown as the month and year, for example 'Completed June 2026' or 'Planned for September 2027', and used to order the project lists, latest first.",
       options: { dateFormat: 'D MMMM YYYY' },
       validation: (rule) => rule.custom((value, context) => commissionedWarning(value, context.document)).warning(),
-    }),
-    defineField({
-      name: 'completionDate',
-      title: 'Completion date',
-      type: 'string',
-      group: 'overview',
-      description: "For a completed project, set the commissioning date instead. For a planned or in-progress project, the target, for example 'Q3 2027'.",
-      validation: (rule) => rule.custom((value, context) => proseWarning(value, context.document)).warning(),
     }),
     defineField({
       name: 'financing',
@@ -176,41 +151,7 @@ export const project = defineType({
       title: 'Client name',
       type: 'string',
       group: 'overview',
-      description: "Shown only when 'Show client name' is on.",
-    }),
-    defineField({
-      name: 'showClientName',
-      title: 'Show client name',
-      type: 'boolean',
-      group: 'overview',
-      initialValue: false,
-      description: 'On only when the client has agreed in writing to be named on this page and on project cards.',
-    }),
-    defineField({
-      name: 'clientConsentOn',
-      title: "Date of the client's written consent",
-      type: 'date',
-      group: 'overview',
-      description: "The date of the client's written consent. Not shown on the site.",
-      options: { dateFormat: 'D MMMM YYYY' },
-      hidden: ({ document }) => document?.showClientName !== true,
-      validation: (rule) => rule.custom((value, context) => consentDateError(value, context.document)),
-    }),
-    defineField({
-      name: 'showRandAmounts',
-      title: 'Show rand amounts',
-      type: 'boolean',
-      group: 'overview',
-      initialValue: false,
-      description:
-        'On only when the client has agreed to publish rand amounts: the project value and any figure in rands. Off hides them everywhere.',
-    }),
-    defineField({
-      name: 'projectValue',
-      title: 'Project value',
-      type: 'string',
-      group: 'overview',
-      description: "The capital cost or contract value, with its basis, for example 'R[x]M excl. VAT'. Shown only when 'Show rand amounts' is on.",
+      description: 'Shown on this page and on project cards. Fill it in only once the client has agreed in writing to be named.',
     }),
     defineField({
       name: 'featured',
@@ -249,72 +190,12 @@ export const project = defineType({
               type: 'string',
               title: 'Note',
               description: "The period and the baseline, for example 'Year 1, against 2025 municipal bills'.",
-              validation: (rule) => [rule.max(70), rule.custom((value, context) => proseWarning(value, context.document)).warning()],
+              validation: (rule) => rule.max(70),
             }),
           ],
-          validation: (rule) => rule.custom((value, context) => rowWarning(value, context.document)).warning(),
         }),
       ],
       validation: (rule) => rule.custom((value) => resultsCountWarning(value)).warning(),
-    }),
-    // What the results rest on. Empty means projected: the site never calls
-    // modelled figures measured unless an editor says so here.
-    defineField({
-      name: 'resultsBasis',
-      title: 'Results basis',
-      type: 'string',
-      group: 'results',
-      description:
-        'Projected: figures from the financial model (the default when empty). Measured: figures from metered or billed data. Sets the strip heading ("Projected results" or "Measured results") and the label on project cards.',
-      options: {
-        list: [
-          { title: 'Projected (financial model)', value: 'projected' },
-          { title: 'Measured (metered or billed data)', value: 'measured' },
-        ],
-        layout: 'radio',
-      },
-      validation: (rule) => rule.custom((value, context) => measuredWarning(value, context.document)).warning(),
-    }),
-    defineField({
-      name: 'resultsAsOf',
-      title: 'Results as of',
-      type: 'date',
-      group: 'results',
-      description: 'The date of the model, or the end of the measured period. Shown beside the results heading.',
-      options: { dateFormat: 'D MMMM YYYY' },
-      validation: (rule) => rule.custom((value, context) => asOfWarning(value, context.document)).warning(),
-    }),
-    defineField({
-      name: 'resultsAssumptions',
-      title: 'Results note',
-      type: 'text',
-      rows: 3,
-      group: 'results',
-      description:
-        'One or two sentences on what the figures rest on: tariff escalation, degradation, baseline, data source. Replaces the default note under the results strip.',
-      validation: (rule) => [
-        rule.max(300).warning('Keep the note to one or two short sentences.'),
-        rule.custom((value, context) => proseWarning(value, context.document)).warning(),
-      ],
-    }),
-    defineField({
-      name: 'resultsInputs',
-      title: 'Calculation inputs',
-      type: 'array',
-      group: 'results',
-      description:
-        "The inputs behind the figures, one per row, for example tariff escalation, panel degradation, battery cycles, the tariff and where the load data came from. Shown under 'How we calculated this'.",
-      of: [
-        defineArrayMember({
-          type: 'object',
-          fields: [
-            defineField({ name: 'label', type: 'string', title: 'Label', validation: (rule) => rule.required().max(40) }),
-            defineField({ name: 'value', type: 'string', title: 'Value', validation: (rule) => rule.required().max(80) }),
-          ],
-          validation: (rule) => rule.custom((value, context) => rowWarning(value, context.document)).warning(),
-        }),
-      ],
-      validation: (rule) => [rule.max(8), rule.custom((value, context) => inputsWarning(value, context.document)).warning()],
     }),
 
     /* ─── Story ─── */
@@ -325,7 +206,6 @@ export const project = defineType({
       rows: 3,
       group: 'story',
       description: 'Two or three sentences introducing the project.',
-      validation: (rule) => rule.custom((value, context) => proseWarning(value, context.document)).warning(),
     }),
     defineField({
       name: 'challengeHeadline',
@@ -333,7 +213,7 @@ export const project = defineType({
       type: 'string',
       group: 'story',
       description: CHAPTER_HEADLINE_HELP,
-      validation: (rule) => [rule.max(90), rule.custom((value, context) => proseWarning(value, context.document)).warning()],
+      validation: (rule) => rule.max(90),
     }),
     defineField({
       name: 'challenge',
@@ -341,7 +221,6 @@ export const project = defineType({
       type: 'array',
       group: 'story',
       of: [storyBlock],
-      validation: (rule) => rule.custom((value, context) => proseWarning(value, context.document)).warning(),
     }),
     defineField({
       name: 'solutionHeadline',
@@ -349,7 +228,7 @@ export const project = defineType({
       type: 'string',
       group: 'story',
       description: CHAPTER_HEADLINE_HELP,
-      validation: (rule) => [rule.max(90), rule.custom((value, context) => proseWarning(value, context.document)).warning()],
+      validation: (rule) => rule.max(90),
     }),
     defineField({
       name: 'solution',
@@ -357,7 +236,6 @@ export const project = defineType({
       type: 'array',
       group: 'story',
       of: [storyBlock],
-      validation: (rule) => rule.custom((value, context) => proseWarning(value, context.document)).warning(),
     }),
     defineField({
       name: 'outcomeHeadline',
@@ -365,7 +243,7 @@ export const project = defineType({
       type: 'string',
       group: 'story',
       description: CHAPTER_HEADLINE_HELP,
-      validation: (rule) => [rule.max(90), rule.custom((value, context) => proseWarning(value, context.document)).warning()],
+      validation: (rule) => rule.max(90),
     }),
     defineField({
       name: 'outcome',
@@ -373,7 +251,6 @@ export const project = defineType({
       type: 'array',
       group: 'story',
       of: [storyBlock],
-      validation: (rule) => rule.custom((value, context) => proseWarning(value, context.document)).warning(),
     }),
 
     /* ─── Facts ─── */
@@ -390,7 +267,6 @@ export const project = defineType({
             defineField({ name: 'label', type: 'string', title: 'Label' }),
             defineField({ name: 'value', type: 'string', title: 'Value' }),
           ],
-          validation: (rule) => rule.custom((value, context) => rowWarning(value, context.document)).warning(),
         }),
       ],
       validation: (rule) => rule.custom((value) => systemRowsWarning(value)).warning(),
@@ -416,13 +292,12 @@ export const project = defineType({
               name: 'brand',
               type: 'string',
               title: 'Brand',
-              validation: (rule) => [rule.required(), rule.custom((value, context) => proseWarning(value, context.document)).warning()],
+              validation: (rule) => rule.required(),
             }),
             defineField({
               name: 'model',
               type: 'string',
               title: 'Model',
-              validation: (rule) => rule.custom((value, context) => proseWarning(value, context.document)).warning(),
             }),
             defineField({ name: 'quantity', type: 'number', title: 'Quantity', validation: (rule) => rule.integer().min(1) }),
           ],
@@ -448,7 +323,7 @@ export const project = defineType({
       of: [
         defineArrayMember({
           type: 'string',
-          validation: (rule) => [rule.max(100), rule.custom((value, context) => proseWarning(value, context.document)).warning()],
+          validation: (rule) => rule.max(100),
         }),
       ],
       validation: (rule) => rule.max(6),
@@ -467,7 +342,7 @@ export const project = defineType({
           type: 'string',
           title: 'Alt text',
           description: ALT_HELP,
-          validation: (rule) => [rule.required(), rule.custom((value, context) => proseWarning(value, context.document)).warning()],
+          validation: (rule) => rule.required(),
         }),
       ],
       validation: (rule) => rule.custom((value) => heroWidthWarning(value)).warning(),
@@ -487,14 +362,14 @@ export const project = defineType({
               type: 'string',
               title: 'Alt text',
               description: ALT_HELP,
-              validation: (rule) => [rule.required(), rule.custom((value, context) => proseWarning(value, context.document)).warning()],
+              validation: (rule) => rule.required(),
             }),
             defineField({
               name: 'caption',
               type: 'string',
               title: 'Caption',
               description: 'Optional. Shown under the photo in the viewer.',
-              validation: (rule) => [rule.max(120), rule.custom((value, context) => proseWarning(value, context.document)).warning()],
+              validation: (rule) => rule.max(120),
             }),
           ],
         }),
@@ -508,7 +383,7 @@ export const project = defineType({
       type: 'string',
       group: 'search',
       description: 'The search result description. Leave empty to use the summary.',
-      validation: (rule) => [rule.max(155), rule.custom((value, context) => proseWarning(value, context.document)).warning()],
+      validation: (rule) => rule.max(155),
     }),
   ],
   preview: {
