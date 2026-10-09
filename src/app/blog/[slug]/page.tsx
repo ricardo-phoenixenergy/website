@@ -140,9 +140,12 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
       {/* From 1024px the article sits beside the 340px sidebar, as a project's story beside its
           facts; below that the contents come first as a closed disclosure and the author after,
-          both no wider than the article (42rem). */}
-      <div className="page-container mt-10 md:mt-12 lg:mt-16 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-x-14">
-        <div className="min-w-0">
+          both no wider than the article (42rem). The author card is rendered once: on phones it
+          follows the article, and from 1024px the grid places it at the foot of the sidebar.
+          The article spans both rows; the contents panel's cell fills the first (1fr), so the
+          panel stays in view down to the author card. */}
+      <div className="page-container mt-10 md:mt-12 lg:mt-16 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:grid-rows-[1fr_auto] lg:gap-x-14 lg:gap-y-4">
+        <div className="min-w-0 lg:col-start-1 lg:row-span-2 lg:row-start-1">
           <TableOfContents items={headings} variant="disclosure" className="mb-8 max-w-[42rem] lg:hidden" />
           <article className="max-w-[42rem]" aria-labelledby="post-title">
             <PortableText value={body} components={postTextComponents(headings)} />
@@ -162,20 +165,20 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               </footer>
             )}
           </article>
-          <AuthorCard author={post.author} className="mt-8 max-w-[42rem] lg:hidden" />
         </div>
-        {/* The panel sticks within its own flex-1 wrapper, which ends above the author card,
-            so it stops there instead of sliding over the card. */}
-        <div className="hidden lg:flex lg:flex-col lg:gap-4">
-          {headings.length > 0 && (
-            <div className="flex-1">
-              <StickyWhenFits>
-                <TableOfContents items={headings} variant="panel" />
-              </StickyWhenFits>
-            </div>
-          )}
-          <AuthorCard author={post.author} titleId="author-title-sidebar" />
-        </div>
+        {/* The panel sticks within its own cell, which ends above the author card, so it stops
+            there instead of sliding over the card. */}
+        {headings.length > 0 && (
+          <div className="hidden lg:col-start-2 lg:row-start-1 lg:block">
+            <StickyWhenFits>
+              <TableOfContents items={headings} variant="panel" />
+            </StickyWhenFits>
+          </div>
+        )}
+        <AuthorCard
+          author={post.author}
+          className={`mt-8 max-w-[42rem] lg:col-start-2 lg:mt-0 lg:max-w-none lg:self-start ${headings.length > 0 ? 'lg:row-start-2' : 'lg:row-start-1'}`}
+        />
       </div>
 
       <PostNext posts={related} />

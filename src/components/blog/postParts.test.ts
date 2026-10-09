@@ -132,6 +132,18 @@ describe('AuthorCard', () => {
     expect(markup).toMatch(/<img[^>]*alt=""/);
     expect(markup).not.toMatch(/#39575C|#E5E7EB/i);
   });
+
+  it("links the author's LinkedIn profile in a new tab, named for where it goes", () => {
+    const markup = html(createElement(AuthorCard, { author: author({ linkedin: 'https://www.linkedin.com/in/ricardo-de-sousa-za' }) }));
+    const link = markup.match(/<a [^>]*href="https:\/\/www\.linkedin\.com\/in\/ricardo-de-sousa-za"[^>]*>/)?.[0] ?? '';
+    expect(link).toContain('target="_blank"');
+    expect(link).toMatch(/rel="[^"]*\bnoopener\b[^"]*"/);
+    expect(link).toContain('aria-label="Ricardo De Sousa on LinkedIn (opens in a new tab)"');
+  });
+
+  it('shows no LinkedIn link without a profile', () => {
+    expect(html(createElement(AuthorCard, { author: author() }))).not.toContain('linkedin.com');
+  });
 });
 
 describe('PostNext', () => {

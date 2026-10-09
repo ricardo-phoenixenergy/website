@@ -193,8 +193,8 @@ lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-x-14
 ```
 
 - Left (`min-w-0`): below 1024px the closed "In this article" disclosure (`mb-8`), then the article (`max-w-[42rem]`, labelled by the H1), the tags footer, and below 1024px the author card (`mt-8`). The disclosure and that author card are `max-w-[42rem]` too, so neither is wider than the article.
-- Right, from 1024px: a `flex flex-col gap-4` column. First a `flex-1` wrapper holding `StickyWhenFits` around the table of contents panel alone; then the author card, which sits at the column's foot (beside the tags footer) and scrolls with the page. Only the contents panel sticks, 96px from the top (under the navbar pill), and it is capped at the window less that 96px and the 24px margin, so it fits, and sticks, on any common laptop window (checked at 1024x768, 1280x720, 1366x657 and 1440x900). Its wrapper ends above the author card, so the panel stops there instead of sliding over it. Contents first because it is the part a reader returns to: it sits beside the article's first lines and stays in reach to the end, and the order matches phones (contents before the article, the author after it). Without headings, the author card alone opens the column.
-- Both versions of the contents and the author card are rendered and each is hidden at the other widths; the two author cards carry their own heading ids (`author-title`, `author-title-sidebar`).
+- Right, from 1024px: the grid has two rows (`grid-rows-[1fr_auto]`, `gap-y-4`) and the article spans both. The first right-hand cell holds `StickyWhenFits` around the table of contents panel alone and fills the `1fr` row; the author card takes the second row, at the column's foot (beside the tags footer), and scrolls with the page. Only the contents panel sticks, 96px from the top (under the navbar pill), and it is capped at the window less that 96px and the 24px margin, so it fits, and sticks, on any common laptop window (checked at 1024x768, 1280x720, 1366x657 and 1440x900). Its wrapper ends above the author card, so the panel stops there instead of sliding over it. Contents first because it is the part a reader returns to: it sits beside the article's first lines and stays in reach to the end, and the order matches phones (contents before the article, the author after it). Without headings, the author card alone opens the column.
+- The author card is rendered once (one `h2` "About the author", id `author-title`): it follows the article in the HTML, so it comes after it on phones, and from 1024px the grid places it in the sidebar's second row (or the first, without headings). Only the contents has two versions, the disclosure and the panel, each hidden at the other widths.
 
 ---
 
@@ -283,7 +283,7 @@ A `footer` inside the article, only when the post has a category or tags: `mt-7 
 
 ## Sidebar (right column, from 1024px)
 
-A `flex flex-col gap-4` column, 340px: the contents panel in `StickyWhenFits` (`src/components/project/StickyWhenFits.tsx`), inside a `flex-1` wrapper, then the author card at the foot. Both panels use `SidePanel` (`src/components/ui/SidePanel.tsx`), the project facts' frame: `rounded-card border border-pe-border bg-white p-6`, an `h2` title (Plus Jakarta Sans 800, 18px), the panel labelled by it.
+A 340px column of two grid rows: the contents panel in `StickyWhenFits` (`src/components/project/StickyWhenFits.tsx`), in the `1fr` row's cell, then the author card in the `auto` row at the foot. Both panels use `SidePanel` (`src/components/ui/SidePanel.tsx`), the project facts' frame: `rounded-card border border-pe-border bg-white p-6`, an `h2` title (Plus Jakarta Sans 800, 18px), the panel labelled by it.
 
 ### 1. Table of Contents
 
@@ -301,6 +301,7 @@ A `flex flex-col gap-4` column, 340px: the contents panel in `StickyWhenFits` (`
 - Name: Plus Jakarta Sans 700, 16px, a link to `/blog/authors/[slug]` with `hit-area`
 - Role: Inter 400, 14px, `pe-secondary-ink`
 - Bio: Inter 400, 14px, `pe-muted`, `line-height: 1.65`, 12px under the name, only when set (no empty gap without one)
+- LinkedIn, when set: the LinkedIn icon and "LinkedIn" as an arrow-link style text link (14px semibold Deep Teal, 44px target), opening in a new tab with `rel="noopener noreferrer"` and the accessible name "{name} on LinkedIn (opens in a new tab)"
 
 ---
 
@@ -663,7 +664,7 @@ Every query below filters on `LIVE_POST` (`_type == "blogPost" && defined(slug.c
 | Author page header | Photo beside the text from 640px | Photo above the text |
 | Breadcrumb row | Share group right of the trail from 640px | Share group on its own line under the trail |
 | Post hero | Full-bleed photo, 400px from 768px and 470px from 1024px, text over it | 4:3 photo in the margins, text under it |
-| Post layout | 2-col (body + 340px sidebar, 56px gap) from 1024px: the sticky contents panel, the author card at the foot | 1-col below 1024px: contents disclosure, body, tags, author, each no wider than 42rem |
+| Post layout | 2-col (body + 340px sidebar, 56px gap) from 1024px: the sticky contents panel, the author card (rendered once) at the foot | 1-col below 1024px: contents disclosure, body, tags, author, each no wider than 42rem |
 | More articles | 3 columns from 768px (2 large for two posts, one wide card for one) | 1 column; 2 from 640px for three |
 | Closing band | Copy left, buttons right from 768px | Stacked |
 

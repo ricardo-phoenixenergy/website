@@ -1,29 +1,31 @@
 // src/components/blog/AuthorCard.tsx
-// "About the author" in the shared SidePanel frame: the 44px photo (or the
-// initials disc), the name as a link to the author's page, the role, and the
-// bio only when there is one, so a short card leaves no empty gap. The photo's
-// alt text is empty: the name sits beside it.
+// "About the author" in the shared SidePanel frame: the 44px photo (cut at
+// 132px, so a 3x screen gets a sharp one) or the initials disc, the name as a
+// link to the author's page, the role, and the bio only when there is one, so a
+// short card leaves no empty gap, then the LinkedIn profile when there is one.
+// The photo's alt text is empty: the name sits beside it.
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Author } from '@/types/sanity';
 import { urlFor } from '@/lib/sanity';
 import { initials } from '@/lib/blogUtils';
 import { SidePanel } from '@/components/ui/SidePanel';
+import { IconLinkedIn } from '@/components/ui/Icons';
+import { arrowLinkClasses } from '@/components/ui/buttonStyles';
 
 interface AuthorCardProps {
   author: Author;
   className?: string;
-  /** The heading id: the page renders two cards (one hidden at each width), each with its own. */
-  titleId?: string;
 }
 
-export function AuthorCard({ author, className, titleId = 'author-title' }: AuthorCardProps) {
-  const photoSrc = author.photo?.asset ? urlFor(author.photo).width(88).height(88).url() : null;
+export function AuthorCard({ author, className }: AuthorCardProps) {
+  const photoSrc = author.photo?.asset ? urlFor(author.photo).width(132).height(132).url() : null;
   const lqip = author.photo?.asset?.metadata?.lqip ?? null;
   const bio = author.bio?.trim();
+  const linkedin = author.linkedin?.trim();
 
   return (
-    <SidePanel title="About the author" titleId={titleId} className={className}>
+    <SidePanel title="About the author" titleId="author-title" className={className}>
       <div className="mt-4 flex items-center gap-3">
         {photoSrc ? (
           <Image
@@ -50,6 +52,18 @@ export function AuthorCard({ author, className, titleId = 'author-title' }: Auth
         </div>
       </div>
       {bio && <p className="mt-3 font-body text-sm leading-[1.65] text-pe-muted">{bio}</p>}
+      {linkedin && (
+        <a
+          href={linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`${author.name} on LinkedIn (opens in a new tab)`}
+          className={arrowLinkClasses({ className: 'mt-2 min-h-11' })}
+        >
+          <IconLinkedIn size={16} className="size-4" />
+          LinkedIn
+        </a>
+      )}
     </SidePanel>
   );
 }

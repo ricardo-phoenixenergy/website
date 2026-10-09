@@ -199,7 +199,7 @@ The full blogPost schema, with the body block fields and the Studio descriptions
 | `role` | string | Under the name on the author card and the author page; `jobTitle` in the JSON-LD. |
 | `photo` | image (hotspot, alt) | The avatar on the byline, the featured card on /blog, the author card and the author page. Initials show when it is empty. |
 | `bio` | text, 2 to 4 sentences | The author card on each post and the author page, and the author page's meta description. |
-| `linkedin` | url | A LinkedIn link on the author page. |
+| `linkedin` | url, a full profile address | A LinkedIn link on the author card and the author page, and `sameAs` in the JSON-LD. The Studio accepts only `https://(www.)linkedin.com/in/{handle}` (optional closing slash), with the error "Use your full profile URL, e.g. https://www.linkedin.com/in/your-name" (`linkedinUrlError()` in `sanity/schemaTypes/authorRules.ts`). |
 
 ---
 
