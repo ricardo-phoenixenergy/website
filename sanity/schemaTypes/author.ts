@@ -1,4 +1,5 @@
 import { defineType, defineField } from 'sanity';
+import { linkedinUrlError } from './authorRules';
 
 export const author = defineType({
   name: 'author',
@@ -16,7 +17,13 @@ export const author = defineType({
       fields: [defineField({ name: 'alt', type: 'string', title: 'Alt text' })],
     }),
     defineField({ name: 'bio', title: 'Bio', type: 'text', rows: 3, description: '2–4 sentences.' }),
-    defineField({ name: 'linkedin', title: 'LinkedIn URL', type: 'url' }),
+    defineField({
+      name: 'linkedin',
+      title: 'LinkedIn URL',
+      type: 'url',
+      description: 'Your full profile address, for example https://www.linkedin.com/in/your-name.',
+      validation: (rule) => rule.custom((value: string | undefined) => linkedinUrlError(value)),
+    }),
   ],
   preview: {
     select: { title: 'name', subtitle: 'role', media: 'photo' },
