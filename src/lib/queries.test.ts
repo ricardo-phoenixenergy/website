@@ -40,8 +40,6 @@ const project = (id: string, extra: Doc = {}): Doc => ({
   vertical: 'ci-solar-storage',
   location: 'Cape Town',
   clientName: 'Hidden Client Ltd',
-  projectValue: 'R42M',
-  clientConsentOn: null,
   systemSize: '82 kWp',
   status: 'completed',
   heroImage: image(),
@@ -51,85 +49,74 @@ const project = (id: string, extra: Doc = {}): Doc => ({
   ...extra,
 });
 
-describe('project queries: the consent switches', () => {
+describe('project queries: the client name, and the fields that were removed', () => {
+  // Documents written before October 2026 still hold the switches, the project
+  // value, the free-text date and the results basis fields until they are
+  // cleared. The queries return none of them, and the name whatever the old switch said.
+  const OLD_FIELDS: Doc = {
+    showClientName: false,
+    clientConsentOn: '2026-09-01',
+    showRandAmounts: false,
+    projectValue: 'R42M',
+    completionDate: 'Q3 2027',
+    resultsBasis: 'measured',
+    resultsAsOf: '2026-06-30',
+    resultsAssumptions: 'Projected from our model.',
+    resultsInputs: [{ _key: 'i', label: 'Tariff escalation', value: '8% a year' }],
+  };
+  const REMOVED = Object.keys(OLD_FIELDS);
   const dataset = [
     ASSET,
-    project('off'),
-    project('named', { showClientName: true, clientConsentOn: '2026-09-01' }),
-    project('switch-only', { showClientName: true }),
-    project('date-only', { clientConsentOn: '2026-09-01' }),
-    // A document written through the API or import can set the switch with a
-    // consent date that isn't a real date: blank, or free text such as "TBC".
-    // Neither reads as a date, so neither may name the client. A different
-    // vertical keeps them out of PROJECTS_BY_VERTICAL_QUERY's six-item window
-    // below, which the original five already fill to the edge of.
-    project('blank-consent', { showClientName: true, clientConsentOn: '', vertical: 'wheeling' }),
-    project('unreadable-consent', { showClientName: true, clientConsentOn: 'TBC', vertical: 'wheeling' }),
-    project('rands', { showRandAmounts: true }),
+    project('old', { ...OLD_FIELDS, featured: true }),
+    project('unnamed', { clientName: null, featured: true }),
+    project('other-service', { ...OLD_FIELDS, vertical: 'wheeling', featured: true }),
   ];
   const byId = (rows: unknown, id: string) => (rows as Row[]).find((row) => row._id === id);
 
   it.each(['ALL_PROJECTS_QUERY', 'FEATURED_PROJECTS_QUERY', 'PROJECTS_BY_VERTICAL_QUERY'] as const)(
-    '%s names the client only with "Show client name" on and a consent date set',
+    '%s names the client whenever the name is set, and returns none of the removed fields',
     async (name) => {
-      const withFeatured = dataset.map((doc) => (doc._type === 'project' ? { ...doc, featured: true } : doc));
-      const rows = await run(queries[name], withFeatured, { vertical: 'ci-solar-storage' });
-      expect(byId(rows, 'named')?.clientName).toBe('Hidden Client Ltd');
-      for (const id of ['off', 'switch-only', 'date-only', 'rands']) {
-        expect(byId(rows, id), id).not.toHaveProperty('clientName');
+      const rows = await run(queries[name], dataset, { vertical: 'ci-solar-storage' });
+      expect(byId(rows, 'old')?.clientName).toBe('Hidden Client Ltd');
+      expect(byId(rows, 'unnamed')?.clientName).toBeNull();
+      for (const row of rows as Row[]) {
+        for (const field of [...REMOVED, 'systemSize', 'caseStudyReady']) {
+          expect(row, `${row._id}: ${field}`).not.toHaveProperty(field);
+        }
       }
     },
   );
 
-  it('never names the client when the consent date is blank or unreadable', async () => {
-    const blank = (await run(queries.PROJECT_BY_SLUG_QUERY, dataset, { slug: 'blank-consent' })) as Row;
-    const unreadable = (await run(queries.PROJECT_BY_SLUG_QUERY, dataset, { slug: 'unreadable-consent' })) as Row;
-    expect(blank).not.toHaveProperty('clientName');
-    expect(unreadable).not.toHaveProperty('clientName');
-  });
-
-  it('never returns the project value, the consent date or a retired field to a card', async () => {
-    const json = JSON.stringify(await run(queries.ALL_PROJECTS_QUERY, dataset));
-    for (const text of ['projectValue', 'R42M', 'clientConsentOn', 'showClientName', 'systemSize', 'caseStudyReady']) {
-      expect(json).not.toContain(text);
+  it('gives the page and its next project cards the client name, and none of the removed fields', async () => {
+    const page = (await run(queries.PROJECT_BY_SLUG_QUERY, dataset, { slug: 'old' })) as Row;
+    expect(page.clientName).toBe('Hidden Client Ltd');
+    expect(byId(page.otherProjects, 'other-service')?.clientName).toBe('Hidden Client Ltd');
+    const json = JSON.stringify(page);
+    for (const field of REMOVED) {
+      expect(json, field).not.toContain(`"${field}"`);
+    }
+    for (const text of ['R42M', 'Q3 2027', 'Projected from our model.', 'Tariff escalation']) {
+      expect(json, text).not.toContain(text);
     }
   });
 
-  it('gives every card its "Show rand amounts" switch, false unless it is on', async () => {
-    const rows = await run(queries.ALL_PROJECTS_QUERY, dataset);
-    expect(byId(rows, 'rands')?.showRandAmounts).toBe(true);
-    expect(byId(rows, 'off')?.showRandAmounts).toBe(false);
-  });
-
-  it('gives the page the project value only with "Show rand amounts" on', async () => {
-    const off = (await run(queries.PROJECT_BY_SLUG_QUERY, dataset, { slug: 'off' })) as Row;
-    const rands = (await run(queries.PROJECT_BY_SLUG_QUERY, dataset, { slug: 'rands' })) as Row;
-    expect(off).not.toHaveProperty('projectValue');
-    expect(off).not.toHaveProperty('clientName');
-    expect(rands.projectValue).toBe('R42M');
-  });
-
-  it('names the client on the page and on the next project cards only with consent', async () => {
-    const named = (await run(queries.PROJECT_BY_SLUG_QUERY, dataset, { slug: 'named' })) as Row;
-    const off = (await run(queries.PROJECT_BY_SLUG_QUERY, dataset, { slug: 'off' })) as Row;
-    expect(named.clientName).toBe('Hidden Client Ltd');
-    expect(byId(off.related, 'named')?.clientName).toBe('Hidden Client Ltd');
-    expect(byId(named.related, 'off')).not.toHaveProperty('clientName');
+  it('passes a rand figure through as written', async () => {
+    const rands = project('rands', { results: [{ _key: 'r', label: 'Off the municipal bill in year one', value: 'R276k' }] });
+    const page = (await run(queries.PROJECT_BY_SLUG_QUERY, [ASSET, rands], { slug: 'rands' })) as Row;
+    expect(page.results).toEqual([{ label: 'Off the municipal bill in year one', value: 'R276k', note: null }]);
   });
 });
 
 describe('project queries: the page fields', () => {
-  it('returns every step 2 field, and the gallery captions', async () => {
+  it('returns every page field, and the gallery captions', async () => {
     const full = project('full', {
       headline: 'Rooftop solar and a battery for a Cape Town logistics warehouse',
       siteType: 'Logistics warehouse',
       commissionedOn: '2026-06-12',
-      completionDate: 'Q2 2026',
       financing: ['outright-purchase'],
       challengeHeadline: 'Peak tariffs landed on the busiest hours',
       solutionHeadline: 'A battery that covers the peak',
       outcomeHeadline: 'Lower bills from month one',
-      resultsInputs: [{ _key: 'i', label: 'Tariff escalation', value: '8% a year' }],
       equipment: [{ _key: 'e', component: 'inverter', brand: 'Sunsynk', model: '50K', quantity: 2, internalNote: 'x' }],
       installationWeeks: 6,
       approvals: ['Municipal SSEG approval'],
@@ -144,7 +131,6 @@ describe('project queries: the page fields', () => {
       challengeHeadline: 'Peak tariffs landed on the busiest hours',
       solutionHeadline: 'A battery that covers the peak',
       outcomeHeadline: 'Lower bills from month one',
-      resultsInputs: [{ label: 'Tariff escalation', value: '8% a year' }],
       equipment: [{ component: 'inverter', brand: 'Sunsynk', model: '50K', quantity: 2 }],
       installationWeeks: 6,
       approvals: ['Municipal SSEG approval'],
@@ -157,7 +143,7 @@ describe('project queries: the page fields', () => {
 });
 
 describe('project queries: newest first', () => {
-  // "Newest" is the commissioning date, else the date the project was added.
+  // "Newest" is the completion date (commissionedOn), else the date the project was added.
   const dataset = [
     ASSET,
     project('added-june', { _createdAt: '2026-06-20T08:00:00Z' }),
@@ -168,7 +154,7 @@ describe('project queries: newest first', () => {
   ];
   const expected = ['commissioned-july', 'added-june', 'unreadable-date', 'added-january', 'commissioned-2025'];
 
-  it('orders /projects and the solution pages by the commissioning date, else the date added, never the free text', async () => {
+  it('orders /projects and the solution pages by the completion date, else the date added, never an old free-text date', async () => {
     expect(ids(await run(queries.ALL_PROJECTS_QUERY, dataset))).toEqual(expected);
     expect(ids(await run(queries.PROJECTS_BY_VERTICAL_QUERY, dataset, { vertical: 'ci-solar-storage' }))).toEqual(expected);
   });
@@ -387,7 +373,7 @@ describe('every query', () => {
       evFleets: image(),
     },
     { _id: 'energyPrices', _type: 'energyPrices', dieselPricePerL: 21.5 },
-    project('a', { featured: true, showRandAmounts: false }),
+    project('a', { featured: true, projectValue: 'R42M' }),
     // Shares project('a')'s vertical, and the same ASSET (via the default
     // heroImage and gallery the project() helper gives every fixture), so
     // PROJECT_BY_SLUG_QUERY's "related" is fed and a leak living only in that
@@ -447,7 +433,7 @@ describe('every query', () => {
     expect((page.otherProjects as Row[]).length, 'otherProjects').toBeGreaterThan(0);
   });
 
-  it.each(ALL_QUERIES)('%s returns no asset file name or metadata, and no withheld project field', async (_name, query) => {
+  it.each(ALL_QUERIES)('%s returns no asset file name or metadata, and no project value', async (_name, query) => {
     // A query that returns null or an empty array feeds nothing to the text
     // check below, so a leak inside it would pass here silently.
     const value = await run(query, dataset, params);
@@ -456,7 +442,7 @@ describe('every query', () => {
       expect(value.length, `${_name} returned no rows for this check to see`).toBeGreaterThan(0);
     }
     const json = JSON.stringify(value);
-    for (const text of ['originalFilename', 'HIDDEN-CLIENT', 'sha1hash', 'deadbeef', 'exif', '"path"', 'Hidden Client Ltd', 'R42M']) {
+    for (const text of ['originalFilename', 'HIDDEN-CLIENT', 'sha1hash', 'deadbeef', 'exif', '"path"', 'R42M']) {
       expect(json).not.toContain(text);
     }
   });

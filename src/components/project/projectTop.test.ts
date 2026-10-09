@@ -7,8 +7,7 @@ import { describe, expect, it } from 'vitest';
 import { ProjectBreadcrumb } from './ProjectBreadcrumb';
 import { ProjectHero } from './ProjectHero';
 import { ProjectResults } from './ProjectResults';
-import type { ProjectMetric, SanityImage } from '@/types/sanity';
-import type { ResultsLabelling } from '@/lib/projectResults';
+import type { Project, ProjectResult, SanityImage } from '@/types/sanity';
 
 const html = (el: Parameters<typeof renderToStaticMarkup>[0]) => renderToStaticMarkup(el);
 
@@ -29,7 +28,7 @@ describe('ProjectBreadcrumb', () => {
 });
 
 describe('ProjectHero', () => {
-  const project = { title: '31 Sacks Circle', vertical: 'ci-solar-storage' as const, location: 'Cape Town', status: 'completed' as const, completionDate: 'Q2 2026' };
+  const project = { title: '31 Sacks Circle', vertical: 'ci-solar-storage' as const, location: 'Cape Town', status: 'completed' as const, commissionedOn: '2026-06-12' };
 
   it('has one H1, the service badge linking to its page, and the line under the headline', () => {
     const markup = html(createElement(ProjectHero, { project, overlapped: true }));
@@ -37,7 +36,23 @@ describe('ProjectHero', () => {
     expect(markup).toMatch(/<h1 id="project-title"[^>]*>31 Sacks Circle<\/h1>/);
     expect(markup).toMatch(/<a [^>]*href="\/solutions\/ci-solar-storage"[^>]*>C&amp;I Solar &amp; Storage<\/a>/);
     expect(markup).toContain('Cape Town');
-    expect(markup).toContain('Completed Q2 2026');
+    expect(markup).toContain('Completed June 2026');
+  });
+
+  it('words the date line by the status: due for a project in progress, planned for one still to start, the status alone without a date', () => {
+    const line = (extra: Partial<Project>) => html(createElement(ProjectHero, { project: { ...project, ...extra }, overlapped: false }));
+    expect(line({ status: 'in-progress', commissionedOn: '2027-09-01' })).toContain('In progress, due September 2027');
+    expect(line({ status: 'planned', commissionedOn: '2027-09-01' })).toContain('Planned for September 2027');
+    expect(line({ status: 'planned', commissionedOn: undefined })).toMatch(/>Planned</);
+    expect(line({ status: 'completed', commissionedOn: undefined })).toMatch(/>Completed</);
+  });
+
+  it("names the client and ignores the old free-text date on a document that still holds the removed fields", () => {
+    const old = { ...project, clientName: 'Example Client', showClientName: false, completionDate: 'Q3 2027', commissionedOn: undefined } as unknown as Project;
+    const markup = html(createElement(ProjectHero, { project: old, overlapped: false }));
+    expect(markup).toContain('Example Client · Cape Town');
+    expect(markup).not.toContain('Q3 2027');
+    expect(markup).toMatch(/>Completed</);
   });
 
   it('breaks a long unbroken word instead of widening the page', () => {
@@ -123,20 +138,18 @@ describe('ProjectHero', () => {
 });
 
 describe('ProjectResults', () => {
-  const labelling: ResultsLabelling = { heading: 'Projected results', asOf: '12 June 2026', note: 'Projections from our financial model for this site.' };
-  const results: ProjectMetric[] = [
+  const results: ProjectResult[] = [
     { label: 'Payback period', value: '51 months' },
     { label: 'Energy bill reduction', value: '41.8%' },
     { label: 'Grid consumption offset', value: '50.4%' },
     { label: 'Peak coverage', value: '>95%' },
     { label: 'A fifth figure', value: '1' },
   ];
-  const markup = html(createElement(ProjectResults, { results, labelling }));
+  const markup = html(createElement(ProjectResults, { results }));
 
-  it('keeps the results-heading id, with the basis sentence and the date', () => {
-    expect(markup).toMatch(/<h2 id="results-heading"[^>]*>Projected results<\/h2>/);
-    expect(markup).toContain('as of 12 June 2026');
-    expect(markup).toContain('Projections from our financial model for this site.');
+  it('heads the card "Impact", keeping the results-heading id', () => {
+    expect(markup).toMatch(/<h2 id="results-heading" class="[^"]*\btext-xs\b[^"]*\buppercase\b[^"]*\btext-pe-muted\b[^"]*">Impact<\/h2>/);
+    expect(markup).toContain('aria-labelledby="results-heading"');
   });
 
   it('shows up to four figures, each label with its value', () => {
@@ -145,56 +158,25 @@ describe('ProjectResults', () => {
     expect(markup).not.toContain('A fifth figure');
   });
 
-  it('links to the disclaimer', () => {
-    expect(markup).toMatch(/<a [^>]*href="\/disclaimer"[^>]*>Read the disclaimer/);
-  });
-
-  it('renders nothing without results', () => {
-    expect(html(createElement(ProjectResults, { results: [], labelling }))).toBe('');
-  });
-
   it("puts a figure's note under it, inside the list, and nothing for a figure without one", () => {
-    const noted = html(createElement(ProjectResults, { results: [{ label: 'Payback period', value: '51 months', note: 'Year 1, against 2025 municipal bills' }, results[1]], labelling }));
+    const noted = html(createElement(ProjectResults, { results: [{ label: 'Payback period', value: '51 months', note: 'Year 1, against 2025 municipal bills' }, results[1]] }));
     expect(noted).toMatch(/<dt[^>]*>Payback period<\/dt><dd[^>]*>51 months<\/dd><dd class="[^"]*text-xs[^"]*text-pe-muted[^"]*">Year 1, against 2025 municipal bills<\/dd>/);
     expect(noted.match(/<dd\b/g)).toHaveLength(3);
   });
 
-  it('shows no disclosure without calculation inputs, with the disclaimer link after the sentence', () => {
-    expect(markup).not.toContain('<details');
-    expect(markup).not.toContain('How we calculated this');
+  it('ends after the figures: no basis, date, note, disclosure or disclaimer link', () => {
+    for (const text of ['<details', 'How we calculated this', 'disclaimer', 'as of', 'Projected', 'Measured', '<a ']) {
+      expect(markup, text).not.toContain(text);
+    }
+    expect(markup).toMatch(/<\/dl><\/div><\/section>$/);
   });
 
-  it('lists the calculation inputs under "How we calculated this", ending with the disclaimer link', () => {
-    const inputs = [
-      { label: 'Tariff escalation', value: '8% a year' },
-      { label: 'Panel degradation', value: '0.5% a year' },
-    ];
-    const withInputs = html(createElement(ProjectResults, { results, labelling, inputs }));
-    const [before, disclosure] = withInputs.split('<details');
-    expect(before).toContain('Projections from our financial model for this site.');
-    expect(before).not.toContain('Read the disclaimer');
-    expect(disclosure).toMatch(/<summary[^>]*>How we calculated this/);
-    expect(disclosure).toMatch(/<dl class="[^"]*lg:grid-cols-3[^"]*">/);
-    expect(disclosure).toMatch(/<dt[^>]*>Tariff escalation<\/dt><dd[^>]*>8% a year<\/dd>/);
-    expect(disclosure.indexOf('Panel degradation')).toBeLessThan(disclosure.indexOf('Read the disclaimer'));
+  it('shows a rand figure as written', () => {
+    const rands = html(createElement(ProjectResults, { results: [{ label: 'Off the municipal bill in year one', value: 'R276k' }] }));
+    expect(rands).toMatch(/<dt[^>]*>Off the municipal bill in year one<\/dt><dd[^>]*>R276k<\/dd>/);
   });
 
-  it('keeps a short input value whole on one line: the label takes the free space, and only a long value wraps', () => {
-    // As in the facts rows (ProjectFacts' Rows): the label grows into the row's free space and
-    // wraps first, so a short value such as "0.5% a year" keeps its own width instead of
-    // splitting at its space; the value keeps min-w-0 and break-words, so a long unbroken one
-    // still wraps inside the card.
-    const inputs = [
-      { label: 'Tariff escalation', value: '8% a year' },
-      { label: 'Panel degradation', value: '0.5% a year' },
-    ];
-    const [, disclosure] = html(createElement(ProjectResults, { results, labelling, inputs })).split('<details');
-    const labels = disclosure.match(/<dt class="[^"]*"/g) ?? [];
-    const values = disclosure.match(/<dd class="[^"]*"/g) ?? [];
-    expect(labels).toHaveLength(inputs.length);
-    expect(values).toHaveLength(inputs.length);
-    expect(labels.every((tag) => /^<dt class="flex-1\b/.test(tag))).toBe(true);
-    expect(values.every((tag) => /\bmin-w-0 break-words\b/.test(tag))).toBe(true);
-    expect(disclosure).toMatch(/<dt class="flex-1 [^"]*">Panel degradation<\/dt><dd class="[^"]*">0\.5% a year<\/dd>/);
+  it('renders nothing without results', () => {
+    expect(html(createElement(ProjectResults, { results: [] }))).toBe('');
   });
 });

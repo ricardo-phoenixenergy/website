@@ -6,7 +6,6 @@ import type { ProjectCard as ProjectCardData } from '@/types/sanity';
 import { IconArrowRight } from '@/components/ui/Icons';
 import { buttonClasses } from '@/components/ui/buttonStyles';
 import { Card } from '@/components/ui/Card';
-import { isMeasured } from '@/lib/projectResults';
 import { cardPlace } from '@/lib/projectMeta';
 
 const DEFAULT_LQIP =
@@ -30,8 +29,8 @@ interface FeaturedProjectCardProps {
 
 /**
  * One project as a wide card, outcomes first like ProjectCard: its first two
- * results (captioned as projected unless an editor marks them measured), then
- * what was installed. A project with no results shows its specs instead.
+ * Impact figures, then what was installed. A project with no figures shows its
+ * specs instead.
  */
 export function FeaturedProjectCard({
   project,
@@ -46,7 +45,7 @@ export function FeaturedProjectCard({
   // No results yet: the specs (up to four, as on ProjectCard) take the outcomes' place.
   const tiles = outcomes.length > 0 ? outcomes : metrics.slice(0, 4);
   const specs = outcomes.length > 0 ? metrics.map((m) => m.value).slice(0, 4) : [];
-  // The city, then the client when the data carries the name: it does only with the client's consent.
+  // The city, then the client whenever the name is set.
   const place = cardPlace(project);
   const status = project.status ? STATUS_LABEL[project.status] : null;
 
@@ -111,9 +110,6 @@ export function FeaturedProjectCard({
           {/* Right: outcomes panel, on the card's own white (a tinted panel reads as a card inside the card) */}
           <div className="flex flex-col p-6 justify-between border-t border-pe-border sm:border-t-0 sm:border-l relative z-10">
             <div>
-              {outcomes.length > 0 && !isMeasured(project.resultsBasis, project.status) && (
-                <p className="font-body text-xs text-pe-muted mb-2">Projected results</p>
-              )}
               {/* Plain value and label pairs, as on ProjectCard: boxed tiles would be cards inside the card */}
               {tiles.length > 0 && (
                 <dl className="flex flex-col gap-4 mb-5">

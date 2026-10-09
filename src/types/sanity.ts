@@ -36,34 +36,23 @@ export type PortableTextBlock = {
 // GROQ returns null, not undefined, for a field that isn't set, so code reads
 // these with ?? and ?. and never compares them with undefined.
 
-/** What a project's results rest on. Unset is treated as projected. */
-export type ResultsBasis = 'projected' | 'measured';
-
 export type ProjectStatus = 'completed' | 'in-progress' | 'planned';
 
-/**
- * A project as the cards show it. The queries (src/lib/queries.ts) include the
- * client's name only while "Show client name" is on with a consent date set,
- * and never the project value, so whatever a card holds may show.
- */
+/** A project as the cards show it. Whatever a card holds shows as written. */
 export interface ProjectCard {
   _id: string;
   title: string;
   slug: SanitySlug;
   vertical: SolutionVertical;
   location?: string;
-  /** Present only with the client's recorded consent. */
+  /** Set only once the client has agreed in writing to be named. */
   clientName?: string;
-  /** "Show rand amounts": with it off, discloseProject() drops every rand amount (src/lib/projectDisclosure.ts). */
-  showRandAmounts?: boolean;
   heroImage?: SanityImage;
   status?: ProjectStatus;
-  /** System facts (kWp, kWh, inverter), without rand amounts unless the switch is on. */
+  /** System facts (kWp, kWh, inverter). */
   metrics?: ProjectMetric[];
-  /** Outcomes (payback, bill reduction), without rand amounts unless the switch is on; the first two lead the card. */
+  /** The Impact figures (payback, bill reduction); the first two lead the card. */
   results?: ProjectResult[];
-  /** Projected (financial model) unless an editor marks the results measured. */
-  resultsBasis?: ResultsBasis;
 }
 
 export interface ProjectMetric {
@@ -102,13 +91,9 @@ export interface Project extends ProjectCard {
   headline?: string;
   /** What the site is, for example "Logistics warehouse". */
   siteType?: string;
-  /** Free text, for example "Q3 2027": the target of a planned or in-progress project, or a completed one's date until commissionedOn is set. */
-  completionDate?: string;
-  /** ISO date (YYYY-MM-DD) of commissioning: shown as the month and year, and the order newest first. */
+  /** The completion date, ISO (YYYY-MM-DD): the day a project was completed, or the day a planned or in-progress one is due. Shown as the month and year, and the order newest first. */
   commissionedOn?: string;
   financing?: FinancingMethod[];
-  /** Present only while "Show rand amounts" is on. */
-  projectValue?: string;
   gallery?: SanityImage[];
   summary?: string;
   challenge?: PortableTextBlock[];
@@ -117,12 +102,6 @@ export interface Project extends ProjectCard {
   solutionHeadline?: string;
   outcome?: PortableTextBlock[];
   outcomeHeadline?: string;
-  /** ISO date (YYYY-MM-DD) of the model or the end of the measured period. */
-  resultsAsOf?: string;
-  /** Replaces the default note under the results. */
-  resultsAssumptions?: string;
-  /** "How we calculated this": the inputs behind the figures, without rand amounts unless the switch is on. */
-  resultsInputs?: ProjectMetric[];
   equipment?: ProjectEquipment[];
   /** Weeks from starting on site to commissioning: a whole number, 1 to 104. */
   installationWeeks?: number;

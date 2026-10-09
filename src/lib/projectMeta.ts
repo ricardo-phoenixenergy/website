@@ -2,37 +2,31 @@
 // The line under a project's headline: who or what the site is, where it is,
 // then its status and date ("Logistics warehouse · Cape Town · Completed June
 // 2026"). The facts panel's Status row uses the same status wording, and the
-// project cards' place line uses cardPlace(). The client's name is in the data
-// only with the client's recorded consent (src/lib/queries.ts), so wherever
-// the name is present it may show.
+// project cards' place line uses cardPlace(). The client's name shows wherever
+// it is set: editors fill it in only once the client has agreed in writing.
 import type { ProjectStatus } from '@/types/sanity';
-import { formatMonthYear } from '@/lib/projectResults';
+import { formatMonthYear } from '@/lib/sanityDate';
 
 export interface StatusSource {
   status?: ProjectStatus | null;
-  /** Free text: the target of a planned or in-progress project, or a completed one's date. */
-  completionDate?: string | null;
-  /** YYYY-MM-DD: a completed project's commissioning date. */
+  /** YYYY-MM-DD: the completion date, or the day a planned or in-progress project is due. */
   commissionedOn?: string | null;
 }
 
 /**
- * "Completed June 2026" from the commissioning date, else "Completed Q2 2026"
- * from the free text, else "Completed"; "In progress, due Q3 2027" or "Planned
- * for Q3 2027" from the target; the status alone without a date; null without a
- * known status.
+ * "Completed June 2026", "In progress, due September 2027" or "Planned for
+ * September 2027" from the status and the completion date; the status alone
+ * without a date it can read; null without a known status.
  */
 export function statusLine(project: StatusSource): string | null {
-  const target = project.completionDate?.trim();
+  const when = formatMonthYear(project.commissionedOn);
   switch (project.status) {
-    case 'completed': {
-      const when = formatMonthYear(project.commissionedOn) ?? target;
+    case 'completed':
       return when ? `Completed ${when}` : 'Completed';
-    }
     case 'in-progress':
-      return target ? `In progress, due ${target}` : 'In progress';
+      return when ? `In progress, due ${when}` : 'In progress';
     case 'planned':
-      return target ? `Planned for ${target}` : 'Planned';
+      return when ? `Planned for ${when}` : 'Planned';
     default:
       return null;
   }

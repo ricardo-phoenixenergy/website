@@ -5,7 +5,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getProjectBySlug, getProjectSlugs } from '@/lib/projectData';
-import { describeResults } from '@/lib/projectResults';
 import { galleryWithoutHero } from '@/lib/projectPhotos';
 import { projectChapters } from '@/lib/projectStory';
 import { projectFacts } from '@/lib/projectFacts';
@@ -46,7 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     path: `/projects/${slug}`,
     // Shared under its own title; link previews show the site's name beside it.
     shareTitle: title,
-    // The hero's alt text goes with it: the Studio warns on it as on all shown text.
+    // The hero's alt text goes with it, as the image's description.
     image: sanityShareImage(project.heroImage, title),
     article: { publishedTime: project._createdAt, modifiedTime: project._updatedAt },
   });
@@ -73,7 +72,7 @@ export default async function ProjectPage({ params }: PageProps) {
 
       <ProjectBreadcrumb title={project.title} url={url} />
       <ProjectHero project={project} overlapped={results.length > 0} />
-      {results.length > 0 && <ProjectResults results={results} labelling={describeResults(project)} inputs={project.resultsInputs ?? []} />}
+      {results.length > 0 && <ProjectResults results={results} />}
       {photos.length > 0 && <ProjectPhotos photos={photos} />}
       <ProjectStory
         summary={project.summary}

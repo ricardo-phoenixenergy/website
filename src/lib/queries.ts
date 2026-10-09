@@ -10,29 +10,13 @@ const IMAGE_FIELDS = `{ ${IMAGE_ASSET_FIELDS}, alt, hotspot, crop }`;
 // Gallery photos also carry their caption, which the photo viewer shows.
 const GALLERY_IMAGE_FIELDS = `{ ${IMAGE_ASSET_FIELDS}, alt, caption, hotspot, crop }`;
 
-// The consent switches apply here, so nothing withheld leaves the CMS
-// (docs/superpowers/specs/2026-09-29-project-page-design.md, "Consent and rand
-// amounts"). The client's name comes only with "Show client name" on and the
-// date of the client's written consent set, and the project value only with
-// "Show rand amounts" on. A switch that is off leaves its field out entirely,
-// with a conditional projection rather than a null, so not even the field's
-// name reaches the page data. showRandAmounts itself comes with every project,
-// because discloseProject() needs it to decide whether figures in rands may
-// show. Read projects through src/lib/projectData.ts, which applies that rule.
-// defined(clientConsentOn) alone would accept "" or free text such as "TBC"
-// (a document written through the API or import, not the Studio, which
-// requires a real date): dateTime() of an unreadable string is null, and
-// defined(null) is false, so only a date that actually parses names the
-// client, the same test NEWEST_FIRST already applies to commissionedOn.
-const CLIENT_NAME_WITH_CONSENT = `showClientName == true && defined(dateTime(clientConsentOn + "T00:00:00Z")) => { clientName }`;
-const PROJECT_VALUE_WITH_CONSENT = `showRandAmounts == true => { projectValue }`;
-
-// "Newest" is the commissioning date, falling back to the date a project was
-// added to the CMS. commissionedOn is a date ("2026-06-12") and _createdAt a
-// datetime ("2026-01-10T08:00:00Z"): dateTime() of a bare date is null, and a
-// string never compares with a datetime, so the date gets midnight UTC and both
-// are compared as datetimes. A date that can't be read falls back to _createdAt.
-// The free-text completion date is never sorted on: "Q3 2024" sorts above "Q2 2026".
+// "Newest" is the completion date (commissionedOn), falling back to the date a
+// project was added to the CMS. A planned or in-progress project's date is the
+// day it's due, and it sorts by that day too. commissionedOn is a date
+// ("2026-06-12") and _createdAt a datetime ("2026-01-10T08:00:00Z"):
+// dateTime() of a bare date is null, and a string never compares with a
+// datetime, so the date gets midnight UTC and both are compared as datetimes.
+// A date that can't be read falls back to _createdAt.
 const NEWEST_FIRST = `coalesce(dateTime(commissionedOn + "T00:00:00Z"), dateTime(_createdAt)) desc`;
 
 const PROJECT_CARD_FIELDS = `
@@ -41,13 +25,11 @@ const PROJECT_CARD_FIELDS = `
   "slug": { "current": slug.current },
   vertical,
   location,
-  ${CLIENT_NAME_WITH_CONSENT},
-  "showRandAmounts": showRandAmounts == true,
+  clientName,
   "heroImage": heroImage ${IMAGE_FIELDS},
   status,
   "metrics": metrics[]{ label, value },
-  "results": results[]{ label, value, note },
-  resultsBasis
+  "results": results[]{ label, value, note }
 `;
 
 const BLOG_CARD_FIELDS = `
@@ -99,10 +81,8 @@ export const PROJECT_BY_SLUG_QUERY = `
     _updatedAt,
     headline,
     siteType,
-    completionDate,
     commissionedOn,
     financing,
-    ${PROJECT_VALUE_WITH_CONSENT},
     "gallery": gallery[] ${GALLERY_IMAGE_FIELDS},
     summary,
     challenge[] { ... },
@@ -111,9 +91,6 @@ export const PROJECT_BY_SLUG_QUERY = `
     solutionHeadline,
     outcome[] { ... },
     outcomeHeadline,
-    resultsAsOf,
-    resultsAssumptions,
-    "resultsInputs": resultsInputs[]{ label, value },
     "equipment": equipment[]{ component, brand, model, quantity },
     installationWeeks,
     approvals,

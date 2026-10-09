@@ -1,29 +1,30 @@
 import { describe, expect, it } from 'vitest';
-import { cardPlace, metaLine, statusLine } from './projectMeta';
+import { cardPlace, metaLine, statusLine, type StatusSource } from './projectMeta';
 import type { ProjectStatus } from '@/types/sanity';
 
 describe('statusLine', () => {
-  it('words a completed project from its commissioning date, as the month and year', () => {
-    expect(statusLine({ status: 'completed', commissionedOn: '2026-06-12', completionDate: 'Q2 2026' })).toBe('Completed June 2026');
+  it('words each status with its completion date, as the month and year', () => {
+    expect(statusLine({ status: 'completed', commissionedOn: '2026-06-12' })).toBe('Completed June 2026');
+    expect(statusLine({ status: 'in-progress', commissionedOn: '2027-09-01' })).toBe('In progress, due September 2027');
+    expect(statusLine({ status: 'planned', commissionedOn: '2027-09-01' })).toBe('Planned for September 2027');
   });
 
-  it('falls back to the free-text date, then to the status alone', () => {
-    expect(statusLine({ status: 'completed', commissionedOn: null, completionDate: 'Q2 2026' })).toBe('Completed Q2 2026');
-    expect(statusLine({ status: 'completed', commissionedOn: '12 June 2026', completionDate: ' Q2 2026 ' })).toBe('Completed Q2 2026');
+  it('gives the status alone without a date, or with one that cannot be read', () => {
     expect(statusLine({ status: 'completed' })).toBe('Completed');
+    expect(statusLine({ status: 'in-progress', commissionedOn: null })).toBe('In progress');
+    expect(statusLine({ status: 'planned', commissionedOn: '12 June 2026' })).toBe('Planned');
   });
 
-  it('words a project still to finish from its target, never from a commissioning date', () => {
-    expect(statusLine({ status: 'in-progress', completionDate: 'Q3 2027', commissionedOn: '2026-06-12' })).toBe('In progress, due Q3 2027');
-    expect(statusLine({ status: 'planned', completionDate: 'Q3 2027' })).toBe('Planned for Q3 2027');
-    expect(statusLine({ status: 'in-progress', completionDate: '  ' })).toBe('In progress');
-    expect(statusLine({ status: 'planned', commissionedOn: '2026-06-12' })).toBe('Planned');
+  it("ignores an old document's free-text date", () => {
+    const old = { status: 'planned', completionDate: 'Q3 2027' } as StatusSource;
+    expect(statusLine(old)).toBe('Planned');
+    expect(statusLine({ ...old, status: 'completed' })).toBe('Completed');
   });
 
   it('says nothing without a known status', () => {
-    expect(statusLine({ status: null, completionDate: 'Q2 2026' })).toBeNull();
+    expect(statusLine({ status: null, commissionedOn: '2026-06-12' })).toBeNull();
     expect(statusLine({})).toBeNull();
-    expect(statusLine({ status: 'operational' as ProjectStatus, completionDate: 'Q2 2026' })).toBeNull();
+    expect(statusLine({ status: 'operational' as ProjectStatus, commissionedOn: '2026-06-12' })).toBeNull();
   });
 });
 
@@ -35,18 +36,18 @@ describe('metaLine', () => {
     });
   });
 
-  it("names the client in the site type's place when the data carries the name", () => {
+  it("names the client in the site type's place whenever the name is set", () => {
     expect(metaLine({ clientName: 'Example Client', siteType: 'Logistics warehouse', location: 'Cape Town' }).place).toEqual(['Example Client', 'Cape Town']);
   });
 
   it('starts with the city without a site type, and leaves out what is not set', () => {
-    expect(metaLine({ siteType: '  ', location: 'Cape Town', status: 'planned', completionDate: 'Q3 2027' })).toEqual({ place: ['Cape Town'], when: 'Planned for Q3 2027' });
+    expect(metaLine({ siteType: '  ', location: 'Cape Town', status: 'planned', commissionedOn: '2027-09-01' })).toEqual({ place: ['Cape Town'], when: 'Planned for September 2027' });
     expect(metaLine({ clientName: null, siteType: null, location: null, status: null })).toEqual({ place: [], when: null });
   });
 });
 
 describe('cardPlace', () => {
-  it('gives the city, then the client when the data carries the name', () => {
+  it('gives the city, then the client whenever the name is set', () => {
     expect(cardPlace({ location: 'Cape Town', clientName: 'Example Client' })).toBe('Cape Town · Example Client');
     expect(cardPlace({ location: ' Cape Town ' })).toBe('Cape Town');
     expect(cardPlace({ location: null, clientName: 'Example Client' })).toBe('Example Client');

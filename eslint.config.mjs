@@ -3,10 +3,10 @@ import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
 // The project queries in src/lib/queries.ts. Only src/lib/projectData.ts may
-// import them, because it applies the consent rules to every read
-// (docs/superpowers/specs/2026-09-29-project-page-design.md, "One module for
-// every read"). The two test files that check the queries and the reads are
-// the only other exceptions.
+// import them, so every read gets the same tidying (incomplete figure rows
+// dropped) and the same order (docs/superpowers/specs/2026-09-29-project-page-design.md,
+// "One module for every read"). The two test files that check the queries and
+// the reads are the only other exceptions.
 const PROJECT_QUERIES = [
   "ALL_PROJECTS_QUERY",
   "FEATURED_PROJECTS_QUERY",
@@ -30,7 +30,7 @@ const eslintConfig = defineConfig([
             {
               regex: "(^|/)queries$",
               importNames: PROJECT_QUERIES,
-              message: "Read projects through src/lib/projectData.ts, which applies the consent rules.",
+              message: "Read projects through src/lib/projectData.ts, which tidies and orders every read.",
             },
           ],
         },

@@ -1,5 +1,5 @@
 // The lint rule that keeps every project read in src/lib/projectData.ts, where
-// the consent rules apply. It lints made-up files with the repo's own
+// every read is tidied and ordered the same way. It lints made-up files with the repo's own
 // eslint.config.mjs, so it tests the rule as `npx eslint` runs it.
 import { describe, expect, it } from 'vitest';
 import { ESLint } from 'eslint';

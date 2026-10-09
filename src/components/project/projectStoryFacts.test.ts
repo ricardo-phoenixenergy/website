@@ -14,7 +14,7 @@ const groups = projectFacts({
   vertical: 'ci-solar-storage',
   location: 'Cape Town',
   status: 'completed',
-  completionDate: 'Q2 2026',
+  commissionedOn: '2026-06-12',
   metrics: [
     { label: 'Solar PV Capacity', value: '82.8 kWp' },
     { label: 'Battery Energy Storage Capacity', value: '80 kWh' },

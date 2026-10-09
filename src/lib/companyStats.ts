@@ -1,5 +1,5 @@
 import type { CompanyStat } from '@/types/sanity';
-import { formatAsOf } from '@/lib/projectResults';
+import { formatAsOf } from '@/lib/sanityDate';
 
 /**
  * Fallback stats — used when the `companyStats` singleton is empty or Sanity

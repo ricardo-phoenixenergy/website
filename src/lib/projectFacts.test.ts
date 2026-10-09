@@ -6,7 +6,6 @@ const base: FactsSource = {
   vertical: 'ci-solar-storage',
   location: 'Cape Town',
   status: 'completed',
-  completionDate: 'Q2 2026',
   metrics: [
     { label: 'Solar PV Capacity', value: '82.8 kWp' },
     { label: 'Battery Energy Storage Capacity', value: '80 kWh' },
@@ -21,7 +20,6 @@ const full: FactsSource = {
   clientName: 'Example Client',
   commissionedOn: '2026-06-12',
   financing: ['outright-purchase', 'ppa'],
-  projectValue: 'R[x]M excl. VAT',
   equipment: [
     { component: 'solar-panels', brand: 'JA Solar', model: 'JAM72S30-550/MR', quantity: 150 },
     { component: 'inverter', brand: 'Sunsynk', model: '50K', quantity: 1 },
@@ -40,14 +38,14 @@ describe('projectFacts', () => {
     expect(groups[0].rows).toEqual([
       { key: 'location', label: 'Location', lines: [{ text: 'Cape Town' }] },
       { key: 'service', label: 'Service', lines: [{ text: 'C&I Solar & Storage', href: '/solutions/ci-solar-storage' }] },
-      { key: 'status', label: 'Status', lines: [{ text: 'Completed Q2 2026' }] },
+      { key: 'status', label: 'Status', lines: [{ text: 'Completed' }] },
     ]);
     expect(groups[1].rows.map((r) => r.label)).toEqual(['Solar PV Capacity', 'Battery Energy Storage Capacity', 'Hybrid Inverter Capacity', 'Deal Structure']);
   });
 
-  it('adds every step 2 row in its group, in the order the spec gives', () => {
+  it('adds every row in its group, in the order the spec gives', () => {
     expect(labels(full)).toEqual([
-      ['Project', ['Site', 'Client', 'Location', 'Service', 'Status', 'Financing', 'Project value']],
+      ['Project', ['Site', 'Client', 'Location', 'Service', 'Status', 'Financing']],
       ['System', ['Solar PV Capacity', 'Battery Energy Storage Capacity', 'Hybrid Inverter Capacity', 'Deal Structure']],
       ['Equipment', ['Solar panels', 'Inverter', 'Battery']],
       ['Delivery', ['On site', 'Approvals']],
@@ -70,7 +68,7 @@ describe('projectFacts', () => {
   });
 
   it('shows a row only when it is set, and a group only when it has a row', () => {
-    expect(projectFacts({ vertical: 'wheeling', location: null, status: null, completionDate: null, metrics: [{ label: 'Solar PV', value: ' ' }] })).toEqual([
+    expect(projectFacts({ vertical: 'wheeling', location: null, status: null, commissionedOn: null, metrics: [{ label: 'Solar PV', value: ' ' }] })).toEqual([
       { key: 'project', title: 'Project', rows: [{ key: 'service', label: 'Service', lines: [{ text: 'Wheeling', href: '/solutions/wheeling' }] }] },
     ]);
   });
@@ -120,6 +118,26 @@ describe('projectFacts', () => {
   });
 });
 
+describe('projectFacts on a document that still holds the removed fields', () => {
+  // Until the old fields are cleared from Sanity, a document can still hold them. The
+  // queries no longer return them, and the facts would ignore them even if they did.
+  const old = {
+    ...full,
+    showClientName: false,
+    showRandAmounts: false,
+    projectValue: 'R1.5M',
+    completionDate: 'Q3 2027',
+  } as FactsSource;
+
+  it('shows the client, since the name is set, and no Project value row', () => {
+    const projectGroup = projectFacts(old)[0];
+    expect(projectGroup.rows.map((r) => r.label)).toEqual(['Site', 'Client', 'Location', 'Service', 'Status', 'Financing']);
+    expect(projectGroup.rows.find((r) => r.key === 'client')?.lines).toEqual([{ text: 'Example Client' }]);
+    expect(projectGroup.rows.find((r) => r.key === 'status')?.lines).toEqual([{ text: 'Completed June 2026' }]);
+    expect(JSON.stringify(projectFacts(old))).not.toMatch(/R1\.5M|Q3 2027|Project value/);
+  });
+});
+
 describe('financingHref', () => {
   it("links to the financing section of the services that have one, and to the service page otherwise", () => {
     expect(financingHref('ci-solar-storage')).toBe('/solutions/ci-solar-storage#financing');
@@ -155,7 +173,7 @@ describe('splitMainRows', () => {
     const unnamed = splitMainRows(projectFacts({ ...full, clientName: null }));
     expect(unnamed.main.map((r) => r.label)).toEqual(['Site', 'Location', 'Solar PV Capacity', 'Battery Energy Storage Capacity', 'Financing']);
     expect(splitMainRows(projectFacts(full)).rest.map((g) => [g.title, g.rows.map((r) => r.label)])).toEqual([
-      ['Project', ['Site', 'Service', 'Status', 'Project value']],
+      ['Project', ['Site', 'Service', 'Status']],
       ['System', ['Hybrid Inverter Capacity', 'Deal Structure']],
       ['Equipment', ['Solar panels', 'Inverter', 'Battery']],
       ['Delivery', ['On site', 'Approvals']],

@@ -1,9 +1,8 @@
 // src/lib/projectFacts.ts
 // The facts panel's groups and rows, in order, each row only when it's set and
 // each group only when it has a row:
-// - Project: Site, Client (the name is in the data only with consent),
-//   Location, Service, Status, Financing and Project value (in the data only
-//   while "Show rand amounts" is on);
+// - Project: Site, Client (whenever the name is set), Location, Service,
+//   Status and Financing;
 // - System: the CMS's System rows, in their order;
 // - Equipment: one row per component, "[brand] [model], 3 units";
 // - Delivery: the weeks on site and the approvals.
@@ -39,10 +38,8 @@ export interface FactsSource {
   clientName?: string | null;
   location?: string | null;
   status?: ProjectStatus | null;
-  completionDate?: string | null;
   commissionedOn?: string | null;
   financing?: FinancingMethod[] | null;
-  projectValue?: string | null;
   metrics?: ProjectMetric[] | null;
   equipment?: ProjectEquipment[] | null;
   installationWeeks?: number | null;
@@ -112,7 +109,6 @@ export function projectFacts(project: FactsSource): FactGroup[] {
     ...(meta ? row('service', 'Service', meta.label, meta.slug) : []),
     ...row('status', 'Status', statusLine(project)),
     ...(financing.length > 0 ? [{ key: 'financing', label: 'Financing', lines: financing }] : []),
-    ...row('project-value', 'Project value', project.projectValue),
   ];
 
   const systemRows: FactRow[] = (project.metrics ?? []).flatMap((metric, i) => {

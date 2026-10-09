@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     // A project shows on its own page, on other projects' pages (the next
     // project cards), on /projects, on home and on its service's solution page,
     // and a change can move it to another service. Refreshing them all makes a
-    // consent switch turned off take effect everywhere at once
+    // change, such as a client name removed, take effect everywhere at once
     // (docs/superpowers/specs/2026-09-29-project-page-design.md, "Revalidation").
     // The sitemap is refreshed too.
     revalidatePath('/projects/[slug]', 'page');

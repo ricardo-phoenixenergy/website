@@ -20,6 +20,20 @@ const project = (id: string, extra: Partial<ProjectPreview> = {}): ProjectPrevie
   ...extra,
 });
 
+const RAND = { label: 'Off the municipal bill in year one', value: 'R276k' };
+const PAYBACK = { label: 'Payback period', value: '51 months' };
+// A card from a document written before the switches went, as an older query
+// would have returned it: the cards read none of these fields.
+const old = {
+  ...project('old'),
+  clientName: 'Example Client',
+  showClientName: false,
+  showRandAmounts: false,
+  projectValue: 'R1.5M excl. VAT',
+  resultsBasis: 'projected',
+  resultsInputs: [{ label: 'Tariff escalation', value: '8% a year' }],
+} as ProjectPreview;
+
 describe('ProjectCard', () => {
   it('says "View project" and shows the place', () => {
     const markup = html(createElement(ProjectCard, { project: project('a'), fluid: true }));
@@ -28,9 +42,23 @@ describe('ProjectCard', () => {
     expect(markup).toMatch(/<p [^>]*>Cape Town<\/p>/);
   });
 
-  it("names the client after the place when the data carries the name, which the queries allow only with the client's consent", () => {
+  it('names the client after the place whenever the name is set', () => {
     const named: ProjectCardData = { ...project('a'), clientName: 'Example Client' };
     expect(html(createElement(ProjectCard, { project: named, fluid: true }))).toMatch(/<p [^>]*>Cape Town · Example Client<\/p>/);
+  });
+
+  it('shows the outcomes with no "Projected results" caption, a rand figure as written', () => {
+    const markup = html(createElement(ProjectCard, { project: project('a', { results: [RAND, PAYBACK] }), fluid: true }));
+    expect(markup).not.toContain('Projected results');
+    expect(markup).not.toContain('Measured results');
+    expect(markup).toMatch(/<dt[^>]*>Off the municipal bill in year one<\/dt><dd[^>]*>R276k<\/dd>/);
+  });
+
+  it('ignores the removed fields on a document that still holds them, and names the client', () => {
+    const markup = html(createElement(ProjectCard, { project: old, fluid: true }));
+    expect(markup).toMatch(/<p [^>]*>Cape Town · Example Client<\/p>/);
+    expect(markup).not.toContain('Projected results');
+    expect(markup).not.toContain('R1.5M excl. VAT');
   });
 });
 
@@ -42,9 +70,22 @@ describe('FeaturedProjectCard', () => {
     expect(markup).not.toContain('case study');
   });
 
-  it('names the client after the place when the data carries the name', () => {
+  it('names the client after the place whenever the name is set', () => {
     const markup = html(createElement(FeaturedProjectCard, { project: { ...project('a'), clientName: 'Example Client' } }));
     expect(markup).toMatch(/<p [^>]*>Cape Town · Example Client<\/p>/);
+  });
+
+  it('shows the outcomes with no "Projected results" caption, a rand figure as written', () => {
+    const markup = html(createElement(FeaturedProjectCard, { project: project('a', { results: [RAND, PAYBACK] }) }));
+    expect(markup).not.toContain('Projected results');
+    expect(markup).toMatch(/<dt[^>]*>Off the municipal bill in year one<\/dt><dd[^>]*>R276k<\/dd>/);
+  });
+
+  it('ignores the removed fields on a document that still holds them, and names the client', () => {
+    const markup = html(createElement(FeaturedProjectCard, { project: old }));
+    expect(markup).toMatch(/<p [^>]*>Cape Town · Example Client<\/p>/);
+    expect(markup).not.toContain('Projected results');
+    expect(markup).not.toContain('R1.5M excl. VAT');
   });
 });
 

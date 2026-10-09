@@ -10,7 +10,7 @@ import { projectTitle } from '@/lib/projectSeo';
 
 type HeroProject = Pick<
   Project,
-  'title' | 'headline' | 'vertical' | 'heroImage' | 'siteType' | 'clientName' | 'location' | 'status' | 'completionDate' | 'commissionedOn'
+  'title' | 'headline' | 'vertical' | 'heroImage' | 'siteType' | 'clientName' | 'location' | 'status' | 'commissionedOn'
 >;
 
 interface ProjectHeroProps {

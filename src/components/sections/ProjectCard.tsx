@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { SOLUTION_META } from '@/types/solutions';
 import type { ProjectCard as ProjectCardType } from '@/types/sanity';
 import { Card, CardImage, CardBody, CardFooter, CardArrow } from '@/components/ui/Card';
-import { isMeasured } from '@/lib/projectResults';
 import { cardPlace } from '@/lib/projectMeta';
 
 interface ProjectCardProps {
@@ -24,9 +23,8 @@ const STATUS_LABEL: Record<NonNullable<ProjectCardType['status']>, string | null
 };
 
 /**
- * A project as a link to its page, outcomes first: the first two results
- * (captioned as projected unless an editor marks them measured), then what was
- * installed (one spec line).
+ * A project as a link to its page, outcomes first: the first two Impact
+ * figures, then what was installed (one spec line).
  */
 export function ProjectCard({ project, className, fluid, size = 'default', headingLevel = 3 }: ProjectCardProps) {
   const meta = project.vertical ? SOLUTION_META[project.vertical] : null;
@@ -34,7 +32,7 @@ export function ProjectCard({ project, className, fluid, size = 'default', headi
   const Title = headingLevel === 2 ? 'h2' : 'h3';
   const outcomes = (project.results ?? []).filter((r) => r.value).slice(0, 2);
   const specs = (project.metrics ?? []).map((m) => m.value).filter(Boolean).slice(0, 4);
-  // The city, then the client when the data carries the name: it does only with the client's consent.
+  // The city, then the client whenever the name is set.
   const place = cardPlace(project);
   const status = project.status ? STATUS_LABEL[project.status] : null;
 
@@ -80,9 +78,6 @@ export function ProjectCard({ project, className, fluid, size = 'default', headi
 
           {outcomes.length > 0 && (
             <div className="mt-4">
-              {!isMeasured(project.resultsBasis, project.status) && (
-                <p className="font-body text-xs text-pe-muted mb-2">Projected results</p>
-              )}
               {/* Two columns while each outcome has 8rem; a narrower card stacks them
                   instead of letting a long value run into its neighbour. Values sit
                   at the top, so a label that wraps never pushes its neighbour down. */}
