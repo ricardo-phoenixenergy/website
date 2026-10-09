@@ -9,12 +9,11 @@ import { breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 
 export const metadata: Metadata = pageMetadata({
   title: 'Projects & Installations',
-  // Not every project has results yet, and those shown are projections, so the
-  // copy promises neither "results for each project" nor measured outcomes.
+  // Not every project has impact figures yet, so the copy doesn't promise them for each.
   description:
-    'Commercial solar and battery installations by Phoenix Energy in South Africa: the site and system for each, with projected results where available.',
+    'Commercial solar and battery installations by Phoenix Energy in South Africa: the site and system for each, and its impact where available.',
   path: '/projects',
-  shareDescription: 'Commercial solar and battery installations by Phoenix Energy in South Africa, with projected results where available.',
+  shareDescription: 'Commercial solar and battery installations by Phoenix Energy in South Africa, and their impact where available.',
 });
 
 export const revalidate = 3600;
@@ -29,7 +28,7 @@ export default async function ProjectsPage() {
       crumb="Projects"
       eyebrow="Our work"
       title={<>Projects &amp; <em className="not-italic text-pe-primary">installations</em></>}
-      intro="Commercial solar and battery installations by Phoenix Energy: the site and system for each project, with projected results where available."
+      intro="Commercial solar and battery installations by Phoenix Energy: the site and system for each project, and its impact where available."
     />
   );
 

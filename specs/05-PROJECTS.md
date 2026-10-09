@@ -46,7 +46,7 @@ As `specs/03-NAVIGATION.md`. On `/projects` and every `/projects/[slug]` page, t
 - **Eyebrow:** `Our work`, set in capitals, `text-pe-muted` (changed 2026-10-08 from `text-pe-secondary-ink`: the index headers share one eyebrow colour).
 - **Component:** the breadcrumb, eyebrow, H1 and intro are `IndexHeader` (`src/components/ui/IndexHeader.tsx`), shared with `/blog`; the page passes it to `ProjectsGrid` as its `header`. The breadcrumb is `BreadcrumbTrail` (an `ol`, as the project page's breadcrumb row). The H1's emphasis stays `text-pe-primary`.
 - **H1:** "Projects & *installations*", with "installations" in `pe-primary`.
-- **Intro:** *"Commercial solar and battery installations by Phoenix Energy: the site and system for each project, with projected results where available."* (max 60ch).
+- **Intro:** *"Commercial solar and battery installations by Phoenix Energy: the site and system for each project, and its impact where available."* (max 60ch).
 
 ---
 
