@@ -123,10 +123,10 @@ export function ProjectsGrid({ projects, header }: ProjectsGridProps) {
       <div className="bg-pe-bg">
         <div className="page-container pt-24 pb-16">
           {header}
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {projects.map((project) => (
               <li key={project._id}>
-                <ProjectCard project={project} fluid size="large" headingLevel={2} />
+                <ProjectCard project={project} fluid headingLevel={2} />
               </li>
             ))}
           </ul>

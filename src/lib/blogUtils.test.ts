@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { activeHeadingId, blogFilterOptions, carouselLayout, formatDate, initials, postHeadings, postMetaLine, postVertical, relatedLayout } from './blogUtils';
+import { activeHeadingId, blogFilterOptions, formatDate, initials, postHeadings, postMetaLine, postVertical, relatedLayout } from './blogUtils';
 import { articleCta } from '@/config/ctas';
 import type { PortableTextBlock } from '@/types/sanity';
 
@@ -77,15 +77,6 @@ describe('relatedLayout', () => {
     expect(relatedLayout(1)).toBe('wide');
     expect(relatedLayout(2)).toBe('two');
     expect(relatedLayout(3)).toBe('three');
-  });
-});
-
-describe('carouselLayout', () => {
-  it('follows FeaturedProjects: two large cards, three in a row, or the scroller from four', () => {
-    expect(carouselLayout(1)).toEqual({ gridColumns: 2, size: 'large' });
-    expect(carouselLayout(2)).toEqual({ gridColumns: 2, size: 'large' });
-    expect(carouselLayout(3)).toEqual({ gridColumns: 3, size: 'default' });
-    expect(carouselLayout(4)).toEqual({ gridColumns: undefined, size: 'default' });
   });
 });
 

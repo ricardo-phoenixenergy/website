@@ -153,14 +153,6 @@ export default async function BlogPage({
 
           {posts.length === 0 ? (
             <BlogEmptyState reason={blogEmptyReason(view, published)} search={view.search} />
-          ) : view.few ? (
-            <ul className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              {posts.map((post, i) => (
-                <AnimatedSection key={post._id} as="li" delay={i * 0.04}>
-                  <ArticleCard post={post} size="large" headingLevel={2} />
-                </AnimatedSection>
-              ))}
-            </ul>
           ) : (
             <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
               {posts.map((post, i) => (

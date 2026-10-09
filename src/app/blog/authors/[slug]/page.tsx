@@ -61,7 +61,6 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
     ? urlFor(author.photo).width(176).height(176).url()
     : null;
   const photoLqip = author.photo?.asset?.metadata?.lqip ?? null;
-  const few = posts.length < 3;
 
   return (
     <>
@@ -132,11 +131,10 @@ export default async function AuthorPage({ params }: { params: Promise<{ slug: s
         {posts.length === 0 ? (
           <p className="font-body text-base text-pe-muted">No articles yet.</p>
         ) : (
-          // Fewer than three: two large cards a row, as the few-posts index; else three a row.
-          <ul className={few ? 'grid grid-cols-1 gap-4 md:grid-cols-2' : 'grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3'}>
+          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
             {posts.map((post, i) => (
               <AnimatedSection key={post._id} as="li" delay={i * 0.04}>
-                <ArticleCard post={post} size={few ? 'large' : 'default'} headingLevel={3} />
+                <ArticleCard post={post} headingLevel={3} />
               </AnimatedSection>
             ))}
           </ul>

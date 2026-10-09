@@ -9,8 +9,11 @@ interface SectionCarouselProps {
   bg?: 'white' | 'gray';
   /** When true, sits flush under a same-background section: no top padding. Default: false */
   flushTop?: boolean;
-  /** Lay the items out as a static grid of this many columns instead of a scroller (few items). */
-  gridColumns?: 2 | 3;
+  /**
+   * Lay the items out as a static grid instead of a scroller (three or fewer):
+   * the /projects grid, one column on phones, two from 640px, three from 768px.
+   */
+  grid?: boolean;
   children: React.ReactNode;
 }
 
@@ -21,7 +24,7 @@ export function SectionCarousel({
   viewAllLabel,
   bg = 'white',
   flushTop = false,
-  gridColumns,
+  grid = false,
   children,
 }: SectionCarouselProps) {
   return (
@@ -47,8 +50,8 @@ export function SectionCarousel({
       </AnimatedSection>
 
       <div className="page-container">
-        {gridColumns ? (
-          <div className={`grid grid-cols-1 gap-4 ${gridColumns === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'}`}>
+        {grid ? (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
             {children}
           </div>
         ) : (

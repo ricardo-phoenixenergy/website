@@ -3,7 +3,6 @@ import { POSTS_BY_VERTICAL_QUERY } from '@/lib/queries';
 import { ArticleCard } from '@/components/ui/ArticleCard';
 import { SectionCarousel } from '@/components/ui/SectionCarousel';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
-import { carouselLayout } from '@/lib/blogUtils';
 import type { BlogPostCard } from '@/types/sanity';
 import type { SolutionVertical } from '@/types/solutions';
 import { SOLUTION_META } from '@/types/solutions';
@@ -36,8 +35,8 @@ async function getPosts(vertical: SolutionVertical): Promise<BlogPostCard[]> {
 export async function RelatedArticles({ vertical }: RelatedArticlesProps) {
   const posts = await getPosts(vertical);
   if (posts.length === 0) return null;
-  // Three or fewer: a static grid, as FeaturedProjects; one or two take large cards.
-  const { gridColumns, size } = carouselLayout(posts.length);
+  // Three or fewer: a static grid, three a row from 768px, as FeaturedProjects.
+  const few = posts.length <= 3;
 
   const meta = SOLUTION_META[vertical];
 
@@ -53,11 +52,11 @@ export async function RelatedArticles({ vertical }: RelatedArticlesProps) {
       viewAllHref="/blog"
       viewAllLabel="View all articles"
       bg="gray"
-      gridColumns={gridColumns}
+      grid={few}
     >
       {posts.map((post, i) => (
-        <AnimatedSection key={post._id} as="div" delay={i * 0.06} className={gridColumns ? undefined : CAROUSEL_ITEM}>
-          <ArticleCard post={post} size={size} />
+        <AnimatedSection key={post._id} as="div" delay={i * 0.06} className={few ? undefined : CAROUSEL_ITEM}>
+          <ArticleCard post={post} />
         </AnimatedSection>
       ))}
     </SectionCarousel>

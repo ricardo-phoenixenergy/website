@@ -24,7 +24,7 @@ async function getProjects(vertical?: SolutionVertical): Promise<ProjectCardType
 export async function FeaturedProjects({ vertical, flushTop = false }: FeaturedProjectsProps = {}) {
   const projects = await getProjects(vertical);
   if (projects.length === 0) return null;
-  // Three or fewer: a static grid, so no empty column or hidden card behind a swipe.
+  // Three or fewer: a static grid, three a row from 768px, so no card hides behind a swipe.
   const few = projects.length <= 3;
 
   // Cards fill exactly 1/3 of the container on md+ so 3 are visible and the rest
@@ -45,11 +45,11 @@ export async function FeaturedProjects({ vertical, flushTop = false }: FeaturedP
       viewAllLabel={PROJECTS_CTA.label}
       bg="white"
       flushTop={flushTop}
-      gridColumns={few ? (projects.length === 3 ? 3 : 2) : undefined}
+      grid={few}
     >
       {projects.map((project, i) => (
         <AnimatedSection key={project._id} delay={i * 0.05} as="div" className={few ? undefined : cardClass}>
-          <ProjectCard project={project} fluid className="w-full" size={few && projects.length < 3 ? 'large' : 'default'} />
+          <ProjectCard project={project} fluid className="w-full" />
         </AnimatedSection>
       ))}
     </SectionCarousel>
