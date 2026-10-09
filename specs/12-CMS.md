@@ -1,6 +1,6 @@
 # 12 — CMS Schemas (Sanity)
 > Spoke | Hub: [`/CLAUDE.md`](/CLAUDE.md) | Version 3.0
-> **Updated 2026-09-29:** the project schema's step 2 fields, consent switches and Studio warnings. All ten schemas in `sanity/schemaTypes/` are described here.
+> **Updated 2026-10-09:** the simpler project schema: the Impact figures, one completion date, and no consent or rand switches, project value or results basis fields. All ten schemas in `sanity/schemaTypes/` are described here.
 
 ---
 
@@ -17,29 +17,18 @@
   siteType:          string    // max 40; the line under the headline (when the client isn't named) and the Site row
   location:          string
   status:            'completed' | 'in-progress' | 'planned'
-  commissionedOn:    date      // shown as "June 2026" and used for the order; a warning when completed and empty
-  completionDate:    string    // free text: a planned or in-progress project's target, e.g. "Q3 2027"
+  commissionedOn:    date      // "Completion date": the day a project was completed, or the day a planned or in-progress one is due;
+                               // shown as "June 2026" and used for the order; a warning only for a date still to come on a completed project
   financing:         string[]  // up to 3: outright-purchase, ppa, pla, energy-efficiency-lease, other (src/lib/projectOptions.ts)
-  clientName:        string    // shown only with "Show client name" on and a readable consent date (YYYY-MM-DD)
-  showClientName:    boolean   // off by default
-  clientConsentOn:   date      // required when showClientName is on, hidden when it's off; never shown or returned (the queries only read it to check it's a readable date)
-  showRandAmounts:   boolean   // off by default; off drops every rand amount from the figures and withholds projectValue
-  projectValue:      string    // e.g. "R[x]M excl. VAT"; shown only with "Show rand amounts" on
+  clientName:        string    // shown wherever it is set; filled in only once the client has agreed in writing to be named
   featured:          boolean   // home "Projects" carousel; featured projects lead /projects
   featuredOrder:     number    // optional; lower first on home and /projects, unnumbered ones after numbered ones
   systemSize:        string    // hidden in the Studio and never shown; the data stays
-  // Results
-  results: [{                  // "Results (up to 4)": a warning above four; the first two lead the project card
+  // Impact
+  results: [{                  // "Results (up to 4)": the Impact card's figures; a warning above four; the first two lead the project card
     label: string
-    value: string
+    value: string              // shown as written, a rand amount included
     note:  string              // max 70; the period and baseline, shown under the figure
-  }]
-  resultsBasis:       'projected' | 'measured'  // empty means projected; a warning when measured and not completed
-  resultsAsOf:        date                      // a warning when results exist and it's empty
-  resultsAssumptions: text                      // the Results note: max 300 characters (warning)
-  resultsInputs: [{            // "Calculation inputs": up to 8; a warning when results exist without them
-    label: string              // required, max 40
-    value: string              // required, max 80
   }]
   // Story
   summary:           text      // the lead paragraph, and the search description's fallback
@@ -72,28 +61,15 @@
 }
 ```
 
-### Consent, warnings and help text (step 2, September 2026)
+### Warnings and help text (simplified October 2026)
 
-The fields, their groups, validation and Studio help text follow the table in `docs/superpowers/specs/2026-09-29-project-page-design.md` ("CMS fields (step 2)"), and every one is optional with a fallback on the site, so a project that doesn't set them keeps working.
+Every field is optional unless marked required, with a fallback on the site, so a project that doesn't set one keeps working. What a field holds shows on the site as written.
 
-- **Consent:** "Show client name" and "Show rand amounts" are off by default. The queries in `src/lib/queries.ts` return `clientName` only while "Show client name" is on and `clientConsentOn` is a readable date (YYYY-MM-DD, the form the Studio's date field writes), and `projectValue` only while "Show rand amounts" is on; a switch that is off leaves the field out of the data. The queries read the consent date in that condition and never return it.
-- **One consent test:** the Studio decides whether the name may show by the queries' test (`nameMayShow()` in `sanity/schemaTypes/projectRules.ts`): the switch on and a consent date in YYYY-MM-DD form. It stops a document being published with "Show client name" on and no consent date in that form, so an imported "TBC" or "12 June 2026" blocks publishing as an empty date does, and the name warnings stay on until the name may show.
-- **Warnings on text shown as written:** the title, the site type, the location, the completion date, the summary, the story, the headline and chapter headlines, the figure notes, the Results note, each approval, each equipment brand and model, alt text, captions and the search description show on the site as written. Each warns while it holds what looks like a rand amount and "Show rand amounts" is off, or the client's name before the name may show (`sanity/schemaTypes/projectRules.ts`, which uses the site's own `isRandAmount()`). The slug warns when it names the client before the name may show, its hyphens read as spaces; a slug can't hold a rand amount.
-- **Row warnings:** the site drops a results figure, System row or calculation input whose label, value or note looks like a rand amount while "Show rand amounts" is off. Such a row warns that it won't show, and asks for it to be reworded or the switch turned on once the client agrees; the Studio uses the site's own test (`isRandRow()` in `src/lib/projectDisclosure.ts`). Otherwise a row warns when it names the client before the name may show.
-- **Other warnings:** a hero photo under 2400px wide ("Photos under 2400px wide look soft on large screens."), more than four results, System rows outside 2 to 4, Measured results on a project that isn't completed, results without an as-of date or calculation inputs, a completed project without a commissioning date, and a commissioning date on a project that isn't completed: the project lists are ordered by that date, so it would move the project ahead of completed ones.
+- **Client name:** its help text reads "Shown on this page and on project cards. Fill it in only once the client has agreed in writing to be named." No switch or consent date guards it any more.
+- **Completion date:** `commissionedOn` keeps its stored name, titled "Completion date". It is the day a project was completed or, for a planned or in-progress project, the day it's due. The only check is a warning for a date still to come on a completed project.
+- **Warnings:** a hero photo under 2400px wide ("Photos under 2400px wide look soft on large screens."), more than four results, System rows outside 2 to 4, and the future completion date above. Text fields carry only their length limits: no field warns about a rand amount or the client's name.
+- **Removed fields:** `showClientName`, `clientConsentOn`, `showRandAmounts`, `projectValue`, `completionDate`, `resultsBasis`, `resultsAsOf`, `resultsAssumptions` and `resultsInputs` left the schema on 9 October 2026, with the warnings that went with them. Documents that still hold them show those values under the Studio's unknown fields notice until they are cleared; the queries never return them.
 - **Tests:** `sanity/schemaTypes/project.test.ts` checks the groups, the help text, the limits and the warnings; `projectRules.test.ts` checks the rules.
-
-### Results basis fields (added September 2026)
-
-The results strip used to be titled "Project results" although its figures were forecasts. These three optional fields let editors say what the figures rest on:
-
-| Field | Studio title | Type | Effect on the site |
-|---|---|---|---|
-| `resultsBasis` | Results basis | radio: Projected (financial model) or Measured (metered or billed data) | The strip heading reads "Measured results" only when this is Measured. Empty or Projected gives "Projected results", and project cards caption their outcomes "Projected results". |
-| `resultsAsOf` | Results as of | date | Shown beside the strip heading as "As of 30 June 2026". |
-| `resultsAssumptions` | Results note | text | Shown under the strip, replacing the default note for projections. Measured results show a note only when this is set. |
-
-No existing document sets them, so every project currently shows "Projected results" with the default note. The GROQ projections in `src/lib/queries.ts` return `resultsBasis` with the card fields and all three on the single project query; the types are in `src/types/sanity.ts` and the labelling rules in `src/lib/projectResults.ts`.
 
 ---
 
@@ -343,15 +319,13 @@ Home shows every active partner in one centred grid, with no tabs.
 ```typescript
 // src/lib/queries.ts (field projections shortened to { ... })
 
-// Project queries return clientName only with showClientName on and clientConsentOn a readable date
-// (YYYY-MM-DD, read in the condition and never returned), and projectValue only with showRandAmounts
-// on, as conditional projections, so a switch that is off leaves the field out. Every project
-// carries "showRandAmounts": showRandAmounts == true. Project
+// Project queries return clientName plainly, and none of the fields removed in October 2026
+// (the switches, the consent date, projectValue, completionDate and the results basis fields). Project
 // images carry only { asset->{ _id, url, metadata { lqip, dimensions } }, alt, hotspot, crop }, and
-// gallery photos their caption too. Read them through src/lib/projectData.ts, which drops rand
-// amounts from results, System rows and calculation inputs while "Show rand amounts" is off; an
-// ESLint rule stops any other file importing them. NEWEST_FIRST, below, is
-// coalesce(dateTime(commissionedOn + "T00:00:00Z"), dateTime(_createdAt)) desc: the commissioning
+// gallery photos their caption too. Read them through src/lib/projectData.ts, which drops results
+// figures and System rows without both a label and a value; an ESLint rule stops any other file
+// importing them. NEWEST_FIRST, below, is
+// coalesce(dateTime(commissionedOn + "T00:00:00Z"), dateTime(_createdAt)) desc: the completion
 // date, else the date added, both compared as datetimes (dateTime() of a bare date is null).
 
 // All projects (/projects), newest first; getAllProjects() then puts featured projects first

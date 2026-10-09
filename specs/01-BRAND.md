@@ -184,7 +184,7 @@ font-size: clamp(2rem, 6.4vw, 3.25rem);   /* about 32px to 52px */
 - **Section vertical padding:** `py-16 md:py-24` (64px / 96px).
 - **Card padding:** `16px` inner body (`CardBody padding="sm"`), `24px` for content-heavy cards (`padding="lg"`).
 - **Grid gap:** `16px` cards, `24px` sections.
-- **Border radius:** `16px` cards (`rounded-2xl`, the featured project card included) and `9999px` for buttons, chips, pills, badges and the navbar (`rounded-full`). The project page uses the `rounded-card` token (16px) for its results card, its facts panel and its hero photo on phones; the `rounded-featured` and `rounded-nav` tokens in `globals.css` are unused.
+- **Border radius:** `16px` cards (`rounded-2xl`, the featured project card included) and `9999px` for buttons, chips, pills, badges and the navbar (`rounded-full`). The project page uses the `rounded-card` token (16px) for its Impact card, its facts panel and its hero photo on phones; the `rounded-featured` and `rounded-nav` tokens in `globals.css` are unused.
 
 ---
 
@@ -264,7 +264,7 @@ src/components/
 ├── project/
 │   ├── ProjectBreadcrumb.tsx   // the breadcrumb row and Copy link
 │   ├── ProjectHero.tsx         // one photo and one H1 at every width
-│   ├── ProjectResults.tsx      // the results card: up to four figures
+│   ├── ProjectResults.tsx      // the Impact card: up to four figures
 │   ├── ProjectPhotos.tsx       // "The site in photos": the mosaic and the photo viewer
 │   ├── ProjectStory.tsx        // the lead paragraph and the chapters
 │   ├── ProjectFacts.tsx        // "Project facts": beside the story, compact, or full width
@@ -492,7 +492,7 @@ One rule in `src/app/globals.css` draws every focus ring: a 2px halo hugging the
 ## Shared Component Interfaces (Engineering Review April 2026)
 
 ### `StatsStrip.tsx`
-Removed in September 2026. Stats render through `CompanyStats` (home), the project page's results card and facts panel (`ProjectResults`, `ProjectFacts`), the `PageFooter` stats band and the blog `StatStrip` block.
+Removed in September 2026. Stats render through `CompanyStats` (home), the project page's Impact card and facts panel (`ProjectResults`, `ProjectFacts`), the `PageFooter` stats band and the blog `StatStrip` block.
 
 ### `CTABanner.tsx`
 Removed in September 2026. The dark CTA band is `PageFooter` (`ctaVariant?: 'stats' | 'centered' | 'deliverables'`), which defaults to the company-level "Book a discovery meeting" CTA from `src/config/ctas.ts`.

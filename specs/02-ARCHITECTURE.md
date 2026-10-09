@@ -81,7 +81,7 @@ phoenix-energy/
 │   │   ├── sanityShareImage.ts      ← a Sanity photo as a share image or an Article image, cropped and served as a JPEG
 │   │   ├── blogSeo.ts               ← a blog post's and an author page's structured data, and the blog index's canonical path
 │   │   ├── utils.ts                 ← cn(), formatDate(), formatRand(), estimateReadTime()
-│   │   └── …                        ← analytics.ts, recaptcha.ts, contactLink.ts, projectResults.ts, projectSeo.ts, validators/, calculator logic, Sanity fetch helpers
+│   │   └── …                        ← analytics.ts, recaptcha.ts, contactLink.ts, sanityDate.ts, projectSeo.ts, validators/, calculator logic, Sanity fetch helpers
 │   └── types/
 │       ├── solutions.ts             ← SolutionVertical, SOLUTION_META
 │       ├── sanity.ts                ← Project, BlogPost, TeamMember and the other document types

@@ -311,7 +311,7 @@ Phones show the same steps as desktop, on the vertical spine, with the same dots
 
 - `background: #ffffff`.
 - No top padding (flush under the partners, also white); `padding-bottom: 64px`, 96px from 768px.
-- Data: Sanity projects with `featured: true` (`getFeaturedProjects()`, `src/lib/projectData.ts`), in the featured order: projects with a `featuredOrder` first, lowest first, then those without one, each newest first by commissioning date, else the date added. The client's name reaches a card only with the client's recorded consent, and no project value or rand amount does unless "Show rand amounts" is on. The section is hidden when there are none.
+- Data: Sanity projects with `featured: true` (`getFeaturedProjects()`, `src/lib/projectData.ts`), in the featured order: projects with a `featuredOrder` first, lowest first, then those without one, each newest first by completion date, else the date added. The client's name shows on a card whenever it is set, and rand amounts in the figures show as written. The section is hidden when there are none.
 - Three or fewer projects: a static grid instead of the scroller (`SectionCarousel`'s `grid`): one column on phones, two from 640px and three from 768px, the grid `/projects` uses. The cards keep their default size, so one or two leave the rest of the row empty rather than stretching.
 
 ### Section header row
@@ -345,8 +345,8 @@ padding-bottom: 16px;
 
 **Card body** (padding `16px`, or `24px` on large cards):
 - Title: Plus Jakarta Sans 700, 18px (20px on large cards), `line-height: 1.3`.
-- Place: the location, then the client's name when it may show (only with the client's recorded consent), Inter 400, 14px, `#646B78`.
-- Results: the first two results with values, under a "Projected results" caption unless the project's results basis is set to measured. Value in Plus Jakarta Sans 800, 20px (24px on large cards), Deep Teal; label Inter 12px, `#646B78`.
+- Place: the location, then the client's name when it is set, Inter 400, 14px, `#646B78`.
+- Results: the first two Impact figures with values, with no caption. Value in Plus Jakarta Sans 800, 20px (24px on large cards), Deep Teal; label Inter 12px, `#646B78`.
 - Spec line: up to four metric values joined with " · ", Inter 12px, `#646B78`.
 - Footer, below a 1px `#E5E7EB` rule: "View project", Inter 600, 14px, Deep Teal, with a 24px arrow circle that fills Deep Teal on hover.
 

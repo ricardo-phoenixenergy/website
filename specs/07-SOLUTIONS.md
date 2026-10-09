@@ -332,7 +332,7 @@ Removed from the solution pages in May 2026; the unused `Testimonials` component
 
 - `background: #ffffff`, padding 64px (96px from 768px). On Carbon Credits it sits flush under the FAQ (`flushTop`).
 - Header row, the same on every page and on the homepage: the eyebrow "Our work", the H2 "Projects" and a "View published projects" link to `/projects` (`PROJECTS_CTA`).
-- GROQ (`PROJECTS_BY_VERTICAL_QUERY`, read through `getProjectsByVertical()` in `src/lib/projectData.ts`): the service's six newest projects, by commissioning date, else the date added (`[0..5]`).
+- GROQ (`PROJECTS_BY_VERTICAL_QUERY`, read through `getProjectsByVertical()` in `src/lib/projectData.ts`): the service's six newest projects, by completion date, else the date added (`[0..5]`).
 - No projects: the section is hidden.
 - Three or fewer: a static grid, one column on phones, two from 640px and three from 768px, the grid `/projects` uses, with default-size cards.
 - Four to six: a horizontal carousel. Cards are 82vw on phones and a third of the container from 768px, so three show and the rest scroll.
