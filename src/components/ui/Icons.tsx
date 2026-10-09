@@ -46,6 +46,26 @@ export function IconHelpCircle({ size = 20, className }: IconProps) {
   );
 }
 
+export function IconInfo({ size = 20, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" x2="12" y1="16" y2="11" />
+      <line x1="12" x2="12.01" y1="7.5" y2="7.5" />
+    </svg>
+  );
+}
+
+export function IconAlertTriangle({ size = 20, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>
+      <path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
+      <line x1="12" x2="12" y1="9" y2="13" />
+      <line x1="12" x2="12.01" y1="17" y2="17" />
+    </svg>
+  );
+}
+
 export function IconX({ size = 20, className }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" className={className} {...base}>

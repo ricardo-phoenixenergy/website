@@ -1,7 +1,9 @@
 // src/components/blog/StatStrip.tsx
-// Up to four figures in a Night Teal strip: the value at the scale's stat size
-// (24px) and its label in on-dark-muted, which keeps 12px text above 4.5:1.
-// On phones the figures stack, one per row; from 640px they share a row.
+// Up to four figures, drawn as the project page's Impact card: a white panel,
+// each value in Plus Jakarta Sans 800 Night Teal (28px) over its label (14px,
+// sentence case as the editor wrote it). Figures stack on phones and share a
+// row from 640px. As a list of terms and values, a screen reader reads each
+// label with its figure.
 interface Stat {
   value: string;
   label: string;
@@ -14,19 +16,16 @@ interface StatStripProps {
 const COLUMNS = ['', 'sm:grid-cols-1', 'sm:grid-cols-2', 'sm:grid-cols-3', 'sm:grid-cols-4'] as const;
 
 export function StatStrip({ stats }: StatStripProps) {
-  const shown = stats.slice(0, 4);
+  const shown = stats.filter((stat) => stat.value?.trim()).slice(0, 4);
   if (shown.length === 0) return null;
   return (
-    <div className={`my-6 grid grid-cols-1 overflow-hidden rounded-xl bg-pe-nav-dark ${COLUMNS[shown.length]}`}>
+    <dl className={`my-8 grid grid-cols-1 gap-x-6 gap-y-5 rounded-card border border-pe-border bg-white px-5 py-5 md:px-6 md:py-6 ${COLUMNS[shown.length]}`}>
       {shown.map((stat, i) => (
-        <div
-          key={i}
-          className="border-b border-white/10 px-4 py-4 text-center last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0"
-        >
-          <p className="font-display text-2xl font-extrabold leading-none text-white">{stat.value}</p>
-          <p className="mt-2 font-body text-xs uppercase leading-[1.4] tracking-[0.08em] text-on-dark-muted">{stat.label}</p>
+        <div key={`${stat.label}-${i}`} className="flex flex-col gap-2">
+          <dt className="order-2 font-body text-sm leading-snug text-pe-text-soft">{stat.label}</dt>
+          <dd className="order-1 font-display text-[28px] font-extrabold leading-none text-pe-nav-dark tabular-nums">{stat.value}</dd>
         </div>
       ))}
-    </div>
+    </dl>
   );
 }

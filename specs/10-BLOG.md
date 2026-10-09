@@ -223,28 +223,28 @@ All blocks are custom Portable Text components in `src/lib/portableTextComponent
 
 #### 1. Callout block (3 variants)
 
+`Callout` (`src/components/blog/Callout.tsx`): an `aside` in the site's white panel, the frame of the project facts and the Impact card: `my-8 flex gap-3.5 rounded-card border border-pe-border bg-white px-5 py-5 md:px-6`. No tinted fill, no coloured side stripe, no emoji. The variants differ only by a drawn icon (18px, the site's 2.5px stroke, `aria-hidden`) on the title's first line, and its colour:
+
 ```
-type: 'info'    → bg-pe-secondary/8, border-pe-secondary/25
-type: 'warning' → bg-accent-solar/12, border-accent-solar/35
-type: 'stat'    → bg-pe-nav-dark, border-white/10
+type: 'info'    → IconInfo,          pe-secondary-ink   (Studio: "Note")
+type: 'warning' → IconAlertTriangle, accent-solar-ink   (Studio: "Caution")
+type: 'stat'    → IconTrendingUp,    pe-primary         (Studio: "Key figure")
 ```
 
-Layout: `flex gap-3 rounded-xl border px-5 py-4 my-6`
-- Icon: the editor's emoji, 18px, decorative (`aria-hidden`)
-- Title: Plus Jakarta Sans 700, 16px; `pe-text` on the light variants, white on the stat variant
-- Text: Inter 400, 16px, `line-height: 1.65`; `pe-text-soft` on the light variants, `on-dark-muted` on the stat variant
+- Title: Plus Jakarta Sans 700, 16px, `pe-text`
+- Text: Inter 400, 16px, `line-height: 1.65`, `pe-text-soft`, 6px under the title
 
-**Sanity fields:** `type` (enum), `icon` (string, optional), `title` (string), `text` (text)
+**Sanity fields:** `type` (Note, Caution or Key figure), `title` (string), `text` (text). The old `icon` (an emoji) is hidden in the Studio and not shown on the site; the field stays so old content keeps its data.
 
 #### 2. Stat strip
 
-`grid rounded-xl bg-pe-nav-dark my-6`: one figure per row on phones (hairline rules between), all in one row from 640px (`sm:grid-cols-{n}`, rules between columns).
+`StatStrip`: up to four figures drawn as the project page's Impact card, a `dl` in the white panel (`my-8 rounded-card border border-pe-border bg-white px-5 py-5 md:px-6 md:py-6`). One figure per row on phones, all in one row from 640px (`sm:grid-cols-{n}`), `gap-x-6 gap-y-5`, left aligned.
 
-Each stat: `px-4 py-4`, centred
-- Value: Plus Jakarta Sans 800, 24px (the scale's stat value), white
-- Label: Inter 400, 12px, uppercase, `tracking-[0.08em]`, `on-dark-muted` (9.4:1)
+Each stat:
+- Value: Plus Jakarta Sans 800, 28px, Night Teal (`text-pe-nav-dark`), `leading-none`, tabular figures
+- Label: Inter 400, 14px, `pe-text-soft`, sentence case as written, 8px under the value
 
-**Sanity fields:** `stats[]`, an array of `{ value: string, label: string }` (max 4)
+**Sanity fields:** `stats[]`, an array of `{ value: string, label: string }` (max 4; a stat without a value is skipped)
 
 #### 3. Inline image with caption
 
@@ -270,6 +270,18 @@ Each stat: `px-4 py-4`, centred
 - `focus-on-dark` turns the focus ring white on the dark block.
 
 **Sanity fields:** `title`, `subtitle`, `btnText`, `btnHref` (internal route or external URL)
+
+#### 6. Comparison table
+
+`ComparisonTable` (`src/components/blog/ComparisonTable.tsx`): a real `table` in the white panel (`figure.my-8 overflow-hidden rounded-card border border-pe-border bg-white`), so search engines can lift it and screen readers announce each value with its row and column.
+- Caption (`caption`): Plus Jakarta Sans 700, 16px, `pe-text`, left aligned, above the table
+- Column headings (`th scope="col"`): Inter 700, 12px, uppercase, `tracking-[0.1em]`, `pe-muted`, as the facts panel's group titles; the label column is 30% wide and its heading is the editor's "First column heading", or a visually hidden "Item"
+- Rows: the label as a row heading (`th scope="row"`, Inter 600, 14px, `pe-text`), then one value per column (Inter 400, 14px, `pe-text-soft`), on `pe-border` rules, tabular figures. A short row gets empty cells, so every row is as wide as the header.
+- Cell padding: 8px between cells and 16px at the panel's edges on phones; 12px and 20px from 640px; 24px at the edges from 768px.
+- Up to three value columns fit a phone by wrapping. With four, the table keeps a 40rem minimum and scrolls sideways inside a focusable `role="region"` named by the caption, so the page never widens.
+- Nothing renders without columns or rows.
+
+**Sanity fields:** `caption` (string, required), `labelHeader` (string, optional), `columns[]` (strings, 1 to 4), `rows[]` of `{ label, values[] }`. The Studio warns on a row without a label, or with a different number of values from the columns (`tableRowWarning()` in `sanity/schemaTypes/blogPostRules.ts`).
 
 ---
 
@@ -503,8 +515,8 @@ export async function generateStaticParams() {
           ]},
         { name: 'callout', type: 'object',
           fields: [
-            { name: 'type',  type: 'string', options: { list: ['info','warning','stat'] }},
-            { name: 'icon',  type: 'string' },
+            { name: 'type',  type: 'string', options: { list: ['info','warning','stat'] }},  // Note, Caution, Key figure
+            { name: 'icon',  type: 'string', hidden: true },                                 // old emoji, not shown
             { name: 'title', type: 'string' },
             { name: 'text',  type: 'text' },
           ]},
@@ -514,6 +526,14 @@ export async function generateStaticParams() {
               { name: 'value', type: 'string' },
               { name: 'label', type: 'string' },
             ]}]}]},
+        { name: 'comparisonTable', type: 'object',
+          fields: [
+            { name: 'caption',     type: 'string', validation: required },
+            { name: 'labelHeader', type: 'string' },
+            { name: 'columns',     type: 'array', of: [{ type: 'string' }] },   // 1 to 4
+            { name: 'rows',        type: 'array', of: [{ type: 'object', name: 'comparisonRow',
+              fields: [{ name: 'label', type: 'string' }, { name: 'values', type: 'array', of: [{ type: 'string' }] }] }] },
+          ]},
         { name: 'inlineCta', type: 'object',
           fields: [
             { name: 'title',    type: 'string' },

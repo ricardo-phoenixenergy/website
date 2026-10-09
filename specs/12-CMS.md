@@ -174,7 +174,7 @@ Each missing or invalid price falls back to its constant in `src/lib/evfleet/est
   heroImage:      image (with alt)     // required, but only a Studio warning: without one the post shares the site's default image and has no image in its search data
   excerpt:        text                 // a Studio warning past 155 characters, not a block
   readTime:       number (minutes)
-  body:           portable text        // Normal, Heading 2 and Heading 3 text, a quote, and image, callout, stat strip and inline CTA blocks; only two heading levels, so the title stays the post's only H1
+  body:           portable text        // Normal, Heading 2 and Heading 3 text, a quote, and image, callout, stat strip, comparison table and inline CTA blocks; only two heading levels, so the title stays the post's only H1
   seoTitle:       string               // a Studio warning past 60 characters
   seoDescription: text                 // a Studio warning past 155 characters
   ogImage:        image

@@ -1,4 +1,5 @@
 import { defineType, defineField, defineArrayMember } from 'sanity';
+import { tableRowWarning, type TableRowValue } from './blogPostRules';
 
 export const blogPost = defineType({
   name: 'blogPost',
@@ -81,8 +82,20 @@ export const blogPost = defineType({
           type: 'object',
           title: 'Callout block',
           fields: [
-            defineField({ name: 'type', type: 'string', options: { list: ['info', 'warning', 'stat'] } }),
-            defineField({ name: 'icon', type: 'string', title: 'Emoji icon' }),
+            defineField({
+              name: 'type',
+              type: 'string',
+              description: 'Sets the icon: a note, a caution, or a key figure.',
+              options: {
+                list: [
+                  { title: 'Note', value: 'info' },
+                  { title: 'Caution', value: 'warning' },
+                  { title: 'Key figure', value: 'stat' },
+                ],
+              },
+            }),
+            // The site draws its own icon for each type, so an emoji is no longer shown. Hidden rather than removed, so old content keeps its data.
+            defineField({ name: 'icon', type: 'string', title: 'Emoji icon', hidden: true }),
             defineField({ name: 'title', type: 'string' }),
             defineField({ name: 'text', type: 'text' }),
           ],
@@ -96,6 +109,50 @@ export const blogPost = defineType({
             type: 'array',
             of: [defineArrayMember({ type: 'object', fields: [defineField({ name: 'value', type: 'string' }), defineField({ name: 'label', type: 'string' })] })],
           })],
+        }),
+        defineArrayMember({
+          name: 'comparisonTable',
+          type: 'object',
+          title: 'Comparison table',
+          description: 'Compare two to four options side by side, for example Tariff C against Tariff E.',
+          fields: [
+            defineField({
+              name: 'caption',
+              type: 'string',
+              title: 'Caption',
+              description: "What the table compares, and on what basis, for example 'Tariff C vs Tariff E, low voltage, from 1 July 2026, excluding VAT'.",
+              validation: (r) => r.required(),
+            }),
+            defineField({ name: 'labelHeader', type: 'string', title: 'First column heading', description: "Optional, for example 'Charge'." }),
+            defineField({
+              name: 'columns',
+              type: 'array',
+              title: 'Columns',
+              description: 'The options compared, one per column, for example Tariff C and Tariff E.',
+              of: [defineArrayMember({ type: 'string' })],
+              validation: (r) => r.required().min(1).max(4),
+            }),
+            defineField({
+              name: 'rows',
+              type: 'array',
+              title: 'Rows',
+              of: [
+                defineArrayMember({
+                  type: 'object',
+                  name: 'comparisonRow',
+                  fields: [
+                    defineField({ name: 'label', type: 'string', title: 'Label', description: 'Heads the row, for example Demand charge.' }),
+                    defineField({ name: 'values', type: 'array', title: 'Values', description: 'One per column, in the same order.', of: [defineArrayMember({ type: 'string' })] }),
+                  ],
+                  preview: { select: { title: 'label' } },
+                  validation: (r) =>
+                    r.custom((row, context) => tableRowWarning(row as TableRowValue | undefined, (context.parent as { columns?: string[] } | undefined)?.columns)).warning(),
+                }),
+              ],
+              validation: (r) => r.required().min(1),
+            }),
+          ],
+          preview: { select: { title: 'caption' }, prepare: ({ title }) => ({ title: title || 'Comparison table', subtitle: 'Comparison table' }) },
         }),
         defineArrayMember({
           name: 'inlineCta',

@@ -15,6 +15,7 @@ import { PostNext } from './PostNext';
 import { StatStrip } from './StatStrip';
 import { InlineCta } from './InlineCta';
 import { Callout } from './Callout';
+import { ComparisonTable } from './ComparisonTable';
 
 const html = (el: Parameters<typeof renderToStaticMarkup>[0]) => renderToStaticMarkup(el);
 
@@ -177,12 +178,13 @@ describe('PostNext', () => {
 });
 
 describe('rich blocks', () => {
-  it('draws the stat strip on Night Teal with 24px values and on-dark-muted labels', () => {
+  it("draws the stat strip as the project Impact card's figures: a white panel, Night Teal values, sentence-case labels", () => {
     const markup = html(createElement(StatStrip, { stats: [{ value: 'R321/kVA', label: 'Demand charge' }, { value: '+33%', label: 'Increase' }] }));
-    expect(markup).toContain('bg-pe-nav-dark');
-    expect(markup).toMatch(/class="[^"]*\btext-2xl\b[^"]*">R321\/kVA</);
-    expect(markup).toMatch(/class="[^"]*\btext-on-dark-muted\b[^"]*">Demand charge</);
-    expect(markup).not.toMatch(/on-dark-subtle|rgba\(|#[0-9a-fA-F]{3,6}\b/);
+    expect(markup).toMatch(/^<dl class="[^"]*\brounded-card\b[^"]*\bborder-pe-border\b[^"]*\bbg-white\b/);
+    expect(markup).not.toContain('bg-pe-nav-dark');
+    expect(markup).toMatch(/<dd class="[^"]*\bfont-extrabold\b[^"]*\btext-pe-nav-dark\b[^"]*\btabular-nums\b[^"]*">R321\/kVA<\/dd>/);
+    expect(markup).toMatch(/<dt class="[^"]*\btext-sm\b[^"]*\btext-pe-text-soft\b[^"]*">Demand charge<\/dt>/);
+    expect(markup).not.toMatch(/uppercase|rgba\(|#[0-9a-fA-F]{3,6}\b/);
   });
 
   it('draws the inline CTA with an 18px title and a 14px on-dark-muted subtitle', () => {
@@ -192,12 +194,60 @@ describe('rich blocks', () => {
     expect(markup).not.toMatch(/on-dark-subtle|rgba\(|#[0-9a-fA-F]{3,6}\b/);
   });
 
-  it('sets the callout at 16px, in token colours', () => {
+  it('sets every callout in the white panel frame at 16px, with a drawn icon and no emoji, tint or side stripe', () => {
     for (const type of ['info', 'warning', 'stat'] as const) {
-      const markup = html(createElement(Callout, { type, title: 'Illustrative figures', text: 'Costs exclude VAT.' }));
+      const markup = html(createElement(Callout, { type, icon: '⚖️', title: 'Illustrative figures', text: 'Costs exclude VAT.' }));
+      expect(markup).toMatch(/^<aside class="[^"]*\brounded-card\b[^"]*\bborder-pe-border\b[^"]*\bbg-white\b/);
       expect(markup).toMatch(/class="[^"]*\btext-base\b[^"]*\bfont-bold\b[^"]*">Illustrative figures</);
       expect(markup).toMatch(/class="[^"]*\btext-base\b[^"]*">Costs exclude VAT\.</);
-      expect(markup).not.toMatch(/style=|rgba\(|#[0-9a-fA-F]{3,6}\b/);
+      expect(markup).toMatch(/aria-hidden="true"[^>]*><svg\b/);
+      expect(markup).not.toContain('⚖️');
+      expect(markup).not.toMatch(/border-l-|bg-pe-nav-dark|\/\d+\b|style=|rgba\(|#[0-9a-fA-F]{3,6}\b/);
     }
+  });
+
+  it('tells the callouts apart by their icon colour alone', () => {
+    const iconClass = (type: 'info' | 'warning' | 'stat') =>
+      html(createElement(Callout, { type, title: 'T', text: 'x' })).match(/<svg[^>]*class="([^"]*)"/)?.[1] ?? '';
+    expect(iconClass('info')).toContain('text-pe-secondary-ink');
+    expect(iconClass('warning')).toContain('text-accent-solar-ink');
+    expect(iconClass('stat')).toContain('text-pe-primary');
+  });
+});
+
+describe('ComparisonTable', () => {
+  const table = {
+    caption: 'Tariff C vs Tariff E, low voltage, from 1 July 2026, excluding VAT',
+    columns: ['Tariff C', 'Tariff E'],
+    rows: [
+      { _key: 'r1', label: 'Demand charge', values: ['R268 to R321 per kVA', 'R172 per kVA'] },
+      { _key: 'r2', label: 'Demand counted', values: ['All hours'] },
+    ],
+  };
+  const markup = html(createElement(ComparisonTable, table));
+
+  it('is a real table in the white panel frame, captioned, with column and row headers', () => {
+    expect(markup).toMatch(/^<figure class="[^"]*\brounded-card\b[^"]*\bborder-pe-border\b[^"]*\bbg-white\b/);
+    expect(markup).toMatch(/<caption[^>]*>Tariff C vs Tariff E, low voltage, from 1 July 2026, excluding VAT<\/caption>/);
+    expect(markup.match(/<th scope="col"/g)).toHaveLength(3);
+    expect(markup).toMatch(/<th scope="row"[^>]*>Demand charge<\/th>/);
+    expect(markup).toMatch(/<td[^>]*>R172 per kVA<\/td>/);
+    expect(markup).toContain('tabular-nums');
+  });
+
+  it('keeps every row as wide as the header, filling a short row with empty cells', () => {
+    const rows = [...markup.matchAll(/<tr\b[\s\S]*?<\/tr>/g)].map(([row]) => (row.match(/<t[hd]\b/g) ?? []).length);
+    expect(rows).toEqual([3, 3, 3]);
+  });
+
+  it('renders nothing without columns or rows', () => {
+    expect(html(createElement(ComparisonTable, { ...table, rows: [] }))).toBe('');
+    expect(html(createElement(ComparisonTable, { ...table, columns: [] }))).toBe('');
+  });
+
+  it('lets a wide table scroll inside a focusable, named region instead of widening the page', () => {
+    const wide = html(createElement(ComparisonTable, { ...table, columns: ['A', 'B', 'C', 'D'], rows: [{ _key: 'r', label: 'Row', values: ['1', '2', '3', '4'] }] }));
+    expect(wide).toMatch(/<div[^>]*role="region"[^>]*tabindex="0"[^>]*class="[^"]*\boverflow-x-auto\b/);
+    expect(markup).not.toContain('tabindex');
   });
 });
