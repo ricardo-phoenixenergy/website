@@ -7,6 +7,7 @@ import { SectionCarousel } from './SectionCarousel';
 
 const row = (grid: boolean) =>
   renderToStaticMarkup(
+    // eslint-disable-next-line react/no-children-prop
     createElement(SectionCarousel, {
       label: 'Our work',
       title: 'Projects',
