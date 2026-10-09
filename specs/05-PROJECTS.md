@@ -16,7 +16,7 @@ The page reads every published project from Sanity (`ALL_PROJECTS_QUERY`) and pi
 
 No projects:          [Empty state]
 1 to 3 projects,
-or one service only:  [Equal large cards, 2 columns]
+or one service only:  [Equal cards, 3 columns from 768px]
                       [Our other services]
 4 or more projects
 across 2+ services:   [Filter pills, with counts]
@@ -101,7 +101,7 @@ In the filter layout only: *"Showing X of Y projects"* in a `role="status"` line
   ↳ "View project" + arrow
 ```
 
-- Few projects (the 1 to 3 layout): `size="large"`, with roomier padding and larger type.
+- `size="large"` (roomier padding and larger type) is used only where two cards share a row: the next project section with two similar projects. The few-projects layout uses the default size, three a row.
 - The same card is used on home and the solution pages (`FeaturedProjects`) and in a project page's next project section when there are two or more.
 
 ---
@@ -176,8 +176,10 @@ interface ProjectsGridProps {
 - `≥ 768px`: 3 columns
 
 ### Equal cards (1 to 3 projects)
-- `< 768px`: 1 column
-- `≥ 768px`: 2 columns
+The same breakpoints as the filter layout (changed 2026-10-09 from two large cards a row):
+- `< 640px`: 1 column
+- `640px` to `767px`: 2 columns
+- `≥ 768px`: 3 columns
 
 ### Featured project card
 - Below `640px` the photo stacks above the outcomes panel (minimum photo height 260px).

@@ -312,7 +312,7 @@ Phones show the same steps as desktop, on the vertical spine, with the same dots
 - `background: #ffffff`.
 - No top padding (flush under the partners, also white); `padding-bottom: 64px`, 96px from 768px.
 - Data: Sanity projects with `featured: true` (`getFeaturedProjects()`, `src/lib/projectData.ts`), in the featured order: projects with a `featuredOrder` first, lowest first, then those without one, each newest first by commissioning date, else the date added. The client's name reaches a card only with the client's recorded consent, and no project value or rand amount does unless "Show rand amounts" is on. The section is hidden when there are none.
-- Three or fewer projects: a static grid instead of the scroller. It has one column on phones and, from 768px, three columns for three projects or two for one or two (with larger cards).
+- Three or fewer projects: a static grid instead of the scroller (`SectionCarousel`'s `grid`): one column on phones, two from 640px and three from 768px, the grid `/projects` uses. The cards keep their default size, so one or two leave the rest of the row empty rather than stretching.
 
 ### Section header row
 - Left: eyebrow `Our work` (Inter 700, 12px, uppercase, `#646B78`) + H2 `Projects` (Plus Jakarta Sans 800, 30px).
@@ -377,7 +377,7 @@ padding-bottom: 16px;
 - `background: #F5F5F5`.
 - No top padding (flush under How It Works, also `#F5F5F5`); `padding-bottom: 64px`, 96px from 768px.
 - Header row: eyebrow `Latest insights` + H2 `News, views & analysis`, with "analysis" in Dusty Blue ink `#45727E`. On the right, `View all articles` with an arrow, linking to `/blog` (`ArrowLink`: Inter 600, 14px, Deep Teal).
-- Updated 2026-10-08, as the projects row (`FeaturedProjects`): three posts or fewer sit in a static grid (`carouselLayout(count)` in `src/lib/blogUtils.ts`): one or two as large cards, two columns from 768px; three in three columns from 768px. From four, a horizontal scroller (gap 14px, no scrollbar), cards `82vw` on phones and a third of the container from 768px. `LATEST_POSTS_QUERY` returns three at most, so today it is always the grid. Each card sits in its own `AnimatedSection` (`delay: i * 0.05`).
+- Updated 2026-10-08, as the projects row (`FeaturedProjects`): three posts or fewer sit in a static grid: one column on phones, two from 640px and three from 768px, the grid `/projects` uses, with default-size cards (changed 2026-10-09 from two large cards a row). From four, a horizontal scroller (gap 14px, no scrollbar), cards `82vw` on phones and a third of the container from 768px. `LATEST_POSTS_QUERY` returns three at most, so today it is always the grid. Each card sits in its own `AnimatedSection` (`delay: i * 0.05`).
 - The section is hidden when there are no posts.
 - Card: `ArticleCard`, with the project card's anatomy (see `specs/10-BLOG.md`, Article Grid and the Article Card): a 16:10 photo with one badge, the service the tags name; the title as an `h3`; the meta line `Industry Insights · 8 Oct 2026 · 6 min read`; the excerpt; a footer reading "Read article" with the card arrow.
 

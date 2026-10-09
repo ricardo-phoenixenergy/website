@@ -13,7 +13,7 @@
 1. Navbar: solid white pill; "News & Insights" highlighted once the link shows (from the first live post)
 2. Breadcrumb: Home / News & Insights
 3. Page header (IndexHeader): eyebrow + H1 + intro, one column
-   Below 4 live posts: every post as a large card, 2 columns from 768px, and nothing else
+   Below 4 live posts: every post as a card, 3 columns from 768px, and nothing else
    From 4 live posts:
 4. Search bar: above the pills; ?q= filters on the server
 5. Filter pills: from the data, with counts; one scrolling row, one active pill at a time
@@ -51,7 +51,7 @@
 |---|---|---|
 | Search and pills | None | The search, then the pills from the data |
 | Featured card | None | Only a post marked featured, on page 1, with no category, tag or search |
-| Grid | Every live post, newest first (`LIVE_POSTS_QUERY`, no cap, so a higher threshold can't hide a post), as large cards: `grid-cols-1 md:grid-cols-2`, `gap-6` | 6 a page, `grid-cols-1 sm:grid-cols-2 md:grid-cols-3`, `gap-4`, without the featured post |
+| Grid | Every live post, newest first (`LIVE_POSTS_QUERY`, no cap, so a higher threshold can't hide a post), as cards: `grid-cols-1 sm:grid-cols-2 md:grid-cols-3`, `gap-4` (the grid of 4 or more) | 6 a page, `grid-cols-1 sm:grid-cols-2 md:grid-cols-3`, `gap-4`, without the featured post |
 | URL parameters | Ignored: `page`, `category`, `tag` and `q`. A shared `?tag=` link still shows every post | Read |
 | Pagination | None (one page) | `BlogPagination` |
 
@@ -125,7 +125,7 @@ All articles (7)  |  Industry Insights (4)  |  Company News (3)  |  Energy Optim
 - **One badge**, bottom left on the photo: the service the post's tags name (`postVertical(tags)`, the first tag that names one), in its accent with its "on" ink, Inter 700, 12px, uppercase, `tracking-[0.1em]`. No service tag, no badge. The category is not a badge.
 - **Body** (`padding: 16px`, large `24px`): the title as a heading (`h3` by default, `h2` straight under the page's H1 on `/blog`), Plus Jakarta Sans 700, 18px (large 20px), `leading-[1.3]`, 3 lines at most; the meta line, 14px muted, `margin-top: 4px`: `Industry Insights · 8 Oct 2026 · 6 min read` (`postMetaLine`; a missing read time is left out); the excerpt, 14px muted, `leading-[1.65]`, `margin-top: 12px`, 3 lines at most.
 - **Footer**: `Read article` in 14px semibold Deep Teal, and the card arrow, over a `pe-border` rule.
-- `size="large"` where only a few cards sit in two columns (the few-posts `/blog`, a carousel of one or two, an author with fewer than three posts).
+- `size="large"` only where two cards share a row: "More articles" with two related posts. Everywhere else (the few-posts `/blog`, the carousels, the author page) cards keep the default size, three a row from 768px.
 
 The category colours (`CATEGORY_STYLES`) are gone: the category is text in the meta line.
 
@@ -152,7 +152,7 @@ Load more is not built. As approved in the Engineering Review Fixes below, the i
 Rebuilt 2026-10-08 on the project page's grammar:
 - `PageBreadcrumb` first: `Home / News & Insights / {name}`, no action (Home drops below 640px, as on every trail of three).
 - A light header in `page-container`, `margin-top: 24px`: the 88px photo (`alt=""`) or the initials on Deep Teal, beside the text from 640px and above it on phones; the name as the H1 (Plus Jakarta Sans 800, 36px, `pe-text`); the role (14px, 500, `pe-secondary-ink`); the bio (16px, muted, `leading-[1.7]`, `max-width: 60ch`) and LinkedIn (a compact ghost `Button` with the LinkedIn icon, new tab), each only when set.
-- The articles in a `section`, `margin-top: 40px` (48px from 768px, 64px from 1024px), `padding-bottom: 64px`: an `h2` in the eyebrow style, "Articles by {name}", then a `ul` of `ArticleCard`s (`h3`), each in `AnimatedSection as="li"`: fewer than three posts, large cards two a row from 768px; otherwise `sm:grid-cols-2 md:grid-cols-3`; `gap-4`. With none, "No articles yet."
+- The articles in a `section`, `margin-top: 40px` (48px from 768px, 64px from 1024px), `padding-bottom: 64px`: an `h2` in the eyebrow style, "Articles by {name}", then a `ul` of `ArticleCard`s (`h3`), each in `AnimatedSection as="li"`: `grid-cols-1 sm:grid-cols-2 md:grid-cols-3`, `gap-4`, whatever the number of posts. With none, "No articles yet."
 - Then `PageFooter ctaVariant="centered"`. No inline colours.
 
 ---
@@ -658,7 +658,7 @@ Every query below filters on `LIVE_POST` (`_type == "blogPost" && defined(slug.c
 | Page header | One column; search bar one third wide from 1024px | One column; search bar full width |
 | Filter pills (4 or more posts) | One row that scrolls sideways | Same |
 | Featured card (4 or more posts) | Photo three fifths beside the panel from 640px | Photo above the panel |
-| Article grid, below 4 posts | 2 large cards a row from 768px | 1 column |
+| Article grid, below 4 posts | 3 columns from 768px | 2 columns from 640px, 1 below |
 | Article grid, 4 or more | 3 columns from 768px | 2 columns from 640px, 1 below |
 | Author page header | Photo beside the text from 640px | Photo above the text |
 | Breadcrumb row | Share group right of the trail from 640px | Share group on its own line under the trail |

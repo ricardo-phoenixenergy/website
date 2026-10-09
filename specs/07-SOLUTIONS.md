@@ -322,7 +322,7 @@ Tags: Free assessment | 5 business days | 6–10 weeks | Savings from day one
 Removed from the solution pages in May 2026; the unused `Testimonials` component was deleted in September 2026. No solution page has testimonials.
 
 - **FAQ:** Carbon Credits and EV Fleets (and WeBuySolar) have an FAQ accordion instead: `FaqAccordion` at `#faq`, which also emits FAQPage JSON-LD.
-- **Related articles:** every page has `RelatedArticles` (`src/components/sections/RelatedArticles.tsx`) on `#F5F5F5`, with the eyebrow "From the blog", the H2 "Further reading on {label}" and a "View all articles" link to `/blog`. It shows up to three posts tagged for the vertical, newest first (`POSTS_BY_VERTICAL_QUERY`), and is hidden when there are none. Updated 2026-10-08, as the projects row: three or fewer posts sit in a static grid (`carouselLayout`), one or two as large `ArticleCard`s in two columns from 768px, three in three; from four, the scroller. The cards are described in `specs/10-BLOG.md` (Article Grid and the Article Card).
+- **Related articles:** every page has `RelatedArticles` (`src/components/sections/RelatedArticles.tsx`) on `#F5F5F5`, with the eyebrow "From the blog", the H2 "Further reading on {label}" and a "View all articles" link to `/blog`. It shows up to three posts tagged for the vertical, newest first (`POSTS_BY_VERTICAL_QUERY`), and is hidden when there are none. Updated 2026-10-08, as the projects row: three or fewer posts sit in a static grid, one column on phones, two from 640px and three from 768px, the grid `/projects` uses, with default-size `ArticleCard`s; from four, the scroller. The cards are described in `specs/10-BLOG.md` (Article Grid and the Article Card).
 
 ---
 
@@ -334,7 +334,7 @@ Removed from the solution pages in May 2026; the unused `Testimonials` component
 - Header row, the same on every page and on the homepage: the eyebrow "Our work", the H2 "Projects" and a "View published projects" link to `/projects` (`PROJECTS_CTA`).
 - GROQ (`PROJECTS_BY_VERTICAL_QUERY`, read through `getProjectsByVertical()` in `src/lib/projectData.ts`): the service's six newest projects, by commissioning date, else the date added (`[0..5]`).
 - No projects: the section is hidden.
-- Three or fewer: a static grid, one column on phones. From 768px, three projects sit in three columns and one or two in two columns, with large cards when there are fewer than three.
+- Three or fewer: a static grid, one column on phones, two from 640px and three from 768px, the grid `/projects` uses, with default-size cards.
 - Four to six: a horizontal carousel. Cards are 82vw on phones and a third of the container from 768px, so three show and the rest scroll.
 - Cards: the same `ProjectCard` as the homepage.
 
