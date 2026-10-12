@@ -18,7 +18,14 @@ export function PartnerBand({ content, logo }: PartnerBandProps) {
         <AnimatedSection>
           {logo && (
             <div className="inline-flex rounded-2xl bg-white p-3 mb-6">
-              <Image src={logo.url} alt={logo.alt} width={logo.width} height={logo.height} className="h-12 w-12 object-contain" />
+              <Image
+                src={logo.url}
+                alt={logo.alt}
+                width={logo.width}
+                height={logo.height}
+                className="h-12 w-12 object-contain"
+                {...(logo.blur ? { placeholder: 'blur' as const, blurDataURL: logo.blur } : {})}
+              />
             </div>
           )}
           <p className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-3" style={{ color: 'var(--color-on-dark-subtle)' }}>
@@ -28,16 +35,16 @@ export function PartnerBand({ content, logo }: PartnerBandProps) {
           <p className="font-body text-sm md:text-base leading-[1.75] mb-6" style={{ color: 'rgba(255,255,255,0.78)' }}>{content.lead}</p>
           <dl className="grid grid-cols-2 gap-4 mb-2">
             {content.stats.map((s) => (
-              <div key={s.label}>
-                <dt className="sr-only">{s.label}</dt>
+              <div key={s.label} className="flex flex-col-reverse">
+                <dt className="font-body text-sm" style={{ color: 'rgba(255,255,255,0.78)' }}>{s.label}</dt>
                 <dd className="font-display font-extrabold text-3xl md:text-4xl">{s.value}</dd>
-                <dd className="font-body text-sm" style={{ color: 'rgba(255,255,255,0.78)' }}>{s.label}</dd>
               </div>
             ))}
           </dl>
           <p className="font-body text-xs mb-6" style={{ color: 'rgba(255,255,255,0.6)' }}>{content.statsSource}</p>
-          <a href={content.link.href} target="_blank" rel="noopener noreferrer" className="font-body text-sm font-semibold underline underline-offset-4 hover:no-underline">
+          <a href={content.link.href} target="_blank" rel="noopener noreferrer" className="inline-block py-1 font-body text-sm font-semibold underline underline-offset-4 hover:no-underline">
             {content.link.label}
+            <span className="sr-only"> (opens in a new tab)</span>
           </a>
         </AnimatedSection>
 

@@ -24,9 +24,12 @@ export interface SupplierAccordionProps {
   accent: string;
 }
 
-/** "2026-10-12" as "12 October 2026". */
-function checkedOn(asOf: string): string {
-  return new Date(`${asOf}T00:00:00Z`).toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+/** "2026-10-12" as "12 October 2026", with no locale data, so the server and the browser always print the same text. */
+export function checkedOn(asOf: string): string {
+  const [year, month, day] = asOf.split('-');
+  return `${Number(day)} ${MONTHS[Number(month) - 1]} ${year}`;
 }
 
 /** The row a URL hash names, or null when it names none or is malformed. */

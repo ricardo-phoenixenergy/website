@@ -69,7 +69,10 @@ export function websiteJsonLd({ searchable }: { searchable: boolean }) {
   };
 }
 
-/** A service, on its solution page, or on a location page with the places it serves, its type, audience and ways to pay. */
+/**
+ * A service, on its solution page, or on a location page with the places it serves, its type, audience and ways to pay.
+ * `offers` and `businessAudience` apply only when `serviceType` is given.
+ */
 export function serviceJsonLd(service: {
   name: string;
   description: string;
@@ -108,6 +111,8 @@ export function webPageJsonLd(page: {
   description: string;
   dateModified: string;
   aboutId?: string;
+  /** The `@id` of the page's BreadcrumbList block. */
+  breadcrumbId?: string;
   mentions?: readonly { name: string; url: string }[];
 }) {
   const url = absoluteUrl(page.path);
@@ -122,6 +127,7 @@ export function webPageJsonLd(page: {
     inLanguage: 'en-ZA',
     isPartOf: { '@id': WEBSITE_ID },
     ...(page.aboutId ? { about: { '@id': page.aboutId } } : {}),
+    ...(page.breadcrumbId ? { breadcrumb: { '@id': page.breadcrumbId } } : {}),
     ...(page.mentions?.length
       ? { mentions: page.mentions.map((m) => ({ '@type': 'Organization', name: m.name, sameAs: m.url })) }
       : {}),
@@ -138,9 +144,10 @@ export interface Crumb {
 export const HOME_CRUMB: Crumb = { name: 'Home', path: '/' };
 
 /** The trail a page's visible breadcrumb shows, as a BreadcrumbList: home first, the page itself last. */
-export function breadcrumbJsonLd(crumbs: readonly Crumb[]) {
+export function breadcrumbJsonLd(crumbs: readonly Crumb[], options: { id?: string } = {}) {
   return {
     '@context': 'https://schema.org',
+    ...(options.id ? { '@id': options.id } : {}),
     '@type': 'BreadcrumbList',
     itemListElement: crumbs.map((crumb, i) => ({ '@type': 'ListItem', position: i + 1, name: crumb.name, item: absoluteUrl(crumb.path) })),
   };

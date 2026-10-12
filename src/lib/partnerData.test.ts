@@ -15,6 +15,11 @@ describe('getPartnerLogo', () => {
     expect(fetchMock).toHaveBeenCalledWith(PARTNER_BY_NAME_QUERY, { name: 'WEG' });
   });
 
+  it('carries the logo’s blur preview when the CMS has one', async () => {
+    fetchMock.mockResolvedValueOnce({ name: 'WEG', logo: { asset: { url: 'https://cdn.sanity.io/x.png', metadata: { lqip: 'data:image/jpeg;base64,AAAA', dimensions: { width: 64, height: 32 } } } } });
+    expect(await getPartnerLogo('WEG')).toEqual({ url: 'https://cdn.sanity.io/x.png', alt: 'WEG logo', width: 64, height: 32, blur: 'data:image/jpeg;base64,AAAA' });
+  });
+
   it('returns null when the partner or its logo is missing, or the CMS fails', async () => {
     fetchMock.mockResolvedValueOnce(null);
     expect(await getPartnerLogo('WEG')).toBeNull();

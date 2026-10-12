@@ -127,7 +127,20 @@ describe('webPageJsonLd', () => {
   });
 });
 
+describe('webPageJsonLd breadcrumb', () => {
+  it('points at the breadcrumb block when given its id, and says nothing otherwise', () => {
+    const base = { path: '/p', name: 'n', description: 'd', dateModified: '2026-10-12' };
+    expect(webPageJsonLd({ ...base, breadcrumbId: `${SITE_URL}/p#breadcrumb` }).breadcrumb).toEqual({ '@id': `${SITE_URL}/p#breadcrumb` });
+    expect(Object.keys(webPageJsonLd(base))).not.toContain('breadcrumb');
+  });
+});
+
 describe('breadcrumbJsonLd', () => {
+  it('carries an @id only when given one', () => {
+    expect(breadcrumbJsonLd([HOME_CRUMB], { id: `${SITE_URL}/p#breadcrumb` })['@id']).toBe(`${SITE_URL}/p#breadcrumb`);
+    expect(Object.keys(breadcrumbJsonLd([HOME_CRUMB]))).not.toContain('@id');
+  });
+
   it('numbers the trail from 1, home first, with absolute URLs', () => {
     expect(
       breadcrumbJsonLd([HOME_CRUMB, { name: 'Solutions', path: '/solutions' }, { name: 'Wheeling', path: '/solutions/wheeling' }]).itemListElement,

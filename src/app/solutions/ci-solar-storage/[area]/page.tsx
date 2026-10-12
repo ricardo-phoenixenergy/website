@@ -67,11 +67,14 @@ export default async function LocationPage({ params }: PageProps) {
   const borrowed = own.length === 0 && area !== 'gauteng' ? await getProjectsByArea(vertical, 'gauteng').catch(() => []) : [];
   const projects = own.length > 0 ? own : borrowed;
   const lead = own[0];
-  const heroImage = lead?.heroImage?.asset?.url ?? hero?.url;
-  const heroBlur = lead?.heroImage?.asset?.metadata?.lqip ?? hero?.lqip;
+  // The photo and its blur come from one source: the lead project's, else the C&I hero's.
+  const leadUrl = lead?.heroImage?.asset?.url;
+  const heroImage = leadUrl ?? hero?.url;
+  const heroBlur = leadUrl ? lead?.heroImage?.asset?.metadata?.lqip : hero?.lqip;
   // The photo's own alt text, else the project and where it is, e.g. "St Andrews Office Park - Block A, Germiston".
   const heroAlt = lead?.heroImage?.asset?.url ? (lead.heroImage.alt || [lead.title, lead.location].filter(Boolean).join(', ')) : meta.label;
   const wegLogo = await getPartnerLogo(WEG_BAND.partnerName);
+  const breadcrumbId = `${absoluteUrl(path)}#breadcrumb`;
   const cta = { label: SERVICE_CTA[vertical].label, href: contactHref(content.closing.ctaMessage) };
 
   return (
@@ -93,7 +96,7 @@ export default async function LocationPage({ params }: PageProps) {
           { name: 'Solutions', path: '/solutions' },
           { name: meta.label, path: meta.slug },
           { name: LOCATION_AREA_LABEL[area], path },
-        ])}
+        ], { id: breadcrumbId })}
       />
       <JsonLd
         data={webPageJsonLd({
@@ -102,6 +105,7 @@ export default async function LocationPage({ params }: PageProps) {
           description: content.seoDescription,
           dateModified: LOCATION_FACTS_CHECKED,
           aboutId: absoluteUrl(path) + '#service',
+          breadcrumbId,
           mentions: [{ name: 'WEG', url: 'https://www.weg.net' }],
         })}
       />
@@ -122,7 +126,7 @@ export default async function LocationPage({ params }: PageProps) {
         <StrategyFinder vertical={vertical} />
       </SolutionHero>
       <AreaProjects
-        eyebrow={content.projects.eyebrow}
+        eyebrow={own.length > 0 ? content.projects.eyebrow : content.projects.fallbackEyebrow}
         heading={own.length > 0 ? content.projects.heading : content.projects.fallbackHeading}
         projects={projects}
         accent={meta.accent}

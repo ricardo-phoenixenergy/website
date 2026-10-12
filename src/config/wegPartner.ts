@@ -1,7 +1,7 @@
 // src/config/wegPartner.ts
 // The WEG band on the location pages (spec 2026-10-12-location-pages-v2, section 5).
 // WEG's figures are WEG's own, credited on the page and held in the claims register.
-import { claimStat } from '@/config/claims';
+import { claimStat, claimValue } from '@/config/claims';
 
 export interface PartnerBandContent {
   partnerName: string;
@@ -15,11 +15,14 @@ export interface PartnerBandContent {
   link: { label: string; href: string };
 }
 
+/** "One solution warranty" from the claims register, as it reads mid-sentence. */
+const warranty = claimValue('weg-solution-warranty').replace(/^./, (c) => c.toLowerCase());
+
 export const WEG_BAND: PartnerBandContent = {
   partnerName: 'WEG',
   eyebrow: 'Our technology partner',
   heading: 'Backed by WEG, from panel to motor',
-  lead: 'Since June 2025 we have partnered with WEG, a global manufacturer founded in 1961. We install WEG equipment across solar, storage and energy efficiency, and back every system with one solution warranty.',
+  lead: `Since June 2025 we have partnered with WEG, a global manufacturer founded in 1961. We install WEG equipment across solar, storage and energy efficiency, and back every system with ${warranty}.`,
   stats: [claimStat('weg-solar-capacity'), claimStat('weg-countries')],
   statsSource: 'Source: WEG',
   points: [

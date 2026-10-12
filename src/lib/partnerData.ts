@@ -6,7 +6,7 @@ import { PARTNER_BY_NAME_QUERY } from '@/lib/queries';
 
 interface PartnerRow {
   name: string;
-  logo: { asset: { url: string; metadata?: { dimensions?: { width: number; height: number } } } } | null;
+  logo: { asset: { url: string; metadata?: { lqip?: string; dimensions?: { width: number; height: number } } } } | null;
 }
 
 export interface PartnerLogo {
@@ -14,6 +14,8 @@ export interface PartnerLogo {
   alt: string;
   width: number;
   height: number;
+  /** Tiny blurred preview, when the CMS has one. */
+  blur?: string;
 }
 
 export async function getPartnerLogo(name: string): Promise<PartnerLogo | null> {
@@ -22,7 +24,8 @@ export async function getPartnerLogo(name: string): Promise<PartnerLogo | null> 
     const asset = row?.logo?.asset;
     if (!asset?.url) return null;
     const dims = asset.metadata?.dimensions;
-    return { url: asset.url, alt: `${name} logo`, width: dims?.width ?? 512, height: dims?.height ?? 512 };
+    const blur = asset.metadata?.lqip;
+    return { url: asset.url, alt: `${name} logo`, width: dims?.width ?? 512, height: dims?.height ?? 512, ...(blur ? { blur } : {}) };
   } catch {
     return null;
   }

@@ -2,7 +2,7 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { SupplierAccordion, rowIdFromHash } from './SupplierAccordion';
+import { SupplierAccordion, rowIdFromHash, checkedOn } from './SupplierAccordion';
 import { ServiceAreaList } from './ServiceAreaList';
 import { LocationLinks } from './LocationLinks';
 import { ExplainerCards } from './ExplainerCards';
@@ -215,6 +215,28 @@ describe('PartnerBand', () => {
     expect(m).toMatch(/href="https:\/\/www\.weg\.net"[^>]*rel="noopener noreferrer"/);
   });
 
+  it('shows each stat once, value first, with its label as the term', () => {
+    const m = html(createElement(PartnerBand, { content: WEG_BAND, logo }));
+    expect(m.match(/<dt/g)).toHaveLength(WEG_BAND.stats.length);
+    expect(m.match(/<dd/g)).toHaveLength(WEG_BAND.stats.length);
+    expect(m).not.toContain('sr-only">' + WEG_BAND.stats[0].label);
+    expect(m).toContain('flex-col-reverse');
+  });
+
+  it('warns that the WEG link opens a new tab', () => {
+    expect(text(html(createElement(PartnerBand, { content: WEG_BAND, logo })))).toContain('(opens in a new tab)');
+  });
+
+  it('blurs the logo while it loads, when it has a preview, and not otherwise', () => {
+    const blurred = html(createElement(PartnerBand, { content: WEG_BAND, logo: { ...logo, blur: 'data:image/jpeg;base64,AAAA' } }));
+    expect(blurred).toContain('data:image/jpeg;base64,AAAA');
+    expect(html(createElement(PartnerBand, { content: WEG_BAND, logo }))).not.toContain('background-image');
+  });
+
+  it('says "one solution warranty" in the lead', () => {
+    expect(WEG_BAND.lead).toContain('with one solution warranty.');
+  });
+
   it('still says everything without the logo', () => {
     const m = html(createElement(PartnerBand, { content: WEG_BAND, logo: null }));
     expect(m).not.toContain('<img');
@@ -235,5 +257,13 @@ describe('ProjectAreaLink', () => {
     ['an unknown area', { serviceArea: 'cape-town', vertical: 'ci-solar-storage' }],
   ])('renders nothing for a project that is %s', (_name, props) => {
     expect(html(createElement(ProjectAreaLink, props))).toBe('');
+  });
+});
+
+describe('checkedOn', () => {
+  it('writes the date in English, with no locale data', () => {
+    expect(checkedOn('2026-10-12')).toBe('12 October 2026');
+    expect(checkedOn('2026-01-05')).toBe('5 January 2026');
+    expect(checkedOn('2026-12-31')).toBe('31 December 2026');
   });
 });

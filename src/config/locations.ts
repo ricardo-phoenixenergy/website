@@ -31,7 +31,7 @@ export interface LocationContent {
   subtitle: string;
   /** One quotable sentence, shown before the lifecycle cards. */
   statement: string;
-  projects: { eyebrow: string; heading: string; fallbackHeading: string };
+  projects: { eyebrow: string; heading: string; fallbackHeading: string; fallbackEyebrow: string };
   /** Blog post slugs shown as further reading. */
   articleSlugs: readonly string[];
   closing: { heading: string; body: string; ctaMessage: string };
@@ -216,7 +216,7 @@ const TSHWANE: MunicipalityCard = {
     { label: 'City of Tshwane, 2 July 2026', url: 'https://www.tshwane.gov.za/?p=102188' },
     { label: 'City of Tshwane tariff schedule 2025/26', url: 'https://www.tshwane.gov.za/?page_id=6924' },
     { label: 'City of Tshwane draft 2026/27 budget', url: 'https://www.tshwane.gov.za/wp-content/uploads/2026/03/19.-Draft-2026-2027-MTREF-for-CoT-1.pdf' },
-    { label: 'City of Tshwane embedded generation requirements', url: 'https://www.tshwane.gov.za/wp-content/uploads/2025/08/Proposed-Embedded-Generation-Policy-to-support-and-formalise-procedure.pdf' },
+    { label: 'City of Tshwane embedded generation requirements, republished with its proposed policy (August 2025)', url: 'https://www.tshwane.gov.za/wp-content/uploads/2025/08/Proposed-Embedded-Generation-Policy-to-support-and-formalise-procedure.pdf' },
     { label: 'City of Tshwane, 19 March 2024', url: 'https://www.tshwane.gov.za/?p=70218' },
     { label: 'SAPVIA (industry body)', url: 'https://sapvia.co.za/?p=107000' },
   ],
@@ -232,21 +232,20 @@ const TSHWANE_INDUSTRIAL: MunicipalityCard = {
   tariff:
     'The City supplies both areas: its Rosslyn substation serves the industrial north, including the automotive zone, and its Waltloo substation serves Silverton and Waltloo. Rosslyn is home to BMW Group Plant Rosslyn and the Automotive Supplier Park; Silverton to Ford’s assembly plant and the Tshwane Automotive Special Economic Zone. Plants this size are billed on bulk tariffs with a demand charge per kVA, and the City moves customers using more than 1 000 kWh a month onto time-of-use rates.',
   solar: [
-    'Low-voltage systems above 350 kVA, and medium-voltage connections, may need a grid impact study at your cost.',
-    'On a dedicated low-voltage feeder, generation is limited to 75% of the site’s notified maximum demand.',
+    'The City’s embedded generation requirements say low-voltage systems above 350 kVA, and medium-voltage connections, may need a grid impact study at your cost.',
+    'The same requirements limit generation on a dedicated low-voltage feeder to 75% of the site’s notified maximum demand.',
     'Business customers with solar stay on their normal tariff, fixed and demand charges included, so we model the saving against your own half-hourly data.',
   ],
   recent:
-    'Nissan agreed in January 2026 to sell its Rosslyn plant to Chery, which has chosen Tshwane as its new manufacturing base. In Silverton, Ford’s assembly plant runs a 13.5 MW solar carport system, switched on in 2022.',
+    'Nissan agreed in January 2026 to sell its Rosslyn plant to Chery, which has chosen Tshwane as its new manufacturing base.',
   sources: [
     { label: 'City of Tshwane State of the Capital Address 2026', url: 'https://www.tshwane.gov.za/wp-content/uploads/2026/04/State-of-the-Capital-Address-2026.pdf' },
     { label: 'City of Tshwane tariff schedule 2025/26', url: 'https://www.tshwane.gov.za/?page_id=6924' },
-    { label: 'City of Tshwane embedded generation requirements', url: 'https://www.tshwane.gov.za/wp-content/uploads/2025/08/Proposed-Embedded-Generation-Policy-to-support-and-formalise-procedure.pdf' },
+    { label: 'City of Tshwane embedded generation requirements, republished with its proposed policy (August 2025)', url: 'https://www.tshwane.gov.za/wp-content/uploads/2025/08/Proposed-Embedded-Generation-Policy-to-support-and-formalise-procedure.pdf' },
     { label: 'BMW Group Plant Rosslyn', url: 'https://www.bmwgroup-werke.com/rosslyn/en.html' },
     { label: 'AIDC Automotive Supplier Park', url: 'https://aidc.co.za/the-automotive-supplier-park/' },
     { label: 'SAnews, 6 November 2020', url: 'https://www.sanews.gov.za/node/49693' },
     { label: 'Engineering News, 23 January 2026 (news report)', url: 'https://www.engineeringnews.co.za/article/nissan-south-africas-rosslyn-plant-to-be-sold-to-chery-2026-01-23' },
-    { label: 'Rekord, 16 May 2022 (news report)', url: 'https://www.citizen.co.za/rekord/uncategorized/2022/05/16/solarafrica-now-supplying-13-5mw-of-electricity-to-the-ford-silverton-assembly-plant/' },
   ],
   asOf: LOCATION_FACTS_CHECKED,
 };
@@ -271,7 +270,7 @@ export const LOCATION_CONTENT: Record<LocationArea, LocationContent> = {
     subtitle:
       'Commercial solar installers for factories, warehouses, offices, farms, schools and estates across Johannesburg, Ekurhuleni and the Vaal. We design and engineer the system, fund it if you prefer, install it and run it for its working life.',
     statement: 'Phoenix Energy designs, funds, installs and operates commercial solar and battery storage for businesses in Johannesburg, Ekurhuleni, the West Rand and the Vaal.',
-    projects: { eyebrow: 'Our work in Gauteng', heading: 'Commercial solar projects in Gauteng', fallbackHeading: 'Commercial solar projects in Gauteng' },
+    projects: { eyebrow: 'Our work in Gauteng', heading: 'Commercial solar projects in Gauteng', fallbackHeading: 'Commercial solar projects in Gauteng', fallbackEyebrow: 'Our work in Gauteng' },
     articleSlugs: ['ekurhuleni-tariff-c-2026-27-switch-to-tariff-e'],
     closing: {
       heading: 'Talk to us about your site in Gauteng',
@@ -348,7 +347,7 @@ export const LOCATION_CONTENT: Record<LocationArea, LocationContent> = {
     subtitle:
       'Commercial solar installers for factories, warehouses, offices, farms, schools and estates across Tshwane, from Rosslyn to Centurion. We design and engineer the system, fund it if you prefer, install it and run it for its working life.',
     statement: 'Phoenix Energy designs, funds, installs and operates commercial solar and battery storage for businesses across Tshwane, from Rosslyn to Centurion.',
-    projects: { eyebrow: 'Our work', heading: 'Commercial solar projects in Pretoria and Centurion', fallbackHeading: 'More of our work in Gauteng' },
+    projects: { eyebrow: 'Our work', heading: 'Commercial solar projects in Pretoria and Centurion', fallbackHeading: 'More of our work in Gauteng', fallbackEyebrow: 'From across Gauteng' },
     articleSlugs: [],
     closing: {
       heading: 'Talk to us about your site in Pretoria or Centurion',
@@ -389,7 +388,7 @@ export const LOCATION_CONTENT: Record<LocationArea, LocationContent> = {
       {
         question: 'Do I need the City of Tshwane’s approval before installing solar at my business?',
         answer:
-          'Yes. Apply to the City and get written approval before installing, and buy no equipment until then. The application needs the inverter’s NRS 097-2-1 certificate and a circuit diagram, and a registered professional engineer or technologist signs off commissioning. We prepare and submit the application and follow it up with the City.',
+          'Yes. The City’s embedded generation requirements ask you to apply and get written approval before installing, and to buy no equipment until then. The application needs the inverter’s NRS 097-2-1 certificate and a circuit diagram, and a registered professional engineer or technologist signs off commissioning. We prepare and submit the application and follow it up with the City.',
       },
       { question: 'Can a business in Centurion get a solar installation with no upfront cost?', answer: UPFRONT_ANSWER },
       {
@@ -400,7 +399,7 @@ export const LOCATION_CONTENT: Record<LocationArea, LocationContent> = {
       {
         question: 'Which solar rules apply to large factories in Rosslyn and Silverton?',
         answer:
-          'The City of Tshwane may ask for a grid impact study, at your cost, for low-voltage systems above 350 kVA and for medium-voltage connections. On a dedicated low-voltage feeder, generation is limited to 75% of the site’s notified maximum demand, and the site keeps its normal fixed and demand charges. We size the system around your half-hourly data so the saving holds up.',
+          'The City of Tshwane’s embedded generation requirements say a grid impact study, at your cost, may be needed for low-voltage systems above 350 kVA and for medium-voltage connections, and limit generation on a dedicated low-voltage feeder to 75% of notified maximum demand. The site keeps its normal fixed and demand charges, so we size the system around your half-hourly data.',
       },
       aftercareFaq('Pretoria and Centurion'),
     ],

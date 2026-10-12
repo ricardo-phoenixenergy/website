@@ -120,4 +120,23 @@ describe('location content', () => {
   it('takes the upfront figure from the claims register', () => {
     expect(LIFECYCLE.cards[2].body).toContain(`${claimValue('ci-ppa-upfront')} upfront`);
   });
+
+  it('credits the Tshwane embedded generation rules to their source and drops the Rekord report', () => {
+    const cards = LOCATION_CONTENT['pretoria-centurion'].municipalities.cards;
+    const url = 'https://www.tshwane.gov.za/wp-content/uploads/2025/08/Proposed-Embedded-Generation-Policy-to-support-and-formalise-procedure.pdf';
+    for (const id of ['tshwane', 'tshwane-industrial']) {
+      const source = cards.find((c) => c.id === id)?.sources.find((x) => x.url === url);
+      expect(source?.label).toBe('City of Tshwane embedded generation requirements, republished with its proposed policy (August 2025)');
+    }
+    const industrial = cards.find((c) => c.id === 'tshwane-industrial');
+    expect(industrial?.solar[0]).toMatch(/^The City’s embedded generation requirements say /);
+    expect(industrial?.solar[1]).toMatch(/^The same requirements limit /);
+    expect(industrial?.recent).toBe('Nissan agreed in January 2026 to sell its Rosslyn plant to Chery, which has chosen Tshwane as its new manufacturing base.');
+    expect(industrial?.sources.some((x) => x.label.startsWith('Rekord'))).toBe(false);
+  });
+
+  it('gives each page an eyebrow for borrowed projects', () => {
+    expect(LOCATION_CONTENT.gauteng.projects.fallbackEyebrow).toBe('Our work in Gauteng');
+    expect(LOCATION_CONTENT['pretoria-centurion'].projects.fallbackEyebrow).toBe('From across Gauteng');
+  });
 });
