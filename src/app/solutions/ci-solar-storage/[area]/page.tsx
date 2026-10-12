@@ -1,7 +1,8 @@
 // src/app/solutions/ci-solar-storage/[area]/page.tsx
-// The commercial solar location pages: Gauteng, and Pretoria and Centurion
+// The commercial solar location page for Gauteng, Pretoria and Centurion included
 // (docs/superpowers/specs/2026-10-12-location-pages-design.md). One template;
 // the words, municipal facts, projects and FAQs come from src/config/locations.ts.
+// The old Pretoria and Centurion address redirects here (next.config.ts).
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { SolutionHero } from '@/components/sections/SolutionHero';
@@ -62,11 +63,8 @@ export default async function LocationPage({ params }: PageProps) {
   const content = LOCATION_CONTENT[area];
   const path = locationPath(area);
   const hero = (await getHeroImages())[vertical];
-  const own = await getProjectsByArea(vertical, area).catch(() => []);
-  // A page without projects of its own shows the Gauteng ones, labelled as such (spec E8).
-  const borrowed = own.length === 0 && area !== 'gauteng' ? await getProjectsByArea(vertical, 'gauteng').catch(() => []) : [];
-  const projects = own.length > 0 ? own : borrowed;
-  const lead = own[0];
+  const projects = await getProjectsByArea(vertical, area).catch(() => []);
+  const lead = projects[0];
   // The photo and its blur come from one source: the lead project's, else the C&I hero's.
   const leadUrl = lead?.heroImage?.asset?.url;
   const heroImage = leadUrl ?? hero?.url;
@@ -126,8 +124,8 @@ export default async function LocationPage({ params }: PageProps) {
         <StrategyFinder vertical={vertical} />
       </SolutionHero>
       <AreaProjects
-        eyebrow={own.length > 0 ? content.projects.eyebrow : content.projects.fallbackEyebrow}
-        heading={own.length > 0 ? content.projects.heading : content.projects.fallbackHeading}
+        eyebrow={content.projects.eyebrow}
+        heading={content.projects.heading}
         projects={projects}
         accent={meta.accent}
       />

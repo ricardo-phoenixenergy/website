@@ -34,6 +34,13 @@ const nextConfig: NextConfig = {
         destination: '/projects/brakpan-solar-storage',
         permanent: true,
       },
+      // Pretoria and Centurion were folded into the Gauteng page on
+      // 12 October 2026 (Pretoria is in Gauteng); keep the old address working.
+      {
+        source: '/solutions/ci-solar-storage/pretoria-centurion',
+        destination: '/solutions/ci-solar-storage/gauteng',
+        permanent: true,
+      },
     ];
   },
   async headers() {

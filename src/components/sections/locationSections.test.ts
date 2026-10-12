@@ -4,7 +4,6 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { SupplierAccordion, rowIdFromHash, checkedOn } from './SupplierAccordion';
 import { ServiceAreaList } from './ServiceAreaList';
-import { LocationLinks } from './LocationLinks';
 import { ExplainerCards } from './ExplainerCards';
 import type { MunicipalityCard } from '@/types/locations';
 import type { ProjectCard as ProjectCardData } from '@/types/sanity';
@@ -103,7 +102,6 @@ describe('ServiceAreaList', () => {
       eyebrow: 'Where we work',
       heading: 'Across Gauteng',
       groups: [{ name: 'Ekurhuleni', places: ['Germiston', 'Kempton Park'] }],
-      sister: { heading: 'Based in Pretoria or Centurion?', body: 'Tshwane has its own tariffs.', label: 'Commercial solar in Pretoria and Centurion', href: '/solutions/ci-solar-storage/pretoria-centurion' },
       accent: ACCENT,
     }),
   );
@@ -114,31 +112,8 @@ describe('ServiceAreaList', () => {
     expect(text(markup)).toContain('Kempton Park');
   });
 
-  it('hands the reader to the other location page', () => {
-    expect(markup).toContain('href="/solutions/ci-solar-storage/pretoria-centurion"');
-    expect(text(markup)).toContain('Based in Pretoria or Centurion?');
-  });
-});
-
-describe('LocationLinks', () => {
-  it('links each location page with its line', () => {
-    const markup = html(
-      createElement(LocationLinks, {
-        heading: 'Where we install',
-        links: [{ label: 'Gauteng', href: '/solutions/ci-solar-storage/gauteng', line: 'Johannesburg, Ekurhuleni and the Vaal.' }],
-        accent: ACCENT,
-      }),
-    );
-    expect(markup).toContain('href="/solutions/ci-solar-storage/gauteng"');
-    expect(text(markup)).toContain('Johannesburg, Ekurhuleni and the Vaal.');
-  });
-});
-
-describe('LocationLinks top padding', () => {
-  const props = { heading: 'h', links: [], accent: ACCENT };
-  it('pads the top by default and not when flush', () => {
-    expect(html(createElement(LocationLinks, props))).toContain('pt-16 md:pt-24');
-    expect(html(createElement(LocationLinks, { ...props, flushTop: true }))).not.toContain('pt-16');
+  it('links to no other location page', () => {
+    expect(markup).not.toContain('href=');
   });
 });
 

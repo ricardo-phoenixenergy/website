@@ -1,5 +1,6 @@
 // src/app/solutions/ci-solar-storage/page.tsx
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { SolutionHero } from '@/components/sections/SolutionHero';
 import { SolutionTabs } from '@/components/sections/SolutionTabs';
 import { HowItWorks } from '@/components/sections/HowItWorks';
@@ -9,9 +10,7 @@ import { JsonLd } from '@/components/layout/JsonLd';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { StrategyFinder } from '@/components/sections/StrategyFinder';
 import { FinancingBand } from '@/components/sections/FinancingBand';
-import { LocationLinks } from '@/components/sections/LocationLinks';
-import { LOCATION_CONTENT } from '@/config/locations';
-import { LOCATION_AREAS, LOCATION_AREA_LABEL, locationPath } from '@/lib/locationAreas';
+import { locationPath } from '@/lib/locationAreas';
 import { strategyTabs } from '@/config/strategies';
 import { getHowItWorks } from '@/lib/getHowItWorks';
 import { getHeroImages } from '@/lib/getHeroImages';
@@ -69,12 +68,20 @@ export default async function CiSolarStoragePage() {
       />
       <FinancingBand />
       {howItWorks && <HowItWorks {...howItWorks} cta={cta} accent={meta.accent} accentText={meta.accentText} flushTop />}
-      <FeaturedProjects vertical={vertical} />
-      <LocationLinks
-        heading="Where we install"
-        links={LOCATION_AREAS.map((area) => ({ label: `Commercial solar installers in ${LOCATION_AREA_LABEL[area]}`, href: locationPath(area), line: LOCATION_CONTENT[area].cardLine }))}
-        accent={meta.accent}
-        flushTop
+      {/* Phoenix works nationally; the Gauteng page is a search landing page,
+          so it gets a link in the copy rather than a section of its own. */}
+      <FeaturedProjects
+        vertical={vertical}
+        intro={
+          <>
+            We design, fund and build commercial solar across South Africa, from a logistics warehouse in Bellville to an
+            office park in Germiston. Based in Johannesburg or Pretoria? See the tariffs, solar rules and projects for{' '}
+            <Link href={locationPath('gauteng')} className="font-semibold text-pe-text underline underline-offset-2 hover:text-pe-primary">
+              commercial solar in Gauteng
+            </Link>
+            .
+          </>
+        }
       />
       <RelatedArticles vertical={vertical} />
       <PageFooter

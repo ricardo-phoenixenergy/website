@@ -4,6 +4,8 @@ import { ArrowLink } from './ArrowLink';
 interface SectionCarouselProps {
   label: string;
   title: React.ReactNode;
+  /** A line under the heading, e.g. the C&I page's link to its Gauteng page. */
+  intro?: React.ReactNode;
   viewAllHref: string;
   viewAllLabel: string;
   bg?: 'white' | 'gray';
@@ -20,6 +22,7 @@ interface SectionCarouselProps {
 export function SectionCarousel({
   label,
   title,
+  intro,
   viewAllHref,
   viewAllLabel,
   bg = 'white',
@@ -42,6 +45,7 @@ export function SectionCarousel({
             <h2 className="font-display font-extrabold text-3xl text-pe-text leading-[1.2]">
               {title}
             </h2>
+            {intro && <p className="font-body text-base leading-[1.7] text-pe-muted mt-3 max-w-2xl">{intro}</p>}
           </div>
           <ArrowLink href={viewAllHref} className="shrink-0">
             {viewAllLabel}

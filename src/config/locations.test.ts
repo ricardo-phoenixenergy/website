@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { LIFECYCLE, LOCATION_CONTENT, OPERATE_BODY } from './locations';
 import { claimValue } from './claims';
-import { LOCATION_AREAS, type LocationArea } from '@/lib/locationAreas';
+import { LOCATION_AREAS } from '@/lib/locationAreas';
 
 /** Every string anywhere inside a value. */
 function strings(value: unknown): string[] {
@@ -14,12 +14,6 @@ function strings(value: unknown): string[] {
 }
 
 const ALL = [LIFECYCLE, OPERATE_BODY, LOCATION_CONTENT];
-
-// The other page's places, which this page's title, H1 and section headings never name (D5).
-const FORBIDDEN: Record<LocationArea, RegExp> = {
-  gauteng: /pretoria|centurion|tshwane/i,
-  'pretoria-centurion': /johannesburg|joburg|ekurhuleni|emfuleni|vaal|gauteng/i,
-};
 
 describe('location content', () => {
   it('has content for every area', () => {
@@ -44,11 +38,14 @@ describe('location content', () => {
     for (const s of strings(ALL)) expect(s, s).not.toMatch(/\b(we don[’']t|we do not|not just|only for businesses|homeowners|residential)\b/i);
   });
 
-  it.each(LOCATION_AREAS)('%s: keeps the other page’s places out of its title, H1 and headings', (area) => {
-    const c = LOCATION_CONTENT[area];
-    for (const s of [c.seoTitle, c.eyebrow, c.h1, c.municipalities.heading, c.areas.heading, c.faqHeading, c.projects.heading, c.closing.heading]) {
-      expect(s, s).not.toMatch(FORBIDDEN[area]);
-    }
+  it('names Pretoria and Centurion on the Gauteng page, which took over their page', () => {
+    const g = LOCATION_CONTENT.gauteng;
+    expect(g.seoTitle).toContain('Pretoria');
+    expect(g.seoDescription).toMatch(/Pretoria, Centurion/);
+    expect(g.municipalities.heading).toContain('Pretoria');
+    expect(g.municipalities.cards.map((c) => c.id)).toEqual(expect.arrayContaining(['tshwane', 'tshwane-industrial']));
+    expect(g.areas.groups.map((x) => x.name)).toEqual(expect.arrayContaining(['Pretoria', 'Centurion']));
+    expect(g.faqs.some((f) => /Pretoria or Centurion/.test(f.question))).toBe(true);
   });
 
   it.each(LOCATION_AREAS)('%s: has a title and description search engines show in full', (area) => {
@@ -99,16 +96,12 @@ describe('location content', () => {
 
   it('carries the search phrases in visible text', () => {
     const g = strings(LOCATION_CONTENT.gauteng).join(' ');
-    const p = strings(LOCATION_CONTENT['pretoria-centurion']).join(' ');
-    for (const phrase of ['Commercial solar installers', 'solar installers in Johannesburg', 'best solar companies in Johannesburg', 'solar installation']) expect(g).toContain(phrase);
-    for (const phrase of ['Commercial solar installers', 'solar companies in Pretoria', 'solar installation', 'Centurion']) expect(p).toContain(phrase);
+    for (const phrase of ['Commercial solar installers', 'solar installers in Johannesburg', 'best solar companies in Johannesburg', 'solar installation', 'Pretoria', 'Centurion']) expect(g).toContain(phrase);
   });
 
   it('names its further reading by slug and gives each page a local close', () => {
     expect(LOCATION_CONTENT.gauteng.articleSlugs).toEqual(['ekurhuleni-tariff-c-2026-27-switch-to-tariff-e']);
-    expect(LOCATION_CONTENT['pretoria-centurion'].articleSlugs).toEqual([]);
     expect(LOCATION_CONTENT.gauteng.closing.heading).toContain('Gauteng');
-    expect(LOCATION_CONTENT['pretoria-centurion'].closing.heading).toContain('Pretoria');
   });
 
   it('runs Design, Engineer, Fund, Build, Operate, with Operate the wide card', () => {
@@ -122,7 +115,7 @@ describe('location content', () => {
   });
 
   it('credits the Tshwane embedded generation rules to their source and drops the Rekord report', () => {
-    const cards = LOCATION_CONTENT['pretoria-centurion'].municipalities.cards;
+    const cards = LOCATION_CONTENT.gauteng.municipalities.cards;
     const url = 'https://www.tshwane.gov.za/wp-content/uploads/2025/08/Proposed-Embedded-Generation-Policy-to-support-and-formalise-procedure.pdf';
     for (const id of ['tshwane', 'tshwane-industrial']) {
       const source = cards.find((c) => c.id === id)?.sources.find((x) => x.url === url);
@@ -133,10 +126,5 @@ describe('location content', () => {
     expect(industrial?.solar[1]).toMatch(/^The same requirements limit /);
     expect(industrial?.recent).toBe('Nissan agreed in January 2026 to sell its Rosslyn plant to Chery, which has chosen Tshwane as its new manufacturing base.');
     expect(industrial?.sources.some((x) => x.label.startsWith('Rekord'))).toBe(false);
-  });
-
-  it('gives each page an eyebrow for borrowed projects', () => {
-    expect(LOCATION_CONTENT.gauteng.projects.fallbackEyebrow).toBe('Our work in Gauteng');
-    expect(LOCATION_CONTENT['pretoria-centurion'].projects.fallbackEyebrow).toBe('From across Gauteng');
   });
 });

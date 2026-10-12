@@ -4,15 +4,17 @@
 // schema's Service area list, the page route, the sitemap and the webhook all
 // read this list, so a page and its project tag can't drift apart. No imports:
 // the Studio schema loads this file too.
+//
+// Pretoria and Centurion had a page of their own until 12 October 2026; it was
+// folded into Gauteng (Pretoria is in Gauteng) and its address redirects there.
 
-export const LOCATION_AREAS = ['gauteng', 'pretoria-centurion'] as const;
+export const LOCATION_AREAS = ['gauteng'] as const;
 
 export type LocationArea = (typeof LOCATION_AREAS)[number];
 
 /** The area's name, as the Studio list and the breadcrumb show it. */
 export const LOCATION_AREA_LABEL: Record<LocationArea, string> = {
   gauteng: 'Gauteng',
-  'pretoria-centurion': 'Pretoria and Centurion',
 };
 
 /** The solution page the area pages sit under. */

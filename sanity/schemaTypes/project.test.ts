@@ -242,7 +242,6 @@ describe('serviceArea', () => {
     expect(area.group).toBe('overview');
     expect(area.options?.list).toEqual([
       { title: 'Gauteng', value: 'gauteng' },
-      { title: 'Pretoria and Centurion', value: 'pretoria-centurion' },
     ]);
     expect(area.validation).toBeUndefined();
   });

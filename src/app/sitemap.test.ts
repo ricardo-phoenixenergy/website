@@ -52,11 +52,11 @@ describe('sitemap', () => {
     expect(entries.some((e) => e.url.includes('/blog'))).toBe(false);
   });
 
-  it('lists both location pages under the C&I solution', async () => {
+  it('lists the Gauteng page under the C&I solution, and not the folded Pretoria page', async () => {
     fetchMock.mockResolvedValue([]);
     entriesMock.mockResolvedValue([]);
     const entries = await sitemap();
     expect(entries).toContainEqual({ url: 'https://phoenixenergy.solutions/solutions/ci-solar-storage/gauteng', lastModified: new Date('2026-10-12'), priority: 0.7, changeFrequency: 'monthly' });
-    expect(entries).toContainEqual({ url: 'https://phoenixenergy.solutions/solutions/ci-solar-storage/pretoria-centurion', lastModified: new Date('2026-10-12'), priority: 0.7, changeFrequency: 'monthly' });
+    expect(entries.some((e) => e.url.includes('pretoria-centurion'))).toBe(false);
   });
 });

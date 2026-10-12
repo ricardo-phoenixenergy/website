@@ -102,6 +102,6 @@ describe('getProjectsByArea', () => {
 
   it('gives an empty list when the CMS returns none', async () => {
     fetchMock.mockResolvedValueOnce(null);
-    expect(await getProjectsByArea('ci-solar-storage', 'pretoria-centurion')).toEqual([]);
+    expect(await getProjectsByArea('ci-solar-storage', 'gauteng')).toEqual([]);
   });
 });

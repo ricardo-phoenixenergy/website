@@ -46,11 +46,3 @@ export interface PlaceGroup {
   /** Towns and industrial areas. */
   places: string[];
 }
-
-/** The card that hands a reader to the other location page. */
-export interface SisterLink {
-  heading: string;
-  body: string;
-  label: string;
-  href: string;
-}

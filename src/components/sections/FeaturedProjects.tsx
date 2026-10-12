@@ -8,6 +8,8 @@ import { PROJECTS_CTA } from '@/config/ctas';
 
 interface FeaturedProjectsProps {
   vertical?: SolutionVertical;
+  /** A line under the heading. */
+  intro?: React.ReactNode;
   /** Collapse top padding when stacked under a same-background section. */
   flushTop?: boolean;
 }
@@ -21,7 +23,7 @@ async function getProjects(vertical?: SolutionVertical): Promise<ProjectCardType
   }
 }
 
-export async function FeaturedProjects({ vertical, flushTop = false }: FeaturedProjectsProps = {}) {
+export async function FeaturedProjects({ vertical, intro, flushTop = false }: FeaturedProjectsProps = {}) {
   const projects = await getProjects(vertical);
   if (projects.length === 0) return null;
   // Three or fewer: a static grid, three a row from 768px, so no card hides behind a swipe.
@@ -40,6 +42,7 @@ export async function FeaturedProjects({ vertical, flushTop = false }: FeaturedP
     <SectionCarousel
       label="Our work"
       title="Projects"
+      intro={intro}
       // /projects holds the published projects, not the whole track record the stats count.
       viewAllHref={PROJECTS_CTA.href}
       viewAllLabel={PROJECTS_CTA.label}

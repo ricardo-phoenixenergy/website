@@ -88,7 +88,7 @@ const REGISTER = {
       'VERTICAL_CONFIG stat (not rendered)',
       '/solutions/ci-solar-storage (meta description, "Zero upfront with our PPA model")',
       '/solutions/ci-solar-storage (hero, "zero upfront cost")',
-      '/solutions/ci-solar-storage/gauteng and /pretoria-centurion (Fund card and FAQ, "R0 upfront")',
+      '/solutions/ci-solar-storage/gauteng (Fund card and FAQ, "R0 upfront")',
     ],
   },
   'ci-system-lifespan': {
@@ -454,7 +454,7 @@ const REGISTER = {
     source: 'WEG partner brief supplied by Ricardo, 12 October 2026',
     asOf: '2026-10-12',
     status: 'confirmed',
-    usedOn: ['/solutions/ci-solar-storage/gauteng and /pretoria-centurion (WEG band)'],
+    usedOn: ['/solutions/ci-solar-storage/gauteng (WEG band)'],
   },
   'weg-countries': {
     value: '135+',
@@ -464,7 +464,7 @@ const REGISTER = {
     source: 'WEG partner brief supplied by Ricardo, 12 October 2026',
     asOf: '2026-10-12',
     status: 'confirmed',
-    usedOn: ['/solutions/ci-solar-storage/gauteng and /pretoria-centurion (WEG band)'],
+    usedOn: ['/solutions/ci-solar-storage/gauteng (WEG band)'],
   },
   'weg-solution-warranty': {
     value: 'One solution warranty',
@@ -474,7 +474,7 @@ const REGISTER = {
     source: 'WEG partner brief supplied by Ricardo, 12 October 2026',
     asOf: '2026-10-12',
     status: 'confirmed',
-    usedOn: ['/solutions/ci-solar-storage/gauteng and /pretoria-centurion (WEG band)'],
+    usedOn: ['/solutions/ci-solar-storage/gauteng (WEG band)'],
   },
 } as const satisfies Record<string, ClaimRecord>;
 
