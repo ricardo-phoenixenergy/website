@@ -399,10 +399,10 @@ describe('every query', () => {
     // heroImage and gallery the project() helper gives every fixture), so
     // PROJECT_BY_SLUG_QUERY's "related" is fed and a leak living only in that
     // nested projection would show up in the check below.
-    project('c', { vertical: 'ci-solar-storage' }),
+    project('c', { vertical: 'ci-solar-storage', serviceArea: 'gauteng' }),
     project('b', { vertical: 'wheeling' }),
   ];
-  const params = { slug: 'a', vertical: 'ci-solar-storage', tag: 'Wheeling', category: '', q: '', offset: 0, exclude: '', id: 'howItWorks.home' };
+  const params = { slug: 'a', vertical: 'ci-solar-storage', area: 'gauteng', tag: 'Wheeling', category: '', q: '', offset: 0, exclude: '', id: 'howItWorks.home' };
 
   // Every export in queries.ts is a GROQ string. (Each export's inferred type is
   // its own string literal, not `string`, so a type predicate can't narrow to

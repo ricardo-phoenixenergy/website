@@ -87,6 +87,14 @@ describe('LocationLinks', () => {
   });
 });
 
+describe('LocationLinks top padding', () => {
+  const props = { heading: 'h', links: [], accent: ACCENT };
+  it('pads the top by default and not when flush', () => {
+    expect(html(createElement(LocationLinks, props))).toContain('pt-16 md:pt-24');
+    expect(html(createElement(LocationLinks, { ...props, flushTop: true }))).not.toContain('pt-16');
+  });
+});
+
 describe('ExplainerCards', () => {
   it('lets one card span two columns', () => {
     const markup = html(

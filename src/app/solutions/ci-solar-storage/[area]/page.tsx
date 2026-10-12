@@ -60,7 +60,7 @@ export default async function LocationPage({ params }: PageProps) {
   const hero = (await getHeroImages())[vertical];
   // Backgrounds alternate white and grey. Without projects (a white section),
   // the grey municipality cards meet the grey funding band, so the band sits
-  // flush. Same query as FeaturedProjects, so Next serves it from one fetch.
+  // flush. Same query and arguments as FeaturedProjects, so the two always agree; at worst it costs one extra cached query.
   const hasProjects = (await getProjectsByArea(vertical, area).catch(() => [])).length > 0;
 
   return (
@@ -80,6 +80,7 @@ export default async function LocationPage({ params }: PageProps) {
         eyebrow={content.eyebrow}
         accent={meta.accent}
         badge={LOCATION_AREA_LABEL[area]}
+        imageAlt={meta.label}
         trail={[{ label: meta.label, href: meta.slug }]}
         heroImage={hero?.url}
         heroBlur={hero?.lqip}

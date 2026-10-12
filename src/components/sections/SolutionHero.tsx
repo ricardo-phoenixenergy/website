@@ -26,6 +26,7 @@ export interface SolutionHeroProps {
   primaryCtaArrow?: boolean;  // append a right-arrow icon to the primary CTA (default true; pass false to omit)
   copyOnly?: boolean;  // no right column — copy spans ~2/3 of the container (use when there are no children)
   trail?: { label: string; href: string }[];  // crumbs between Solutions and this page, e.g. the C&I page above a location page
+  imageAlt?: string;     // alt text for the hero photo; defaults to badge
   eyebrow?: string;      // a short line above the H1, e.g. 'Commercial solar installers · Gauteng'
 }
 
@@ -71,6 +72,7 @@ export function SolutionHero({
   copyOnly = false,
   trail = [],
   eyebrow,
+  imageAlt,
 }: SolutionHeroProps) {
   return (
     // Dark from edge to edge, hero tools included: every control here takes the on-dark ring.
@@ -79,7 +81,7 @@ export function SolutionHero({
       {heroImage ? (
         <Image
           src={heroImage}
-          alt={badge}
+          alt={imageAlt ?? badge}
           fill
           priority
           className={`object-cover ${HERO_OBJECT_POSITION[imagePosition]}`}
@@ -118,21 +120,21 @@ export function SolutionHero({
           <div className={copyOnly ? 'lg:max-w-[66%]' : undefined}>
             {/* Breadcrumb — matches the dark-hero style used across the site */}
             <nav
-              className="flex items-center gap-1.5 font-body text-sm mb-5"
+              className="flex flex-wrap items-center gap-x-1.5 gap-y-1 font-body text-sm mb-5"
               style={{ color: 'var(--color-on-dark-subtle)' }}
               aria-label="Breadcrumb"
             >
-              <Link href="/" className="hover:text-white transition-colors">Home</Link>
+              <Link href="/" className="whitespace-nowrap hover:text-white transition-colors">Home</Link>
               <span aria-hidden>/</span>
-              <Link href="/solutions" className="hover:text-white transition-colors">Solutions</Link>
+              <Link href="/solutions" className="whitespace-nowrap hover:text-white transition-colors">Solutions</Link>
               {trail.map((crumb) => (
                 <Fragment key={crumb.href}>
                   <span aria-hidden>/</span>
-                  <Link href={crumb.href} className="hover:text-white transition-colors">{crumb.label}</Link>
+                  <Link href={crumb.href} className="whitespace-nowrap hover:text-white transition-colors">{crumb.label}</Link>
                 </Fragment>
               ))}
               <span aria-hidden>/</span>
-              <span className="font-semibold text-white">{badge}</span>
+              <span className="whitespace-nowrap font-semibold text-white">{badge}</span>
             </nav>
 
             {eyebrow && (

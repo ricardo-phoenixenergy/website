@@ -30,6 +30,16 @@ describe('location content', () => {
     for (const s of strings(ALL)) expect(s, s).not.toMatch(/[–—]/); // en dash, em dash
   });
 
+  it('links only articles on this site from the municipality cards', () => {
+    for (const area of LOCATION_AREAS) {
+      for (const card of LOCATION_CONTENT[area].municipalities.cards) {
+        if (card.readMore) expect(card.readMore.href).toMatch(/^\/blog\//);
+      }
+    }
+    const ekurhuleni = LOCATION_CONTENT.gauteng.municipalities.cards.find((c) => c.name === 'City of Ekurhuleni');
+    expect(ekurhuleni?.readMore?.href).toBe('/blog/ekurhuleni-tariff-c-2026-27-switch-to-tariff-e');
+  });
+
   it('never says what Phoenix is not, or turns readers away', () => {
     for (const s of strings(ALL)) expect(s, s).not.toMatch(/\b(we don[’']t|we do not|not just|only for businesses|homeowners|residential)\b/i);
   });

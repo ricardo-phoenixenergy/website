@@ -74,6 +74,7 @@ export default async function CiSolarStoragePage() {
         heading="Where we install"
         links={LOCATION_AREAS.map((area) => ({ label: LOCATION_AREA_LABEL[area], href: locationPath(area), line: LOCATION_CONTENT[area].cardLine }))}
         accent={meta.accent}
+        flushTop
       />
       <RelatedArticles vertical={vertical} />
       <PageFooter

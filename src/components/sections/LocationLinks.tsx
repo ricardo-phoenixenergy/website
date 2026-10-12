@@ -7,11 +7,13 @@ export interface LocationLinksProps {
   heading: string;
   links: { label: string; href: string; line: string }[];
   accent: string;
+  /** Collapse top padding when stacked under a same-background section. */
+  flushTop?: boolean;
 }
 
-export function LocationLinks({ heading, links, accent }: LocationLinksProps) {
+export function LocationLinks({ heading, links, accent, flushTop = false }: LocationLinksProps) {
   return (
-    <section className="bg-white pb-16 md:pb-24">
+    <section className={`bg-white pb-16 md:pb-24 ${flushTop ? '' : 'pt-16 md:pt-24'}`}>
       <div className="page-container">
         <AnimatedSection>
           <h2 className="font-display font-extrabold text-xl md:text-2xl text-pe-text leading-[1.2] mb-5">{heading}</h2>

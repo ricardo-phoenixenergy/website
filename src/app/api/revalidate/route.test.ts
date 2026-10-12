@@ -69,6 +69,6 @@ describe('POST /api/revalidate', () => {
 
   it('still refreshes every solution page when the hero images change', async () => {
     await POST(webhook({ _type: 'heroImages', _id: 'heroImages' }));
-    expect(revalidated()).toEqual(['/', '/solutions', ...SOLUTION_PAGES]);
+    expect(revalidated()).toEqual(['/', '/solutions', ...SOLUTION_PAGES, LOCATION_PAGES]);
   });
 });

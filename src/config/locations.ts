@@ -117,7 +117,7 @@ const CITY_POWER: MunicipalityCard = {
   recent:
     'In January 2026, reports that City Power would move prepaid solar users to post-paid billing caused an outcry. City Power said there is no blanket policy, and that only customers who export need a bi-directional post-paid meter.',
   sources: [
-    { label: 'City Power SSEG booklet (SSEG section of citypower.co.za)', url: 'https://www.citypower.co.za/' },
+    { label: 'City Power (citypower.co.za)', url: 'https://www.citypower.co.za/' },
     { label: 'City of Johannesburg 2026/27 budget report', url: 'https://joburg.org.za/documents_/Documents/2026-27-Final-Medium-Budget-Reports/2026-27-to-2028-29-Medium-Term-Operating-Budget-Report.pdf' },
     { label: 'Energize, 13 January 2026 (news report)', url: 'https://www.energize.co.za/article/no-solar-penalty-city-power-says-amid-prepaid-meter-claims' },
   ],
@@ -145,6 +145,7 @@ const EKURHULENI: MunicipalityCard = {
     { label: 'Ekurhuleni registration process', url: 'https://www.ekurhuleni.gov.za/wp-content/uploads/2023/02/City-of-Ekurhuleni-embedded-generation-registration-process-summary.pdf' },
     { label: 'EWN, 15 January 2026 (news report)', url: 'https://www.ewn.co.za/2026/01/15/another-nersa-blunder-as-court-orders-do-over-of-electricity-tariffs-for-4-municipalities' },
   ],
+  readMore: { label: 'Tariff C or Tariff E: what Ekurhuleni’s 2026/27 tariffs mean for your business', href: '/blog/ekurhuleni-tariff-c-2026-27-switch-to-tariff-e' },
   asOf: CHECKED,
 };
 

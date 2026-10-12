@@ -100,6 +100,7 @@ export async function POST(req: NextRequest) {
     for (const v of SOLUTION_VERTICALS) {
       revalidatePath(`/solutions/${v}`);
     }
+    revalidatePath(`${LOCATION_PARENT_PATH}/[area]`, 'page'); // the location pages show the hero photo too
   }
 
   if (type === 'energyPrices') {

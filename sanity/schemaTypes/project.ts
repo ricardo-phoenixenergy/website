@@ -125,7 +125,7 @@ export const project = defineType({
       type: 'string',
       group: 'overview',
       description:
-        'Shows the project on that area\'s commercial solar page. Leave it empty for a project that belongs on neither, such as a home.',
+        'Shows the project on that area’s commercial solar page. Applies to C&I Solar & Storage projects only. Leave it empty for a project that belongs on neither, such as a home.',
       options: { list: LOCATION_AREAS.map((value) => ({ title: LOCATION_AREA_LABEL[value], value })) },
     }),
     defineField({
