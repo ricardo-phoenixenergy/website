@@ -3,6 +3,7 @@ import { sanityServerClient } from '@/lib/sanity.server';
 import { getProjectSitemapEntries, type ProjectSitemapEntry } from '@/lib/projectData';
 import { AUTHOR_SITEMAP_QUERY, BLOG_SITEMAP_QUERY } from '@/lib/queries';
 import { SITE_URL as SITE } from '@/lib/seo';
+import { LOCATION_AREAS, locationPath } from '@/lib/locationAreas';
 
 // Rebuilt at least hourly, and at once when the webhook (src/app/api/revalidate/route.ts) reports a post, author or project change.
 export const revalidate = 3600;
@@ -13,6 +14,7 @@ const STATIC: MetadataRoute.Sitemap = [
   { url: `${SITE}/contact`,                             priority: 0.8, changeFrequency: 'monthly' },
   { url: `${SITE}/solutions`,                           priority: 0.9, changeFrequency: 'monthly' },
   { url: `${SITE}/solutions/ci-solar-storage`,          priority: 0.8, changeFrequency: 'monthly' },
+  ...LOCATION_AREAS.map((area) => ({ url: `${SITE}${locationPath(area)}`, priority: 0.7, changeFrequency: 'monthly' as const })),
   { url: `${SITE}/solutions/wheeling`,                  priority: 0.8, changeFrequency: 'monthly' },
   { url: `${SITE}/solutions/energy-optimisation`,       priority: 0.8, changeFrequency: 'monthly' },
   { url: `${SITE}/solutions/carbon-credits`,            priority: 0.8, changeFrequency: 'monthly' },

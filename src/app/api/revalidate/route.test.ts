@@ -25,7 +25,10 @@ const SOLUTION_PAGES = [
   '/solutions/ev-fleets',
 ];
 
-const EVERY_PAGE_A_PROJECT_SHOWS_ON = ['/projects/[slug] page', '/projects', '/', ...SOLUTION_PAGES, '/sitemap.xml'];
+// Both location pages, refreshed by their route pattern (src/lib/locationAreas.ts).
+const LOCATION_PAGES = '/solutions/ci-solar-storage/[area] page';
+
+const EVERY_PAGE_A_PROJECT_SHOWS_ON = ['/projects/[slug] page', '/projects', '/', ...SOLUTION_PAGES, LOCATION_PAGES, '/sitemap.xml'];
 
 beforeEach(() => {
   vi.stubEnv('REVALIDATE_SECRET', SECRET);
@@ -43,7 +46,7 @@ describe('POST /api/revalidate', () => {
     expect(revalidatePathMock).not.toHaveBeenCalled();
   });
 
-  it('refreshes every project page, /projects, home and the six solution pages when a project changes', async () => {
+  it('refreshes every project page, /projects, home, the six solution pages and the location pages when a project changes', async () => {
     const response = await POST(webhook({ _type: 'project', _id: 'abc', slug: { current: '31-sacks-circle' } }));
     expect(response.status).toBe(200);
     expect(revalidated()).toEqual(EVERY_PAGE_A_PROJECT_SHOWS_ON);
@@ -56,7 +59,7 @@ describe('POST /api/revalidate', () => {
 
   it('refreshes every page a post shows on, and the sitemap, when a blog post changes', async () => {
     await POST(webhook({ _type: 'blogPost', slug: { current: 'a-post' } }));
-    expect(revalidated()).toEqual(['/blog/[slug] page', '/blog', '/', '/blog/authors/[slug] page', ...SOLUTION_PAGES, '/sitemap.xml']);
+    expect(revalidated()).toEqual(['/blog/[slug] page', '/blog', '/', '/blog/authors/[slug] page', ...SOLUTION_PAGES, LOCATION_PAGES, '/sitemap.xml']);
   });
 
   it("refreshes the author pages, their posts and the sitemap when an author changes", async () => {

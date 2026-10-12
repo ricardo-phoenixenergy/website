@@ -2,6 +2,7 @@
 import { revalidatePath } from 'next/cache';
 import { NextRequest } from 'next/server';
 import { SOLUTION_VERTICALS } from '@/types/solutions';
+import { LOCATION_PARENT_PATH } from '@/lib/locationAreas';
 
 function extractSlug(raw: unknown): string | undefined {
   if (typeof raw === 'string') return raw;
@@ -43,6 +44,7 @@ export async function POST(req: NextRequest) {
     revalidatePath('/');         // homepage shows latest posts
     revalidatePath('/blog/authors/[slug]', 'page');
     for (const vertical of SOLUTION_VERTICALS) revalidatePath(`/solutions/${vertical}`);
+    revalidatePath(`${LOCATION_PARENT_PATH}/[area]`, 'page'); // both location pages: projects and related articles
     revalidatePath('/sitemap.xml');
   }
 
@@ -65,6 +67,7 @@ export async function POST(req: NextRequest) {
     revalidatePath('/projects');
     revalidatePath('/');         // homepage shows featured projects
     for (const vertical of SOLUTION_VERTICALS) revalidatePath(`/solutions/${vertical}`);
+    revalidatePath(`${LOCATION_PARENT_PATH}/[area]`, 'page'); // both location pages: projects and related articles
     revalidatePath('/sitemap.xml');
   }
 

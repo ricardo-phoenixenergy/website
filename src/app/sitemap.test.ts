@@ -51,4 +51,12 @@ describe('sitemap', () => {
     const entries = await sitemap();
     expect(entries.some((e) => e.url.includes('/blog'))).toBe(false);
   });
+
+  it('lists both location pages under the C&I solution', async () => {
+    fetchMock.mockResolvedValue([]);
+    entriesMock.mockResolvedValue([]);
+    const entries = await sitemap();
+    expect(entries).toContainEqual({ url: 'https://phoenixenergy.solutions/solutions/ci-solar-storage/gauteng', priority: 0.7, changeFrequency: 'monthly' });
+    expect(entries).toContainEqual({ url: 'https://phoenixenergy.solutions/solutions/ci-solar-storage/pretoria-centurion', priority: 0.7, changeFrequency: 'monthly' });
+  });
 });
