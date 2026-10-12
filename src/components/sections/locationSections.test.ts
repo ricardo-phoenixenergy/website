@@ -2,7 +2,7 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { SupplierAccordion } from './SupplierAccordion';
+import { SupplierAccordion, rowIdFromHash } from './SupplierAccordion';
 import { ServiceAreaList } from './ServiceAreaList';
 import { LocationLinks } from './LocationLinks';
 import { ExplainerCards } from './ExplainerCards';
@@ -78,6 +78,17 @@ describe('SupplierAccordion', () => {
     expect(text(markup)).toContain('The name on your electricity bill tells you.');
     expect(markup).toContain('href="/contact"');
   });
+});
+
+describe('rowIdFromHash', () => {
+  const ids = new Set(['city-power', 'eskom']);
+  it('returns the row a hash names', () => expect(rowIdFromHash('#city-power', ids)).toBe('city-power'));
+  it('returns null for an unknown id or an empty hash', () => {
+    expect(rowIdFromHash('#nowhere', ids)).toBeNull();
+    expect(rowIdFromHash('', ids)).toBeNull();
+    expect(rowIdFromHash('#', ids)).toBeNull();
+  });
+  it('returns null for a malformed hash instead of throwing', () => expect(rowIdFromHash('#%E0%A4%A', ids)).toBeNull());
 });
 
 describe('ServiceAreaList', () => {

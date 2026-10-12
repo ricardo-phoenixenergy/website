@@ -29,6 +29,17 @@ function checkedOn(asOf: string): string {
   return new Date(`${asOf}T00:00:00Z`).toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 }
 
+/** The row a URL hash names, or null when it names none or is malformed. */
+export function rowIdFromHash(hash: string, ids: ReadonlySet<string>): string | null {
+  let id: string;
+  try {
+    id = decodeURIComponent(hash.replace(/^#/, ''));
+  } catch {
+    return null;
+  }
+  return ids.has(id) ? id : null;
+}
+
 export function SupplierAccordion({ eyebrow, heading, subtitle, cards, help, defaultOpen = [], accent }: SupplierAccordionProps) {
   const [open, setOpen] = useState<ReadonlySet<string>>(() => new Set(defaultOpen));
   const baseId = useId();
@@ -46,8 +57,8 @@ export function SupplierAccordion({ eyebrow, heading, subtitle, cards, help, def
   useEffect(() => {
     const ids = new Set(cards.map((c) => c.id));
     const openFromHash = () => {
-      const id = decodeURIComponent(window.location.hash.slice(1));
-      if (!ids.has(id)) return;
+      const id = rowIdFromHash(window.location.hash, ids);
+      if (!id) return;
       toggle(id, true);
       requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({ block: 'start' }));
     };
@@ -134,7 +145,7 @@ function SupplierRow({ card, isOpen, onToggle, onReveal, buttonId, panelId, acce
               {card.keyFact}
             </span>
           </span>
-          <span className="mt-1 flex-shrink-0 transition-transform duration-200" style={{ color: inkFor(accent), transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)' }} aria-hidden="true">
+          <span className="mt-1 flex-shrink-0 motion-safe:transition-transform duration-200" style={{ color: inkFor(accent), transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)' }} aria-hidden="true">
             <IconArrowRight size={18} />
           </span>
         </button>
