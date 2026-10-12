@@ -9,6 +9,9 @@ import { ExplainerCards } from './ExplainerCards';
 import type { MunicipalityCard } from '@/types/locations';
 import type { ProjectCard as ProjectCardData } from '@/types/sanity';
 import { AreaProjects } from './AreaProjects';
+import { PartnerBand } from './PartnerBand';
+import { WEG_BAND } from '@/config/wegPartner';
+import { claimValue } from '@/config/claims';
 
 const html = (el: Parameters<typeof renderToStaticMarkup>[0]) => renderToStaticMarkup(el);
 const text = (markup: string) => markup.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
@@ -193,5 +196,27 @@ describe('AreaProjects', () => {
 
   it('links to all projects', () => {
     expect(html(createElement(AreaProjects, props(1)))).toContain('href="/projects"');
+  });
+});
+
+describe('PartnerBand', () => {
+  const logo = { url: 'https://cdn.sanity.io/x.png', alt: 'WEG logo', width: 512, height: 512 };
+
+  it('states the partnership, the two WEG figures from the claims register, credited to WEG, and the three points', () => {
+    const m = html(createElement(PartnerBand, { content: WEG_BAND, logo }));
+    const t = text(m);
+    expect(m).toMatch(/<h2[^>]*>Backed by WEG, from panel to motor<\/h2>/);
+    expect(t).toContain(claimValue('weg-solar-capacity'));
+    expect(t).toContain(claimValue('weg-countries'));
+    expect(t).toContain('Source: WEG');
+    expect(m.match(/<h3/g)).toHaveLength(3);
+    expect(m).toContain('alt="WEG logo"');
+    expect(m).toMatch(/href="https:\/\/www\.weg\.net"[^>]*rel="noopener noreferrer"/);
+  });
+
+  it('still says everything without the logo', () => {
+    const m = html(createElement(PartnerBand, { content: WEG_BAND, logo: null }));
+    expect(m).not.toContain('<img');
+    expect(text(m)).toContain('Since June 2025');
   });
 });

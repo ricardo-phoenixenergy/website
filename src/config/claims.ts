@@ -444,6 +444,38 @@ const REGISTER = {
     ],
     note: 'Replaced "results delivered in 48 hours" (shared footer default) and "a free assessment for your facility in under 48 hours" (case study CTA) in September 2026.',
   },
+
+  // ── WEG partnership ────────────────────────────────────────────────────────────────────────
+  'weg-solar-capacity': {
+    value: '3,947 MW',
+    label: 'of WEG solar capacity in operation',
+    definition: 'WEG’s installed solar capacity in operation worldwide, as the label implies.',
+    basis: 'WEG’s own figure, from the partner brief Ricardo supplied',
+    source: 'WEG partner brief supplied by Ricardo, 12 October 2026',
+    asOf: '2026-10-12',
+    status: 'confirmed',
+    usedOn: ['/solutions/ci-solar-storage/gauteng and /pretoria-centurion (WEG band)'],
+  },
+  'weg-countries': {
+    value: '135+',
+    label: 'countries where WEG delivers renewable energy',
+    definition: 'Number of countries where WEG delivers renewable energy, as the label implies.',
+    basis: 'WEG’s own figure, from the partner brief Ricardo supplied',
+    source: 'WEG partner brief supplied by Ricardo, 12 October 2026',
+    asOf: '2026-10-12',
+    status: 'confirmed',
+    usedOn: ['/solutions/ci-solar-storage/gauteng and /pretoria-centurion (WEG band)'],
+  },
+  'weg-solution-warranty': {
+    value: 'One solution warranty',
+    label: 'for the whole system',
+    definition: 'One warranty covering the whole installed system, instead of one per supplier.',
+    basis: 'Phoenix’s offer under the WEG partnership, as Ricardo described it',
+    source: 'WEG partner brief supplied by Ricardo, 12 October 2026',
+    asOf: '2026-10-12',
+    status: 'confirmed',
+    usedOn: ['/solutions/ci-solar-storage/gauteng and /pretoria-centurion (WEG band)'],
+  },
 } as const satisfies Record<string, ClaimRecord>;
 
 export type ClaimId = keyof typeof REGISTER;

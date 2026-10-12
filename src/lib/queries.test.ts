@@ -402,15 +402,15 @@ describe('every query', () => {
     project('c', { vertical: 'ci-solar-storage', serviceArea: 'gauteng' }),
     project('b', { vertical: 'wheeling' }),
   ];
-  const params = { slug: 'a', vertical: 'ci-solar-storage', area: 'gauteng', tag: 'Wheeling', category: '', q: '', offset: 0, exclude: '', id: 'howItWorks.home' };
+  const params = { slug: 'a', vertical: 'ci-solar-storage', area: 'gauteng', tag: 'Wheeling', category: '', q: '', offset: 0, exclude: '', id: 'howItWorks.home', name: 'A Partner' };
 
   // Every export in queries.ts is a GROQ string. (Each export's inferred type is
   // its own string literal, not `string`, so a type predicate can't narrow to
   // [string, string]; the cast below just widens it back.)
   const ALL_QUERIES = Object.entries(queries).filter((entry) => typeof entry[1] === 'string') as [string, string][];
 
-  it('covers all 29 queries', () => {
-    expect(ALL_QUERIES).toHaveLength(29);
+  it('covers all 30 queries', () => {
+    expect(ALL_QUERIES).toHaveLength(30);
   });
 
   // From the base file (git show 57a7bed:src/lib/queries.test.ts): a static
@@ -466,6 +466,20 @@ describe('every query', () => {
     for (const text of ['originalFilename', 'HIDDEN-CLIENT', 'sha1hash', 'deadbeef', 'exif', '"path"', 'R42M']) {
       expect(json).not.toContain(text);
     }
+  });
+
+  it('finds the active partner by exact name, with its logo URL, and nothing otherwise', async () => {
+    const partners: Doc[] = [
+      ASSET,
+      { _id: 'p-weg', _type: 'partner', name: 'WEG', website: 'https://www.weg.net', active: true, logo: image() },
+      { _id: 'p-off', _type: 'partner', name: 'Off', active: false, logo: image() },
+    ];
+    const weg = (await run(queries.PARTNER_BY_NAME_QUERY, partners, { name: 'WEG' })) as Row;
+    expect(weg.name).toBe('WEG');
+    expect(JSON.stringify(weg.logo)).toContain('https://cdn.sanity.io/images/p/production/abc123-4000x2250.jpg');
+    expect(await run(queries.PARTNER_BY_NAME_QUERY, partners, { name: 'Off' })).toBeNull();
+    expect(await run(queries.PARTNER_BY_NAME_QUERY, partners, { name: 'weg' })).toBeNull();
+    expect(await run(queries.PARTNER_BY_NAME_QUERY, partners, { name: 'Nobody' })).toBeNull();
   });
 
   it('keeps no case-study rule or unused project query', () => {

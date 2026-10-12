@@ -343,6 +343,14 @@ export const PARTNERS_QUERY = `
   }
 `;
 
+export const PARTNER_BY_NAME_QUERY = `
+  *[_type == "partner" && name == $name && active != false][0]{
+    name,
+    website,
+    "logo": logo ${IMAGE_FIELDS}
+  }
+`;
+
 /* ─── How It Works ──────────────────────────────────────────────────────────── */
 
 export const HOW_IT_WORKS_QUERY = `
