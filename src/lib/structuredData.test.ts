@@ -56,6 +56,19 @@ describe('serviceJsonLd', () => {
       areaServed: AREA_SERVED,
     });
   });
+
+  it('names the places a location page serves, in place of the country', () => {
+    const places = [
+      { '@type': 'City', name: 'Johannesburg' },
+      { '@type': 'AdministrativeArea', name: 'Gauteng' },
+    ] as const;
+    const service = serviceJsonLd({ name: 'Commercial solar in Gauteng', description: 'd', path: '/solutions/ci-solar-storage/gauteng', areaServed: places });
+    expect(service.areaServed).toEqual(places);
+  });
+
+  it('keeps South Africa when the list is empty', () => {
+    expect(serviceJsonLd({ name: 'n', description: 'd', path: '/p', areaServed: [] }).areaServed).toEqual({ '@type': 'Country', name: 'South Africa' });
+  });
 });
 
 describe('breadcrumbJsonLd', () => {

@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { Button } from '@/components/ui/Button';
 import { IconArrowRight } from '@/components/ui/Icons';
 
@@ -25,6 +25,8 @@ export interface SolutionHeroProps {
   imagePosition?: 'center' | 'top' | 'bottom';  // object-position of the hero photo (default center)
   primaryCtaArrow?: boolean;  // append a right-arrow icon to the primary CTA (default true; pass false to omit)
   copyOnly?: boolean;  // no right column — copy spans ~2/3 of the container (use when there are no children)
+  trail?: { label: string; href: string }[];  // crumbs between Solutions and this page, e.g. the C&I page above a location page
+  eyebrow?: string;      // a short line above the H1, e.g. 'Commercial solar installers · Gauteng'
 }
 
 const HERO_OBJECT_POSITION: Record<NonNullable<SolutionHeroProps['imagePosition']>, string> = {
@@ -67,6 +69,8 @@ export function SolutionHero({
   imagePosition = 'center',
   primaryCtaArrow = true,
   copyOnly = false,
+  trail = [],
+  eyebrow,
 }: SolutionHeroProps) {
   return (
     // Dark from edge to edge, hero tools included: every control here takes the on-dark ring.
@@ -121,9 +125,21 @@ export function SolutionHero({
               <Link href="/" className="hover:text-white transition-colors">Home</Link>
               <span aria-hidden>/</span>
               <Link href="/solutions" className="hover:text-white transition-colors">Solutions</Link>
+              {trail.map((crumb) => (
+                <Fragment key={crumb.href}>
+                  <span aria-hidden>/</span>
+                  <Link href={crumb.href} className="hover:text-white transition-colors">{crumb.label}</Link>
+                </Fragment>
+              ))}
               <span aria-hidden>/</span>
               <span className="font-semibold text-white">{badge}</span>
             </nav>
+
+            {eyebrow && (
+              <p data-hero-eyebrow className="font-body text-xs font-bold uppercase tracking-[0.14em] mb-3" style={{ color: accent }}>
+                {eyebrow}
+              </p>
+            )}
 
             <h1 className={`font-display font-extrabold text-[1.875rem] md:text-[2.625rem] text-white leading-[1.18] mb-4 ${copyOnly ? '' : 'max-w-[560px]'}`}>
               {renderTitle(title, accent)}

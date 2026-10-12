@@ -15,6 +15,12 @@ export const ORGANIZATION_REF = { '@type': 'Organization', '@id': ORGANIZATION_I
 /** Where Phoenix Energy works. */
 export const AREA_SERVED = { '@type': 'Country', name: 'South Africa' } as const;
 
+/** A place a service is offered in, for a location page. */
+export interface PlaceServed {
+  '@type': 'City' | 'AdministrativeArea';
+  name: string;
+}
+
 /** The organisation, on every page (src/app/layout.tsx). */
 export function organizationJsonLd() {
   return {
@@ -63,8 +69,8 @@ export function websiteJsonLd({ searchable }: { searchable: boolean }) {
   };
 }
 
-/** A service, on its solution page. */
-export function serviceJsonLd(service: { name: string; description: string; path: string }) {
+/** A service, on its solution page, or on a location page with the places it serves. */
+export function serviceJsonLd(service: { name: string; description: string; path: string; areaServed?: readonly PlaceServed[] }) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Service',
@@ -72,7 +78,7 @@ export function serviceJsonLd(service: { name: string; description: string; path
     description: service.description,
     url: absoluteUrl(service.path),
     provider: ORGANIZATION_REF,
-    areaServed: AREA_SERVED,
+    areaServed: service.areaServed?.length ? service.areaServed : AREA_SERVED,
   };
 }
 
