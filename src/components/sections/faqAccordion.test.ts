@@ -11,7 +11,7 @@ const items = [
   { question: 'Third?', answer: 'Answer three.' },
 ];
 const markup = renderToStaticMarkup(createElement(FaqAccordion, { items }));
-const dds = markup.match(/<dd[^>]*>[^<]*<\/dd>/g) ?? [];
+const dds = markup.match(/<dd[^>]*>.*?<\/dd>/g) ?? [];
 
 describe('FaqAccordion', () => {
   it('puts every answer in the HTML, not only the open one', () => {
@@ -24,6 +24,14 @@ describe('FaqAccordion', () => {
     // React 19.2 server markup is hidden=""; FaqAnswer sets until-found after hydration.
     expect(dds[1]).toMatch(/hidden=""/);
     expect(dds[2]).toMatch(/hidden=""/);
+  });
+
+  it('keeps spacing off the dd so collapsed rows take no height', () => {
+    for (const dd of dds) {
+      const open = dd.match(/^<dd[^>]*>/)?.[0] ?? '';
+      expect(open).not.toMatch(/class=/);
+      expect(dd).toMatch(/<div class="pb-5 -mt-1 /);
+    }
   });
 
   it('ties each question button to its answer', () => {

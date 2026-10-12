@@ -86,7 +86,7 @@ export function FaqAccordion({
                     </span>
                   </button>
                 </dt>
-                <FaqAnswer id={answerId} open={isOpen} onReveal={() => setOpen(i)}>
+                <FaqAnswer id={answerId} index={i} open={isOpen} onReveal={setOpen}>
                   {it.answer}
                 </FaqAnswer>
               </div>
@@ -100,7 +100,7 @@ export function FaqAccordion({
 
 /** An answer that stays in the page while collapsed: hidden="until-found" keeps
  *  it findable, and the browser's beforematch event opens it. */
-function FaqAnswer({ id, open, onReveal, children }: { id: string; open: boolean; onReveal: () => void; children: React.ReactNode }) {
+function FaqAnswer({ id, index, open, onReveal, children }: { id: string; index: number; open: boolean; onReveal: (index: number) => void; children: React.ReactNode }) {
   const ref = useRef<HTMLElement>(null);
   useEffect(() => {
     const el = ref.current;
@@ -108,17 +108,17 @@ function FaqAnswer({ id, open, onReveal, children }: { id: string; open: boolean
     // React 19.2 server-renders a string hidden value as hidden="", so the
     // until-found state is set here, after hydration and after every toggle.
     if (!open) el.setAttribute('hidden', 'until-found');
-    el.addEventListener('beforematch', onReveal);
-    return () => el.removeEventListener('beforematch', onReveal);
-  }, [open, onReveal]);
+    const reveal = () => onReveal(index);
+    el.addEventListener('beforematch', reveal);
+    return () => el.removeEventListener('beforematch', reveal);
+  }, [open, index, onReveal]);
+  // The dd carries no padding or margin: until-found keeps the element's box,
+  // so spacing sits on the inner div and closed rows collapse to zero height.
   return (
-    <dd
-      ref={ref}
-      id={id}
-      hidden={open ? undefined : true}
-      className="pb-5 -mt-1 font-body text-sm md:text-base text-pe-text-soft leading-[1.75] max-w-[60ch]"
-    >
-      {children}
+    <dd ref={ref} id={id} hidden={open ? undefined : true}>
+      <div className="pb-5 -mt-1 font-body text-sm md:text-base text-pe-text-soft leading-[1.75] max-w-[60ch]">
+        {children}
+      </div>
     </dd>
   );
 }
