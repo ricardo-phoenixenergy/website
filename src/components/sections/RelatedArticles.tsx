@@ -1,5 +1,5 @@
 import { sanityServerClient } from '@/lib/sanity.server';
-import { POSTS_BY_VERTICAL_QUERY } from '@/lib/queries';
+import { POSTS_BY_SLUGS_QUERY, POSTS_BY_VERTICAL_QUERY } from '@/lib/queries';
 import { ArticleCard } from '@/components/ui/ArticleCard';
 import { SectionCarousel } from '@/components/ui/SectionCarousel';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
@@ -21,10 +21,18 @@ const CAROUSEL_ITEM = 'flex-shrink-0 w-[82vw] md:w-[calc((min(100vw,80rem)-4rem-
 
 interface RelatedArticlesProps {
   vertical: SolutionVertical;
+  /** Show exactly these posts (by slug) instead of the vertical's latest. An empty list renders nothing. */
+  slugs?: readonly string[];
+  /** Replaces "Further reading on <vertical>". */
+  heading?: string;
 }
 
-async function getPosts(vertical: SolutionVertical): Promise<BlogPostCard[]> {
+async function getPosts(vertical: SolutionVertical, slugs?: readonly string[]): Promise<BlogPostCard[]> {
   try {
+    if (slugs) {
+      if (slugs.length === 0) return [];
+      return await sanityServerClient.fetch<BlogPostCard[]>(POSTS_BY_SLUGS_QUERY, { slugs: [...slugs] });
+    }
     const tag = VERTICAL_CATEGORY_MAP[vertical];
     return await sanityServerClient.fetch<BlogPostCard[]>(POSTS_BY_VERTICAL_QUERY, { tag } as Record<string, string>);
   } catch {
@@ -32,8 +40,8 @@ async function getPosts(vertical: SolutionVertical): Promise<BlogPostCard[]> {
   }
 }
 
-export async function RelatedArticles({ vertical }: RelatedArticlesProps) {
-  const posts = await getPosts(vertical);
+export async function RelatedArticles({ vertical, slugs, heading }: RelatedArticlesProps) {
+  const posts = await getPosts(vertical, slugs);
   if (posts.length === 0) return null;
   // Three or fewer: a static grid, three a row from 768px, as FeaturedProjects.
   const few = posts.length <= 3;
@@ -44,10 +52,12 @@ export async function RelatedArticles({ vertical }: RelatedArticlesProps) {
     <SectionCarousel
       label="From the blog"
       title={
-        <>
-          Further reading on{' '}
-          <em style={{ color: meta.accentInk, fontStyle: 'normal' }}>{meta.label}</em>
-        </>
+        heading ?? (
+          <>
+            Further reading on{' '}
+            <em style={{ color: meta.accentInk, fontStyle: 'normal' }}>{meta.label}</em>
+          </>
+        )
       }
       viewAllHref="/blog"
       viewAllLabel="View all articles"

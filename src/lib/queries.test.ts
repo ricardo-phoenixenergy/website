@@ -256,6 +256,8 @@ describe('blog queries: live posts only', () => {
     expect(ids(await run(queries.BLOG_INDEX_QUERY, dataset, listParams))).toEqual(['live']);
     expect(ids(await run(queries.LATEST_POSTS_QUERY, dataset))).toEqual(['live']);
     expect(ids(await run(queries.POSTS_BY_VERTICAL_QUERY, dataset, { tag: 'Wheeling' }))).toEqual(['live']);
+    expect(ids(await run(queries.POSTS_BY_SLUGS_QUERY, dataset, { slugs: ['live', 'future', 'no-slug', 'missing'] }))).toEqual(['live']);
+    expect(ids(await run(queries.POSTS_BY_SLUGS_QUERY, dataset, { slugs: [] }))).toEqual([]);
     expect(ids(await run(queries.POSTS_BY_AUTHOR_QUERY, dataset, { slug: 'a' }))).toEqual(['live']);
     expect(ids(await run(queries.POSTS_BY_AUTHOR_QUERY, dataset, { slug: 'b' }))).toEqual([]);
     expect((await run(queries.FEATURED_POST_QUERY, dataset)) as Row).toMatchObject({ _id: 'live' });
@@ -402,15 +404,15 @@ describe('every query', () => {
     project('c', { vertical: 'ci-solar-storage', serviceArea: 'gauteng' }),
     project('b', { vertical: 'wheeling' }),
   ];
-  const params = { slug: 'a', vertical: 'ci-solar-storage', area: 'gauteng', tag: 'Wheeling', category: '', q: '', offset: 0, exclude: '', id: 'howItWorks.home', name: 'A Partner' };
+  const params = { slug: 'a', vertical: 'ci-solar-storage', area: 'gauteng', tag: 'Wheeling', category: '', q: '', offset: 0, exclude: '', slugs: ['a'], id: 'howItWorks.home', name: 'A Partner' };
 
   // Every export in queries.ts is a GROQ string. (Each export's inferred type is
   // its own string literal, not `string`, so a type predicate can't narrow to
   // [string, string]; the cast below just widens it back.)
   const ALL_QUERIES = Object.entries(queries).filter((entry) => typeof entry[1] === 'string') as [string, string][];
 
-  it('covers all 30 queries', () => {
-    expect(ALL_QUERIES).toHaveLength(30);
+  it('covers all 31 queries', () => {
+    expect(ALL_QUERIES).toHaveLength(31);
   });
 
   // From the base file (git show 57a7bed:src/lib/queries.test.ts): a static

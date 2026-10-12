@@ -150,6 +150,13 @@ export const POSTS_BY_VERTICAL_QUERY = `
   }
 `;
 
+// A page's chosen articles: only live posts, newest first, whatever the tags.
+export const POSTS_BY_SLUGS_QUERY = `
+  *[${LIVE_POST} && slug.current in $slugs] | order(publishedAt desc) {
+    ${BLOG_CARD_FIELDS}
+  }
+`;
+
 // $exclude is the featured post's _id while /blog shows it in its own card
 // (the whole list, any page), else "": the grid and the page count leave it out.
 export const BLOG_INDEX_QUERY = `

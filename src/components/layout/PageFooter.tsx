@@ -22,6 +22,8 @@ export interface PageFooterProps {
   /** Bullet list shown in the right-hand card of the `deliverables` variant. */
   deliverables?: string[];
   deliverablesLabel?: string;
+  /** A phone line under the button, centered variant only. */
+  phone?: { label: string; href: string };
 }
 
 // The defaults are the company-level band: pages that pass nothing (Tools, the
@@ -36,6 +38,7 @@ export function PageFooter({
   accent     = '#709DA9',
   deliverables = [],
   deliverablesLabel = 'What you receive',
+  phone,
 }: PageFooterProps = {}) {
   return (
     /* Single wrapper — overflow:clip clips without creating a scroll container,
@@ -87,6 +90,20 @@ export function PageFooter({
             <Button variant="light" href={primaryCta.href}>
               {primaryCta.label} <IconArrowRight />
             </Button>
+            {phone && (
+              <p
+                className="font-body text-base leading-[1.75] mt-5"
+                style={{ color: 'var(--color-on-dark-subtle)' }}
+              >
+                Or call{' '}
+                <a
+                  href={phone.href}
+                  className="inline-block min-h-6 font-semibold text-white underline underline-offset-4"
+                >
+                  {phone.label}
+                </a>
+              </p>
+            )}
           </AnimatedSection>
         ) : ctaVariant === 'deliverables' ? (
           <div className="page-container grid gap-10 md:grid-cols-2 md:items-center">
