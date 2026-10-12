@@ -75,9 +75,9 @@ export default async function CiSolarStoragePage() {
         intro={
           <>
             We design, fund and build commercial solar across South Africa, from a logistics warehouse in Bellville to an
-            office park in Germiston. Based in Johannesburg or Pretoria? See the tariffs, solar rules and projects for{' '}
+            office park in Germiston. Based in Johannesburg or Pretoria? See the tariffs, solar rules and projects on our page for{' '}
             <Link href={locationPath('gauteng')} className="font-semibold text-pe-text underline underline-offset-2 hover:text-pe-primary">
-              commercial solar in Gauteng
+              commercial solar installers in Gauteng
             </Link>
             .
           </>

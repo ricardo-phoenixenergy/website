@@ -122,7 +122,7 @@ const CITY_POWER: MunicipalityCard = {
   name: 'City Power',
   servesWhere: 'Most of Johannesburg',
   keyFact: 'Up 8.63% on average from 1 July 2026',
-  weHandle: 'We prepare the registration, submit it to City Power and follow it up.',
+  weHandle: 'We handle your solar installation in Johannesburg, from City Power’s design approval to final sign-off.',
   tariff:
     'Smaller businesses pay a seasonal energy charge per kWh plus a fixed monthly service charge and a capacity charge. Larger users are on industrial tariffs with a demand charge per kVA, or on time-of-use tariffs with peak, standard and off-peak rates. The City set an average increase of 8.63% from 1 July 2026, and some customers pay more than the average.',
   solar: [
@@ -200,7 +200,7 @@ const TSHWANE: MunicipalityCard = {
   name: 'City of Tshwane',
   servesWhere: 'Pretoria, Centurion and surrounds',
   keyFact: 'Up 8.8% from 1 July 2026',
-  weHandle: 'We prepare the application and follow it up with the City.',
+  weHandle: 'We prepare the application for your solar installation in Pretoria or Centurion and follow it up with the City.',
   tariff:
     'Larger businesses on bulk low-voltage or 11 kV supplies pay a fixed monthly charge, a demand charge per kVA of their highest half-hourly demand, and an energy charge per kWh. New bulk connections go onto time-of-use tariffs, where a kWh costs most in winter (June to August) peak hours. Smaller businesses pay a monthly fixed charge set by their circuit-breaker size plus a flat rate per kWh. The City raised its electricity tariffs by 8.8% from 1 July 2026.',
   solar: [
@@ -260,15 +260,15 @@ export const SUPPLIER_HELP: SupplierHelp = {
 
 export const LOCATION_CONTENT: Record<LocationArea, LocationContent> = {
   gauteng: {
-    seoTitle: 'Commercial Solar Installers in Gauteng & Pretoria | Phoenix Energy',
+    seoTitle: 'Commercial Solar Installers in Gauteng | Phoenix Energy',
     seoDescription:
       'Commercial solar installers in Gauteng. We design, fund, install and run solar and storage for businesses in Johannesburg, Pretoria, Centurion and Ekurhuleni.',
-    serviceName: 'Commercial solar and storage in Gauteng',
+    serviceName: 'Commercial solar installation in Gauteng',
     eyebrow: 'Commercial solar installers · Gauteng',
     h1: 'Commercial solar in Gauteng, <em>designed, funded and built</em> by one team',
     subtitle:
       'Commercial solar installers for factories, warehouses, offices, farms, schools and estates across Johannesburg, Pretoria, Centurion, Ekurhuleni and the Vaal. We design and engineer the system, fund it if you prefer, install it and run it for its working life.',
-    statement: 'Phoenix Energy designs, funds, installs and operates commercial solar and battery storage for businesses in Johannesburg, Pretoria, Centurion, Ekurhuleni, the West Rand and the Vaal.',
+    statement: 'Phoenix Energy designs, funds, installs and operates commercial solar and battery storage for businesses across Gauteng, from Johannesburg, Ekurhuleni and the West Rand to Pretoria, Centurion and the Vaal.',
     projects: { eyebrow: 'Our work in Gauteng', heading: 'Commercial solar projects in Gauteng' },
     articleSlugs: ['ekurhuleni-tariff-c-2026-27-switch-to-tariff-e'],
     closing: {
@@ -306,22 +306,27 @@ export const LOCATION_CONTENT: Record<LocationArea, LocationContent> = {
         { name: 'The Vaal', places: ['Vereeniging', 'Vanderbijlpark'] },
       ],
     },
-    faqHeading: 'Commercial solar in Gauteng: your questions',
+    faqHeading: 'Commercial solar installers in Gauteng: your questions',
     faqs: [
-      { question: 'How do I choose between commercial solar installers in Johannesburg or Pretoria?', answer: choosingAnswer('The best solar companies in Johannesburg or Pretoria for a business') },
+      { question: 'How do I choose between commercial solar installers in Gauteng?', answer: choosingAnswer('The best solar companies in Johannesburg or Pretoria for a business') },
       {
-        question: 'Do I need approval before installing solar at a business in Johannesburg?',
+        question: 'What do solar installers in Gauteng need from my business to give a proposal?',
+        answer:
+          'A recent electricity bill is enough to start, whether your site is in Johannesburg, Pretoria, Centurion or Ekurhuleni. We size every commercial system from how the site uses power, so we ask for your bills and any meter data you have, then show you what solar, storage and funding could do for your site.',
+      },
+      {
+        question: 'Do I need City Power’s approval for a solar installation in Johannesburg?',
         answer:
           'Yes. City Power requires grid-tied and hybrid systems up to 1 MVA to be registered, at businesses and homes, and approves the design before installation. If Eskom bills your site directly, Eskom approves it instead, and you move to a time-of-use tariff such as Miniflex first. We prepare and submit the application as part of the project.',
       },
       {
-        question: 'Do I need the City of Tshwane’s approval before installing solar at a business in Pretoria or Centurion?',
+        question: 'Do I need the City of Tshwane’s approval for a solar installation in Pretoria or Centurion?',
         answer:
           'Yes. The City’s embedded generation requirements ask you to apply and get written approval before installing, and to buy no equipment until then. The application needs the inverter’s NRS 097-2-1 certificate and a circuit diagram, and a registered professional engineer or technologist signs off commissioning. We prepare and submit the application and follow it up with the City.',
       },
       { question: 'Can a business in Gauteng install solar with no upfront cost?', answer: UPFRONT_ANSWER },
       {
-        question: 'Does the Joburg solar billing change affect businesses?',
+        question: 'Do City Power’s solar billing changes affect businesses?',
         answer:
           'The reports in early 2026 were about prepaid customers being moved to post-paid billing. City Power said there is no blanket policy, and that a bi-directional post-paid meter is needed only by customers who export. A business that wants to export needs that meter in any case, and we include it in the plan and the payback figures.',
       },

@@ -38,9 +38,9 @@ describe('location content', () => {
     for (const s of strings(ALL)) expect(s, s).not.toMatch(/\b(we don[’']t|we do not|not just|only for businesses|homeowners|residential)\b/i);
   });
 
-  it('names Pretoria and Centurion on the Gauteng page, which took over their page', () => {
+  it('names Pretoria and Centurion on the Gauteng page, which took over their page, while the title stays on Gauteng', () => {
     const g = LOCATION_CONTENT.gauteng;
-    expect(g.seoTitle).toContain('Pretoria');
+    expect(g.seoTitle).toBe('Commercial Solar Installers in Gauteng | Phoenix Energy');
     expect(g.seoDescription).toMatch(/Pretoria, Centurion/);
     expect(g.municipalities.heading).toContain('Pretoria');
     expect(g.municipalities.cards.map((c) => c.id)).toEqual(expect.arrayContaining(['tshwane', 'tshwane-industrial']));
@@ -72,10 +72,10 @@ describe('location content', () => {
     }
   });
 
-  it.each(LOCATION_AREAS)('%s: has five to eight FAQs in plain text, since the answers go into FAQPage markup', (area) => {
+  it.each(LOCATION_AREAS)('%s: has five to ten FAQs in plain text, since the answers go into FAQPage markup', (area) => {
     const faqs = LOCATION_CONTENT[area].faqs;
     expect(faqs.length).toBeGreaterThanOrEqual(5);
-    expect(faqs.length).toBeLessThanOrEqual(8);
+    expect(faqs.length).toBeLessThanOrEqual(10); // the Gauteng page carries Tshwane's questions too
     for (const { question, answer } of faqs) {
       expect(question).toMatch(/\?$/);
       for (const s of [question, answer]) expect(s, s).not.toMatch(/[<>&]/);
@@ -96,7 +96,17 @@ describe('location content', () => {
 
   it('carries the search phrases in visible text', () => {
     const g = strings(LOCATION_CONTENT.gauteng).join(' ');
-    for (const phrase of ['Commercial solar installers', 'solar installers in Johannesburg', 'best solar companies in Johannesburg', 'solar installation', 'Pretoria', 'Centurion']) expect(g).toContain(phrase);
+    for (const phrase of ['Commercial solar installers', 'best solar companies in Johannesburg', 'solar installation in Johannesburg', 'solar installation in Pretoria or Centurion', 'Pretoria', 'Centurion']) expect(g).toContain(phrase);
+  });
+
+  it('uses the primary phrase in the visible headings and questions, without overdoing it', () => {
+    const c = LOCATION_CONTENT.gauteng;
+    const visible = [c.eyebrow, c.subtitle, c.statement, c.faqHeading, c.areas.heading, ...c.faqs.flatMap((f) => [f.question, f.answer])].join(' ');
+    const count = (visible.match(/solar installers in Gauteng/gi) ?? []).length;
+    expect(c.faqHeading).toMatch(/solar installers in Gauteng/);
+    expect(c.faqs.filter((f) => /solar installers in Gauteng/.test(f.question))).toHaveLength(2);
+    expect(count).toBeGreaterThanOrEqual(3);
+    expect(count).toBeLessThanOrEqual(6);
   });
 
   it('names its further reading by slug and gives each page a local close', () => {
