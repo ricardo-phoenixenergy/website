@@ -15,10 +15,12 @@ import {
   PROJECT_BY_SLUG_QUERY,
   PROJECT_SITEMAP_QUERY,
   PROJECTS_BY_VERTICAL_QUERY,
+  PROJECTS_BY_AREA_QUERY,
 } from '@/lib/queries';
 import { orderForProjectsPage } from '@/lib/projectOrder';
 import type { Project, ProjectCard, ProjectMetric, ProjectPreview, ProjectResult } from '@/types/sanity';
 import type { SolutionVertical } from '@/types/solutions';
+import type { LocationArea } from '@/lib/locationAreas';
 
 /** The rows with both a label and a value. GROQ gives null for a field that isn't set. */
 function completeRows<R extends ProjectMetric>(rows: readonly R[] | null | undefined): R[] {
@@ -58,6 +60,12 @@ export async function getFeaturedProjects(): Promise<ProjectCard[]> {
 /** A solution page's projects: its service's newest six. */
 export async function getProjectsByVertical(vertical: SolutionVertical): Promise<ProjectCard[]> {
   const projects = await sanityServerClient.fetch<ProjectCard[] | null>(PROJECTS_BY_VERTICAL_QUERY, { vertical });
+  return (projects ?? []).map(withCompleteRows);
+}
+
+/** A location page's projects: one service's projects tagged to the area, newest six. */
+export async function getProjectsByArea(vertical: SolutionVertical, area: LocationArea): Promise<ProjectCard[]> {
+  const projects = await sanityServerClient.fetch<ProjectCard[] | null>(PROJECTS_BY_AREA_QUERY, { vertical, area });
   return (projects ?? []).map(withCompleteRows);
 }
 

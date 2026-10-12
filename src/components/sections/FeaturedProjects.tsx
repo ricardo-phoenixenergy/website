@@ -1,28 +1,32 @@
-import { getFeaturedProjects, getProjectsByVertical } from '@/lib/projectData';
+import { getFeaturedProjects, getProjectsByVertical, getProjectsByArea } from '@/lib/projectData';
 import { ProjectCard } from './ProjectCard';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { SectionCarousel } from '@/components/ui/SectionCarousel';
 import type { ProjectCard as ProjectCardType } from '@/types/sanity';
 import type { SolutionVertical } from '@/types/solutions';
+import type { LocationArea } from '@/lib/locationAreas';
 import { PROJECTS_CTA } from '@/config/ctas';
 
 interface FeaturedProjectsProps {
   vertical?: SolutionVertical;
+  /** With a vertical: only that service's projects tagged to this area (a location page). */
+  area?: LocationArea;
   /** Collapse top padding when stacked under a same-background section. */
   flushTop?: boolean;
 }
 
-/** Home: the featured projects in their featured order. A solution page: its service's newest six. */
-async function getProjects(vertical?: SolutionVertical): Promise<ProjectCardType[]> {
+/** Home: the featured projects in their featured order. A solution page: its service's newest six. A location page: those tagged to its area. */
+async function getProjects(vertical?: SolutionVertical, area?: LocationArea): Promise<ProjectCardType[]> {
   try {
+    if (vertical && area) return await getProjectsByArea(vertical, area);
     return vertical ? await getProjectsByVertical(vertical) : await getFeaturedProjects();
   } catch {
     return [];
   }
 }
 
-export async function FeaturedProjects({ vertical, flushTop = false }: FeaturedProjectsProps = {}) {
-  const projects = await getProjects(vertical);
+export async function FeaturedProjects({ vertical, area, flushTop = false }: FeaturedProjectsProps = {}) {
+  const projects = await getProjects(vertical, area);
   if (projects.length === 0) return null;
   // Three or fewer: a static grid, three a row from 768px, so no card hides behind a swipe.
   const few = projects.length <= 3;

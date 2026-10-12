@@ -3,8 +3,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const { fetchMock } = vi.hoisted(() => ({ fetchMock: vi.fn() }));
 vi.mock('@/lib/sanity.server', () => ({ sanityServerClient: { fetch: fetchMock } }));
 
-import { getAllProjects, getFeaturedProjects, getProjectBySlug, getProjectSitemapEntries, getProjectSlugs, getProjectsByVertical } from './projectData';
-import { ALL_PROJECTS_QUERY, FEATURED_PROJECTS_QUERY, PROJECT_BY_SLUG_QUERY, PROJECTS_BY_VERTICAL_QUERY } from './queries';
+import { getAllProjects, getFeaturedProjects, getProjectBySlug, getProjectSitemapEntries, getProjectSlugs, getProjectsByVertical, getProjectsByArea } from './projectData';
+import { ALL_PROJECTS_QUERY, FEATURED_PROJECTS_QUERY, PROJECT_BY_SLUG_QUERY, PROJECTS_BY_VERTICAL_QUERY, PROJECTS_BY_AREA_QUERY } from './queries';
 
 const RAND = { label: 'Off the municipal bill in year one', value: 'R276k' };
 const KEEP = { label: 'Payback period', value: '51 months' };
@@ -89,5 +89,19 @@ describe('slugs and sitemap entries', () => {
   it("gives each project its last update", async () => {
     fetchMock.mockResolvedValueOnce([{ slug: 'a', _updatedAt: '2026-09-20T10:00:00Z' }, { slug: null, _updatedAt: '2026-09-21T10:00:00Z' }]);
     expect(await getProjectSitemapEntries()).toEqual([{ slug: 'a', updatedAt: '2026-09-20T10:00:00Z' }]);
+  });
+});
+
+describe('getProjectsByArea', () => {
+  it('asks for the service and the area, and keeps only complete rows', async () => {
+    fetchMock.mockResolvedValueOnce([card('a')]);
+    const projects = await getProjectsByArea('ci-solar-storage', 'gauteng');
+    expect(fetchMock).toHaveBeenCalledWith(PROJECTS_BY_AREA_QUERY, { vertical: 'ci-solar-storage', area: 'gauteng' });
+    expect(projects[0].results).toEqual([RAND, KEEP]);
+  });
+
+  it('gives an empty list when the CMS returns none', async () => {
+    fetchMock.mockResolvedValueOnce(null);
+    expect(await getProjectsByArea('ci-solar-storage', 'pretoria-centurion')).toEqual([]);
   });
 });

@@ -202,6 +202,27 @@ describe('slugs and sitemap entries', () => {
   });
 });
 
+describe('PROJECTS_BY_AREA_QUERY', () => {
+  it('returns only the service\'s projects tagged to the area', async () => {
+    const dataset = [
+      ASSET,
+      project('tagged', { serviceArea: 'gauteng' }),
+      project('other-area', { serviceArea: 'pretoria-centurion' }),
+      project('untagged'),
+      project('other-service', { serviceArea: 'gauteng', vertical: 'wheeling' }),
+      project('no-slug', { serviceArea: 'gauteng', slug: undefined }),
+    ];
+    const rows = await run(queries.PROJECTS_BY_AREA_QUERY, dataset, { vertical: 'ci-solar-storage', area: 'gauteng' });
+    expect(ids(rows)).toEqual(['tagged']);
+  });
+
+  it('returns at most six', async () => {
+    const dataset = [ASSET, ...Array.from({ length: 8 }, (_, i) => project(`p${i}`, { serviceArea: 'gauteng' }))];
+    const rows = await run(queries.PROJECTS_BY_AREA_QUERY, dataset, { vertical: 'ci-solar-storage', area: 'gauteng' });
+    expect((rows as unknown[]).length).toBe(6);
+  });
+});
+
 describe('blog queries: live posts only', () => {
   // A post goes live on its publish date: one dated in the future, or without a
   // slug, is left out of every list, count, lookup and the sitemap.
@@ -388,8 +409,8 @@ describe('every query', () => {
   // [string, string]; the cast below just widens it back.)
   const ALL_QUERIES = Object.entries(queries).filter((entry) => typeof entry[1] === 'string') as [string, string][];
 
-  it('covers all 28 queries', () => {
-    expect(ALL_QUERIES).toHaveLength(28);
+  it('covers all 29 queries', () => {
+    expect(ALL_QUERIES).toHaveLength(29);
   });
 
   // From the base file (git show 57a7bed:src/lib/queries.test.ts): a static

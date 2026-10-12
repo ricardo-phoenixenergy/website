@@ -74,6 +74,13 @@ export const PROJECTS_BY_VERTICAL_QUERY = `
   }
 `;
 
+/** A location page's projects: one service's projects tagged to the area, newest six. */
+export const PROJECTS_BY_AREA_QUERY = `
+  *[_type == "project" && vertical == $vertical && serviceArea == $area && defined(slug.current)] | order(${NEWEST_FIRST}) [0..5] {
+    ${PROJECT_CARD_FIELDS}
+  }
+`;
+
 export const PROJECT_BY_SLUG_QUERY = `
   *[_type == "project" && slug.current == $slug][0] {
     ${PROJECT_CARD_FIELDS},
