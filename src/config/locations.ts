@@ -29,6 +29,12 @@ export interface LocationContent {
   /** Supports one <em> for the accent phrase. */
   h1: string;
   subtitle: string;
+  /** One quotable sentence, shown before the lifecycle cards. */
+  statement: string;
+  projects: { eyebrow: string; heading: string; fallbackHeading: string };
+  /** Blog post slugs shown as further reading. */
+  articleSlugs: readonly string[];
+  closing: { heading: string; body: string; ctaMessage: string };
   /** The line under this page's link on the C&I page. */
   cardLine: string;
   areaServed: PlaceServed[];
@@ -66,12 +72,16 @@ export const LIFECYCLE: Omit<ExplainerCardsProps, 'accent' | 'background'> = {
 
 /* ─── Shared answers ────────────────────────────────────────────────────── */
 
-const CHOOSING_ANSWER =
-  'Ask who designs the system, who signs off the electrical work and who looks after it once it runs. A registered professional should sign off the design, the installer should issue a certificate of compliance, and the company should be able to show commercial projects of a similar size. Ask too how the system is monitored after handover and who you call when output drops.';
+/** How to choose a solar company, opening with the page's own search phrase. */
+const choosingAnswer = (opening: string) =>
+  `${opening} can show who designs the system, who signs off the electrical work and who looks after it once it runs. A registered professional should sign off the design, the installer should issue a certificate of compliance, and the company should be able to show commercial projects of a similar size. Ask too how the system is monitored after handover and who you call when output drops.`;
 
 const UPFRONT_ANSWER = `Yes. Under a power purchase agreement we fund, install and maintain the system on your site. You pay ${UPFRONT} upfront and pay for the power the system produces.`;
 
-const AFTERCARE_FAQ: FaqItem = { question: 'Who looks after the system after it is installed?', answer: `We do. ${OPERATE_BODY}` };
+const aftercareFaq = (where: string): FaqItem => ({
+  question: `Who looks after a commercial solar system in ${where} after it is installed?`,
+  answer: `We do. ${OPERATE_BODY}`,
+});
 
 /* ─── Sources ───────────────────────────────────────────────────────────── */
 
@@ -189,25 +199,54 @@ const EMFULENI: MunicipalityCard = {
 const TSHWANE: MunicipalityCard = {
   id: 'tshwane',
   name: 'City of Tshwane',
-  servesWhere: 'Pretoria, Centurion, Rosslyn, Silverton and surrounds',
+  servesWhere: 'Pretoria, Centurion and surrounds',
   keyFact: 'Up 8.8% from 1 July 2026',
   weHandle: 'We prepare the application and follow it up with the City.',
   tariff:
-    'Tshwane raised its electricity tariffs by 8.8% from 1 July 2026, slightly below the 9.01% rise in what municipalities pay Eskom. Business tariffs differ by the size of the supply, so we start from your bills and your meter data.',
+    'Larger businesses on bulk low-voltage or 11 kV supplies pay a fixed monthly charge, a demand charge per kVA of their highest half-hourly demand, and an energy charge per kWh. New bulk connections go onto time-of-use tariffs, where a kWh costs most in winter (June to August) peak hours. Smaller businesses pay a monthly fixed charge set by their circuit-breaker size plus a flat rate per kWh. The City raised its electricity tariffs by 8.8% from 1 July 2026.',
   solar: [
-    'Every grid-tied system must be registered with its supplier, whether or not it exports.',
-    'Applications include the inverter’s NRS 097-2-1 certificate, an electrical diagram and the signatures of the installer and a professional.',
-    'Feeding power back into the grid needs the City’s approval, a registered system and a bidirectional meter.',
+    'Apply to the City and get written approval before installing, and buy no equipment until then.',
+    'The application needs the inverter’s NRS 097-2-1 certificate and a circuit diagram of the system.',
+    'A registered professional engineer or technologist signs off commissioning, and the City fits a bidirectional meter at your cost.',
+    'Once the City approves the system, exported power is credited per kWh, as long as the site stays a net consumer over the year.',
   ],
   recent:
-    'SAPVIA, the solar industry body, has raised slow approvals with the City, and the City is reviewing its process. We prepare the application and follow it up with the City for you.',
+    'The City’s 2025/26 tariffs added a credit for exported solar power, and its draft 2026/27 tariffs keep it. SAPVIA, the solar industry body, has raised slow approvals with the City, which is reviewing its process.',
   sources: [
-    { label: 'City of Tshwane, 1 July 2026', url: 'https://www.tshwane.gov.za/?p=102188' },
+    { label: 'City of Tshwane, 2 July 2026', url: 'https://www.tshwane.gov.za/?p=102188' },
+    { label: 'City of Tshwane tariff schedule 2025/26', url: 'https://www.tshwane.gov.za/?page_id=6924' },
+    { label: 'City of Tshwane draft 2026/27 budget', url: 'https://www.tshwane.gov.za/wp-content/uploads/2026/03/19.-Draft-2026-2027-MTREF-for-CoT-1.pdf' },
+    { label: 'City of Tshwane embedded generation requirements', url: 'https://www.tshwane.gov.za/wp-content/uploads/2025/08/Proposed-Embedded-Generation-Policy-to-support-and-formalise-procedure.pdf' },
     { label: 'City of Tshwane, 19 March 2024', url: 'https://www.tshwane.gov.za/?p=70218' },
-    SRC.eskomRegistration,
-    SRC.eskomBulk,
-    { label: 'SurgePV Tshwane guide (industry guide)', url: 'https://www.surgepv.com/solar-compliance/south-africa/municipalities/tshwane' },
     { label: 'SAPVIA (industry body)', url: 'https://sapvia.co.za/?p=107000' },
+  ],
+  asOf: LOCATION_FACTS_CHECKED,
+};
+
+const TSHWANE_INDUSTRIAL: MunicipalityCard = {
+  id: 'tshwane-industrial',
+  name: 'Rosslyn and Silverton',
+  servesWhere: 'Tshwane’s automotive and manufacturing areas',
+  keyFact: 'Supplied by the City of Tshwane',
+  weHandle: 'We size the system around your load and demand charges, and handle the City’s studies and sign-off.',
+  tariff:
+    'The City supplies both areas: its Rosslyn substation serves the industrial north, including the automotive zone, and its Waltloo substation serves Silverton and Waltloo. Rosslyn is home to BMW Group Plant Rosslyn and the Automotive Supplier Park; Silverton to Ford’s assembly plant and the Tshwane Automotive Special Economic Zone. Plants this size are billed on bulk tariffs with a demand charge per kVA, and the City moves customers using more than 1 000 kWh a month onto time-of-use rates.',
+  solar: [
+    'Low-voltage systems above 350 kVA, and medium-voltage connections, may need a grid impact study at your cost.',
+    'On a dedicated low-voltage feeder, generation is limited to 75% of the site’s notified maximum demand.',
+    'Business customers with solar stay on their normal tariff, fixed and demand charges included, so we model the saving against your own half-hourly data.',
+  ],
+  recent:
+    'Nissan agreed in January 2026 to sell its Rosslyn plant to Chery, which has chosen Tshwane as its new manufacturing base. In Silverton, Ford’s assembly plant runs a 13.5 MW solar carport system, switched on in 2022.',
+  sources: [
+    { label: 'City of Tshwane State of the Capital Address 2026', url: 'https://www.tshwane.gov.za/wp-content/uploads/2026/04/State-of-the-Capital-Address-2026.pdf' },
+    { label: 'City of Tshwane tariff schedule 2025/26', url: 'https://www.tshwane.gov.za/?page_id=6924' },
+    { label: 'City of Tshwane embedded generation requirements', url: 'https://www.tshwane.gov.za/wp-content/uploads/2025/08/Proposed-Embedded-Generation-Policy-to-support-and-formalise-procedure.pdf' },
+    { label: 'BMW Group Plant Rosslyn', url: 'https://www.bmwgroup-werke.com/rosslyn/en.html' },
+    { label: 'AIDC Automotive Supplier Park', url: 'https://aidc.co.za/the-automotive-supplier-park/' },
+    { label: 'SAnews, 6 November 2020', url: 'https://www.sanews.gov.za/node/49693' },
+    { label: 'Engineering News, 23 January 2026 (news report)', url: 'https://www.engineeringnews.co.za/article/nissan-south-africas-rosslyn-plant-to-be-sold-to-chery-2026-01-23' },
+    { label: 'Rekord, 16 May 2022 (news report)', url: 'https://www.citizen.co.za/rekord/uncategorized/2022/05/16/solarafrica-now-supplying-13-5mw-of-electricity-to-the-ford-silverton-assembly-plant/' },
   ],
   asOf: LOCATION_FACTS_CHECKED,
 };
@@ -225,29 +264,39 @@ export const LOCATION_CONTENT: Record<LocationArea, LocationContent> = {
   gauteng: {
     seoTitle: 'Commercial Solar Installers in Gauteng | Phoenix Energy',
     seoDescription:
-      'We design, engineer, fund, install and operate commercial solar and battery storage across Johannesburg, Ekurhuleni, Midrand, the West Rand and the Vaal.',
+      'Commercial solar installers in Gauteng. We design, fund, install and run solar and storage for businesses in Johannesburg, Ekurhuleni, the West Rand and Vaal.',
     serviceName: 'Commercial solar and storage in Gauteng',
     eyebrow: 'Commercial solar installers · Gauteng',
     h1: 'Commercial solar in Gauteng, <em>designed, funded and built</em> by one team',
     subtitle:
-      'For factories, warehouses, offices, farms, schools and estates across Johannesburg, Ekurhuleni and the Vaal. We design and engineer the system, fund it if you prefer, install it and run it for its working life.',
+      'Commercial solar installers for factories, warehouses, offices, farms, schools and estates across Johannesburg, Ekurhuleni and the Vaal. We design and engineer the system, fund it if you prefer, install it and run it for its working life.',
+    statement: 'Phoenix Energy designs, funds, installs and operates commercial solar and battery storage for businesses in Johannesburg, Ekurhuleni, the West Rand and the Vaal.',
+    projects: { eyebrow: 'Our work in Gauteng', heading: 'Commercial solar projects in Gauteng', fallbackHeading: 'Commercial solar projects in Gauteng' },
+    articleSlugs: ['ekurhuleni-tariff-c-2026-27-switch-to-tariff-e'],
+    closing: {
+      heading: 'Talk to us about your site in Gauteng',
+      body: 'Send us a recent electricity bill and our engineers will show you what solar, storage and funding could do for your site.',
+      ctaMessage: 'I’d like to book a discovery meeting about commercial solar and storage for my business site in Gauteng.',
+    },
     cardLine: 'Johannesburg, Ekurhuleni, Midrand, the West Rand and the Vaal.',
     areaServed: [
       { '@type': 'City', name: 'Johannesburg' },
       { '@type': 'AdministrativeArea', name: 'City of Ekurhuleni' },
       { '@type': 'AdministrativeArea', name: 'Emfuleni Local Municipality' },
+      { '@type': 'AdministrativeArea', name: 'Mogale City Local Municipality' },
+      { '@type': 'AdministrativeArea', name: 'Rand West City Local Municipality' },
       { '@type': 'AdministrativeArea', name: 'Gauteng' },
     ],
     municipalities: {
       eyebrow: 'Your municipality, your numbers',
-      heading: 'Tariffs and solar rules where your business is',
+      heading: 'Johannesburg, Ekurhuleni and Vaal tariffs and solar rules',
       subtitle:
         'City Power, Eskom, Ekurhuleni and Emfuleni each set their own tariffs and rules for connecting solar. This is what applies to businesses, as checked in October 2026.',
       cards: [CITY_POWER, eskomCard('Parts of Soweto, Sandton, Diepsloot, Ivory Park and Orange Farm, and any site Eskom bills directly'), EKURHULENI, EMFULENI],
     },
     areas: {
       eyebrow: 'Where we work',
-      heading: 'Where we work in Gauteng',
+      heading: 'Commercial solar installation across Gauteng',
       groups: [
         { name: 'Johannesburg', places: ['Sandton', 'Midrand', 'Randburg', 'Rosebank', 'Roodepoort', 'the Johannesburg CBD', 'City Deep', 'Soweto'] },
         { name: 'Ekurhuleni', places: ['Germiston', 'Kempton Park', 'Isando', 'Jet Park', 'Boksburg', 'Benoni', 'Brakpan', 'Alberton'] },
@@ -263,7 +312,7 @@ export const LOCATION_CONTENT: Record<LocationArea, LocationContent> = {
     },
     faqHeading: 'Commercial solar in Gauteng: your questions',
     faqs: [
-      { question: 'How do I choose a commercial solar company in Johannesburg?', answer: CHOOSING_ANSWER },
+      { question: 'How do I choose between commercial solar installers in Johannesburg?', answer: choosingAnswer('The best solar companies in Johannesburg for a business') },
       {
         question: 'Do I need approval before installing solar at a business in Johannesburg?',
         answer:
@@ -278,26 +327,34 @@ export const LOCATION_CONTENT: Record<LocationArea, LocationContent> = {
       {
         question: 'Can I sell solar power back to the grid in Ekurhuleni?',
         answer:
-          'Registered systems can earn an export credit under the City’s 2026/27 tariffs, as long as the site stays a net consumer each month and has a four-quadrant import and export meter. The City says credits start once its billing system can bill them, so we size systems mainly for your own use.',
+          'Registered systems can earn an export credit under the City of Ekurhuleni’s 2026/27 tariffs, as long as the site stays a net consumer each month and has a four-quadrant import and export meter. The City says credits start once its billing system can bill them, so we size systems mainly for your own use.',
       },
       {
         question: 'Do you install commercial solar in the Vaal?',
         answer:
           'Yes. We work across Emfuleni, including Vereeniging and Vanderbijlpark. Eskom runs billing and connections there as the municipality’s agent, and we confirm the current solar rules and any levy for your site before we design.',
       },
-      AFTERCARE_FAQ,
+      aftercareFaq('Gauteng'),
     ],
   },
 
   'pretoria-centurion': {
-    seoTitle: 'Commercial Solar Installers, Pretoria & Centurion | Phoenix Energy',
+    seoTitle: 'Commercial Solar Installers in Pretoria & Centurion | Phoenix Energy',
     seoDescription:
-      'We design, engineer, fund, install and operate commercial solar and battery storage for businesses in Pretoria, Centurion, Rosslyn and across Tshwane.',
+      'Commercial solar installers in Pretoria and Centurion. We design, fund, install and run solar and storage for businesses across Tshwane, from Rosslyn to Irene.',
     serviceName: 'Commercial solar and storage in Pretoria and Centurion',
     eyebrow: 'Commercial solar installers · Pretoria & Centurion',
     h1: 'Commercial solar in Pretoria and Centurion, <em>designed, funded and built</em> by one team',
     subtitle:
-      'For factories, warehouses, offices, farms, schools and estates across Tshwane, from Rosslyn to Centurion. We design and engineer the system, fund it if you prefer, install it and run it for its working life.',
+      'Commercial solar installers for factories, warehouses, offices, farms, schools and estates across Tshwane, from Rosslyn to Centurion. We design and engineer the system, fund it if you prefer, install it and run it for its working life.',
+    statement: 'Phoenix Energy designs, funds, installs and operates commercial solar and battery storage for businesses across Tshwane, from Rosslyn to Centurion.',
+    projects: { eyebrow: 'Our work', heading: 'Commercial solar projects in Pretoria and Centurion', fallbackHeading: 'More of our work in Gauteng' },
+    articleSlugs: [],
+    closing: {
+      heading: 'Talk to us about your site in Pretoria or Centurion',
+      body: 'Send us a recent electricity bill and our engineers will show you what solar, storage and funding could do for your site.',
+      ctaMessage: 'I’d like to book a discovery meeting about commercial solar and storage for my business site in Pretoria or Centurion.',
+    },
     cardLine: 'Pretoria, Centurion, Rosslyn and the rest of Tshwane.',
     areaServed: [
       { '@type': 'City', name: 'Pretoria' },
@@ -306,15 +363,15 @@ export const LOCATION_CONTENT: Record<LocationArea, LocationContent> = {
     ],
     municipalities: {
       eyebrow: 'Your municipality, your numbers',
-      heading: 'Tariffs and solar rules where your business is',
+      heading: 'Tshwane tariffs and solar rules for business',
       subtitle:
-        'Most businesses here buy power from the City of Tshwane; some are billed by Eskom directly. This is what applies to businesses, as checked in October 2026.',
-      cards: [TSHWANE, eskomCard('Any site in and around Tshwane that Eskom bills directly')],
+        'Most businesses here buy power from the City of Tshwane, and some are billed by Eskom directly. This is what applies to businesses, as checked in October 2026.',
+      cards: [TSHWANE, TSHWANE_INDUSTRIAL, eskomCard('Any site in and around Tshwane that Eskom bills directly')],
       defaultOpen: ['tshwane'],
     },
     areas: {
       eyebrow: 'Where we work',
-      heading: 'Where we work in Pretoria and Centurion',
+      heading: 'Commercial solar installation across Pretoria and Centurion',
       groups: [
         { name: 'Pretoria', places: ['the Pretoria CBD', 'Pretoria East', 'Hatfield', 'Menlyn', 'Silverton', 'Rosslyn', 'Pretoria West'] },
         { name: 'Centurion', places: ['Centurion', 'Irene', 'Highveld', 'Samrand', 'Lyttelton'] },
@@ -328,19 +385,24 @@ export const LOCATION_CONTENT: Record<LocationArea, LocationContent> = {
     },
     faqHeading: 'Commercial solar in Pretoria and Centurion: your questions',
     faqs: [
-      { question: 'How do I choose a solar company in Pretoria?', answer: CHOOSING_ANSWER },
+      { question: 'How do I compare solar companies in Pretoria?', answer: choosingAnswer('The solar companies in Pretoria worth shortlisting for a business') },
       {
-        question: 'Do I need Tshwane’s approval before installing solar at my business?',
+        question: 'Do I need the City of Tshwane’s approval before installing solar at my business?',
         answer:
-          'Yes. Every grid-tied system must be registered with its supplier, whether or not it exports. Tshwane asks for the inverter’s NRS 097-2-1 certificate, an electrical diagram and the signatures of the installer and a professional. We prepare and submit the application and follow it up with the City.',
+          'Yes. Apply to the City and get written approval before installing, and buy no equipment until then. The application needs the inverter’s NRS 097-2-1 certificate and a circuit diagram, and a registered professional engineer or technologist signs off commissioning. We prepare and submit the application and follow it up with the City.',
       },
-      { question: 'Can a business in Centurion install solar with no upfront cost?', answer: UPFRONT_ANSWER },
+      { question: 'Can a business in Centurion get a solar installation with no upfront cost?', answer: UPFRONT_ANSWER },
       {
-        question: 'Can I feed solar power back into Tshwane’s grid?',
+        question: 'Does the City of Tshwane credit solar power a business exports?',
         answer:
-          'Only with the City’s approval, on a registered system with a bidirectional meter. Sources disagree on whether Tshwane’s current tariffs allow export and credit it, so we confirm the position with the City for your site and size the system mainly for your own use.',
+          'Yes, once the City has approved the system. The City of Tshwane’s 2025/26 tariffs include a credit per kWh for exported power for registered, grid-tied customers with a bidirectional meter who remain net consumers over the year, and its draft 2026/27 tariffs keep the credit. We size systems mainly for your own use and treat export as a bonus.',
       },
-      AFTERCARE_FAQ,
+      {
+        question: 'Which solar rules apply to large factories in Rosslyn and Silverton?',
+        answer:
+          'The City of Tshwane may ask for a grid impact study, at your cost, for low-voltage systems above 350 kVA and for medium-voltage connections. On a dedicated low-voltage feeder, generation is limited to 75% of the site’s notified maximum demand, and the site keeps its normal fixed and demand charges. We size the system around your half-hourly data so the saving holds up.',
+      },
+      aftercareFaq('Pretoria and Centurion'),
     ],
   },
 };

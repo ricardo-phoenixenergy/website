@@ -46,7 +46,7 @@ describe('location content', () => {
 
   it.each(LOCATION_AREAS)('%s: keeps the other page’s places out of its title, H1 and headings', (area) => {
     const c = LOCATION_CONTENT[area];
-    for (const s of [c.seoTitle, c.eyebrow, c.h1, c.municipalities.heading, c.areas.heading, c.faqHeading]) {
+    for (const s of [c.seoTitle, c.eyebrow, c.h1, c.municipalities.heading, c.areas.heading, c.faqHeading, c.projects.heading, c.closing.heading]) {
       expect(s, s).not.toMatch(FORBIDDEN[area]);
     }
   });
@@ -57,7 +57,7 @@ describe('location content', () => {
     expect(c.seoTitle.length).toBeLessThanOrEqual(70);
     expect(c.seoDescription.length).toBeGreaterThanOrEqual(120);
     expect(c.seoDescription.length).toBeLessThanOrEqual(160);
-    expect(c.seoDescription).toMatch(/^We design, engineer, fund, install and operate/);
+    expect(c.seoDescription).toMatch(/^Commercial solar installers in /);
   });
 
   it.each(LOCATION_AREAS)('%s: carries the keyword in the eyebrow and one accent phrase in the H1', (area) => {
@@ -83,6 +83,32 @@ describe('location content', () => {
       expect(question).toMatch(/\?$/);
       for (const s of [question, answer]) expect(s, s).not.toMatch(/[<>&]/);
     }
+  });
+
+  it.each(LOCATION_AREAS)('%s: gives every supplier row a unique anchor, a short key fact and a one-sentence promise', (area) => {
+    const cards = LOCATION_CONTENT[area].municipalities.cards;
+    const ids = cards.map((c) => c.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const c of cards) {
+      expect(c.id).toMatch(/^[a-z]+(-[a-z]+)*$/);
+      expect(c.keyFact.length).toBeLessThanOrEqual(45);
+      expect(c.weHandle).toMatch(/^We .*\.$/);
+    }
+    for (const id of LOCATION_CONTENT[area].municipalities.defaultOpen ?? []) expect(ids).toContain(id);
+  });
+
+  it('carries the search phrases in visible text', () => {
+    const g = strings(LOCATION_CONTENT.gauteng).join(' ');
+    const p = strings(LOCATION_CONTENT['pretoria-centurion']).join(' ');
+    for (const phrase of ['Commercial solar installers', 'solar installers in Johannesburg', 'best solar companies in Johannesburg', 'solar installation']) expect(g).toContain(phrase);
+    for (const phrase of ['Commercial solar installers', 'solar companies in Pretoria', 'solar installation', 'Centurion']) expect(p).toContain(phrase);
+  });
+
+  it('names its further reading by slug and gives each page a local close', () => {
+    expect(LOCATION_CONTENT.gauteng.articleSlugs).toEqual(['ekurhuleni-tariff-c-2026-27-switch-to-tariff-e']);
+    expect(LOCATION_CONTENT['pretoria-centurion'].articleSlugs).toEqual([]);
+    expect(LOCATION_CONTENT.gauteng.closing.heading).toContain('Gauteng');
+    expect(LOCATION_CONTENT['pretoria-centurion'].closing.heading).toContain('Pretoria');
   });
 
   it('runs Design, Engineer, Fund, Build, Operate, with Operate the wide card', () => {
