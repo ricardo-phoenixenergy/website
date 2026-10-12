@@ -88,6 +88,7 @@ const REGISTER = {
       'VERTICAL_CONFIG stat (not rendered)',
       '/solutions/ci-solar-storage (meta description, "Zero upfront with our PPA model")',
       '/solutions/ci-solar-storage (hero, "zero upfront cost")',
+      '/solutions/ci-solar-storage/gauteng and /pretoria-centurion (Fund card and FAQ, "R0 upfront")',
     ],
   },
   'ci-system-lifespan': {

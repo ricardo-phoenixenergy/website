@@ -1,0 +1,320 @@
+// src/config/locations.ts
+// The words on the commercial solar location pages (src/app/solutions/
+// ci-solar-storage/[area]/page.tsx), per the spec in
+// docs/superpowers/specs/2026-10-12-location-pages-design.md.
+//
+// The municipal facts were checked on 12 October 2026. Official sources
+// (municipality, Eskom, NERSA) are stated plainly; news reports are named as
+// such. Where sources conflict or nothing official was found, the copy says
+// Phoenix confirms the position for the site. Tariffs change every July (Eskom
+// direct: April): recheck each card then and move its asOf.
+//
+// The pages never say what Phoenix is not. Figures come from the claims register.
+import type { ExplainerCardsProps } from '@/components/sections/ExplainerCards';
+import type { FaqItem } from '@/components/sections/FaqAccordion';
+import type { PlaceServed } from '@/lib/structuredData';
+import type { LocationArea } from '@/lib/locationAreas';
+import { locationPath } from '@/lib/locationAreas';
+import type { MunicipalityCard, PlaceGroup, SisterLink } from '@/types/locations';
+import { claimValue } from '@/config/claims';
+
+export interface LocationContent {
+  seoTitle: string;
+  seoDescription: string;
+  /** The Service block's name in structured data. */
+  serviceName: string;
+  /** The line above the H1: carries the search keyword. */
+  eyebrow: string;
+  /** Supports one <em> for the accent phrase. */
+  h1: string;
+  subtitle: string;
+  /** The line under this page's link on the C&I page. */
+  cardLine: string;
+  areaServed: PlaceServed[];
+  municipalities: { eyebrow: string; heading: string; subtitle: string; cards: MunicipalityCard[] };
+  areas: { eyebrow: string; heading: string; groups: PlaceGroup[]; sister: SisterLink };
+  faqHeading: string;
+  faqs: FaqItem[];
+}
+
+const CHECKED = '2026-10-12';
+const UPFRONT = claimValue('ci-ppa-upfront');
+
+/**
+ * The Operate card. Until Ricardo confirms which after-care services Phoenix
+ * provides (spec section 7, item 2), it says only what the claims register's
+ * PPA basis already states: Phoenix maintains the system.
+ */
+export const OPERATE_BODY =
+  'Handover is where our longest job starts. We look after the system for its working life and keep it producing at its best.';
+
+export const LIFECYCLE: Omit<ExplainerCardsProps, 'accent' | 'background'> = {
+  eyebrow: 'One team, start to finish',
+  heading: 'From your first bill review to <em>every year after</em>',
+  subtitle:
+    'One team carries your project from the first look at your electricity bill to running the system day to day, so the people who designed it answer for how it performs.',
+  cards: [
+    { icon: 'ClipboardCheck', title: 'Design', body: 'We start with your electricity bills and meter data, then size the solar and any battery to how your site uses power through the day and the year.' },
+    { icon: 'Sliders', title: 'Engineer', body: 'Our engineers produce the layout, structural checks and electrical design, and prepare the application your municipality or Eskom needs to approve the connection.' },
+    { icon: 'DollarSign', title: 'Fund', body: `Buy the system, rent it, or sign a power purchase agreement and pay ${UPFRONT} upfront: we fund the system and you pay for the power it produces.` },
+    { icon: 'Building', title: 'Build', body: 'We install, test and certify the system, then commission it with you before handover.' },
+    { icon: 'Activity', title: 'Operate', body: OPERATE_BODY, wide: true },
+  ],
+};
+
+/* ─── Shared answers ────────────────────────────────────────────────────── */
+
+const CHOOSING_ANSWER =
+  'Ask who designs the system, who signs off the electrical work and who looks after it once it runs. A registered professional should sign off the design, the installer should issue a certificate of compliance, and the company should be able to show commercial projects of a similar size. Ask too how the system is monitored after handover and who you call when output drops.';
+
+const UPFRONT_ANSWER = `Yes. Under a power purchase agreement we fund, install and maintain the system on your site. You pay ${UPFRONT} upfront and pay for the power the system produces.`;
+
+const AFTERCARE_FAQ: FaqItem = { question: 'Who looks after the system after it is installed?', answer: `We do. ${OPERATE_BODY}` };
+
+/* ─── Sources ───────────────────────────────────────────────────────────── */
+
+const SRC = {
+  eskomBooklet: { label: 'Eskom Tariffs and Charges Booklet 2026/27', url: 'https://www.eskom.co.za/distribution/wp-content/uploads/2026/07/Eskom-Tariff-booklet_Final.pdf' },
+  eskomSseg: { label: 'Eskom SSEG application process', url: 'https://www.eskom.co.za/distribution/wp-content/uploads/2025/04/20240703-SSEG-Application-process.docx.pdf' },
+  eskomRegistration: { label: 'Eskom, 21 October 2025', url: 'https://www.eskom.co.za/eskom-simplifies-solar-system-compliance-after-working-with-industry-stakeholders-extends-cost-relief-for-small-scale-embedded-generation-sseg-customers/' },
+  eskomWaiver: { label: 'Engineering News, 1 October 2026 (news report)', url: 'https://www.engineeringnews.co.za/article/eskom-extends-assistance-timeframe-for-grid-tied-solar-installation-registrations-amid-regulatory-cost-concerns-2026-10-01' },
+  eskomBulk: { label: 'Eskom 2026/27 tariff increase', url: 'https://www.eskom.co.za/distribution/2026-2027-tariff-increase/' },
+};
+
+/** Eskom's direct customers, on either page. */
+function eskomCard(servesWhere: string): MunicipalityCard {
+  return {
+    name: 'Eskom (direct supply)',
+    servesWhere,
+    tariff:
+      'Businesses up to 100 kVA are usually on Businessrate: one energy charge per kWh plus daily capacity, service and administration charges. Miniflex and Megaflex are time-of-use tariffs with peak, standard and off-peak rates by season, and capacity and demand charges per kVA. Eskom’s increase for direct customers was 8.76% from 1 April 2026.',
+    solar: [
+      'Businessrate is only for supplies without grid-tied generation, so a business adding grid-tied solar moves to a time-of-use tariff such as Miniflex. The two applications can run together.',
+      'Eskom runs a capacity study and issues a quotation before connection, and systems over 100 kW also register with NERSA.',
+      'Before the system is switched on, Eskom needs a compliance test report, a certificate of compliance, the inverter’s NRS 097 certificate and the safety labels.',
+      'Power exported on a time-of-use tariff is credited under Gen-offset, up to the energy you bought in the same period each month.',
+    ],
+    recent:
+      'Eskom has waived registration and connection fees for small systems until further notice. Reports describe the waiver as covering homes, so we confirm whether it applies to your site.',
+    sources: [SRC.eskomBooklet, SRC.eskomSseg, SRC.eskomWaiver],
+    asOf: CHECKED,
+  };
+}
+
+/* ─── Gauteng ───────────────────────────────────────────────────────────── */
+
+const CITY_POWER: MunicipalityCard = {
+  name: 'City Power',
+  servesWhere: 'Most of Johannesburg',
+  tariff:
+    'Smaller businesses pay a seasonal energy charge per kWh plus a fixed monthly service charge and a capacity charge. Larger users are on industrial tariffs with a demand charge per kVA, or on time-of-use tariffs with peak, standard and off-peak rates. The City set an average increase of 8.63% from 1 July 2026, and some customers pay more than the average.',
+  solar: [
+    'Grid-tied and hybrid systems up to 1 MVA must be registered, at businesses and homes alike, and registration is free.',
+    'City Power approves the design before installation, then gives final approval once the certificate of compliance and commissioning report are in.',
+    'Inverters need an NRS 097-2-1 certificate, and systems of 350 kVA or more need a grid impact study.',
+    'To export power you need a post-paid, bi-directional smart meter, which City Power installs at your cost.',
+  ],
+  recent:
+    'In January 2026, reports that City Power would move prepaid solar users to post-paid billing caused an outcry. City Power said there is no blanket policy, and that only customers who export need a bi-directional post-paid meter.',
+  sources: [
+    { label: 'City Power SSEG booklet (SSEG section of citypower.co.za)', url: 'https://www.citypower.co.za/' },
+    { label: 'City of Johannesburg 2026/27 budget report', url: 'https://joburg.org.za/documents_/Documents/2026-27-Final-Medium-Budget-Reports/2026-27-to-2028-29-Medium-Term-Operating-Budget-Report.pdf' },
+    { label: 'Energize, 13 January 2026 (news report)', url: 'https://www.energize.co.za/article/no-solar-penalty-city-power-says-amid-prepaid-meter-claims' },
+  ],
+  asOf: CHECKED,
+};
+
+const EKURHULENI: MunicipalityCard = {
+  name: 'City of Ekurhuleni',
+  servesWhere: 'Germiston, Kempton Park, Boksburg, Benoni, Brakpan, Alberton and surrounds',
+  tariff:
+    'Smaller business supplies up to 100 kVA pay a monthly basic charge, a capacity charge per ampere and a seasonal energy charge, higher from June to August. Larger supplies add a demand charge and a network access charge per kVA, with time-of-use energy rates and a reactive energy charge.',
+  solar: [
+    'You need the City’s written consent before connecting any generator, and that applies to commercial and industrial sites.',
+    'The City issues a first approval before construction and a final approval after commissioning.',
+    'Designs above 18 kVA are signed off at commissioning by a registered professional engineer or technologist, and inverters need NRS 097-2-1 type-test certificates.',
+    'The site must stay a net consumer each month, and the City fits a four-quadrant import and export meter at your cost.',
+    'Sites inside Ekurhuleni that Eskom supplies apply to Eskom, not the City.',
+  ],
+  recent:
+    'The 2026/27 tariffs include an export credit for registered systems, which the City will pay once its billing system can bill it. In January 2026 the High Court set aside the City’s 2024/25 tariffs after a challenge by industrial users.',
+  sources: [
+    { label: 'Ekurhuleni electricity tariffs 2026/27', url: 'https://www.ekurhuleni.gov.za/wp-content/uploads/2026/07/Schedule-2-of-Electricity-Tariffs-2026-27-aligned-with-NERSA-rates-approved-on-23-May-2026-v.26.07.30-signed.pdf' },
+    { label: 'Ekurhuleni embedded generation guideline', url: 'https://www.ekurhuleni.gov.za/wp-content/uploads/2026/07/Annexure-E25-Guideline-for-Embedded-Generation.pdf' },
+    { label: 'Ekurhuleni electricity tariff policy', url: 'https://www.ekurhuleni.gov.za/wp-content/uploads/2026/07/Annexure-E16-Electricity-Tariff-Policy-Revised.pdf' },
+    { label: 'Ekurhuleni registration process', url: 'https://www.ekurhuleni.gov.za/wp-content/uploads/2023/02/City-of-Ekurhuleni-embedded-generation-registration-process-summary.pdf' },
+    { label: 'EWN, 15 January 2026 (news report)', url: 'https://www.ewn.co.za/2026/01/15/another-nersa-blunder-as-court-orders-do-over-of-electricity-tariffs-for-4-municipalities' },
+  ],
+  asOf: CHECKED,
+};
+
+const EMFULENI: MunicipalityCard = {
+  name: 'Emfuleni',
+  servesWhere: 'Vereeniging and Vanderbijlpark',
+  tariff:
+    'Small businesses are on prepaid or conventional commercial tariffs with seasonal energy rates. Larger supplies pay a basic charge, a demand charge per kVA and summer and winter energy rates, and Miniflex, Megaflex and Nightsave time-of-use tariffs are offered. The council approved a 13.5% increase for 2026/27, subject to NERSA.',
+  solar: [
+    'Eskom runs billing, queries and new connections as the municipality’s agent.',
+    'The 2025/26 business tariffs carry no charge specific to solar.',
+    'The municipality publishes no registration process for solar, so we confirm the requirements with Emfuleni and Eskom for your site.',
+  ],
+  recent:
+    'In June 2026 the council approved in principle a once-off application fee and a monthly levy on solar users. Reports describe it as aimed at households, and it is being contested. We check where it stands before we design.',
+  sources: [
+    { label: 'Emfuleni tariff booklet 2025/26', url: 'https://emfuleni.gov.za/wp-content/uploads/2025/07/ELM-tariff-booklet-2025-2026-latest.pdf' },
+    { label: 'Emfuleni council resolution, 10 June 2026', url: 'https://emfuleni.gov.za/wp-content/uploads/2026/07/Council-Resolution-26_27.pdf' },
+    { label: 'EWN, 4 October 2024 (news report)', url: 'https://www.ewn.co.za/2024/10/04/to-enhance-revenue-collection-emfuleni-municipality-signs-distribution-agreement-with-eskom' },
+    { label: 'Sedibeng Ster, 15 June 2026 (news report)', url: 'https://www.citizen.co.za/sedibeng-ster/news/news-news/2026/06/15/emfuleni-plans-to-penalise-solar-power-users/' },
+  ],
+  asOf: CHECKED,
+};
+
+/* ─── Pretoria and Centurion ────────────────────────────────────────────── */
+
+const TSHWANE: MunicipalityCard = {
+  name: 'City of Tshwane',
+  servesWhere: 'Pretoria, Centurion, Rosslyn, Silverton and surrounds',
+  tariff:
+    'Tshwane raised its electricity tariffs by 8.8% from 1 July 2026, slightly below the 9.01% rise in what municipalities pay Eskom. Business tariffs differ by the size of the supply, so we start from your bills and your meter data.',
+  solar: [
+    'Every grid-tied system must be registered with its supplier, whether or not it exports.',
+    'Applications include the inverter’s NRS 097-2-1 certificate, an electrical diagram and the signatures of the installer and a professional.',
+    'Feeding power back into the grid needs the City’s approval, a registered system and a bidirectional meter.',
+  ],
+  recent:
+    'SAPVIA, the solar industry body, has raised slow approvals with the City, and the City is reviewing its process. We prepare the application and follow it up with the City for you.',
+  sources: [
+    { label: 'City of Tshwane, 1 July 2026', url: 'https://www.tshwane.gov.za/?p=102188' },
+    { label: 'City of Tshwane, 19 March 2024', url: 'https://www.tshwane.gov.za/?p=70218' },
+    SRC.eskomRegistration,
+    SRC.eskomBulk,
+    { label: 'SurgePV Tshwane guide (industry guide)', url: 'https://www.surgepv.com/solar-compliance/south-africa/municipalities/tshwane' },
+    { label: 'SAPVIA (industry body)', url: 'https://sapvia.co.za/?p=107000' },
+  ],
+  asOf: CHECKED,
+};
+
+/* ─── The pages ─────────────────────────────────────────────────────────── */
+
+export const LOCATION_CONTENT: Record<LocationArea, LocationContent> = {
+  gauteng: {
+    seoTitle: 'Commercial Solar Installers in Gauteng | Phoenix Energy',
+    seoDescription:
+      'We design, engineer, fund, install and operate commercial solar and battery storage across Johannesburg, Ekurhuleni, Midrand, the West Rand and the Vaal.',
+    serviceName: 'Commercial solar and storage in Gauteng',
+    eyebrow: 'Commercial solar installers · Gauteng',
+    h1: 'Commercial solar in Gauteng, <em>designed, funded and built</em> by one team',
+    subtitle:
+      'For factories, warehouses, offices, farms, schools and estates across Johannesburg, Ekurhuleni and the Vaal. We design and engineer the system, fund it if you prefer, install it and run it for its working life.',
+    cardLine: 'Johannesburg, Ekurhuleni, Midrand, the West Rand and the Vaal.',
+    areaServed: [
+      { '@type': 'City', name: 'Johannesburg' },
+      { '@type': 'AdministrativeArea', name: 'City of Ekurhuleni' },
+      { '@type': 'AdministrativeArea', name: 'Emfuleni Local Municipality' },
+      { '@type': 'AdministrativeArea', name: 'Gauteng' },
+    ],
+    municipalities: {
+      eyebrow: 'Your municipality, your numbers',
+      heading: 'Tariffs and solar rules where your business is',
+      subtitle:
+        'City Power, Eskom, Ekurhuleni and Emfuleni each set their own tariffs and rules for connecting solar. This is what applies to businesses, as checked in October 2026.',
+      cards: [CITY_POWER, eskomCard('Parts of Soweto, Sandton, Diepsloot, Ivory Park and Orange Farm, and any site Eskom bills directly'), EKURHULENI, EMFULENI],
+    },
+    areas: {
+      eyebrow: 'Where we work',
+      heading: 'Where we work in Gauteng',
+      groups: [
+        { name: 'Johannesburg', places: ['Sandton', 'Midrand', 'Randburg', 'Rosebank', 'Roodepoort', 'the Johannesburg CBD', 'City Deep', 'Soweto'] },
+        { name: 'Ekurhuleni', places: ['Germiston', 'Kempton Park', 'Isando', 'Jet Park', 'Boksburg', 'Benoni', 'Brakpan', 'Alberton'] },
+        { name: 'West Rand', places: ['Krugersdorp', 'Randfontein', 'Westonaria'] },
+        { name: 'The Vaal', places: ['Vereeniging', 'Vanderbijlpark'] },
+      ],
+      sister: {
+        heading: 'Based in Pretoria or Centurion?',
+        body: 'Tshwane sets its own tariffs and solar rules, so it has its own page.',
+        label: 'Commercial solar in Pretoria and Centurion',
+        href: locationPath('pretoria-centurion'),
+      },
+    },
+    faqHeading: 'Commercial solar in Gauteng: your questions',
+    faqs: [
+      { question: 'How do I choose a commercial solar company in Johannesburg?', answer: CHOOSING_ANSWER },
+      {
+        question: 'Do I need approval before installing solar at a business in Johannesburg?',
+        answer:
+          'Yes. City Power requires grid-tied and hybrid systems up to 1 MVA to be registered, at businesses and homes, and approves the design before installation. If Eskom bills your site directly, Eskom approves it instead, and you move to a time-of-use tariff such as Miniflex first. We prepare and submit the application as part of the project.',
+      },
+      { question: 'Can a business in Gauteng install solar with no upfront cost?', answer: UPFRONT_ANSWER },
+      {
+        question: 'Does the Joburg solar billing change affect businesses?',
+        answer:
+          'The reports in early 2026 were about prepaid customers being moved to post-paid billing. City Power said there is no blanket policy, and that a bi-directional post-paid meter is needed only by customers who export. A business that wants to export needs that meter in any case, and we include it in the plan and the payback figures.',
+      },
+      {
+        question: 'Can I sell solar power back to the grid in Ekurhuleni?',
+        answer:
+          'Registered systems can earn an export credit under the City’s 2026/27 tariffs, as long as the site stays a net consumer each month and has a four-quadrant import and export meter. The City says credits start once its billing system can bill them, so we size systems mainly for your own use.',
+      },
+      {
+        question: 'Do you install commercial solar in the Vaal?',
+        answer:
+          'Yes. We work across Emfuleni, including Vereeniging and Vanderbijlpark. Eskom runs billing and connections there as the municipality’s agent, and we confirm the current solar rules and any levy for your site before we design.',
+      },
+      AFTERCARE_FAQ,
+    ],
+  },
+
+  'pretoria-centurion': {
+    seoTitle: 'Commercial Solar Installers, Pretoria & Centurion | Phoenix Energy',
+    seoDescription:
+      'We design, engineer, fund, install and operate commercial solar and battery storage for businesses in Pretoria, Centurion, Rosslyn and across Tshwane.',
+    serviceName: 'Commercial solar and storage in Pretoria and Centurion',
+    eyebrow: 'Commercial solar installers · Pretoria & Centurion',
+    h1: 'Commercial solar in Pretoria and Centurion, <em>designed, funded and built</em> by one team',
+    subtitle:
+      'For factories, warehouses, offices, farms, schools and estates across Tshwane, from Rosslyn to Centurion. We design and engineer the system, fund it if you prefer, install it and run it for its working life.',
+    cardLine: 'Pretoria, Centurion, Rosslyn and the rest of Tshwane.',
+    areaServed: [
+      { '@type': 'City', name: 'Pretoria' },
+      { '@type': 'City', name: 'Centurion' },
+      { '@type': 'AdministrativeArea', name: 'City of Tshwane' },
+    ],
+    municipalities: {
+      eyebrow: 'Your municipality, your numbers',
+      heading: 'Tariffs and solar rules where your business is',
+      subtitle:
+        'Most businesses here buy power from the City of Tshwane; some are billed by Eskom directly. This is what applies to businesses, as checked in October 2026.',
+      cards: [TSHWANE, eskomCard('Any site in and around Tshwane that Eskom bills directly')],
+    },
+    areas: {
+      eyebrow: 'Where we work',
+      heading: 'Where we work in Pretoria and Centurion',
+      groups: [
+        { name: 'Pretoria', places: ['the Pretoria CBD', 'Pretoria East', 'Hatfield', 'Menlyn', 'Silverton', 'Rosslyn', 'Pretoria West'] },
+        { name: 'Centurion', places: ['Centurion', 'Irene', 'Highveld', 'Samrand', 'Lyttelton'] },
+      ],
+      sister: {
+        heading: 'Johannesburg, Ekurhuleni or the Vaal?',
+        body: 'Each sets its own tariffs and solar rules. See our page for the rest of the province.',
+        label: 'Commercial solar in Gauteng',
+        href: locationPath('gauteng'),
+      },
+    },
+    faqHeading: 'Commercial solar in Pretoria and Centurion: your questions',
+    faqs: [
+      { question: 'How do I choose a solar company in Pretoria?', answer: CHOOSING_ANSWER },
+      {
+        question: 'Do I need Tshwane’s approval before installing solar at my business?',
+        answer:
+          'Yes. Every grid-tied system must be registered with its supplier, whether or not it exports. Tshwane asks for the inverter’s NRS 097-2-1 certificate, an electrical diagram and the signatures of the installer and a professional. We prepare and submit the application and follow it up with the City.',
+      },
+      { question: 'Can a business in Centurion install solar with no upfront cost?', answer: UPFRONT_ANSWER },
+      {
+        question: 'Can I feed solar power back into Tshwane’s grid?',
+        answer:
+          'Only with the City’s approval, on a registered system with a bidirectional meter. Sources disagree on whether Tshwane’s current tariffs allow export and credit it, so we confirm the position with the City for your site and size the system mainly for your own use.',
+      },
+      AFTERCARE_FAQ,
+    ],
+  },
+};
