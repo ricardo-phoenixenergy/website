@@ -69,16 +69,62 @@ export function websiteJsonLd({ searchable }: { searchable: boolean }) {
   };
 }
 
-/** A service, on its solution page, or on a location page with the places it serves. */
-export function serviceJsonLd(service: { name: string; description: string; path: string; areaServed?: readonly PlaceServed[] }) {
+/** A service, on its solution page, or on a location page with the places it serves, its type, audience and ways to pay. */
+export function serviceJsonLd(service: {
+  name: string;
+  description: string;
+  path: string;
+  areaServed?: readonly PlaceServed[];
+  serviceType?: string;
+  offers?: readonly string[];
+  businessAudience?: boolean;
+}) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Service',
+    ...(service.serviceType ? { '@id': `${absoluteUrl(service.path)}#service`, serviceType: service.serviceType } : {}),
     name: service.name,
     description: service.description,
     url: absoluteUrl(service.path),
     provider: ORGANIZATION_REF,
     areaServed: service.areaServed?.length ? service.areaServed : AREA_SERVED,
+    ...(service.serviceType && service.businessAudience ? { audience: { '@type': 'BusinessAudience' } } : {}),
+    ...(service.serviceType && service.offers?.length
+      ? {
+          hasOfferCatalog: {
+            '@type': 'OfferCatalog',
+            name: 'Ways to pay',
+            itemListElement: service.offers.map((name) => ({ '@type': 'Offer', name })),
+          },
+        }
+      : {}),
+  };
+}
+
+/** A page of the site: when it was last checked, the site it belongs to, what it is about and the bodies it mentions. */
+export function webPageJsonLd(page: {
+  path: string;
+  name: string;
+  description: string;
+  dateModified: string;
+  aboutId?: string;
+  mentions?: readonly { name: string; url: string }[];
+}) {
+  const url = absoluteUrl(page.path);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': `${url}#webpage`,
+    url,
+    name: page.name,
+    description: page.description,
+    dateModified: page.dateModified,
+    inLanguage: 'en-ZA',
+    isPartOf: { '@id': WEBSITE_ID },
+    ...(page.aboutId ? { about: { '@id': page.aboutId } } : {}),
+    ...(page.mentions?.length
+      ? { mentions: page.mentions.map((m) => ({ '@type': 'Organization', name: m.name, sameAs: m.url })) }
+      : {}),
   };
 }
 

@@ -38,7 +38,8 @@ export interface LocationContent {
   faqs: FaqItem[];
 }
 
-const CHECKED = '2026-10-12';
+/** The date the municipal facts on the location pages were last checked. */
+export const LOCATION_FACTS_CHECKED = '2026-10-12';
 const UPFRONT = claimValue('ci-ppa-upfront');
 
 /**
@@ -101,7 +102,7 @@ function eskomCard(servesWhere: string): MunicipalityCard {
     recent:
       'Eskom has waived registration and connection fees for small systems until further notice. Reports describe the waiver as covering homes, so we confirm whether it applies to your site.',
     sources: [SRC.eskomBooklet, SRC.eskomSseg, SRC.eskomWaiver],
-    asOf: CHECKED,
+    asOf: LOCATION_FACTS_CHECKED,
   };
 }
 
@@ -128,7 +129,7 @@ const CITY_POWER: MunicipalityCard = {
     { label: 'City of Johannesburg 2026/27 budget report', url: 'https://joburg.org.za/documents_/Documents/2026-27-Final-Medium-Budget-Reports/2026-27-to-2028-29-Medium-Term-Operating-Budget-Report.pdf' },
     { label: 'Energize, 13 January 2026 (news report)', url: 'https://www.energize.co.za/article/no-solar-penalty-city-power-says-amid-prepaid-meter-claims' },
   ],
-  asOf: CHECKED,
+  asOf: LOCATION_FACTS_CHECKED,
 };
 
 const EKURHULENI: MunicipalityCard = {
@@ -156,7 +157,7 @@ const EKURHULENI: MunicipalityCard = {
     { label: 'EWN, 15 January 2026 (news report)', url: 'https://www.ewn.co.za/2026/01/15/another-nersa-blunder-as-court-orders-do-over-of-electricity-tariffs-for-4-municipalities' },
   ],
   readMore: { label: 'Tariff C or Tariff E: what Ekurhuleni’s 2026/27 tariffs mean for your business', href: '/blog/ekurhuleni-tariff-c-2026-27-switch-to-tariff-e' },
-  asOf: CHECKED,
+  asOf: LOCATION_FACTS_CHECKED,
 };
 
 const EMFULENI: MunicipalityCard = {
@@ -180,7 +181,7 @@ const EMFULENI: MunicipalityCard = {
     { label: 'EWN, 4 October 2024 (news report)', url: 'https://www.ewn.co.za/2024/10/04/to-enhance-revenue-collection-emfuleni-municipality-signs-distribution-agreement-with-eskom' },
     { label: 'Sedibeng Ster, 15 June 2026 (news report)', url: 'https://www.citizen.co.za/sedibeng-ster/news/news-news/2026/06/15/emfuleni-plans-to-penalise-solar-power-users/' },
   ],
-  asOf: CHECKED,
+  asOf: LOCATION_FACTS_CHECKED,
 };
 
 /* ─── Pretoria and Centurion ────────────────────────────────────────────── */
@@ -208,7 +209,7 @@ const TSHWANE: MunicipalityCard = {
     { label: 'SurgePV Tshwane guide (industry guide)', url: 'https://www.surgepv.com/solar-compliance/south-africa/municipalities/tshwane' },
     { label: 'SAPVIA (industry body)', url: 'https://sapvia.co.za/?p=107000' },
   ],
-  asOf: CHECKED,
+  asOf: LOCATION_FACTS_CHECKED,
 };
 
 /** The box beside the municipality accordion. */

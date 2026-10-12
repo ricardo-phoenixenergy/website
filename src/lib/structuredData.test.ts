@@ -6,9 +6,11 @@ import {
   HOME_CRUMB,
   ORGANIZATION_ID,
   ORGANIZATION_REF,
+  WEBSITE_ID,
   breadcrumbJsonLd,
   organizationJsonLd,
   serviceJsonLd,
+  webPageJsonLd,
   websiteJsonLd,
 } from './structuredData';
 
@@ -68,6 +70,60 @@ describe('serviceJsonLd', () => {
 
   it('keeps South Africa when the list is empty', () => {
     expect(serviceJsonLd({ name: 'n', description: 'd', path: '/p', areaServed: [] }).areaServed).toEqual({ '@type': 'Country', name: 'South Africa' });
+  });
+
+  it('adds an id, a service type, the audience and a catalogue of offers when asked', () => {
+    const service = serviceJsonLd({
+      name: 'Commercial solar in Gauteng',
+      description: 'd',
+      path: '/solutions/ci-solar-storage/gauteng',
+      serviceType: 'Commercial solar installation',
+      businessAudience: true,
+      offers: ['PPA', 'Lease', 'Purchase'],
+    });
+    expect(service['@id']).toBe(`${SITE_URL}/solutions/ci-solar-storage/gauteng#service`);
+    expect(service.serviceType).toBe('Commercial solar installation');
+    expect(service.audience).toEqual({ '@type': 'BusinessAudience' });
+    expect(service.hasOfferCatalog).toEqual({
+      '@type': 'OfferCatalog',
+      name: 'Ways to pay',
+      itemListElement: [
+        { '@type': 'Offer', name: 'PPA' },
+        { '@type': 'Offer', name: 'Lease' },
+        { '@type': 'Offer', name: 'Purchase' },
+      ],
+    });
+  });
+
+  it('adds none of the extras without them', () => {
+    const service = serviceJsonLd({ name: 'n', description: 'd', path: '/p', offers: [], businessAudience: true });
+    expect(Object.keys(service)).not.toContain('@id');
+    expect(Object.keys(service)).not.toContain('audience');
+    expect(Object.keys(service)).not.toContain('hasOfferCatalog');
+  });
+});
+
+describe('webPageJsonLd', () => {
+  it('names the page, its date, its site, its subject and the bodies it mentions', () => {
+    const page = webPageJsonLd({
+      path: '/solutions/ci-solar-storage/gauteng',
+      name: 'Gauteng',
+      description: 'd',
+      dateModified: '2026-10-12',
+      aboutId: `${SITE_URL}/solutions/ci-solar-storage/gauteng#service`,
+      mentions: [{ name: 'Wheeling Energy Group', url: 'https://weg.example' }],
+    });
+    expect(page['@id']).toMatch(/#webpage$/);
+    expect(page.dateModified).toBe('2026-10-12');
+    expect(page.isPartOf).toEqual({ '@id': WEBSITE_ID });
+    expect(page.about).toEqual({ '@id': `${SITE_URL}/solutions/ci-solar-storage/gauteng#service` });
+    expect(page.mentions).toEqual([{ '@type': 'Organization', name: 'Wheeling Energy Group', sameAs: 'https://weg.example' }]);
+  });
+
+  it('leaves out about and mentions when not given', () => {
+    const page = webPageJsonLd({ path: '/p', name: 'n', description: 'd', dateModified: '2026-10-12' });
+    expect(Object.keys(page)).not.toContain('about');
+    expect(Object.keys(page)).not.toContain('mentions');
   });
 });
 
