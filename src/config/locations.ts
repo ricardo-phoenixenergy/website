@@ -15,8 +15,9 @@ import type { FaqItem } from '@/components/sections/FaqAccordion';
 import type { PlaceServed } from '@/lib/structuredData';
 import type { LocationArea } from '@/lib/locationAreas';
 import { locationPath } from '@/lib/locationAreas';
-import type { MunicipalityCard, PlaceGroup, SisterLink } from '@/types/locations';
+import type { MunicipalityCard, PlaceGroup, SisterLink, SupplierHelp } from '@/types/locations';
 import { claimValue } from '@/config/claims';
+import { contactHref } from '@/lib/contactLink';
 
 export interface LocationContent {
   seoTitle: string;
@@ -31,7 +32,7 @@ export interface LocationContent {
   /** The line under this page's link on the C&I page. */
   cardLine: string;
   areaServed: PlaceServed[];
-  municipalities: { eyebrow: string; heading: string; subtitle: string; cards: MunicipalityCard[] };
+  municipalities: { eyebrow: string; heading: string; subtitle: string; cards: MunicipalityCard[]; defaultOpen?: string[] };
   areas: { eyebrow: string; heading: string; groups: PlaceGroup[]; sister: SisterLink };
   faqHeading: string;
   faqs: FaqItem[];
@@ -84,8 +85,11 @@ const SRC = {
 /** Eskom's direct customers, on either page. */
 function eskomCard(servesWhere: string): MunicipalityCard {
   return {
+    id: 'eskom',
     name: 'Eskom (direct supply)',
     servesWhere,
+    keyFact: 'Up 8.76% from 1 April 2026',
+    weHandle: 'We apply to Eskom, including any move to a time-of-use tariff.',
     tariff:
       'Businesses up to 100 kVA are usually on Businessrate: one energy charge per kWh plus daily capacity, service and administration charges. Miniflex and Megaflex are time-of-use tariffs with peak, standard and off-peak rates by season, and capacity and demand charges per kVA. Eskom’s increase for direct customers was 8.76% from 1 April 2026.',
     solar: [
@@ -104,8 +108,11 @@ function eskomCard(servesWhere: string): MunicipalityCard {
 /* ─── Gauteng ───────────────────────────────────────────────────────────── */
 
 const CITY_POWER: MunicipalityCard = {
+  id: 'city-power',
   name: 'City Power',
   servesWhere: 'Most of Johannesburg',
+  keyFact: 'Up 8.63% on average from 1 July 2026',
+  weHandle: 'We prepare the registration, submit it to City Power and follow it up.',
   tariff:
     'Smaller businesses pay a seasonal energy charge per kWh plus a fixed monthly service charge and a capacity charge. Larger users are on industrial tariffs with a demand charge per kVA, or on time-of-use tariffs with peak, standard and off-peak rates. The City set an average increase of 8.63% from 1 July 2026, and some customers pay more than the average.',
   solar: [
@@ -125,8 +132,11 @@ const CITY_POWER: MunicipalityCard = {
 };
 
 const EKURHULENI: MunicipalityCard = {
+  id: 'ekurhuleni',
   name: 'City of Ekurhuleni',
   servesWhere: 'Germiston, Kempton Park, Boksburg, Benoni, Brakpan, Alberton and surrounds',
+  keyFact: 'Export credit in the 2026/27 tariffs',
+  weHandle: 'We apply for the City’s consent and handle commissioning sign-off.',
   tariff:
     'Smaller business supplies up to 100 kVA pay a monthly basic charge, a capacity charge per ampere and a seasonal energy charge, higher from June to August. Larger supplies add a demand charge and a network access charge per kVA, with time-of-use energy rates and a reactive energy charge.',
   solar: [
@@ -150,8 +160,11 @@ const EKURHULENI: MunicipalityCard = {
 };
 
 const EMFULENI: MunicipalityCard = {
+  id: 'emfuleni',
   name: 'Emfuleni',
   servesWhere: 'Vereeniging and Vanderbijlpark',
+  keyFact: 'Council approved 13.5%, subject to NERSA',
+  weHandle: 'We confirm the current rules and any levy with Emfuleni and Eskom.',
   tariff:
     'Small businesses are on prepaid or conventional commercial tariffs with seasonal energy rates. Larger supplies pay a basic charge, a demand charge per kVA and summer and winter energy rates, and Miniflex, Megaflex and Nightsave time-of-use tariffs are offered. The council approved a 13.5% increase for 2026/27, subject to NERSA.',
   solar: [
@@ -173,8 +186,11 @@ const EMFULENI: MunicipalityCard = {
 /* ─── Pretoria and Centurion ────────────────────────────────────────────── */
 
 const TSHWANE: MunicipalityCard = {
+  id: 'tshwane',
   name: 'City of Tshwane',
   servesWhere: 'Pretoria, Centurion, Rosslyn, Silverton and surrounds',
+  keyFact: 'Up 8.8% from 1 July 2026',
+  weHandle: 'We prepare the application and follow it up with the City.',
   tariff:
     'Tshwane raised its electricity tariffs by 8.8% from 1 July 2026, slightly below the 9.01% rise in what municipalities pay Eskom. Business tariffs differ by the size of the supply, so we start from your bills and your meter data.',
   solar: [
@@ -193,6 +209,13 @@ const TSHWANE: MunicipalityCard = {
     { label: 'SAPVIA (industry body)', url: 'https://sapvia.co.za/?p=107000' },
   ],
   asOf: CHECKED,
+};
+
+/** The box beside the municipality accordion. */
+export const SUPPLIER_HELP: SupplierHelp = {
+  text: 'Not sure who supplies you? The name on your electricity bill tells you. Send us a recent bill and we’ll check.',
+  linkLabel: 'Send us your bill',
+  href: contactHref('I’d like you to check who supplies electricity to my business site, and what solar could do there.'),
 };
 
 /* ─── The pages ─────────────────────────────────────────────────────────── */
@@ -286,6 +309,7 @@ export const LOCATION_CONTENT: Record<LocationArea, LocationContent> = {
       subtitle:
         'Most businesses here buy power from the City of Tshwane; some are billed by Eskom directly. This is what applies to businesses, as checked in October 2026.',
       cards: [TSHWANE, eskomCard('Any site in and around Tshwane that Eskom bills directly')],
+      defaultOpen: ['tshwane'],
     },
     areas: {
       eyebrow: 'Where we work',

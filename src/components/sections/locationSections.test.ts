@@ -2,7 +2,7 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { MunicipalityCards } from './MunicipalityCards';
+import { SupplierAccordion } from './SupplierAccordion';
 import { ServiceAreaList } from './ServiceAreaList';
 import { LocationLinks } from './LocationLinks';
 import { ExplainerCards } from './ExplainerCards';
@@ -12,41 +12,71 @@ const html = (el: Parameters<typeof renderToStaticMarkup>[0]) => renderToStaticM
 const text = (markup: string) => markup.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
 const ACCENT = '#E3C58D';
 
-const card: MunicipalityCard = {
-  name: 'City Power',
+const row = (id: string, name: string): MunicipalityCard => ({
+  id,
+  name,
   servesWhere: 'Most of Johannesburg',
+  keyFact: 'Up 8.63% on average from 1 July 2026',
+  weHandle: 'We prepare the registration and follow it up.',
   tariff: 'Business customers pay an energy charge and fixed charges.',
   solar: ['Register before you connect.', 'An engineer signs off the design.'],
   recent: 'A new charge applies from July.',
-  readMore: { label: 'What the billing change means for your payback', href: '/blog/joburg-solar-billing-change' },
+  readMore: { label: 'Read the article', href: '/blog/a-post' },
   sources: [{ label: 'City Power', url: 'https://www.citypower.co.za/' }],
   asOf: '2026-10-12',
-};
+});
+const help = { text: 'Not sure who supplies you? The name on your electricity bill tells you.', linkLabel: 'Send us a bill', href: '/contact' };
 
-describe('MunicipalityCards', () => {
-  const markup = html(createElement(MunicipalityCards, { eyebrow: 'Your municipality, your numbers', heading: 'Who supplies your power', cards: [card], accent: ACCENT }));
+describe('SupplierAccordion', () => {
+  const markup = html(createElement(SupplierAccordion, {
+    eyebrow: 'Your municipality, your numbers',
+    heading: 'Johannesburg tariffs and solar rules',
+    subtitle: 'Each supplier sets its own rules.',
+    cards: [row('city-power', 'City Power'), row('eskom', 'Eskom (direct supply)')],
+    help,
+    accent: ACCENT,
+  }));
 
-  it('gives each supplier a heading, its tariff and its solar steps as a list', () => {
-    expect(markup).toMatch(/<h2[^>]*>Who supplies your power<\/h2>/);
-    expect(markup).toMatch(/<h3[^>]*>City Power<\/h3>/);
-    expect(markup.match(/<li/g)).toHaveLength(2);
-    expect(text(markup)).toContain('A new charge applies from July.');
+  it('shows each supplier as a button row with its anchor, where it supplies and its key fact', () => {
+    expect(markup).toMatch(/<h2[^>]*>Johannesburg tariffs and solar rules<\/h2>/);
+    expect(markup).toContain('id="city-power"');
+    expect(markup).toContain('id="eskom"');
+    expect(markup.match(/<button[^>]*aria-expanded="false"/g)).toHaveLength(2);
+    expect(text(markup)).toContain('Up 8.63% on average from 1 July 2026');
+    expect(text(markup)).toContain('Most of Johannesburg');
   });
 
-  it('says when the facts were checked and links the source, so a reader can see they are dated', () => {
-    expect(text(markup)).toContain('Checked 12 October 2026');
-    expect(markup).toContain('href="https://www.citypower.co.za/"');
+  it('keeps every panel in the page, collapsed but findable, and labelled by its button', () => {
+    const panels = markup.match(/<div[^>]*role="region"[^>]*>/g) ?? [];
+    expect(panels).toHaveLength(2);
+    for (const p of panels) {
+      expect(p).toMatch(/hidden="until-found"|hidden=""/);
+      expect(p).toMatch(/aria-labelledby="[^"]+"/);
+    }
+    const controls = [...markup.matchAll(/aria-controls="([^"]+)"/g)].map((m) => m[1]);
+    for (const id of controls) expect(markup).toContain(`id="${id}"`);
+    expect(text(markup)).toContain('Register before you connect.');
+  });
+
+  it('leads the panel with what Phoenix handles, lists the steps in order, and dates the sources', () => {
+    const t = text(markup);
+    expect(t.indexOf('We prepare the registration')).toBeLessThan(t.indexOf('Business customers pay'));
+    expect(markup).toMatch(/<ol[^>]*>\s*<li/);
+    expect(t).toContain('Checked 12 October 2026');
     expect(markup).toMatch(/href="https:\/\/www\.citypower\.co\.za\/"[^>]*rel="noopener noreferrer"/);
   });
 
-  it('links the article when there is one', () => {
-    expect(markup).toContain('href="/blog/joburg-solar-billing-change"');
+  it('opens the rows named in defaultOpen', () => {
+    const open = html(createElement(SupplierAccordion, {
+      eyebrow: 'e', heading: 'h', subtitle: 's', cards: [row('tshwane', 'City of Tshwane')], help, accent: ACCENT, defaultOpen: ['tshwane'],
+    }));
+    expect(open).toMatch(/<button[^>]*aria-expanded="true"/);
+    expect(open.match(/<div[^>]*role="region"[^>]*>/)?.[0]).not.toMatch(/hidden=/);
   });
 
-  it('leaves out the recent-change line and the article link when there are none', () => {
-    const bare = html(createElement(MunicipalityCards, { eyebrow: 'e', heading: 'h', cards: [{ ...card, recent: undefined, readMore: undefined }], accent: ACCENT }));
-    expect(bare).not.toContain('A new charge');
-    expect(bare).not.toContain('/blog/');
+  it('shows the help box with its link', () => {
+    expect(text(markup)).toContain('The name on your electricity bill tells you.');
+    expect(markup).toContain('href="/contact"');
   });
 });
 

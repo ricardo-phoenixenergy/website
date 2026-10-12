@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { SolutionHero } from '@/components/sections/SolutionHero';
 import { ExplainerCards } from '@/components/sections/ExplainerCards';
-import { MunicipalityCards } from '@/components/sections/MunicipalityCards';
+import { SupplierAccordion } from '@/components/sections/SupplierAccordion';
 import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
 import { FinancingBand } from '@/components/sections/FinancingBand';
 import { ServiceAreaList } from '@/components/sections/ServiceAreaList';
@@ -20,7 +20,7 @@ import { getProjectsByArea } from '@/lib/projectData';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import { SERVICE_CTA } from '@/config/ctas';
-import { LIFECYCLE, LOCATION_CONTENT } from '@/config/locations';
+import { LIFECYCLE, LOCATION_CONTENT, SUPPLIER_HELP } from '@/config/locations';
 import { LOCATION_AREAS, LOCATION_AREA_LABEL, isLocationArea, locationPath } from '@/lib/locationAreas';
 import { pageMetadata } from '@/lib/seo';
 import { serviceJsonLd, breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
@@ -91,7 +91,7 @@ export default async function LocationPage({ params }: PageProps) {
         <StrategyFinder vertical={vertical} />
       </SolutionHero>
       <ExplainerCards {...LIFECYCLE} accent={meta.accent} background="white" />
-      <MunicipalityCards {...content.municipalities} accent={meta.accent} />
+      <SupplierAccordion {...content.municipalities} help={SUPPLIER_HELP} accent={meta.accent} />
       <FeaturedProjects vertical={vertical} area={area} />
       <FinancingBand flushTop={!hasProjects} />
       <ServiceAreaList {...content.areas} accent={meta.accent} />
