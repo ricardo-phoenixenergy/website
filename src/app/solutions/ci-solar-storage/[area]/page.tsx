@@ -7,7 +7,8 @@ import { notFound } from 'next/navigation';
 import { SolutionHero } from '@/components/sections/SolutionHero';
 import { ExplainerCards } from '@/components/sections/ExplainerCards';
 import { SupplierAccordion } from '@/components/sections/SupplierAccordion';
-import { FeaturedProjects } from '@/components/sections/FeaturedProjects';
+import { AreaProjects } from '@/components/sections/AreaProjects';
+import { PartnerBand } from '@/components/sections/PartnerBand';
 import { FinancingBand } from '@/components/sections/FinancingBand';
 import { ServiceAreaList } from '@/components/sections/ServiceAreaList';
 import { FaqAccordion } from '@/components/sections/FaqAccordion';
@@ -17,17 +18,20 @@ import { JsonLd } from '@/components/layout/JsonLd';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { getHeroImages } from '@/lib/getHeroImages';
 import { getProjectsByArea } from '@/lib/projectData';
+import { getPartnerLogo } from '@/lib/partnerData';
+import { contactHref } from '@/lib/contactLink';
+import { CONTACT } from '@/config/contact';
+import { WEG_BAND } from '@/config/wegPartner';
 import { VERTICAL_CONFIG } from '@/config/verticals';
 import { SOLUTION_META } from '@/types/solutions';
 import { SERVICE_CTA } from '@/config/ctas';
-import { LIFECYCLE, LOCATION_CONTENT, SUPPLIER_HELP } from '@/config/locations';
+import { LIFECYCLE, LOCATION_CONTENT, LOCATION_FACTS_CHECKED, SUPPLIER_HELP } from '@/config/locations';
 import { LOCATION_AREAS, LOCATION_AREA_LABEL, isLocationArea, locationPath } from '@/lib/locationAreas';
-import { pageMetadata } from '@/lib/seo';
-import { serviceJsonLd, breadcrumbJsonLd, HOME_CRUMB } from '@/lib/structuredData';
+import { absoluteUrl, pageMetadata } from '@/lib/seo';
+import { serviceJsonLd, breadcrumbJsonLd, webPageJsonLd, HOME_CRUMB } from '@/lib/structuredData';
 
 const vertical = 'ci-solar-storage' as const;
 const meta = SOLUTION_META[vertical];
-const cta = SERVICE_CTA[vertical];
 
 type PageProps = { params: Promise<{ area: string }> };
 
@@ -58,14 +62,31 @@ export default async function LocationPage({ params }: PageProps) {
   const content = LOCATION_CONTENT[area];
   const path = locationPath(area);
   const hero = (await getHeroImages())[vertical];
-  // Backgrounds alternate white and grey. Without projects (a white section),
-  // the grey municipality cards meet the grey funding band, so the band sits
-  // flush. Same query and arguments as FeaturedProjects, so the two always agree; at worst it costs one extra cached query.
-  const hasProjects = (await getProjectsByArea(vertical, area).catch(() => [])).length > 0;
+  const own = await getProjectsByArea(vertical, area).catch(() => []);
+  // A page without projects of its own shows the Gauteng ones, labelled as such (spec E8).
+  const borrowed = own.length === 0 && area !== 'gauteng' ? await getProjectsByArea(vertical, 'gauteng').catch(() => []) : [];
+  const projects = own.length > 0 ? own : borrowed;
+  const lead = own[0];
+  const heroImage = lead?.heroImage?.asset?.url ?? hero?.url;
+  const heroBlur = lead?.heroImage?.asset?.metadata?.lqip ?? hero?.lqip;
+  // The photo's own alt text, else the project and where it is, e.g. "St Andrews Office Park - Block A, Germiston".
+  const heroAlt = lead?.heroImage?.asset?.url ? (lead.heroImage.alt || [lead.title, lead.location].filter(Boolean).join(', ')) : meta.label;
+  const wegLogo = await getPartnerLogo(WEG_BAND.partnerName);
+  const cta = { label: SERVICE_CTA[vertical].label, href: contactHref(content.closing.ctaMessage) };
 
   return (
     <>
-      <JsonLd data={serviceJsonLd({ name: content.serviceName, description: content.seoDescription, path, areaServed: content.areaServed })} />
+      <JsonLd
+        data={serviceJsonLd({
+          name: content.serviceName,
+          description: content.seoDescription,
+          path,
+          areaServed: content.areaServed,
+          serviceType: 'Commercial solar PV and battery storage installation',
+          businessAudience: true,
+          offers: ['Outright purchase', 'Power lease agreement', 'Power purchase agreement'],
+        })}
+      />
       <JsonLd
         data={breadcrumbJsonLd([
           HOME_CRUMB,
@@ -74,35 +95,52 @@ export default async function LocationPage({ params }: PageProps) {
           { name: LOCATION_AREA_LABEL[area], path },
         ])}
       />
+      <JsonLd
+        data={webPageJsonLd({
+          path,
+          name: content.seoTitle,
+          description: content.seoDescription,
+          dateModified: LOCATION_FACTS_CHECKED,
+          aboutId: absoluteUrl(path) + '#service',
+          mentions: [{ name: 'WEG', url: 'https://www.weg.net' }],
+        })}
+      />
       <SolutionHero
         title={content.h1}
         subtitle={content.subtitle}
         eyebrow={content.eyebrow}
         accent={meta.accent}
         badge={LOCATION_AREA_LABEL[area]}
-        imageAlt={meta.label}
+        imageAlt={heroAlt}
         trail={[{ label: meta.label, href: meta.slug }]}
-        heroImage={hero?.url}
-        heroBlur={hero?.lqip}
+        heroImage={heroImage}
+        heroBlur={heroBlur}
         heroBg="linear-gradient(135deg, #0d1f22 0%, #1a3a3f 50%, #2d5c63 100%)"
         primaryCta={cta}
         wideRight
       >
         <StrategyFinder vertical={vertical} />
       </SolutionHero>
-      <ExplainerCards {...LIFECYCLE} accent={meta.accent} background="white" />
+      <AreaProjects
+        eyebrow={content.projects.eyebrow}
+        heading={own.length > 0 ? content.projects.heading : content.projects.fallbackHeading}
+        projects={projects}
+        accent={meta.accent}
+      />
+      <ExplainerCards {...LIFECYCLE} subtitle={`${content.statement} ${LIFECYCLE.subtitle}`} accent={meta.accent} background="gray" />
       <SupplierAccordion {...content.municipalities} help={SUPPLIER_HELP} accent={meta.accent} />
-      <FeaturedProjects vertical={vertical} area={area} />
-      <FinancingBand flushTop={!hasProjects} />
+      <PartnerBand content={WEG_BAND} logo={wegLogo} />
+      <FinancingBand />
       <ServiceAreaList {...content.areas} accent={meta.accent} />
       <FaqAccordion id="faq" eyebrow="Questions" heading={content.faqHeading} items={content.faqs} accent={meta.accent} flushTop />
-      <RelatedArticles vertical={vertical} />
+      <RelatedArticles vertical={vertical} slugs={content.articleSlugs} heading="Further reading" />
       <PageFooter
         ctaVariant="centered"
         eyebrow="Start today"
-        heading="Find your optimal energy strategy"
-        body="Work with our engineers to identify the best energy strategy for your business. You'll receive a clear, data-driven roadmap to reduce costs and improve energy performance."
+        heading={content.closing.heading}
+        body={content.closing.body}
         primaryCta={cta}
+        phone={{ label: CONTACT.phone, href: CONTACT.phoneHref }}
       />
     </>
   );

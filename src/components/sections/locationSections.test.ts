@@ -12,6 +12,7 @@ import { AreaProjects } from './AreaProjects';
 import { PartnerBand } from './PartnerBand';
 import { WEG_BAND } from '@/config/wegPartner';
 import { claimValue } from '@/config/claims';
+import { ProjectAreaLink } from '@/components/project/ProjectAreaLink';
 
 const html = (el: Parameters<typeof renderToStaticMarkup>[0]) => renderToStaticMarkup(el);
 const text = (markup: string) => markup.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
@@ -218,5 +219,21 @@ describe('PartnerBand', () => {
     const m = html(createElement(PartnerBand, { content: WEG_BAND, logo: null }));
     expect(m).not.toContain('<img');
     expect(text(m)).toContain('Since June 2025');
+  });
+});
+
+describe('ProjectAreaLink', () => {
+  it('links a tagged commercial solar project to its area page', () => {
+    const m = html(createElement(ProjectAreaLink, { serviceArea: 'gauteng', vertical: 'ci-solar-storage' }));
+    expect(m).toContain('href="/solutions/ci-solar-storage/gauteng"');
+    expect(text(m)).toContain('More commercial solar in Gauteng');
+  });
+
+  it.each([
+    ['untagged', { serviceArea: null, vertical: 'ci-solar-storage' }],
+    ['another service', { serviceArea: 'gauteng', vertical: 'wheeling' }],
+    ['an unknown area', { serviceArea: 'cape-town', vertical: 'ci-solar-storage' }],
+  ])('renders nothing for a project that is %s', (_name, props) => {
+    expect(html(createElement(ProjectAreaLink, props))).toBe('');
   });
 });

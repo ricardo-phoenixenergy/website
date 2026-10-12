@@ -107,6 +107,14 @@ describe('project queries: the client name, and the fields that were removed', (
   });
 });
 
+describe('project queries: the service area', () => {
+  it('returns the area a project is tagged to on its page', async () => {
+    const tagged = project('tagged', { serviceArea: 'gauteng' });
+    const page = (await run(queries.PROJECT_BY_SLUG_QUERY, [ASSET, tagged], { slug: 'tagged' })) as Row;
+    expect(page.serviceArea).toBe('gauteng');
+  });
+});
+
 describe('project queries: the page fields', () => {
   it('returns every page field, and the gallery captions', async () => {
     const full = project('full', {

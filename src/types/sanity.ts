@@ -94,6 +94,8 @@ export interface Project extends ProjectCard {
   /** The completion date, ISO (YYYY-MM-DD): the day a project was completed, or the day a planned or in-progress one is due. Shown as the month and year, and the order newest first. */
   commissionedOn?: string;
   financing?: FinancingMethod[];
+  /** The commercial solar location page this project belongs to, when tagged. */
+  serviceArea?: string | null;
   gallery?: SanityImage[];
   summary?: string;
   challenge?: PortableTextBlock[];

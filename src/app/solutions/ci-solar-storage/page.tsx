@@ -72,7 +72,7 @@ export default async function CiSolarStoragePage() {
       <FeaturedProjects vertical={vertical} />
       <LocationLinks
         heading="Where we install"
-        links={LOCATION_AREAS.map((area) => ({ label: LOCATION_AREA_LABEL[area], href: locationPath(area), line: LOCATION_CONTENT[area].cardLine }))}
+        links={LOCATION_AREAS.map((area) => ({ label: `Commercial solar installers in ${LOCATION_AREA_LABEL[area]}`, href: locationPath(area), line: LOCATION_CONTENT[area].cardLine }))}
         accent={meta.accent}
         flushTop
       />

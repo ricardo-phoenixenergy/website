@@ -19,6 +19,7 @@ import { ProjectHero } from '@/components/project/ProjectHero';
 import { ProjectResults } from '@/components/project/ProjectResults';
 import { ProjectPhotos } from '@/components/project/ProjectPhotos';
 import { ProjectStory } from '@/components/project/ProjectStory';
+import { ProjectAreaLink } from '@/components/project/ProjectAreaLink';
 import { ProjectNext } from '@/components/project/ProjectNext';
 import { ProjectBand } from '@/components/project/ProjectBand';
 
@@ -81,6 +82,7 @@ export default async function ProjectPage({ params }: PageProps) {
         cta={cta}
         ctaLocation={`project_facts:${slug}`}
       />
+      <ProjectAreaLink serviceArea={project.serviceArea} vertical={project.vertical} />
       {related && <ProjectNext related={related} />}
       <ProjectBand cta={cta} ctaLocation={`project_band:${slug}`} afterStory={!related} />
     </div>

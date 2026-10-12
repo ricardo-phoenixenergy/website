@@ -90,6 +90,7 @@ export const PROJECT_BY_SLUG_QUERY = `
     siteType,
     commissionedOn,
     financing,
+    serviceArea,
     "gallery": gallery[] ${GALLERY_IMAGE_FIELDS},
     summary,
     challenge[] { ... },
