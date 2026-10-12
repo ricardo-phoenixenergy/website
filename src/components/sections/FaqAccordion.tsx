@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { IconArrowRight } from '@/components/ui/Icons';
 import { JsonLd } from '@/components/layout/JsonLd';
@@ -30,6 +30,7 @@ export function FaqAccordion({
   flushTop = false,
 }: FaqAccordionProps) {
   const [open, setOpen] = useState<number | null>(0);
+  const baseId = useId();
 
   const faqJsonLd = {
     '@context': 'https://schema.org',
@@ -63,6 +64,7 @@ export function FaqAccordion({
         <dl className="flex flex-col">
           {items.map((it, i) => {
             const isOpen = open === i;
+            const answerId = `${baseId}-a${i}`;
             return (
               <div key={it.question} className="border-t border-pe-border last:border-b">
                 <dt>
@@ -71,6 +73,7 @@ export function FaqAccordion({
                     onClick={() => setOpen(isOpen ? null : i)}
                     className="w-full flex items-center justify-between gap-4 py-5 text-left"
                     aria-expanded={isOpen}
+                    aria-controls={answerId}
                   >
                     <span className="font-display font-bold text-base md:text-lg text-pe-text">
                       {it.question}
@@ -83,16 +86,39 @@ export function FaqAccordion({
                     </span>
                   </button>
                 </dt>
-                {isOpen && (
-                  <dd className="pb-5 -mt-1 font-body text-sm md:text-base text-pe-text-soft leading-[1.75] max-w-[60ch]">
-                    {it.answer}
-                  </dd>
-                )}
+                <FaqAnswer id={answerId} open={isOpen} onReveal={() => setOpen(i)}>
+                  {it.answer}
+                </FaqAnswer>
               </div>
             );
           })}
         </dl>
       </div>
     </section>
+  );
+}
+
+/** An answer that stays in the page while collapsed: hidden="until-found" keeps
+ *  it findable, and the browser's beforematch event opens it. */
+function FaqAnswer({ id, open, onReveal, children }: { id: string; open: boolean; onReveal: () => void; children: React.ReactNode }) {
+  const ref = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    // React 19.2 server-renders a string hidden value as hidden="", so the
+    // until-found state is set here, after hydration and after every toggle.
+    if (!open) el.setAttribute('hidden', 'until-found');
+    el.addEventListener('beforematch', onReveal);
+    return () => el.removeEventListener('beforematch', onReveal);
+  }, [open, onReveal]);
+  return (
+    <dd
+      ref={ref}
+      id={id}
+      hidden={open ? undefined : true}
+      className="pb-5 -mt-1 font-body text-sm md:text-base text-pe-text-soft leading-[1.75] max-w-[60ch]"
+    >
+      {children}
+    </dd>
   );
 }
