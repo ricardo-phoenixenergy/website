@@ -6,7 +6,7 @@ import { LOCATION_AREA_LABEL, isLocationArea, locationPath } from '@/lib/locatio
 export function ProjectAreaLink({ serviceArea, vertical }: { serviceArea?: string | null; vertical: string }) {
   if (!serviceArea || vertical !== 'ci-solar-storage' || !isLocationArea(serviceArea)) return null;
   return (
-    <div className="page-container py-8">
+    <div className="page-container pt-8">
       <ArrowLink href={locationPath(serviceArea)} size="lg">
         More commercial solar in {LOCATION_AREA_LABEL[serviceArea]}
       </ArrowLink>
