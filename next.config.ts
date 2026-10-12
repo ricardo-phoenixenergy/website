@@ -27,6 +27,13 @@ const nextConfig: NextConfig = {
         destination: '/projects/31-sacks-circle',
         permanent: true,
       },
+      // The Brakpan project was renamed from its site type to its system
+      // (12 October 2026); keep the old address (linked and indexed) working.
+      {
+        source: '/projects/residential-home-brakpan',
+        destination: '/projects/brakpan-solar-storage',
+        permanent: true,
+      },
     ];
   },
   async headers() {
