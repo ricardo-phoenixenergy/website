@@ -9,6 +9,9 @@ import { JsonLd } from '@/components/layout/JsonLd';
 import { PageFooter } from '@/components/layout/PageFooter';
 import { StrategyFinder } from '@/components/sections/StrategyFinder';
 import { FinancingBand } from '@/components/sections/FinancingBand';
+import { LocationLinks } from '@/components/sections/LocationLinks';
+import { LOCATION_CONTENT } from '@/config/locations';
+import { LOCATION_AREAS, LOCATION_AREA_LABEL, locationPath } from '@/lib/locationAreas';
 import { strategyTabs } from '@/config/strategies';
 import { getHowItWorks } from '@/lib/getHowItWorks';
 import { getHeroImages } from '@/lib/getHeroImages';
@@ -67,6 +70,11 @@ export default async function CiSolarStoragePage() {
       <FinancingBand />
       {howItWorks && <HowItWorks {...howItWorks} cta={cta} accent={meta.accent} accentText={meta.accentText} flushTop />}
       <FeaturedProjects vertical={vertical} />
+      <LocationLinks
+        heading="Where we install"
+        links={LOCATION_AREAS.map((area) => ({ label: LOCATION_AREA_LABEL[area], href: locationPath(area), line: LOCATION_CONTENT[area].cardLine }))}
+        accent={meta.accent}
+      />
       <RelatedArticles vertical={vertical} />
       <PageFooter
         ctaVariant="centered"
