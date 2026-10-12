@@ -7,6 +7,8 @@ import { ServiceAreaList } from './ServiceAreaList';
 import { LocationLinks } from './LocationLinks';
 import { ExplainerCards } from './ExplainerCards';
 import type { MunicipalityCard } from '@/types/locations';
+import type { ProjectCard as ProjectCardData } from '@/types/sanity';
+import { AreaProjects } from './AreaProjects';
 
 const html = (el: Parameters<typeof renderToStaticMarkup>[0]) => renderToStaticMarkup(el);
 const text = (markup: string) => markup.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
@@ -147,5 +149,49 @@ describe('ExplainerCards', () => {
       }),
     );
     expect(markup.match(/md:col-span-2/g)).toHaveLength(1);
+  });
+});
+
+describe('AreaProjects', () => {
+  const projectCard = (id: string): ProjectCardData => ({
+    _id: id,
+    title: `Project ${id}`,
+    slug: { current: id },
+    vertical: 'ci-solar-storage',
+    location: 'Cape Town',
+    status: 'completed',
+    metrics: [{ label: 'Solar PV Capacity', value: '82.8 kWp' }],
+    results: [{ label: 'Payback period', value: '51 months' }],
+  });
+  const props = (n: number) => ({
+    eyebrow: 'Our work in Gauteng',
+    heading: 'Commercial solar projects in Gauteng',
+    accent: ACCENT,
+    projects: Array.from({ length: n }, (_, i) => projectCard(`p${i}`)),
+  });
+
+  it('renders nothing without projects', () => {
+    expect(html(createElement(AreaProjects, props(0)))).toBe('');
+  });
+
+  it('shows one project as one wide card, with no empty grid cells', () => {
+    const m = html(createElement(AreaProjects, props(1)));
+    expect(m).toMatch(/<h2[^>]*>Commercial solar projects in Gauteng<\/h2>/);
+    expect(m.match(/href="\/projects\/p0"/g)).toHaveLength(1);
+    expect(m).not.toMatch(/md:grid-cols-3/);
+  });
+
+  it('matches the row to the count for two and three', () => {
+    expect(html(createElement(AreaProjects, props(2)))).toMatch(/md:grid-cols-2/);
+    expect(html(createElement(AreaProjects, props(3)))).toMatch(/md:grid-cols-3/);
+  });
+
+  it('leads with a wide card when there are four or more, then the rest', () => {
+    const m = html(createElement(AreaProjects, props(4)));
+    for (let i = 0; i < 4; i += 1) expect(m).toContain(`href="/projects/p${i}"`);
+  });
+
+  it('links to all projects', () => {
+    expect(html(createElement(AreaProjects, props(1)))).toContain('href="/projects"');
   });
 });
