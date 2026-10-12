@@ -233,3 +233,22 @@ describe('the project schema', () => {
     expect(width({ asset: { _ref: 'image-abc123-1200x900-png' } }, {})).toBe(HERO_WIDTH_WARNING);
   });
 });
+
+describe('serviceArea', () => {
+  it('offers the location pages as an optional list in the Overview group', () => {
+    const area = field('serviceArea');
+    expect(area.title).toBe('Service area');
+    expect(area.type).toBe('string');
+    expect(area.group).toBe('overview');
+    expect(area.options?.list).toEqual([
+      { title: 'Gauteng', value: 'gauteng' },
+      { title: 'Pretoria and Centurion', value: 'pretoria-centurion' },
+    ]);
+    expect(area.validation).toBeUndefined();
+  });
+
+  it('comes straight after Location', () => {
+    const names = (project.fields as unknown as Definition[]).map((f) => f.name);
+    expect(names.indexOf('serviceArea')).toBe(names.indexOf('location') + 1);
+  });
+});

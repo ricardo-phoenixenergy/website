@@ -7,6 +7,7 @@
 // figures or System rows.
 import { defineArrayMember, defineField, defineType } from 'sanity';
 import { EQUIPMENT_COMPONENTS, FINANCING_METHODS } from '../../src/lib/projectOptions';
+import { LOCATION_AREAS, LOCATION_AREA_LABEL } from '../../src/lib/locationAreas';
 import { commissionedWarning, heroWidthWarning, resultsCountWarning, systemRowsWarning } from './projectRules';
 
 const ALT_HELP = "What the photo shows, for people who can't see it.";
@@ -117,6 +118,15 @@ export const project = defineType({
       title: 'Location',
       type: 'string',
       group: 'overview',
+    }),
+    defineField({
+      name: 'serviceArea',
+      title: 'Service area',
+      type: 'string',
+      group: 'overview',
+      description:
+        'Shows the project on that area\'s commercial solar page. Leave it empty for a project that belongs on neither, such as a home.',
+      options: { list: LOCATION_AREAS.map((value) => ({ title: LOCATION_AREA_LABEL[value], value })) },
     }),
     defineField({
       name: 'status',
