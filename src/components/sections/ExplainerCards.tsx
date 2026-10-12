@@ -44,6 +44,8 @@ export interface ExplainerCardItem {
   icon: ExplainerIcon;
   title: string;
   body: string;
+  /** Spans two columns from md: the card the section leans on. */
+  wide?: boolean;
 }
 
 export interface ExplainerCardsProps {
@@ -112,7 +114,7 @@ export function ExplainerCards({
 
         <div className={`grid gap-4 ${columns === 4 ? 'md:grid-cols-2 lg:grid-cols-4' : 'md:grid-cols-3'}`}>
           {cards.map((c, i) => (
-            <AnimatedSection key={c.title} delay={i * 0.08}>
+            <AnimatedSection key={c.title} delay={i * 0.08} className={c.wide ? 'md:col-span-2' : undefined}>
               <Card variant="light" pattern={3} className="h-full">
                 <div className="h-[3px]" style={{ background: accent }} />
                 <CardBody padding="lg">
