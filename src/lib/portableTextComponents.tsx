@@ -14,6 +14,13 @@ import { urlFor } from '@/lib/sanity';
 export const POST_H2_CLASS = 'font-display font-extrabold text-[26px] text-pe-text leading-[1.2] mt-12 mb-4 text-balance';
 export const POST_H3_CLASS = 'font-display font-bold text-xl text-pe-text leading-[1.3] mt-9 mb-3';
 
+// Body images keep their own proportions, so a chart is never cropped.
+// 16:9 is the fallback when Sanity has no dimensions for the asset.
+export function bodyImageAspectRatio(value: { asset?: { metadata?: { dimensions?: { aspectRatio?: number } } } }): number {
+  const ratio = value?.asset?.metadata?.dimensions?.aspectRatio;
+  return typeof ratio === 'number' && Number.isFinite(ratio) && ratio > 0 ? ratio : 16 / 9;
+}
+
 export const portableTextComponents: PortableTextComponents = {
   block: {
     normal: ({ children }) => (
@@ -70,11 +77,12 @@ export const portableTextComponents: PortableTextComponents = {
   types: {
     image: ({ value }) => {
       if (!value?.asset) return null;
-      const src = urlFor(value).width(680).auto('format').url();
+      // 1360 px serves the 680 px column sharply on high-density screens.
+      const src = urlFor(value).width(1360).auto('format').url();
       const blurSrc: string | undefined = value?.asset?.metadata?.lqip;
       return (
         <figure className="my-8">
-          <div className="relative w-full rounded-xl overflow-hidden" style={{ aspectRatio: '16/9' }}>
+          <div className="relative w-full rounded-xl overflow-hidden" style={{ aspectRatio: bodyImageAspectRatio(value) }}>
             <Image
               src={src}
               alt={value.alt ?? ''}
