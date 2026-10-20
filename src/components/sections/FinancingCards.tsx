@@ -145,7 +145,6 @@ export function FinancingCards({
               'R0 capital and no upfront cost.',
               'Fixed tariff below grid rate.',
               'Operations & maintenance included.',
-              'Off-balance-sheet financing.',
               '10 to 25 year agreement, with a purchase option.',
             ].map((item) => (
               <li

@@ -17,7 +17,7 @@ const CI_FINANCING: FinancingOption[] = [
     tag: '5 to 10 years',
     description:
       'Spread the cost over fixed monthly payments while you start saving from month one. At the end of the term the system is yours, and you never paid for it up front.',
-    benefits: ['Predictable monthly payments.', 'Off-balance-sheet financing.', 'Ownership at end of term.', 'Immediate net savings.', 'Maintenance & monitoring included.'],
+    benefits: ['Predictable monthly payments.', 'No upfront capital.', 'Ownership at end of term.', 'Immediate net savings.', 'Maintenance & monitoring included.'],
   },
   {
     icon: 'agreement',
@@ -25,7 +25,7 @@ const CI_FINANCING: FinancingOption[] = [
     tag: '10 to 20 years',
     description:
       'We design, fund, install and maintain the system on your roof at zero upfront cost. You simply buy the clean power it generates at a tariff below your current grid rate.',
-    benefits: ['No upfront capital.', 'Off-balance-sheet financing.', 'Immediate net savings.', 'Maintenance & monitoring included.'],
+    benefits: ['No upfront capital.', 'Immediate net savings.', 'Maintenance & monitoring included.'],
   },
 ];
 
