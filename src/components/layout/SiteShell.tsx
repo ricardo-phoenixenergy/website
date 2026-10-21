@@ -22,7 +22,7 @@ export function SiteShell({ children, showBlog }: { children: React.ReactNode; s
       <main id="main-content" tabIndex={-1} className="focus:outline-none">
         {children}
       </main>
-      <SiteFooter />
+      <SiteFooter showBlog={showBlog} />
     </MotionConfig>
   );
 }
