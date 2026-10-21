@@ -6,7 +6,7 @@ import { SiteFooter } from './SiteFooter';
 const render = (showBlog: boolean) => renderToStaticMarkup(createElement(SiteFooter, { showBlog }));
 
 describe('SiteFooter', () => {
-  it('links every solution page and the Gauteng page from the server HTML', () => {
+  it('links every solution page from the server HTML', () => {
     const markup = render(true);
     for (const href of [
       '/solutions/ci-solar-storage',
@@ -15,10 +15,13 @@ describe('SiteFooter', () => {
       '/solutions/carbon-credits',
       '/solutions/webuysolar',
       '/solutions/ev-fleets',
-      '/solutions/ci-solar-storage/gauteng',
     ]) {
       expect(markup).toContain(`href="${href}"`);
     }
+  });
+
+  it('leaves the area pages out; the C&I page links them from its copy', () => {
+    expect(render(true)).not.toContain('/solutions/ci-solar-storage/gauteng');
   });
 
   it('links the company pages and keeps the legal links', () => {

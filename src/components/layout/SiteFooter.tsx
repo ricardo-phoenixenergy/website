@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { SOLUTION_META, SOLUTION_VERTICALS } from '@/types/solutions';
-import { LOCATION_AREAS, LOCATION_AREA_LABEL, locationPath } from '@/lib/locationAreas';
 
 interface FooterLink {
   label: string;
@@ -8,12 +7,13 @@ interface FooterLink {
 }
 
 // Every page carries these links in its server HTML, so search engines reach the
-// solution and area pages from anywhere on the site. The navbar's Solutions menu
-// only renders its links while it is open.
-const SOLUTION_LINKS: FooterLink[] = [
-  ...SOLUTION_VERTICALS.map((v) => ({ label: SOLUTION_META[v].label, href: SOLUTION_META[v].slug })),
-  ...LOCATION_AREAS.map((a) => ({ label: `Solar installers in ${LOCATION_AREA_LABEL[a]}`, href: locationPath(a) })),
-];
+// solution pages from anywhere on the site. The navbar's Solutions menu only
+// renders its links while it is open. Area pages stay out: listing them read as
+// if Phoenix only works there; the C&I page links them from its copy.
+const SOLUTION_LINKS: FooterLink[] = SOLUTION_VERTICALS.map((v) => ({
+  label: SOLUTION_META[v].label,
+  href: SOLUTION_META[v].slug,
+}));
 
 // Shown once a blog post is live, the same rule as the navbar (src/lib/blogNav.ts).
 const BLOG_LINK: FooterLink = { label: 'News & Insights', href: '/blog' };
