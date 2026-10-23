@@ -10,6 +10,8 @@
 // three value columns fit a phone by wrapping; a wider table keeps its columns
 // and scrolls sideways inside a named, focusable region instead of widening
 // the page.
+// An optional footnote under the table holds the basis, the dates and the
+// sources, so the caption can stay short.
 
 export interface ComparisonRow {
   _key?: string;
@@ -23,11 +25,12 @@ interface ComparisonTableProps {
   labelHeader?: string;
   columns?: string[];
   rows?: ComparisonRow[];
+  note?: string;
 }
 
 const CELL = 'px-2 py-3 align-top first:pl-4 last:pr-4 sm:px-3 sm:first:pl-5 sm:last:pr-5 md:first:pl-6 md:last:pr-6';
 
-export function ComparisonTable({ caption, labelHeader, columns = [], rows = [] }: ComparisonTableProps) {
+export function ComparisonTable({ caption, labelHeader, columns = [], rows = [], note }: ComparisonTableProps) {
   const heads = columns.map((column) => column?.trim() ?? '');
   const body = rows.filter((row) => row.label?.trim());
   if (heads.length === 0 || body.length === 0) return null;
@@ -76,6 +79,9 @@ export function ComparisonTable({ caption, labelHeader, columns = [], rows = [] 
         </div>
       ) : (
         table
+      )}
+      {note?.trim() && (
+        <p className="border-t border-pe-border px-4 py-3 font-body text-xs leading-5 text-pe-muted sm:px-5 md:px-6">{note.trim()}</p>
       )}
     </figure>
   );

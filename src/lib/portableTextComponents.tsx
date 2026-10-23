@@ -6,6 +6,7 @@ import { Callout } from '@/components/blog/Callout';
 import { StatStrip } from '@/components/blog/StatStrip';
 import { InlineCta } from '@/components/blog/InlineCta';
 import { ComparisonTable } from '@/components/blog/ComparisonTable';
+import { BarChart } from '@/components/blog/BarChart';
 import { urlFor } from '@/lib/sanity';
 
 // The body headings. The h2 matches the project page's chapter headline (26px);
@@ -112,8 +113,9 @@ export const portableTextComponents: PortableTextComponents = {
       <StatStrip stats={value.stats ?? []} />
     ),
     comparisonTable: ({ value }) => (
-      <ComparisonTable caption={value.caption} labelHeader={value.labelHeader} columns={value.columns ?? []} rows={value.rows ?? []} />
+      <ComparisonTable caption={value.caption} labelHeader={value.labelHeader} columns={value.columns ?? []} rows={value.rows ?? []} note={value.note} />
     ),
+    barChart: ({ value }) => <BarChart title={value.title} bars={value.bars ?? []} note={value.note} />,
     inlineCta: ({ value }) => (
       <InlineCta
         title={value.title ?? ''}

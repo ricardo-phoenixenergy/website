@@ -16,6 +16,7 @@ import { StatStrip } from './StatStrip';
 import { InlineCta } from './InlineCta';
 import { Callout } from './Callout';
 import { ComparisonTable } from './ComparisonTable';
+import { BarChart } from './BarChart';
 
 const html = (el: Parameters<typeof renderToStaticMarkup>[0]) => renderToStaticMarkup(el);
 
@@ -249,5 +250,45 @@ describe('ComparisonTable', () => {
     const wide = html(createElement(ComparisonTable, { ...table, columns: ['A', 'B', 'C', 'D'], rows: [{ _key: 'r', label: 'Row', values: ['1', '2', '3', '4'] }] }));
     expect(wide).toMatch(/<div[^>]*role="region"[^>]*tabindex="0"[^>]*class="[^"]*\boverflow-x-auto\b/);
     expect(markup).not.toContain('tabindex');
+  });
+
+  it('puts the footnote under the table, and leaves it out when there is none', () => {
+    const noted = html(createElement(ComparisonTable, { ...table, note: 'Source: Ekurhuleni tariff schedule.' }));
+    expect(noted).toMatch(/<\/table><p class="[^"]*\btext-xs\b[^"]*">Source: Ekurhuleni tariff schedule\.<\/p><\/figure>$/);
+    expect(markup).not.toContain('<p');
+  });
+});
+
+describe('BarChart', () => {
+  const chart = {
+    title: 'Yearly saving',
+    note: 'Eskom 2026/27, excluding VAT.',
+    bars: [
+      { _key: 'a', label: 'Diesel generator', value: 114, upTo: 190, valueLabel: 'R114k to R190k' },
+      { _key: 'b', label: 'Ruraflex', value: 30, valueLabel: 'R30k' },
+    ],
+  };
+  const markup = html(createElement(BarChart, chart));
+
+  it('scales every bar against the largest figure, the top of a range included', () => {
+    expect(markup).toContain('width:calc((100% - 8.5rem) * 0.6)');
+    expect(markup).toContain('width:calc((100% - 8.5rem) * 0.4)');
+    expect(markup).toContain(`width:calc((100% - 8.5rem) * ${30 / 190})`);
+  });
+
+  it('draws a range as a second, lighter segment and explains the tint', () => {
+    expect(markup.match(/bg-pe-secondary-ink\/45/g)).toHaveLength(2);
+    expect(markup).toContain('Range, from the low to the high estimate');
+    expect(html(createElement(BarChart, { ...chart, bars: [chart.bars[1]] }))).not.toContain('Range,');
+  });
+
+  it('hides the drawing from screen readers and gives them the figures as a table', () => {
+    expect(markup).toMatch(/<figcaption[^>]*>Yearly saving<\/figcaption><div aria-hidden="true"/);
+    expect(markup).toMatch(/<table class="sr-only">[\s\S]*<th scope="row">Diesel generator<\/th><td>R114k to R190k<\/td>/);
+  });
+
+  it('ends with the footnote, and renders nothing without a usable bar', () => {
+    expect(markup).toMatch(/>Eskom 2026\/27, excluding VAT\.<\/p><\/figure>$/);
+    expect(html(createElement(BarChart, { ...chart, bars: [{ label: 'Empty', value: 0, valueLabel: 'R0' }] }))).toBe('');
   });
 });
