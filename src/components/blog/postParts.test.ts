@@ -17,6 +17,7 @@ import { InlineCta } from './InlineCta';
 import { Callout } from './Callout';
 import { ComparisonTable } from './ComparisonTable';
 import { BarChart } from './BarChart';
+import { DemandProfile, demandMonth } from './DemandProfile';
 
 const html = (el: Parameters<typeof renderToStaticMarkup>[0]) => renderToStaticMarkup(el);
 
@@ -290,5 +291,63 @@ describe('BarChart', () => {
   it('ends with the footnote, and renders nothing without a usable bar', () => {
     expect(markup).toMatch(/>Eskom 2026\/27, excluding VAT\.<\/p><\/figure>$/);
     expect(html(createElement(BarChart, { ...chart, bars: [{ label: 'Empty', value: 0, valueLabel: 'R0' }] }))).toBe('');
+  });
+});
+
+describe('DemandProfile', () => {
+  const chart = {
+    title: 'One half-hour sets the demand charge',
+    month: '2026-09-01',
+    peakKva: 400,
+    usualKva: 330,
+    rate: 321.46,
+    note: 'Illustrative, excluding VAT.',
+  };
+  const markup = html(createElement(DemandProfile, chart));
+
+  it('draws every half-hour of the month, with the peak once and the next highest as entered', () => {
+    const month = demandMonth(2026, 8, 400, 330);
+    expect(month.readings).toHaveLength(30 * 48);
+    expect(month.readings.filter((kva) => kva === 400)).toHaveLength(1);
+    expect(Math.max(...month.readings.filter((kva) => kva !== 400))).toBeCloseTo(330, 6);
+    // 1 September 2026 is a Tuesday; the peak falls on the first weekday from the 14th, Monday.
+    expect(month.firstWeekday).toBe(2);
+    expect(month.peakDay).toBe(14);
+    expect(month.readings[(14 - 1) * 48 + 21]).toBe(400);
+    expect(demandMonth(2026, 8, 400, 330).readings).toEqual(month.readings);
+  });
+
+  it('keeps weekends at the base load', () => {
+    const month = demandMonth(2026, 8, 400, 330);
+    // Saturday 5 and Sunday 6 September.
+    const weekend = month.readings.slice(4 * 48, 6 * 48);
+    expect(Math.max(...weekend)).toBeLessThan(400 * 0.25 * 1.07);
+  });
+
+  it('works out the charge with and without the peak half-hour', () => {
+    expect(markup).toContain('Demand charge for September 2026:');
+    expect(markup).toContain('400 kVA × R321.46 =');
+    expect(markup).toContain('R128,584');
+    expect(markup).toContain('the maximum would be 330 kVA and the charge R106,082. One half-hour added R22,502.');
+    expect(markup).toContain('400 kVA, Mon 14 Sep, 10:30');
+  });
+
+  it('leaves the comparison out without a next highest half-hour', () => {
+    const plain = html(createElement(DemandProfile, { ...chart, usualKva: undefined }));
+    expect(plain).toContain('R128,584');
+    expect(plain).not.toContain('Without that half-hour');
+    expect(plain).not.toContain('Next highest');
+  });
+
+  it('hides the drawing from screen readers and gives them the figures as a table', () => {
+    expect(markup).toMatch(/<figcaption[^>]*>One half-hour sets the demand charge<\/figcaption><div aria-hidden="true"/);
+    expect(markup).toMatch(/<table class="sr-only">[\s\S]*<th scope="row">Maximum demand<\/th><td>400 kVA, Mon 14 Sep, 10:30<\/td>/);
+  });
+
+  it('ends with the footnote, and renders nothing without a month, a peak or a rate', () => {
+    expect(markup).toMatch(/>Illustrative, excluding VAT\.<\/p><\/figure>$/);
+    expect(html(createElement(DemandProfile, { ...chart, month: undefined }))).toBe('');
+    expect(html(createElement(DemandProfile, { ...chart, peakKva: 0 }))).toBe('');
+    expect(html(createElement(DemandProfile, { ...chart, rate: undefined }))).toBe('');
   });
 });

@@ -192,6 +192,32 @@ export const blogPost = defineType({
           preview: { select: { title: 'title' }, prepare: ({ title }) => ({ title: title || 'Bar chart', subtitle: 'Bar chart' }) },
         }),
         defineArrayMember({
+          name: 'demandProfile',
+          type: 'object',
+          title: 'Demand profile',
+          description: 'An illustrative month of half-hour demand with the peak that sets the demand charge marked, and the charge worked out under it.',
+          fields: [
+            defineField({ name: 'title', type: 'string', title: 'Title', description: "What the chart shows, for example 'One half-hour sets the demand charge for the month'.", validation: (r) => r.required() }),
+            defineField({ name: 'month', type: 'date', title: 'Billing month', description: 'Any day in the month. Sets the number of days and the weekends.', validation: (r) => r.required() }),
+            defineField({ name: 'peakKva', type: 'number', title: 'Maximum demand (kVA)', description: "The month's highest half-hour, for example 400.", validation: (r) => r.required().positive() }),
+            defineField({
+              name: 'usualKva',
+              type: 'number',
+              title: 'Next highest half-hour (kVA)',
+              description: 'Optional. The highest of every other half-hour, for example 330. Shows what the month would cost without the peak.',
+              validation: (r) =>
+                r.custom((value, context) => {
+                  const peak = (context.parent as { peakKva?: number } | undefined)?.peakKva;
+                  if (value === undefined || !peak) return true;
+                  return (value as number) < peak && (value as number) > peak * 0.3 ? true : 'Between 30% of the maximum demand and the maximum itself.';
+                }),
+            }),
+            defineField({ name: 'rate', type: 'number', title: 'Demand charge (R per kVA)', description: 'Excluding VAT, for example 321.46.', validation: (r) => r.required().positive() }),
+            defineField({ name: 'note', type: 'text', rows: 2, title: 'Footnote', description: 'Optional. The basis, dates and sources.' }),
+          ],
+          preview: { select: { title: 'title' }, prepare: ({ title }) => ({ title: title || 'Demand profile', subtitle: 'Demand profile' }) },
+        }),
+        defineArrayMember({
           name: 'inlineCta',
           type: 'object',
           title: 'Inline CTA',

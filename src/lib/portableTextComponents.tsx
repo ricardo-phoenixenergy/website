@@ -7,6 +7,7 @@ import { StatStrip } from '@/components/blog/StatStrip';
 import { InlineCta } from '@/components/blog/InlineCta';
 import { ComparisonTable } from '@/components/blog/ComparisonTable';
 import { BarChart } from '@/components/blog/BarChart';
+import { DemandProfile } from '@/components/blog/DemandProfile';
 import { urlFor } from '@/lib/sanity';
 
 // The body headings. The h2 matches the project page's chapter headline (26px);
@@ -116,6 +117,9 @@ export const portableTextComponents: PortableTextComponents = {
       <ComparisonTable caption={value.caption} labelHeader={value.labelHeader} columns={value.columns ?? []} rows={value.rows ?? []} note={value.note} />
     ),
     barChart: ({ value }) => <BarChart title={value.title} bars={value.bars ?? []} note={value.note} />,
+    demandProfile: ({ value }) => (
+      <DemandProfile title={value.title} month={value.month} peakKva={value.peakKva} usualKva={value.usualKva} rate={value.rate} note={value.note} />
+    ),
     inlineCta: ({ value }) => (
       <InlineCta
         title={value.title ?? ''}
