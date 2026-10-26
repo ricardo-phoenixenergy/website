@@ -220,37 +220,40 @@ export function DemandProfile({ title, month, peakKva, usualKva, rate, note }: D
           </p>
         )}
       </div>
-      <table className="sr-only">
-        {heading && <caption>{heading}</caption>}
-        <tbody>
-          <tr>
-            <th scope="row">Maximum demand</th>
-            <td>
-              {kva(peakKva)}, {peakWhen}
-            </td>
-          </tr>
-          {showUsual && (
+      {/* A table ignores the 1px width sr-only sets, so the div holds it in. */}
+      <div className="sr-only">
+        <table>
+          {heading && <caption>{heading}</caption>}
+          <tbody>
             <tr>
-              <th scope="row">Next highest half-hour</th>
-              <td>{kva(profile.usualKva)}</td>
+              <th scope="row">Maximum demand</th>
+              <td>
+                {kva(peakKva)}, {peakWhen}
+              </td>
             </tr>
-          )}
-          <tr>
-            <th scope="row">Demand charge rate</th>
-            <td>{rand(rate, 2)} per kVA</td>
-          </tr>
-          <tr>
-            <th scope="row">Demand charge for {monthName}</th>
-            <td>{rand(charge)}</td>
-          </tr>
-          {showUsual && (
+            {showUsual && (
+              <tr>
+                <th scope="row">Next highest half-hour</th>
+                <td>{kva(profile.usualKva)}</td>
+              </tr>
+            )}
             <tr>
-              <th scope="row">Without the maximum half-hour</th>
-              <td>{rand(without)}</td>
+              <th scope="row">Demand charge rate</th>
+              <td>{rand(rate, 2)} per kVA</td>
             </tr>
-          )}
-        </tbody>
-      </table>
+            <tr>
+              <th scope="row">Demand charge for {monthName}</th>
+              <td>{rand(charge)}</td>
+            </tr>
+            {showUsual && (
+              <tr>
+                <th scope="row">Without the maximum half-hour</th>
+                <td>{rand(without)}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
       {note?.trim() && <p className="mt-4 border-t border-pe-border pt-3 font-body text-xs leading-5 text-pe-muted">{note.trim()}</p>}
     </figure>
   );

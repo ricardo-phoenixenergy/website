@@ -341,7 +341,7 @@ describe('DemandProfile', () => {
 
   it('hides the drawing from screen readers and gives them the figures as a table', () => {
     expect(markup).toMatch(/<figcaption[^>]*>One half-hour sets the demand charge<\/figcaption><div aria-hidden="true"/);
-    expect(markup).toMatch(/<table class="sr-only">[\s\S]*<th scope="row">Maximum demand<\/th><td>400 kVA, Mon 14 Sep, 10:30<\/td>/);
+    expect(markup).toMatch(/<div class="sr-only"><table>[\s\S]*<th scope="row">Maximum demand<\/th><td>400 kVA, Mon 14 Sep, 10:30<\/td>/);
   });
 
   it('ends with the footnote, and renders nothing without a month, a peak or a rate', () => {
